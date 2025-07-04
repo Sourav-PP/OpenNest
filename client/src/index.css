@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-primary {
+    @apply text-white px-12 py-2.5 rounded-full bg-gradient-to-r from-[#5C68FF] to-[#70A5FF] transition-all;
+  }
+}
+
+body {
+  @apply font-jakarta;
+} 
+
