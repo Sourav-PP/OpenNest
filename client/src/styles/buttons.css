@@ -1,0 +1,3 @@
+.btn-primary {
+  @apply text-white px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all;
+}
