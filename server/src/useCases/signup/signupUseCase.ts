@@ -16,16 +16,22 @@ export class SignupUseCase {
     async execute(request: SignupRequest): Promise<SignupResponse> {
         const existingUser = await this.userRepository.findByEmail(request.email)
         if(existingUser) {
-            throw new Error("User with this email already exists")
+            const error: Error & {statusCode?: number} = new Error('User with this email already exists')
+            error.statusCode = 400
+            throw error
         } 
 
         if(request.password !== request.confirmPassword) {
-            throw new Error("Password do not match")
+            const error: Error & {statusCode?: number} = new Error("Password do not match")
+            error.statusCode = 400
+            throw error
         }
 
         const isVerified = await this.otpService.isVerified(request.email);
         if (!isVerified) {
-            throw new Error("Email not verified with OTP");
+            const error: Error & {statusCode?: number} = new Error("Email not verified with OTP")
+            error.statusCode = 400
+            throw error
         }
 
         const hashPassword = await this.authService.hashPassword(request.password)

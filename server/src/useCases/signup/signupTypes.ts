@@ -1,3 +1,5 @@
+import { PublicUser } from "../../domain/entities/user"
+
 export interface SignupRequest {
     name: string,
     email: string,
@@ -8,12 +10,7 @@ export interface SignupRequest {
 }
 
 export interface SignupResponse {
-    user: {
-        id: string,
-        name: string,
-        email: string,
-        role: string
-    };
+    user: PublicUser
     accessToken: string,
     refreshToken: string
     

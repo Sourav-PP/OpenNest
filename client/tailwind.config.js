@@ -18,6 +18,7 @@ export default {
       },
       backgroundImage: {
         'auth': "url('/images/auth_bg.jpg')",
+        'login': "url('/images/login_bg.svg')"
       },
       fontFamily: {
         jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
