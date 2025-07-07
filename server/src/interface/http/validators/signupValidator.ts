@@ -19,8 +19,8 @@ export const signupValidator = [
     .matches(/^\d{10}$/)
     .withMessage("Mobile number must be exactly 10 digits"),
   body("password")
-    .isLength({ min: 8 })
-    .withMessage("Password must be at least 8 characters long")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
     )
@@ -31,6 +31,8 @@ export const signupValidator = [
     .custom((value, { req }) => value === req.body.password)
     .withMessage("Passwords do not match"),
   body("role")
+    .notEmpty()
+    .withMessage("role is required")
     .isIn(["user", "psychologist"])
     .withMessage('Role must be either "user" or "psychologist"'),
 ];

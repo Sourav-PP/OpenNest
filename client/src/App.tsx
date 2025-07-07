@@ -2,7 +2,9 @@ import './App.css'
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+// pages
 import SignupPage from './pages/SignupPage'
+import LoginPage from './pages/LoginPage'
 
 function App() {
 
@@ -21,6 +23,7 @@ function App() {
       />
       <Routes>
         <Route path='/signup' element={<SignupPage />}/>
+        <Route path='/login' element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   )

@@ -1,6 +1,6 @@
 import arrow_icon from './arrow_icon.svg'
 import lock from './lock.svg'
-import logo from './logo.svg'
+import logo from './Logo_light.png'
 import mail from './mail.svg'
 import person_icon from './person_icon.svg'
 import hand_wave from './hand_wave.png'
