@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 // pages
 import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
+import VerificationPage from './pages/VerificationPage'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
       <Routes>
         <Route path='/signup' element={<SignupPage />}/>
         <Route path='/login' element={<LoginPage />} />
+        <Route path='/verification' element={< VerificationPage/>} />
       </Routes>
     </BrowserRouter>
   )

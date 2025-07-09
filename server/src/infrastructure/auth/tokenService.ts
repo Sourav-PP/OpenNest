@@ -10,18 +10,26 @@ export class JwtTokenService implements TokenService {
         this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || '';
     }
 
-    generateAccessToken(userId: string, role: string): string {
+    generateAccessToken(userId: string, role: string, email: string): string {
         console.log('hi token is:', this.accessTokenSecret)
-        return jwt.sign({ userId, role }, this.accessTokenSecret, { expiresIn: '15m' })
+        return jwt.sign({ userId, role, email }, this.accessTokenSecret, { expiresIn: '15m' })
     }
 
-    generateRefreshToken(userId: string, role: string): string {
-        return jwt.sign({ userId, role }, this.refreshTokenSecret, { expiresIn: '7d' })
+    generateRefreshToken(userId: string, role: string, email: string): string {
+        return jwt.sign({ userId, role, email }, this.refreshTokenSecret, { expiresIn: '7d' })
     }
 
-    verifyRefreshToken(token: string): { userId: string; role: string; } | null {
+    verifyRefreshToken(token: string): { userId: string; role: string; email: string } | null {
         try {
-            return jwt.verify(token, this.refreshTokenSecret) as { userId: string, role: string}
+            return jwt.verify(token, this.refreshTokenSecret) as { userId: string, role: string, email: string}
+        } catch (error) {
+            return null
+        }
+    }
+
+    verifyAccessToken(token: string): { userId: string; email: string; role: string; } | null {
+        try {
+            return jwt.verify(token, this.accessTokenSecret) as { userId: string, role: string, email: string}
         } catch (error) {
             return null
         }
