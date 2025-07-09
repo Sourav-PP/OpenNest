@@ -19,7 +19,7 @@ export class RefreshTokenUseCase {
             throw new AppError("User not found", 404)
         }
 
-        const newAccessToken = this.tokenService.generateAccessToken(payload.userId, user.role)
+        const newAccessToken = this.tokenService.generateAccessToken(payload.userId, user.role, user.email)
 
         return {
             accessToken: newAccessToken

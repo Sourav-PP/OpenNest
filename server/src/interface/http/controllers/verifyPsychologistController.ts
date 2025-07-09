@@ -1,0 +1,52 @@
+import { Request, Response } from "express";
+import { VerifyPsychologistUseCase } from "../../../useCases/verifyPsychologist/verifyUseCase";
+import { uploadToCloudinary } from "../../../utils/uploadToCloudinary";
+
+export class VerifyPsychologistController {
+    constructor(private verifyPsychologistUseCase: VerifyPsychologistUseCase) {}
+
+    handle = async(req: Request, res: Response): Promise<void> => {
+        try {
+
+            console.log("req :", req.body)
+            console.log('files: ', req.files)
+            const userId = req.user?.userId
+            const files = req.files as Record<string, Express.Multer.File[]>
+
+            const uploadDoc = async(field: string, label: string) => {
+                const file = files[field]?.[0]
+
+                if(!file) throw new Error(`${label} not uploaded`)
+                return await uploadToCloudinary(file.buffer, `${label}-${Date.now()}`, 'kyc-docs')
+            }
+
+            const identificationUrl = await uploadDoc('identificationDoc', 'identification')
+            const educationalCertificationUrl = await uploadDoc('educationalCertification', 'education')
+            const experienceCertificateUrl = await uploadDoc('experienceCertificate', 'experience')
+
+            const data = {
+                ...req.body,
+                userId,
+                identificationDoc: identificationUrl,
+                educationalCertification: educationalCertificationUrl,
+                experienceCertificate: experienceCertificateUrl
+            }
+
+           const { psychologist, kyc} =  await this.verifyPsychologistUseCase.execute(data)
+
+            res.status(201).json({
+                success: true,
+                message: "Verification profile submitted",
+                data: {
+                    psychologistId: psychologist._id,
+                    isVerified: psychologist.isVerified,
+                    kycStatus: kyc.kycStatus
+                }
+            })
+        } catch (error) {
+            console.log("verify error: ", error)
+            res.status(500).json({message: "Internal server error"})
+            return
+        }
+    }
+}

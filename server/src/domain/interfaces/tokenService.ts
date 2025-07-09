@@ -1,5 +1,6 @@
 export interface TokenService {
-    generateAccessToken(userId: string, role: string): string;
-    generateRefreshToken(userId: string, role: string): string;
-    verifyRefreshToken(token: string): { userId: string; role: string } | null
+    generateAccessToken(userId: string, role: string, email: string): string;
+    generateRefreshToken(userId: string, role: string, email: string): string;
+    verifyAccessToken(token: string): { userId: string, email: string, role: string } | null
+    verifyRefreshToken(token: string): { userId: string, email: string, role: string } | null
 }

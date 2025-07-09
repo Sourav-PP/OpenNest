@@ -27,8 +27,8 @@ export class LoginUseCase {
             throw new Error("Account is inactive. Please contact support")
         }
 
-        const accessToken = this.tokenService.generateAccessToken(user._id!, user.role)
-        const refreshToken = this.tokenService.generateRefreshToken(user._id!, user.role)
+        const accessToken = this.tokenService.generateAccessToken(user._id!, user.role, user.email)
+        const refreshToken = this.tokenService.generateRefreshToken(user._id!, user.role, user.email)
         
         return {
             user: {

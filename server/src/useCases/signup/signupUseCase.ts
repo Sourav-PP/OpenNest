@@ -49,8 +49,8 @@ export class SignupUseCase {
         console.log('saved user: ', savedUser)
 
         // generate tokens
-        const accessToken = this.tokenService.generateAccessToken(savedUser._id!, savedUser.role)
-        const refreshToken = this.tokenService.generateRefreshToken(savedUser._id!, savedUser.role)
+        const accessToken = this.tokenService.generateAccessToken(savedUser._id!, savedUser.role, savedUser.email)
+        const refreshToken = this.tokenService.generateRefreshToken(savedUser._id!, savedUser.role, savedUser.email)
 
         return {
             user: {

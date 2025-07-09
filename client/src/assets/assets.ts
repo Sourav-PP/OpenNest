@@ -10,6 +10,9 @@ import eye_slash from './eye_slash.svg'
 import user from './user.svg'
 import message from './message-square.svg'
 import phone from './phone.svg'
+import qualification from './qualification.svg'
+import rupee from './badge-indian-rupee.svg'
+import doc from './file-text.svg'
 
 export const assets = {
     arrow_icon,
@@ -23,5 +26,8 @@ export const assets = {
     eye_slash,
     phone,
     user,
-    message
+    message,
+    qualification,
+    rupee,
+    doc
 }

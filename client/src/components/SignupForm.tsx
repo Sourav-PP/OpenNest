@@ -63,6 +63,7 @@ const SignupForm = ({ role }: Props) => {
   };
 
   const onSubmit = async (data: SignupData) => {
+    console.log("role: ", role)
     const payload = {
       ...data,
       role,
@@ -74,11 +75,16 @@ const SignupForm = ({ role }: Props) => {
       apiClient.setAuthToken(token);
       localStorage.setItem("accessToken", token);
       toast.success("Signup successful!");
-      navigate("/home");
+      
+      if (role === "psychologist") {
+        navigate("/verification");
+      } else {
+        navigate("/home");
+      }
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;
       toast.error(
-        "Signup failed: " + error?.response?.data?.error || "Unknown error"
+        "Signup failed: " + error?.response?.data?.error || "Something went wrong"
       );
     }
   };
@@ -222,6 +228,7 @@ const SignupForm = ({ role }: Props) => {
           {isSubmitting ? "Signing up..." : "Signup"}
         </button>
       </div>
+      <p className="text-center">Already have an account?<span className="text-[#70A5FF] cursor-pointer" onClick={() => navigate('/login')}> Login</span></p>
     </form>
   );
 };
