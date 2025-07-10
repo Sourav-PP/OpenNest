@@ -8,12 +8,11 @@ import type { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 
-type Props = {
-  role: "user" | "psychologist";
-};
-
-const SignupForm = ({ role }: Props) => {
+const SignupForm = () => {
+  const [searchParams] = useSearchParams()
+  const role = searchParams.get('role')
   const {
     register,
     handleSubmit,
@@ -228,7 +227,7 @@ const SignupForm = ({ role }: Props) => {
           {isSubmitting ? "Signing up..." : "Signup"}
         </button>
       </div>
-      <p className="text-center">Already have an account?<span className="text-[#70A5FF] cursor-pointer" onClick={() => navigate('/login')}> Login</span></p>
+      <p className="text-center">Already have an account?<span className="text-[#70A5FF] cursor-pointer" onClick={() => navigate(`/login?role=${role ?? "user"}`)}> Login</span></p>
     </form>
   );
 };

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
 import VerificationPage from './pages/VerificationPage'
+import LandingPage from './pages/LandingPage'
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         theme="colored"
       />
       <Routes>
+        <Route path='/' element={<LandingPage />} />
         <Route path='/signup' element={<SignupPage />}/>
         <Route path='/login' element={<LoginPage />} />
         <Route path='/verification' element={< VerificationPage/>} />

@@ -1,9 +1,6 @@
 import SignupForm from "../components/SignupForm";
-import { useSearchParams } from "react-router-dom";
 
 export default function SignupPage() {
-    const [searchParams] = useSearchParams()
-    const role = searchParams.get('role') === "psychologist" ? "psychologist" : "user"
     return (
         <div className="relative flex items-center justify-center min-h-screen px-4 sm:px-6 bg-auth bg-cover bg-center py-8 sm:py-12 overflow-auto">
             <div className="absolute inset-0 bg-white opacity-10 z-0"></div>
@@ -12,7 +9,7 @@ export default function SignupPage() {
                     Create Account
                 </h2>
                 <p className="text-center  mb-4">Create a new account here</p>
-                <SignupForm role={role}/>
+                <SignupForm/>
             </div>
         </div>
     )
