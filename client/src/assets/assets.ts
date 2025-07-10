@@ -13,6 +13,9 @@ import phone from './phone.svg'
 import qualification from './qualification.svg'
 import rupee from './badge-indian-rupee.svg'
 import doc from './file-text.svg'
+import facebook from './facebook.svg'
+import instagram from './instagram.svg'
+import youtube from './youtube.svg'
 
 export const assets = {
     arrow_icon,
@@ -29,5 +32,8 @@ export const assets = {
     message,
     qualification,
     rupee,
-    doc
+    doc,
+    facebook,
+    instagram,
+    youtube
 }

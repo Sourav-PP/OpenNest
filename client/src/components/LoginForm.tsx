@@ -7,8 +7,12 @@ import type { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { apiClient } from "../lib/axios";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 const LoginForm = () => {
+  const [searchParams] = useSearchParams()
+  const role = searchParams.get('role')
+
   const navigate = useNavigate();
   const { 
     register,
@@ -28,7 +32,11 @@ const LoginForm = () => {
       localStorage.setItem("accessToken", accessToken);
       apiClient.setAuthToken(accessToken);
       toast.success("Login successful");
-      navigate("/home");
+      if(role === 'psychologist') {
+        navigate('/psychologist/profile')
+      } else {
+        navigate("/home");
+      }
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;
       console.log('error is: ', error)
@@ -85,7 +93,8 @@ const LoginForm = () => {
       </div>
       <div>
       <p className="text-center cursor-pointer hover:text-[#70A5FF]">Forgot Password?</p>
-      <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer" onClick={() => navigate('/signup')}> Sign up</span></p>
+      <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer"
+         onClick={() => navigate(`/signup?role=${role ?? "user"}`)}> Sign up</span></p>
       </div>
     </form>
   );
