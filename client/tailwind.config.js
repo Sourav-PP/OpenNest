@@ -7,7 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primaryText: "#1A4384"
+        primaryText: "#1A4384",
+        'admin-bg-primary': '#0D0F10',
+        'admin-bg-secondary': "#1C2023",
+        'admin-extra-light' : "#2D353C"
       },
       keyframes: {
         'glow-ring': {

@@ -1,11 +1,11 @@
 import { useForm } from 'react-hook-form'
 // import { assets } from '../assets/assets'
-import { verificationSchema, type verificationData } from '../lib/validations/verificationValidation'
+import { verificationSchema, type verificationData } from '../../lib/validations/psychologist/verificationValidation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { assets } from '../assets/assets'
+import { assets } from '../../assets/assets'
 import { toast } from 'react-toastify'
 import type { AxiosError } from 'axios'
-import { apiClient } from '../lib/axios'
+import instance from '../../lib/axios'
 
 const VerificationForm = () => {
     const {
@@ -37,9 +37,7 @@ const VerificationForm = () => {
         formData.append("experienceCertificate", data.experienceCertificate[0])
 
         try {
-            const res = await apiClient.getInstance().post('/auth/psychologist/verify-profile', formData, {
-                withCredentials: true
-            })
+            const res = await instance.post('/auth/psychologist/verify-profile', formData)
             console.log("verify res:  ", res)
             toast.success("Profile submitted successfully!");
         } catch (err) {

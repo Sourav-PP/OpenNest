@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { assets } from "../assets/assets";
+import { assets } from "../../assets/assets";
 import { FiMenu, FiX } from "react-icons/fi";
 import BellButton from "./BellButton";
 import { useNavigate } from "react-router-dom";

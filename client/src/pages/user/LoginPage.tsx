@@ -1,5 +1,5 @@
-import LoginForm from "../components/LoginForm"
-import { assets } from "../assets/assets"
+import LoginForm from "../../components/user/LoginForm"
+import { assets } from "../../assets/assets"
 
 
 const LoginPage = () => {

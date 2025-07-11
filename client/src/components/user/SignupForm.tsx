@@ -1,18 +1,26 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signupSchema } from "../lib/validations/signupValidation";
-import type { SignupData } from "../lib/validations/signupValidation";
-import { apiClient } from "../lib/axios";
+import { signupSchema } from "../../lib/validations/user/signupValidation";
+import type { SignupData } from "../../lib/validations/user/signupValidation";
+import instance from "../../lib/axios";
 import { useState } from "react";
 import type { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
-import { assets } from "../assets/assets";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { assets } from "../../assets/assets";
 import { toast } from "react-toastify";
-import { useSearchParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+interface TokenPayload {
+  userId: string;
+  email: string;
+  role: "user" | "psychologist" | "admin";
+  exp: number;
+  iat: number;
+}
 
 const SignupForm = () => {
   const [searchParams] = useSearchParams()
-  const role = searchParams.get('role')
+  const roleFromUrl = searchParams.get('role')
   const {
     register,
     handleSubmit,
@@ -33,7 +41,7 @@ const SignupForm = () => {
     if (!email) return toast.error("Enter email first");
     setOtpLoading(true);
     try {
-      await apiClient.getInstance().post("/auth/send-otp", { email });
+      await instance.post("/auth/send-otp", { email });
       setOtpSent(true);
       toast.success("OTP has been sent to your email");
     } catch (error) {
@@ -50,7 +58,7 @@ const SignupForm = () => {
     if (!email || !otp) toast.error("Provide email and otp");
     setVerifyLoading(true);
     try {
-      await apiClient.getInstance().post("/auth/verify-otp", { email, otp });
+      await instance.post("/auth/verify-otp", { email, otp });
       setOtpVerified(true);
       toast.success("Email has been verified");
     } catch (e) {
@@ -62,20 +70,24 @@ const SignupForm = () => {
   };
 
   const onSubmit = async (data: SignupData) => {
-    console.log("role: ", role)
+    if (!otpVerified) return toast.error("Please verify OTP first");
+
     const payload = {
       ...data,
-      role,
+      roleFromUrl,
     };
-    if (!otpVerified) return toast.error("Please verify OTP first");
+    
     try {
-      const res = await apiClient.getInstance().post("/auth/signup", payload);
+      const res = await instance.post("/auth/signup", payload);
       const token = res.data.accessToken;
-      apiClient.setAuthToken(token);
+      
+      const decode = jwtDecode<TokenPayload>(token)
       localStorage.setItem("accessToken", token);
+      localStorage.setItem("role", decode.role);
+
       toast.success("Signup successful!");
       
-      if (role === "psychologist") {
+      if (decode.role === "psychologist") {
         navigate("/verification");
       } else {
         navigate("/home");
@@ -227,7 +239,7 @@ const SignupForm = () => {
           {isSubmitting ? "Signing up..." : "Signup"}
         </button>
       </div>
-      <p className="text-center">Already have an account?<span className="text-[#70A5FF] cursor-pointer" onClick={() => navigate(`/login?role=${role ?? "user"}`)}> Login</span></p>
+      <p className="text-center">Already have an account?<span className="text-[#70A5FF] cursor-pointer" onClick={() => navigate(`/login?role=${roleFromUrl ?? "user"}`)}> Login</span></p>
     </form>
   );
 };

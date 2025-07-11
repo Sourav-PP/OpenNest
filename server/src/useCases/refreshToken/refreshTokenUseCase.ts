@@ -1,11 +1,11 @@
 import { TokenService } from "../../domain/interfaces/tokenService";
-import { UserRepository } from "../../domain/interfaces/userRepository";
+import { AuthAccountRepository } from "../../domain/interfaces/authAccountRepository";
 import { AppError } from "../../domain/errors/AppError";
 
 export class RefreshTokenUseCase {
     constructor(
         private tokenService: TokenService,
-        private userRepository: UserRepository
+        private accountRepository: AuthAccountRepository
     ) {}
 
     async execute(refreshToken: string): Promise<{accessToken: string}> {
@@ -14,13 +14,15 @@ export class RefreshTokenUseCase {
             throw new AppError("Invalid refresh token", 403)
         }
 
-        const user = await this.userRepository.findById(payload.userId)
+        console.log("payload: ", payload)
+
+        const user = await this.accountRepository.findById(payload.userId)
         if(!user) {
             throw new AppError("User not found", 404)
         }
 
         const newAccessToken = this.tokenService.generateAccessToken(payload.userId, user.role, user.email)
-
+        
         return {
             accessToken: newAccessToken
         }

@@ -3,6 +3,7 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import authRoutes from './interface/http/routes/authRoutes'
+import adminRoutes from './interface/http/routes/adminRoutes'
 import cookieParser from 'cookie-parser'
 
 dotenv.config()
@@ -15,7 +16,10 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+
+
 app.use('/api/auth', authRoutes)
+app.use('/api/admin', adminRoutes )
 
 const PORT = Number(process.env.PORT) || 5000
 
