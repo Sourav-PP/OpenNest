@@ -2,11 +2,22 @@ import './App.css'
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-// pages
-import SignupPage from './pages/SignupPage'
-import LoginPage from './pages/LoginPage'
-import VerificationPage from './pages/VerificationPage'
-import LandingPage from './pages/LandingPage'
+
+// =============== PAGES =================
+
+// ------------ user -------------
+import SignupPage from './pages/user/SignupPage'
+import LoginPage from './pages/user/LoginPage'
+import LandingPage from './pages/user/LandingPage'
+
+// ------------ psychologist ---------------
+import VerificationPage from './pages/psychologist/VerificationPage'
+
+//------------- admin ---------------
+import AdminLoginPage from './pages/admin/AdminLoginPage'
+// import Dashboard from './pages/admin/Dashboard'
+
+
 
 function App() {
 
@@ -24,10 +35,17 @@ function App() {
         theme="colored"
       />
       <Routes>
+        {/* user routes */}
         <Route path='/' element={<LandingPage />} />
         <Route path='/signup' element={<SignupPage />}/>
         <Route path='/login' element={<LoginPage />} />
+
+        {/* psychologist routes */}
         <Route path='/verification' element={< VerificationPage/>} />
+
+        {/* admin routes */}
+        <Route path='/admin/login' element={< AdminLoginPage />} />
+        {/* <Route path='/admin/dashboard' element={< Dashboard />} /> */}
       </Routes>
     </BrowserRouter>
   )

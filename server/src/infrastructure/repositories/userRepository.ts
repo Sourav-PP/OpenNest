@@ -1,8 +1,9 @@
 import { IUser } from "../../domain/entities/user";
 import { UserRepository } from "../../domain/interfaces/userRepository";
+import { AuthAccountRepository } from "../../domain/interfaces/authAccountRepository";
 import { userModel } from "../database/models/UserModel";
 
-export class MongoUserRepository implements UserRepository {
+export class MongoUserRepository implements UserRepository   {
     async findByEmail(email: string): Promise<IUser | null> {
         const userDoc = await userModel.findOne({ email }).select("+password")
         if(!userDoc) return null

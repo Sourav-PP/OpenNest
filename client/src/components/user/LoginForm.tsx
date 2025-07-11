@@ -1,17 +1,25 @@
 import { useForm } from "react-hook-form";
-import { loginSchema } from "../lib/validations/loginValidation";
-import type { LoginData } from "../lib/validations/loginValidation";
+import { loginSchema } from "../../lib/validations/user/loginValidation";
+import type { LoginData } from "../../lib/validations/user/loginValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { assets } from "../assets/assets";
+import { assets } from "../../assets/assets";
 import type { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import { apiClient } from "../lib/axios";
-import { useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import instance from "../../lib/axios";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+interface TokenPayload {
+  userId: string;
+  email: string;
+  role: "user" | "psychologist" | "admin";
+  exp: number;
+  iat: number;
+}
 
 const LoginForm = () => {
   const [searchParams] = useSearchParams()
-  const role = searchParams.get('role')
+  const roleFromUrl = searchParams.get('role')
 
   const navigate = useNavigate();
   const { 
@@ -24,14 +32,20 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const res = await apiClient.getInstance().post("/auth/login", data, {
-        withCredentials: true,
-      });
+      console.log("it is working: ", data)
+      const res = await instance.post("/auth/login", data);
 
       const { accessToken } = res.data;
+
+      const decode = jwtDecode<TokenPayload>(accessToken)
+      const role = decode.role
+
       localStorage.setItem("accessToken", accessToken);
-      apiClient.setAuthToken(accessToken);
+      localStorage.setItem('role', role)
+
       toast.success("Login successful");
+
+      // navigation based on role
       if(role === 'psychologist') {
         navigate('/psychologist/profile')
       } else {
@@ -94,7 +108,7 @@ const LoginForm = () => {
       <div>
       <p className="text-center cursor-pointer hover:text-[#70A5FF]">Forgot Password?</p>
       <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer"
-         onClick={() => navigate(`/signup?role=${role ?? "user"}`)}> Sign up</span></p>
+         onClick={() => navigate(`/signup?role=${roleFromUrl ?? "user"}`)}> Sign up</span></p>
       </div>
     </form>
   );

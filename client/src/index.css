@@ -7,6 +7,10 @@
     @apply text-white px-5 sm:px-12 py-2 sm:py-2.5 text-xs sm:text-base rounded-full bg-gradient-to-r from-[#5C68FF] to-[#70A5FF] transition-all;
   }
 
+  .admin-btn-primary {
+    @apply text-white px-5 sm:px-12 py-2.5 sm:py-2.5 text-xs sm:text-base rounded-lg bg-gradient-to-r from-[#24ae64] to-[#24AE76] transition-all;
+  }
+
   .btn-login {
     @apply text-green-800 px-12 py-2.5 rounded-full font-medium bg-gradient-to-r from-[#46cf56] to-[#00ff04] transition-all;
   }

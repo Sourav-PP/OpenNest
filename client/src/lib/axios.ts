@@ -1,42 +1,71 @@
-import axios from "axios";
+import axios, {AxiosError, type AxiosRequestConfig} from "axios";
 
-const instance = axios.create({
-    baseURL: "http://192.168.20.2:5006/api",
-    withCredentials: true
-})
-
-export class ApiClient {
-    private client = instance
-
-    constructor() {
-        this.client.interceptors.response.use(
-            (response) => response,
-            async(error) => {
-                const originalRequest = error.config
-                if(error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== "/auth/refresh-token") {
-                    originalRequest._retry = true
-                    try {
-                        const { data } = await this.client.post("/auth/refresh-token");
-                        localStorage.setItem("accessToken", data.accessToken);
-                        originalRequest.headers["Authorization"] = `Bearer ${data.accessToken}`;
-                        return this.client(originalRequest);
-                    } catch (refreshError) {
-                        localStorage.removeItem("accessToken");
-                        window.location.href = "/login";
-                        return Promise.reject(refreshError);
-                    }
-                }
-                return Promise.reject(error);
-            }
-        )
-    }
-    getInstance() {
-        return this.client; 
-    }
-
-    setAuthToken(token: string) {
-        this.client.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    }
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
 }
 
-export const apiClient = new ApiClient();
+
+const instance = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    withCredentials: true,
+    headers: {
+        "Content-Type" : "application/json"
+    }
+})
+
+type Role = "user" | "psychologist" | "admin"
+
+instance.interceptors.request.use((config) => {
+    console.log(import.meta.env.BASE_URL)
+    const token = localStorage.getItem("accessToken")
+    if(token) {
+        config.headers["Authorization"] = `Bearer ${token}` 
+    }
+    return config
+})
+
+instance.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+        const originalRequest = error.config as CustomAxiosRequestConfig
+
+        if(
+            error.response?.status === 401 &&
+            !originalRequest._retry &&
+            !originalRequest.url?.includes("/refresh-token") &&
+            !["/auth/login", "/auth/signup", "/auth/send-otp", "/auth/verify-otp", "/admin/login", "/admin/refresh-token"].some((path) =>
+                originalRequest.url?.includes(path)
+            )
+        ) {
+            originalRequest._retry = true;
+
+            const role = (localStorage.getItem("role") as Role) || "user";
+
+            // Role-based refresh endpoint
+            const refreshEndpoint = role === "admin" ? "/admin/refresh-token" : "/auth/refresh-token";
+
+            try {
+                const {data} = await instance.post(refreshEndpoint)
+                const accessToken = data.accessToken
+
+                localStorage.setItem('accessToken', accessToken)
+                if (!originalRequest.headers) {
+                    originalRequest.headers = {};
+                }
+                originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
+                return instance(originalRequest);
+            } catch (err) {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("role");
+
+                const loginRedirect = role === "admin" ? "/admin/login" : role === "psychologist" ? "/login?role=psychologist" : "/login?role=user";
+            
+                window.location.href = loginRedirect;
+                return Promise.reject(err);
+            }
+        }
+        return Promise.reject(error);
+    }
+)
+
+export default instance

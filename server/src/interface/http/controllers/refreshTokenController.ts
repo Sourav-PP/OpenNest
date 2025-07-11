@@ -3,11 +3,14 @@ import { RefreshTokenUseCase } from "../../../useCases/refreshToken/refreshToken
 import { AppError } from "../../../domain/errors/AppError";
 
 export class RefreshTokenController {
-  constructor(private refreshTokenUseCase: RefreshTokenUseCase) {}
+  constructor(
+    private refreshTokenUseCase: RefreshTokenUseCase,
+    private cookieKey: string
+  ) {}
 
   handle = async (req: Request, res: Response): Promise<void> => {
     try {
-      const refreshToken = req.cookies?.refreshToken;
+      const refreshToken = req.cookies?.[this.cookieKey];
       if (!refreshToken) {
         res.status(401).json({ message: "No refresh token" });
         return;

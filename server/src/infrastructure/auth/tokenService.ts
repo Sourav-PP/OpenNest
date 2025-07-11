@@ -21,6 +21,7 @@ export class JwtTokenService implements TokenService {
 
     verifyRefreshToken(token: string): { userId: string; role: string; email: string } | null {
         try {
+            console.log('token: ',token)
             return jwt.verify(token, this.refreshTokenSecret) as { userId: string, role: string, email: string}
         } catch (error) {
             return null
