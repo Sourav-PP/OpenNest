@@ -1,4 +1,4 @@
-import VerificationForm from "../../components/user/VerificationForm";
+import VerificationForm from "../../components/psychologist/VerificationForm";
 
 export default function VerificationPage() {
     return (

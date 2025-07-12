@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import instance from "../../lib/axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../redux/slices/authSlice";
 
 interface TokenPayload {
   userId: string;
@@ -22,6 +24,8 @@ const LoginForm = () => {
   const roleFromUrl = searchParams.get('role')
 
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+
   const { 
     register,
     handleSubmit,
@@ -34,19 +38,23 @@ const LoginForm = () => {
     try {
       console.log("it is working: ", data)
       const res = await instance.post("/auth/login", data);
-
       const { accessToken } = res.data;
 
-      const decode = jwtDecode<TokenPayload>(accessToken)
-      const role = decode.role
-
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem('role', role)
+      const decoded = jwtDecode<TokenPayload>(accessToken)
+      
+      dispatch(
+        loginSuccess({
+          accessToken,
+          email: decoded.email,
+          role: decoded.role,
+          userId: decoded.userId
+        })
+      )
 
       toast.success("Login successful");
 
       // navigation based on role
-      if(role === 'psychologist') {
+      if(decoded.role === 'psychologist') {
         navigate('/psychologist/profile')
       } else {
         navigate("/home");

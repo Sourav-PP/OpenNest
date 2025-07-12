@@ -47,7 +47,6 @@ const VerificationForm = () => {
     }
 
     const identificationDoc = watch("identificationDoc") as FileList;
-    console.log('id', identificationDoc)
     const educationalCertification = watch("educationalCertification") as FileList;
     const experienceCertificate = watch("experienceCertificate") as FileList;
   return (

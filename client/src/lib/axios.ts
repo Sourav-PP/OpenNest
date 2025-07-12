@@ -1,4 +1,6 @@
 import axios, {AxiosError, type AxiosRequestConfig} from "axios";
+import { store } from "../redux/store";
+import { loginSuccess, logout } from "../redux/slices/authSlice";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
@@ -13,11 +15,8 @@ const instance = axios.create({
     }
 })
 
-type Role = "user" | "psychologist" | "admin"
-
 instance.interceptors.request.use((config) => {
-    console.log(import.meta.env.BASE_URL)
-    const token = localStorage.getItem("accessToken")
+    const token = store.getState().auth.accessToken
     if(token) {
         config.headers["Authorization"] = `Bearer ${token}` 
     }
@@ -39,7 +38,7 @@ instance.interceptors.response.use(
         ) {
             originalRequest._retry = true;
 
-            const role = (localStorage.getItem("role") as Role) || "user";
+            const { role, email, userId } = store.getState().auth
 
             // Role-based refresh endpoint
             const refreshEndpoint = role === "admin" ? "/admin/refresh-token" : "/auth/refresh-token";
@@ -48,15 +47,22 @@ instance.interceptors.response.use(
                 const {data} = await instance.post(refreshEndpoint)
                 const accessToken = data.accessToken
 
-                localStorage.setItem('accessToken', accessToken)
+                store.dispatch(
+                    loginSuccess({
+                        accessToken,
+                        email: email ?? "",
+                        userId: userId ?? "",
+                        role: role ?? "user"
+                    })
+                );
+                
                 if (!originalRequest.headers) {
                     originalRequest.headers = {};
                 }
                 originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
                 return instance(originalRequest);
             } catch (err) {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("role");
+                store.dispatch(logout())
 
                 const loginRedirect = role === "admin" ? "/admin/login" : role === "psychologist" ? "/login?role=psychologist" : "/login?role=user";
             

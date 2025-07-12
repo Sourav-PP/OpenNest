@@ -9,6 +9,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../redux/slices/authSlice";
 
 interface TokenPayload {
   userId: string;
@@ -35,6 +37,7 @@ const SignupForm = () => {
   const [otpLoading, setOtpLoading] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const sendOtp = async () => {
     const email = getValues("email");
@@ -79,15 +82,22 @@ const SignupForm = () => {
     
     try {
       const res = await instance.post("/auth/signup", payload);
-      const token = res.data.accessToken;
+      const accessToken = res.data.accessToken;
       
-      const decode = jwtDecode<TokenPayload>(token)
-      localStorage.setItem("accessToken", token);
-      localStorage.setItem("role", decode.role);
+      const decoded = jwtDecode<TokenPayload>(accessToken)
+
+      dispatch(
+        loginSuccess({
+          accessToken,
+          email: decoded.email,
+          role: decoded.role,
+          userId: decoded.userId
+        })
+      )
 
       toast.success("Signup successful!");
       
-      if (decode.role === "psychologist") {
+      if (decoded.role === "psychologist") {
         navigate("/verification");
       } else {
         navigate("/home");

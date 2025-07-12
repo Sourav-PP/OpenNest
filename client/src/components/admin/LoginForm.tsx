@@ -7,6 +7,8 @@ import instance from "../../lib/axios"
 import { assets } from "../../assets/assets"
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { loginSuccess } from "../../redux/slices/authSlice"
 
 interface TokenPayload {
   userId: string;
@@ -18,6 +20,7 @@ interface TokenPayload {
 
 const LoginForm = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const {
         register,
         handleSubmit,
@@ -30,10 +33,16 @@ const LoginForm = () => {
         try {
             const res = await instance.post('/admin/login', data)
             const { accessToken } = res.data
-            const decode = jwtDecode<TokenPayload>(accessToken)
-            const role = decode.role
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem('role', role)
+            const decoded = jwtDecode<TokenPayload>(accessToken)
+            
+            dispatch(
+              loginSuccess({
+                accessToken,
+                email: decoded.email,
+                role: decoded.role,
+                userId: decoded.userId
+              })
+            )
 
             toast.success("Login successful");
             
