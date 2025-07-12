@@ -15,7 +15,7 @@ import VerificationPage from './pages/psychologist/VerificationPage'
 
 //------------- admin ---------------
 import AdminLoginPage from './pages/admin/AdminLoginPage'
-// import Dashboard from './pages/admin/Dashboard'
+import AdminDashboard from './pages/admin/Dashboard'
 
 
 
@@ -45,7 +45,7 @@ function App() {
 
         {/* admin routes */}
         <Route path='/admin/login' element={< AdminLoginPage />} />
-        {/* <Route path='/admin/dashboard' element={< Dashboard />} /> */}
+        <Route path='/admin/dashboard' element={< AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   )

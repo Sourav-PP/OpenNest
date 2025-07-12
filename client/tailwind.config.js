@@ -9,7 +9,9 @@ export default {
       colors: {
         primaryText: "#1A4384",
         'admin-bg-primary': '#0D0F10',
-        'admin-bg-secondary': "#1C2023",
+        'admin-bg-secondary': "#131619",
+        'admin-bg-box': "#1C2023",
+        'admin-gb-box-active': "#5B6166",
         'admin-extra-light' : "#2D353C"
       },
       keyframes: {

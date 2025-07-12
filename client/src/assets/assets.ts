@@ -1,6 +1,7 @@
 import arrow_icon from './arrow_icon.svg'
 import lock from './lock.svg'
 import logo from './Logo_light.png'
+import logo_dark from './Logo_dark.png'
 import mail from './mail.svg'
 import person_icon from './person_icon.svg'
 import hand_wave from './hand_wave.png'
@@ -16,6 +17,7 @@ import doc from './file-text.svg'
 import facebook from './facebook.svg'
 import instagram from './instagram.svg'
 import youtube from './youtube.svg'
+import house from './house.svg'
 
 export const assets = {
     arrow_icon,
@@ -35,5 +37,7 @@ export const assets = {
     doc,
     facebook,
     instagram,
-    youtube
+    youtube,
+    logo_dark,
+    house
 }
