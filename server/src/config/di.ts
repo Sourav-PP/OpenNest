@@ -13,8 +13,9 @@ import { MongoKycRepository } from "../infrastructure/repositories/kycRepository
 import { MongoPsychologistRepository } from "../infrastructure/repositories/psychologistRepository";
 
 // -------------- admin ----------------
-import { MongoAdminRepository } from "../infrastructure/repositories/adminRepository";
-import { AdminAuthAccountRepository } from "../infrastructure/repositories/adminAuthAccountRepository";
+import { MongoAdminRepository } from "../infrastructure/repositories/admin/adminRepository";
+import { AdminAuthAccountRepository } from "../infrastructure/repositories/admin/adminAuthAccountRepository";
+import { MongoServiceRepository } from "../infrastructure/repositories/admin/serviceRepository";
 
 
 //===================== SERVICES ======================
@@ -39,6 +40,7 @@ import { VerifyPsychologistUseCase } from "../useCases/verifyPsychologist/verify
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from "../useCases/admin/login/loginUseCase";
+import { CreateServiceUseCase } from "../useCases/admin/services/createServiceUseCase";
 
 
 //===================== CONTROLLERS =====================
@@ -52,6 +54,7 @@ import { VerifyPsychologistController } from "../interface/http/controllers/veri
 
 //---------------- admin -------------------
 import { AdminAuthController } from "../interface/http/controllers/admin/adminAuthController";
+import { CreateServiceController } from "../interface/http/controllers/admin/createServiceController";
 
 
 //===================== MIDDLEWARE ========================
@@ -105,6 +108,9 @@ const adminRepository = new MongoAdminRepository()
 const adminAuthRepository = new AdminAuthAccountRepository()
 const adminRefreshTokenUseCase = new RefreshTokenUseCase(tokenService, adminAuthRepository)
 const adminLoginUseCase = new AdminLoginUseCase(adminRepository, tokenService, authService)
+const serviceRepository = new MongoServiceRepository()
+const createServiceUseCase = new CreateServiceUseCase(serviceRepository)
 
 export const adminAuthController = new AdminAuthController(adminLoginUseCase)
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, "adminRefreshToken")
+export const createServiceController = new CreateServiceController(createServiceUseCase)

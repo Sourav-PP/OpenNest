@@ -1,6 +1,6 @@
-import { IAdmin } from "../../domain/entities/admin";
-import { AdminRepository } from "../../domain/interfaces/adminRepository";
-import { AdminModel } from "../database/models/adminModel";
+import { IAdmin } from "../../../domain/entities/admin";
+import { AdminRepository } from "../../../domain/interfaces/adminRepository";
+import { AdminModel } from "../../database/models/admin/adminModel";
 
 export class MongoAdminRepository implements AdminRepository {
     async findByEmail(email: string): Promise<IAdmin | null> {

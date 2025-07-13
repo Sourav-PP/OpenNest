@@ -1,5 +1,5 @@
 import { IOtpRepository } from "../../domain/interfaces/otpRepository";
-import { OtpModel } from "../database/models/OtpModels";
+import { OtpModel } from "../database/models/user/OtpModels";
 
 export class MongoOtpRepository implements IOtpRepository {
     async saveOtp(email: string, otp: string): Promise<void> {

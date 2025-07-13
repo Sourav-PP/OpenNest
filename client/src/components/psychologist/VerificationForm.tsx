@@ -21,7 +21,7 @@ const VerificationForm = () => {
         },
     })
 
-    const onSubmit = async( data: verificationData) => {
+    const onSubmit = async( data: verificationData ) => {
         console.log('verify data: ', data)
         const formData = new FormData()
 

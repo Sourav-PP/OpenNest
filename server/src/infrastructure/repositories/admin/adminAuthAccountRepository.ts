@@ -1,5 +1,5 @@
-import { AdminModel } from "../database/models/adminModel";
-import { AuthAccountRepository } from "../../domain/interfaces/authAccountRepository";
+import { AdminModel } from "../../database/models/admin/adminModel";
+import { AuthAccountRepository } from "../../../domain/interfaces/authAccountRepository";
 
 export class AdminAuthAccountRepository implements AuthAccountRepository {
     async findById(id: string): Promise<{ _id: string; role: string; email: string; } | null> {

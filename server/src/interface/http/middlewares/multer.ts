@@ -1,7 +1,6 @@
 import multer from 'multer'
 
 const memoryStorate = multer.memoryStorage()
-
 export const uploadFields = (fields: string[]) => {
     return multer({ storage: memoryStorate }).fields(
         fields.map((name) => ({ name, maxCount: 1}))

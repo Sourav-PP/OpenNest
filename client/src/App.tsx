@@ -16,6 +16,7 @@ import VerificationPage from './pages/psychologist/VerificationPage'
 //------------- admin ---------------
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/Dashboard'
+import ServicePage from './pages/admin/ServicePage'
 
 
 
@@ -46,6 +47,7 @@ function App() {
         {/* admin routes */}
         <Route path='/admin/login' element={< AdminLoginPage />} />
         <Route path='/admin/dashboard' element={< AdminDashboard />} />
+        <Route path='/admin/services' element={<ServicePage />} />
       </Routes>
     </BrowserRouter>
   )

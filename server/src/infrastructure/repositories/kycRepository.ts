@@ -1,6 +1,6 @@
 import { IKyc } from "../../domain/entities/kyc";
 import { KycRepository } from "../../domain/interfaces/kycRepository";
-import { KycModel } from "../database/models/kycModel";
+import { KycModel } from "../database/models/psychologist/kycModel";
 import { publicKyc } from "../../domain/entities/kyc";
 
 export class MongoKycRepository implements KycRepository {
