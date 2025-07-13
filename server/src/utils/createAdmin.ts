@@ -1,4 +1,4 @@
-import { AdminModel } from "../infrastructure/database/models/adminModel";
+import { AdminModel } from "../infrastructure/database/models/admin/adminModel";
 import bcrypt from 'bcrypt'
 
 export const createAdmin = async() => {

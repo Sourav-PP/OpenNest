@@ -1,4 +1,4 @@
-import { userModel } from "../database/models/UserModel";
+import { userModel } from "../database/models/user/UserModel";
 import { AuthAccountRepository } from "../../domain/interfaces/authAccountRepository";
 
 export class UserAuthAccountRepository implements AuthAccountRepository {

@@ -1,6 +1,6 @@
 import { IPsychologist } from "../../domain/entities/psychologist";
 import { PsychologistRepository } from "../../domain/interfaces/psychologistRepository";
-import { PsychologistModel } from "../database/models/PsychologistModel";
+import { PsychologistModel } from "../database/models/psychologist/PsychologistModel";
 
 export class MongoPsychologistRepository implements PsychologistRepository {
     async create(psychologist: IPsychologist): Promise<IPsychologist> {
