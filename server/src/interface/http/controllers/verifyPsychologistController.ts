@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { VerifyPsychologistUseCase } from "../../../useCases/verifyPsychologist/verifyUseCase";
+import { VerifyPsychologistUseCase } from "../../../useCases/psychologist/verifyPsychologist/verifyUseCase";
 import { uploadToCloudinary } from "../../../utils/uploadToCloudinary";
 
 export class VerifyPsychologistController {

@@ -1,4 +1,4 @@
-import { PublicUser } from "../../domain/entities/user"
+import { PublicUser } from "../../../domain/entities/user"
 
 export interface SignupRequest {
     name: string,

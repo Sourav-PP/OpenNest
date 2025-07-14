@@ -15,7 +15,9 @@ import { MongoPsychologistRepository } from "../infrastructure/repositories/psyc
 // -------------- admin ----------------
 import { MongoAdminRepository } from "../infrastructure/repositories/admin/adminRepository";
 import { AdminAuthAccountRepository } from "../infrastructure/repositories/admin/adminAuthAccountRepository";
-import { MongoServiceRepository } from "../infrastructure/repositories/admin/serviceRepository";
+
+// -------------- shared ---------------
+import { MongoServiceRepository } from "../infrastructure/repositories/serviceRepository";
 
 
 //===================== SERVICES ======================
@@ -29,14 +31,15 @@ import { NodemailerOtpService } from "../infrastructure/auth/otpService";
 // ==================== USE CASES =======================
 
 //--------------- user ---------------
-import { SignupUseCase } from "../useCases/signup/signupUseCase";
-import { SendOtpUseCase } from "../useCases/signup/sendOtpUseCase";
-import { VerifyOtpUseCase } from "../useCases/signup/verifyOtpUseCase";
-import { LoginUseCase } from "../useCases/login/loginUseCase";
+import { SignupUseCase } from "../useCases/user/signup/signupUseCase";
+import { SendOtpUseCase } from "../useCases/user/signup/sendOtpUseCase";
+import { VerifyOtpUseCase } from "../useCases/user/signup/verifyOtpUseCase";
+import { LoginUseCase } from "../useCases/user/login/loginUseCase";
 import { RefreshTokenUseCase } from "../useCases/refreshToken/refreshTokenUseCase";
+import { GetAllServiceUseCase } from "../useCases/user/services/getAllServicesUseCase";
 
 //--------------- psychologist ------------------
-import { VerifyPsychologistUseCase } from "../useCases/verifyPsychologist/verifyUseCase";
+import { VerifyPsychologistUseCase } from "../useCases/psychologist/verifyPsychologist/verifyUseCase";
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from "../useCases/admin/login/loginUseCase";
@@ -48,6 +51,7 @@ import { CreateServiceUseCase } from "../useCases/admin/services/createServiceUs
 //---------------- user ------------------
 import { AuthController } from "../interface/http/controllers/authController";
 import { RefreshTokenController } from "../interface/http/controllers/refreshTokenController";
+import { GetAllServicesController } from "../interface/http/controllers/user/getAllServicesController";
 
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../interface/http/controllers/verifyPsychologistController";
@@ -76,12 +80,14 @@ export const authenticate = authMiddleware(tokenService)
 
 const userRepository = new MongoUserRepository();
 const userAuthRepository = new UserAuthAccountRepository()
+const userServiceRepository = new MongoServiceRepository()
 
 const signupUseCase = new SignupUseCase( userRepository, authService, tokenService, otpService );
 const loginUseCase = new LoginUseCase( userRepository, authService, tokenService );
 const sendOtpUseCase = new SendOtpUseCase(otpService);
 const verifyOtpUseCase = new VerifyOtpUseCase(otpService);
 const refreshTokenUseCase = new RefreshTokenUseCase(tokenService, userAuthRepository)
+const getAllServicesUseCase = new GetAllServiceUseCase(userServiceRepository)
 
 export const authController = new AuthController(
   signupUseCase,
@@ -90,6 +96,7 @@ export const authController = new AuthController(
   loginUseCase,
 );
 export const refreshTokenController = new RefreshTokenController(refreshTokenUseCase, "refreshToken")
+export const userGetAllServicesController = new GetAllServicesController(getAllServicesUseCase)
 
 
 // ---------- PSYCHOLOGIST ----------

@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import authRoutes from './interface/http/routes/authRoutes'
 import adminRoutes from './interface/http/routes/adminRoutes'
+import userRoutes from './interface/http/routes/userRoutes'
 import cookieParser from 'cookie-parser'
 
 dotenv.config()
@@ -20,6 +21,7 @@ app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes )
+app.use('/api/user', userRoutes)
 
 const PORT = Number(process.env.PORT) || 5000
 

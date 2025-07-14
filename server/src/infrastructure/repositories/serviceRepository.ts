@@ -1,6 +1,6 @@
-import { IService } from "../../../domain/entities/service";
-import { ServiceRepository } from "../../../domain/interfaces/serviceRepository";
-import { ServiceModel } from "../../database/models/admin/serviceModel";
+import { IService } from "../../domain/entities/service";
+import { ServiceRepository } from "../../domain/interfaces/serviceRepository";
+import { ServiceModel } from "../database/models/admin/serviceModel";
 
 export class MongoServiceRepository implements ServiceRepository {
     async create(service: IService): Promise<IService> {
@@ -23,5 +23,16 @@ export class MongoServiceRepository implements ServiceRepository {
             description: obj.description,
             bannerImage: obj.bannerImage
         }
+    }
+
+    async getAllServices(): Promise<IService[]> {
+        const services = await ServiceModel.find()
+        return services.map((s) => {
+            const obj = s.toObject()
+            return {
+                ...obj,
+                _id: obj._id.toString()
+            }
+        })
     }
 }

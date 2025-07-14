@@ -1,8 +1,8 @@
-import { AuthService } from "../../domain/interfaces/authService";
-import { TokenService } from "../../domain/interfaces/tokenService";
-import { UserRepository } from "../../domain/interfaces/userRepository";
+import { AuthService } from "../../../domain/interfaces/authService";
+import { TokenService } from "../../../domain/interfaces/tokenService";
+import { UserRepository } from "../../../domain/interfaces/userRepository";
 import { LoginRequest, LoginResponse } from "./loginTypes";
-import { AppError } from "../../domain/errors/AppError";
+import { AppError } from "../../../domain/errors/AppError";
 
 export class LoginUseCase {
     constructor(

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { SignupUseCase } from "../../../useCases/signup/signupUseCase";
-import { SignupRequest } from "../../../useCases/signup/signupTypes";
-import { SendOtpUseCase } from "../../../useCases/signup/sendOtpUseCase";
-import { VerifyOtpUseCase } from "../../../useCases/signup/verifyOtpUseCase";
-import { LoginUseCase } from "../../../useCases/login/loginUseCase";
+import { SignupUseCase } from "../../../useCases/user/signup/signupUseCase";
+import { SignupRequest } from "../../../useCases/user/signup/signupTypes";
+import { SendOtpUseCase } from "../../../useCases/user/signup/sendOtpUseCase";
+import { VerifyOtpUseCase } from "../../../useCases/user/signup/verifyOtpUseCase";
+import { LoginUseCase } from "../../../useCases/user/login/loginUseCase";
 
 export class AuthController {
   constructor(
