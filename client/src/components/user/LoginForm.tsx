@@ -36,7 +36,6 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      console.log("it is working: ", data)
       const res = await instance.post("/auth/login", data);
       const { accessToken, hasSubmittedVerificationForm  } = res.data;
 

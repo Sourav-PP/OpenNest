@@ -43,7 +43,7 @@ instance.interceptors.response.use(
             try {
                 const {data} = await instance.post(refreshEndpoint)
                 console.log("refresh_response: ", data)
-                const accessToken = data.accessToken
+                const accessToken = data.accessToken.accessToken
                 console.log("accesstoken in refreshResponse: ", accessToken)
 
                 store.dispatch(

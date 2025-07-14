@@ -21,7 +21,7 @@ export class JwtTokenService implements TokenService {
 
     verifyRefreshToken(token: string): { userId: string; role: string; email: string } | null {
         try {
-            console.log('token: ',token)
+            console.log("refresh token verified")
             return jwt.verify(token, this.refreshTokenSecret) as { userId: string, role: string, email: string}
         } catch (error) {
             return null
@@ -30,8 +30,11 @@ export class JwtTokenService implements TokenService {
 
     verifyAccessToken(token: string): { userId: string; email: string; role: string; } | null {
         try {
+    
             return jwt.verify(token, this.accessTokenSecret) as { userId: string, role: string, email: string}
+
         } catch (error) {
+            console.log('JWT verify error: ', error)
             return null
         }
     }

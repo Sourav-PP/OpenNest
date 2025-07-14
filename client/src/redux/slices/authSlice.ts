@@ -24,7 +24,7 @@ const authSlice = createSlice({
         loginSuccess: (state, action: PayloadAction<Omit<AuthState, "isAuthenticated">>) => {
             return {
                 ...action.payload,
-                isAuthenticated: false
+                isAuthenticated: true
             }
         },
         logout: () =>initialState

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 
-export class AdminLogoutUseCase {
+export class LogoutUseCase {
     async execute(req: Request, res: Response): Promise<void> {
-        res.clearCookie("adminRefreshToken", {
+        res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-        });
+        })
     }
 }

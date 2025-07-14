@@ -1,5 +1,6 @@
 import { IPsychologist } from "../../domain/entities/psychologist";
 import { PsychologistRepository } from "../../domain/interfaces/psychologistRepository";
+import { ServiceModel } from "../database/models/admin/serviceModel";
 import { PsychologistModel } from "../database/models/psychologist/PsychologistModel";
 
 export class MongoPsychologistRepository implements PsychologistRepository {
@@ -61,5 +62,10 @@ export class MongoPsychologistRepository implements PsychologistRepository {
                 fee: fee.fee
             }))
         };
+    }
+
+    async getSpecializationNamesByIds(ids: string[]): Promise<string[]> {
+        const specializations = await ServiceModel.find({_id: {$in: ids}}).select("name")
+        return specializations.map(s => s.name)
     }
 }

@@ -13,6 +13,8 @@ import LandingPage from './pages/user/LandingPage'
 
 // ------------ psychologist ---------------
 import VerificationPage from './pages/psychologist/VerificationPage'
+import ProfilePage from './pages/psychologist/ProfilePage'
+// import EditProfilePage from './pages/psychologist/EditProfilePage'
 
 //------------- admin ---------------
 import AdminLoginPage from './pages/admin/AdminLoginPage'
@@ -45,6 +47,8 @@ function App() {
         {/* psychologist routes */}
         <Route element={<PrivateRoute allowedRoles={['psychologist']}/>}>
           <Route path='/psychologist/verification' element={< VerificationPage/>} />
+          <Route path='/psychologist/profile' element={< ProfilePage />} />
+          {/* <Route path='/psychologist/edit-profile' element={< EditProfilePage />} /> */}
         </Route>
 
         {/* admin routes */}

@@ -37,9 +37,11 @@ import { VerifyOtpUseCase } from "../useCases/user/signup/verifyOtpUseCase";
 import { LoginUseCase } from "../useCases/user/login/loginUseCase";
 import { RefreshTokenUseCase } from "../useCases/refreshToken/refreshTokenUseCase";
 import { GetAllServiceUseCase } from "../useCases/user/services/getAllServicesUseCase";
+import { LogoutUseCase } from "../useCases/user/logoutUseCase";
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from "../useCases/psychologist/verifyPsychologist/verifyUseCase";
+import { GetProfileUseCase } from "../useCases/psychologist/getProfileUseCase";
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from "../useCases/admin/auth/loginUseCase";
@@ -56,6 +58,7 @@ import { GetAllServicesController } from "../interface/http/controllers/user/get
 
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../interface/http/controllers/verifyPsychologistController";
+import { GetProfileController } from "../interface/http/controllers/psychologist/getProfileController";
 
 //---------------- admin -------------------
 import { AdminAuthController } from "../interface/http/controllers/admin/adminAuthController";
@@ -74,7 +77,10 @@ const tokenService = new JwtTokenService();
 const otpRepository = new MongoOtpRepository();
 const otpService = new NodemailerOtpService(otpRepository);
 
-export const authenticate = authMiddleware(tokenService)
+export const authenticateUser = authMiddleware(tokenService, ["user"]);
+export const authenticatePsychologist = authMiddleware(tokenService, ["psychologist"]);
+export const authenticateAdmin = authMiddleware(tokenService, ["admin"]);
+export const authenticateAll = authMiddleware(tokenService, ["user", "psychologist", "admin"]);
 
 
 // ---------- user ------------
@@ -87,6 +93,7 @@ const psychologistRepository = new MongoPsychologistRepository()
 
 const signupUseCase = new SignupUseCase( userRepository, authService, tokenService, otpService );
 const loginUseCase = new LoginUseCase( userRepository, authService, tokenService, psychologistRepository );
+const logoutUseCase = new LogoutUseCase()
 const sendOtpUseCase = new SendOtpUseCase(otpService);
 const verifyOtpUseCase = new VerifyOtpUseCase(otpService);
 const refreshTokenUseCase = new RefreshTokenUseCase(tokenService, userAuthRepository)
@@ -97,6 +104,7 @@ export const authController = new AuthController(
   sendOtpUseCase,
   verifyOtpUseCase,
   loginUseCase,
+  logoutUseCase
 );
 export const refreshTokenController = new RefreshTokenController(refreshTokenUseCase, "refreshToken")
 export const userGetAllServicesController = new GetAllServicesController(getAllServicesUseCase)
@@ -107,8 +115,10 @@ export const userGetAllServicesController = new GetAllServicesController(getAllS
 const kycRepository = new MongoKycRepository()
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository)
+const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository)
 
 export const verifyPsychologistController = new VerifyPsychologistController(verifyPsychologistUseCase)
+export const getProfileController = new GetProfileController(getProfileUseCase)
 
 
 // ---------- ADMIN ----------

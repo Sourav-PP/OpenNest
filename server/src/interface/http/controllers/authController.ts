@@ -4,13 +4,16 @@ import { SignupRequest } from "../../../useCases/user/signup/signupTypes";
 import { SendOtpUseCase } from "../../../useCases/user/signup/sendOtpUseCase";
 import { VerifyOtpUseCase } from "../../../useCases/user/signup/verifyOtpUseCase";
 import { LoginUseCase } from "../../../useCases/user/login/loginUseCase";
+import { LogoutUseCase } from "../../../useCases/user/logoutUseCase";
+import { AppError } from "../../../domain/errors/AppError";
 
 export class AuthController {
   constructor(
     private signupUseCase: SignupUseCase,
     private sendOtpUseCase: SendOtpUseCase,
     private verifyOtpUseCase: VerifyOtpUseCase,
-    private loginUseCase: LoginUseCase
+    private loginUseCase: LoginUseCase,
+    private logoutUseCase: LogoutUseCase
   ) {}
 
   sendOtp = async(req: Request, res: Response): Promise<void> => {
@@ -80,6 +83,18 @@ export class AuthController {
       const statusCode = error.statusCode ||   500
       const message = error.message || "Internal server error"
       res.status(statusCode).json({ error: message });
+    }
+  }
+
+  logout = async(req: Request, res: Response): Promise<void> => {
+    try {
+        await this.logoutUseCase.execute(req, res)
+        res.status(200).json({message: "logout successful"})
+    } catch (error: any) {
+        const status = error instanceof AppError ? error.statusCode : 500
+        const message = error.message || "Internal server error";
+        console.log("its here", message, status)
+        res.status(status).json({ message });
     }
   }
 }

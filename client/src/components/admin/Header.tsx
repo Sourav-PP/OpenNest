@@ -13,6 +13,7 @@ const Header = () => {
       await instance.post('/admin/logout')
 
       dispatch(logout())
+      localStorage.removeItem("persist:root");
       toast.success("Logout successfully")
 
       navigate('/admin/login')
