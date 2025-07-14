@@ -23,8 +23,12 @@ router.post(
   "/login",
   loginValidator,
   loginValidate,
-  adminAuthController.handle
+  adminAuthController.login
 );
+router.post(
+  '/logout',
+  adminAuthController.logout
+)
 router.post("/refresh-token", adminRefreshTokenController.handle);
 router.post(
   "/services",

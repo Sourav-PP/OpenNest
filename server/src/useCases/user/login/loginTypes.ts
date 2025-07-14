@@ -9,4 +9,5 @@ export interface LoginResponse {
     user: PublicUser
     accessToken: string
     refreshToken: string
+    hasSubmittedVerificationForm: boolean
 }

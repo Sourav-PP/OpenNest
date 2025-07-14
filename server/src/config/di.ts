@@ -42,8 +42,9 @@ import { GetAllServiceUseCase } from "../useCases/user/services/getAllServicesUs
 import { VerifyPsychologistUseCase } from "../useCases/psychologist/verifyPsychologist/verifyUseCase";
 
 //--------------- admin -----------------
-import { AdminLoginUseCase } from "../useCases/admin/login/loginUseCase";
+import { AdminLoginUseCase } from "../useCases/admin/auth/loginUseCase";
 import { CreateServiceUseCase } from "../useCases/admin/services/createServiceUseCase";
+import { AdminLogoutUseCase } from "../useCases/admin/auth/logoutUseCase";
 
 
 //===================== CONTROLLERS =====================
@@ -81,9 +82,11 @@ export const authenticate = authMiddleware(tokenService)
 const userRepository = new MongoUserRepository();
 const userAuthRepository = new UserAuthAccountRepository()
 const userServiceRepository = new MongoServiceRepository()
+const psychologistRepository = new MongoPsychologistRepository()
+
 
 const signupUseCase = new SignupUseCase( userRepository, authService, tokenService, otpService );
-const loginUseCase = new LoginUseCase( userRepository, authService, tokenService );
+const loginUseCase = new LoginUseCase( userRepository, authService, tokenService, psychologistRepository );
 const sendOtpUseCase = new SendOtpUseCase(otpService);
 const verifyOtpUseCase = new VerifyOtpUseCase(otpService);
 const refreshTokenUseCase = new RefreshTokenUseCase(tokenService, userAuthRepository)
@@ -101,7 +104,6 @@ export const userGetAllServicesController = new GetAllServicesController(getAllS
 
 // ---------- PSYCHOLOGIST ----------
 
-const psychologistRepository = new MongoPsychologistRepository()
 const kycRepository = new MongoKycRepository()
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository)
@@ -115,9 +117,10 @@ const adminRepository = new MongoAdminRepository()
 const adminAuthRepository = new AdminAuthAccountRepository()
 const adminRefreshTokenUseCase = new RefreshTokenUseCase(tokenService, adminAuthRepository)
 const adminLoginUseCase = new AdminLoginUseCase(adminRepository, tokenService, authService)
+const adminLogoutUseCase = new AdminLogoutUseCase()
 const serviceRepository = new MongoServiceRepository()
 const createServiceUseCase = new CreateServiceUseCase(serviceRepository)
 
-export const adminAuthController = new AdminAuthController(adminLoginUseCase)
+export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase)
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, "adminRefreshToken")
 export const createServiceController = new CreateServiceController(createServiceUseCase)

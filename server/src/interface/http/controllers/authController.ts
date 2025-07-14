@@ -60,7 +60,6 @@ export class AuthController {
 
   login = async(req: Request, res: Response): Promise<void> => {
     try {
-      console.log("its here, req: ", req)
       const response = await this.loginUseCase.execute(req.body)
 
       res.cookie("refreshToken", response.refreshToken, {
@@ -75,6 +74,7 @@ export class AuthController {
         message: "Login successfull",
         user: response.user,
         accessToken: response.accessToken,
+        hasSubmittedVerificationForm: response.hasSubmittedVerificationForm
       });
     } catch (error: any) {
       const statusCode = error.statusCode ||   500

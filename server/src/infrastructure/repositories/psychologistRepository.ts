@@ -33,4 +33,33 @@ export class MongoPsychologistRepository implements PsychologistRepository {
             }))
         };
     }
+
+    async updateByUserId(userId: string, updateData: Partial<IPsychologist>): Promise<IPsychologist | null> {
+        return PsychologistModel.findByIdAndUpdate(
+            {userId},
+            {$set: updateData},
+            {new: true}
+        )
+    }
+
+    async findByUserId(userId: string): Promise<IPsychologist | null> {
+        const doc = await PsychologistModel.findOne({userId})
+        if(!doc) return null
+
+        const obj = doc.toObject();
+        return {
+            _id: obj._id.toString(),
+            userId: obj.userId.toString(),
+            aboutMe: obj.aboutMe,
+            qualification: obj.qualification,
+            specializations: obj.specializations.map(id => id.toString()),
+            defaultFee: obj.defaultFee,
+            isVerified: obj.isVerified,
+            specializationFees: obj.specializationFees.map(fee => ({
+                specializationId: fee.specializationId.toString(),
+                specializationName: fee.specializationName,
+                fee: fee.fee
+            }))
+        };
+    }
 }

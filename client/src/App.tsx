@@ -2,6 +2,7 @@ import './App.css'
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import PrivateRoute from './components/auth/PrivateRoute'
 
 // =============== PAGES =================
 
@@ -42,12 +43,16 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
 
         {/* psychologist routes */}
-        <Route path='/verification' element={< VerificationPage/>} />
+        <Route element={<PrivateRoute allowedRoles={['psychologist']}/>}>
+          <Route path='/psychologist/verification' element={< VerificationPage/>} />
+        </Route>
 
         {/* admin routes */}
         <Route path='/admin/login' element={< AdminLoginPage />} />
-        <Route path='/admin/dashboard' element={< AdminDashboard />} />
-        <Route path='/admin/services' element={<ServicePage />} />
+        <Route element={<PrivateRoute allowedRoles={['admin']}/>}>
+          <Route path='/admin/dashboard' element={< AdminDashboard />} />
+          <Route path='/admin/services' element={<ServicePage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

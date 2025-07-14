@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import instance from "../../lib/axios";
+import { toast } from "react-toastify";
 
 type Service = {
   _id: string,
@@ -25,6 +26,7 @@ const ServiceSession = () => {
 
         setServices(mapped)
       } catch (error) {
+        toast.error("Failed to load specialization")
         console.error("Failed to fetch services:", error);
       }
     }
