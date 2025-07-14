@@ -1,9 +1,9 @@
-import { IUser } from "../../domain/entities/user";
-import { AuthService } from "../../domain/interfaces/authService";
-import { TokenService } from "../../domain/interfaces/tokenService";
-import { UserRepository } from "../../domain/interfaces/userRepository";
+import { IUser } from "../../../domain/entities/user";
+import { AuthService } from "../../../domain/interfaces/authService";
+import { TokenService } from "../../../domain/interfaces/tokenService";
+import { UserRepository } from "../../../domain/interfaces/userRepository";
 import { SignupRequest, SignupResponse } from "./signupTypes";
-import { IOtpService } from "../../domain/interfaces/otpService";
+import { IOtpService } from "../../../domain/interfaces/otpService";
 
 export class SignupUseCase {
     constructor(

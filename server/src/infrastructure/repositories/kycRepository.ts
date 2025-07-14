@@ -21,7 +21,7 @@ export class MongoKycRepository implements KycRepository {
     }
 
     async findByPsychologistId(psychologistId: string): Promise<IKyc | null> {
-        const kycDoc = await KycModel.findById(psychologistId)
+        const kycDoc = await KycModel.findOne({psychologistId})
         if(!kycDoc) return null
 
         const obj = kycDoc.toObject()
@@ -36,5 +36,13 @@ export class MongoKycRepository implements KycRepository {
             rejectionReason: obj.rejectionReason,
             verifiedAt: obj.verifiedAt,
         }
+    }
+
+    async updateByPsychologistId(psychologistId: string | undefined, updateData: Partial<IKyc>): Promise<IKyc | null> {
+        return KycModel.findByIdAndUpdate(
+            {psychologistId},
+            {$set: updateData},
+            {new: true}
+        )
     }
 }

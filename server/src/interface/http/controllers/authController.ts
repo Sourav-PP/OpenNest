@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { SignupUseCase } from "../../../useCases/signup/signupUseCase";
-import { SignupRequest } from "../../../useCases/signup/signupTypes";
-import { SendOtpUseCase } from "../../../useCases/signup/sendOtpUseCase";
-import { VerifyOtpUseCase } from "../../../useCases/signup/verifyOtpUseCase";
-import { LoginUseCase } from "../../../useCases/login/loginUseCase";
+import { SignupUseCase } from "../../../useCases/user/signup/signupUseCase";
+import { SignupRequest } from "../../../useCases/user/signup/signupTypes";
+import { SendOtpUseCase } from "../../../useCases/user/signup/sendOtpUseCase";
+import { VerifyOtpUseCase } from "../../../useCases/user/signup/verifyOtpUseCase";
+import { LoginUseCase } from "../../../useCases/user/login/loginUseCase";
 
 export class AuthController {
   constructor(
@@ -60,7 +60,6 @@ export class AuthController {
 
   login = async(req: Request, res: Response): Promise<void> => {
     try {
-      console.log("its here, req: ", req)
       const response = await this.loginUseCase.execute(req.body)
 
       res.cookie("refreshToken", response.refreshToken, {
@@ -75,6 +74,7 @@ export class AuthController {
         message: "Login successfull",
         user: response.user,
         accessToken: response.accessToken,
+        hasSubmittedVerificationForm: response.hasSubmittedVerificationForm
       });
     } catch (error: any) {
       const statusCode = error.statusCode ||   500

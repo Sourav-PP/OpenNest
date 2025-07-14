@@ -10,9 +10,6 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 const instance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     withCredentials: true,
-    headers: {
-        "Content-Type" : "application/json"
-    }
 })
 
 instance.interceptors.request.use((config) => {
@@ -45,7 +42,9 @@ instance.interceptors.response.use(
 
             try {
                 const {data} = await instance.post(refreshEndpoint)
+                console.log("refresh_response: ", data)
                 const accessToken = data.accessToken
+                console.log("accesstoken in refreshResponse: ", accessToken)
 
                 store.dispatch(
                     loginSuccess({

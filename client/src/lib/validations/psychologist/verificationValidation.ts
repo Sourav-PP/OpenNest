@@ -28,7 +28,7 @@ export const verificationSchema = z.object({
     .string()
     .trim()
     .min(1, { message: "aboutMe is required" })
-    .max(50, { message: "aboutMe must be at most 50 characters" }),
+    .max(300, { message: "aboutMe must be at most 300 characters" }),
     defaultFee: z
     .number({
         required_error: "Default Fee is required",            

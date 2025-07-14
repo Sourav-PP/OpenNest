@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
-import { AdminLoginUseCase } from "../../../../useCases/admin/login/loginUseCase";
+import { AdminLoginUseCase } from "../../../../useCases/admin/auth/loginUseCase";
+import { AdminLogoutUseCase } from "../../../../useCases/admin/auth/logoutUseCase";
 import { AppError } from "../../../../domain/errors/AppError";
 
 export class AdminAuthController {
-    constructor(private adminLoginUseCase: AdminLoginUseCase) {}
+    constructor(
+        private adminLoginUseCase: AdminLoginUseCase,
+        private adminLogoutUseCase: AdminLogoutUseCase
+    ) {}
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    login = async(req: Request, res: Response): Promise<void> => {
         try {
             const { email, password } = req.body
             const {accessToken, refreshToken} = await this.adminLoginUseCase.execute({email, password})
@@ -18,6 +22,18 @@ export class AdminAuthController {
             })
 
             res.status(200).json({accessToken})
+        } catch (error: any) {
+            const status = error instanceof AppError ? error.statusCode : 500
+            const message = error.message || "Internal server error";
+            console.log("its here", message, status)
+            res.status(status).json({ message });
+        }
+    }
+
+    logout = async(req: Request, res: Response): Promise<void> => {
+        try {
+            await this.adminLogoutUseCase.execute(req, res)
+            res.status(200).json({message: "Admin logout successful"})
         } catch (error: any) {
             const status = error instanceof AppError ? error.statusCode : 500
             const message = error.message || "Internal server error";

@@ -14,7 +14,7 @@ export const verifyPsychologistValidator = [
   body("aboutMe")
     .isString()
     .trim()
-    .isLength({ max: 50 })
+    .isLength({ max: 300 })
     .notEmpty()
     .withMessage("aboutMe is required"),
   body("defaultFee")

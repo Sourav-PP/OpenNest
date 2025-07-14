@@ -1,27 +1,38 @@
+import { useEffect, useState } from "react";
+import instance from "../../lib/axios";
+import { toast } from "react-toastify";
+
+type Service = {
+  _id: string,
+  name: string,
+  description: string,
+  bannerImage: string
+}
+
 const ServiceSession = () => {
-  const services = [
-    {
-      id: 1,
-      title: "Depression",
-      image: "/images/depression.svg",
-      description: "Overcome the grip of depression with our compassionate and effective therapy services. Our expert therapists work through evidence-based approaches to help you regain your joy, find inner strength, and live a fulfilling life.",
-      buttonText: "Show Psychologists"
-    },
-    {
-      id: 2,
-      title: "Anxiety",
-      image: "/images/anxiety.svg",
-      description: "Feeling low and on the edge is a sign that you need help. There's an unmet need of either feeling loved, worthy or just self-assurance that can be met with professional assistance.",
-      buttonText: "Show Psychologists"
-    },
-    {
-      id: 3,
-      title: "Stress",
-      image: "/images/stress.svg",
-      description: "Overwhelmed by stress? Our stress therapy services offer a compassionate and effective approach to help you overcome the challenges and regain a sense of peace and balance. Take the first step towards a stress-free life today.",
-      buttonText: "Show Psychologists"
+  const [services, setServices] = useState<Service[]>([])
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await instance.get('/user/services')
+
+        const mapped = response.data.slice(0, 3).map((service: Service) => ({
+          _id: service._id,
+          name: service.name,
+          description: service.description,
+          bannerImage: service.bannerImage,
+        }));
+
+        setServices(mapped)
+      } catch (error) {
+        toast.error("Failed to load specialization")
+        console.error("Failed to fetch services:", error);
+      }
     }
-  ];
+
+    fetchServices()
+  },[])
 
   return (
     <div className="bg-gray-200 py-16 px-8 sm:px-6 lg:px-36 pt-32">
@@ -29,19 +40,19 @@ const ServiceSession = () => {
         {/* Service Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-20 sm:gap-8 mb-12">
           {services.map((service) => (
-            <div key={service.id} className="relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-center items-center">
+            <div key={service._id} className="relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-center items-center">
               {/* Image */}
               <div className="absolute w-[230px] h-auto top-[-50px] left-1/2 transform -translate-x-1/2 mb-6 overflow-hidden rounded-2xl">
                 <img 
-                  src={service.image} 
-                  alt={service.title}
+                  src={service.bannerImage} 
+                  alt={service.name}
                   className="w-[230px] h-auto object-cover"
                 />
               </div>
               
               {/* Title */}
               <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center mt-20">
-                {service.title}
+                {service.name}
               </h3>
               
               {/* Description */}
@@ -52,7 +63,7 @@ const ServiceSession = () => {
               {/* Button */}
               <div className="text-center">
                 <button className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors duration-200">
-                  {service.buttonText}
+                  Show Psychologists
                 </button>
               </div>
             </div>

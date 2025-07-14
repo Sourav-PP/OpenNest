@@ -38,7 +38,7 @@ const LoginForm = () => {
     try {
       console.log("it is working: ", data)
       const res = await instance.post("/auth/login", data);
-      const { accessToken } = res.data;
+      const { accessToken, hasSubmittedVerificationForm  } = res.data;
 
       const decoded = jwtDecode<TokenPayload>(accessToken)
       
@@ -55,7 +55,11 @@ const LoginForm = () => {
 
       // navigation based on role
       if(decoded.role === 'psychologist') {
-        navigate('/psychologist/profile')
+        if(hasSubmittedVerificationForm) {
+          navigate('/psychologist/profile')
+        }else{
+          navigate('/psychologist/verification')
+        }
       } else {
         navigate("/home");
       }

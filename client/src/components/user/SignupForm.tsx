@@ -77,7 +77,7 @@ const SignupForm = () => {
 
     const payload = {
       ...data,
-      roleFromUrl,
+      role: roleFromUrl,
     };
     
     try {
@@ -98,7 +98,7 @@ const SignupForm = () => {
       toast.success("Signup successful!");
       
       if (decoded.role === "psychologist") {
-        navigate("/verification");
+        navigate("/psychologist/verification");
       } else {
         navigate("/home");
       }

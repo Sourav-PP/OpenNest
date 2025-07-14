@@ -6,8 +6,36 @@ import { assets } from '../../assets/assets'
 import { toast } from 'react-toastify'
 import type { AxiosError } from 'axios'
 import instance from '../../lib/axios'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
+type Specialization = {
+  _id: string,
+  name: string
+}
 const VerificationForm = () => {
+    const navigate = useNavigate()
+    const [specializations, sestSpecializations] = useState<Specialization[]>([])
+
+    useEffect(() => {
+      const fetchSpecialization = async () => {
+        try {
+          const response = await instance.get('/user/services')
+          const mapped = response.data.map((s:Specialization) => ({
+            _id: s._id,
+            name: s.name
+          }))
+
+          sestSpecializations(mapped)
+        } catch (error) {
+          toast.error("Failed to fetch specialization")
+          console.log(error)
+        }
+      }
+
+      fetchSpecialization()
+    }, [])
+
     const {
         register,
         handleSubmit,
@@ -22,7 +50,13 @@ const VerificationForm = () => {
     })
 
     const onSubmit = async( data: verificationData ) => {
+      const logFormData = (formData: FormData) => {
+        for (const [key, value] of formData.entries()) {
+          console.log(`${key}:`, value);
+        }
+      };
         console.log('verify data: ', data)
+        console.log(data.qualification)
         const formData = new FormData()
 
         formData.append("qualification", data.qualification)
@@ -35,11 +69,12 @@ const VerificationForm = () => {
         formData.append("identificationDoc", data.identificationDoc[0])
         formData.append("educationalCertification", data.educationalCertification[0])
         formData.append("experienceCertificate", data.experienceCertificate[0])
-
+        logFormData(formData)
         try {
             const res = await instance.post('/auth/psychologist/verify-profile', formData)
             console.log("verify res:  ", res)
             toast.success("Profile submitted successfully!");
+            navigate('/psychologist/profile')
         } catch (err) {
             const error = err as AxiosError<{ error: string }>;
             toast.error(error.response?.data?.error || "Something went wrong");
@@ -89,11 +124,11 @@ const VerificationForm = () => {
     Specializations
   </label>
   <div className="space-y-3 mb-6">
-    {["Anxiety", "Depression", "PTSD", "ADHD", "Stress"].map((spec) => (
-      <label key={spec} className="relative flex items-center pl-10 cursor-pointer text-gray-700 text-sm select-none">
+    {specializations.map((spec) => (
+      <label key={spec._id} className="relative flex items-center pl-10 cursor-pointer text-gray-700 text-sm select-none">
         <input
           type="checkbox"
-          value={spec}
+          value={spec._id}
           {...register("specializations")}
           className="peer absolute opacity-0 h-0 w-0"
         />
@@ -113,7 +148,7 @@ const VerificationForm = () => {
             className="absolute left-1.5 top-[3px] h-3 w-2 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100">
             <path d="M20 6 9 17l-5-5"/>
         </svg>
-        {spec}
+        {spec.name}
       </label>
     ))}
   </div>

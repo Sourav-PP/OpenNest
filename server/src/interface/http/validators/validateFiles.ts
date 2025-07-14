@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 
 export const validateFiles = (req: Request, res: Response, next: NextFunction): void => {
+  console.log("enterred validate files")
+  console.log('file is:',req.file)
   const files = req.files as {
     identificationDoc?: Express.Multer.File[],
     educationalCertification?: Express.Multer.File[],
     experienceCertificate?: Express.Multer.File[]
   };
+
+  console.log("files: ", files)
 
   if (
     !files?.identificationDoc?.[0] ||
@@ -17,6 +21,7 @@ export const validateFiles = (req: Request, res: Response, next: NextFunction): 
     });
     return 
   }
+  console.log("now here")
 
   const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
 
@@ -39,6 +44,7 @@ export const validateFiles = (req: Request, res: Response, next: NextFunction): 
       res.status(400).json({ message: `${field} exceeds the 5MB size limit` });
       return 
     }
+    console.log("finally")
   }
 
   next();

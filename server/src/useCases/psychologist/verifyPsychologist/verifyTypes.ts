@@ -1,5 +1,5 @@
-import { IKyc } from "../../domain/entities/kyc";
-import { IPsychologist } from "../../domain/entities/psychologist";
+import { IKyc } from "../../../domain/entities/kyc";
+import { IPsychologist } from "../../../domain/entities/psychologist";
 
 export interface VerifyProfileRequest {
   userId: string;

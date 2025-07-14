@@ -14,8 +14,6 @@ export class RefreshTokenUseCase {
             throw new AppError("Invalid refresh token", 403)
         }
 
-        console.log("payload: ", payload)
-
         const user = await this.accountRepository.findById(payload.userId)
         if(!user) {
             throw new AppError("User not found", 404)

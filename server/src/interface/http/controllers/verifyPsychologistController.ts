@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { VerifyPsychologistUseCase } from "../../../useCases/verifyPsychologist/verifyUseCase";
+import { VerifyPsychologistUseCase } from "../../../useCases/psychologist/verifyPsychologist/verifyUseCase";
 import { uploadToCloudinary } from "../../../utils/uploadToCloudinary";
 
 export class VerifyPsychologistController {
@@ -7,10 +7,11 @@ export class VerifyPsychologistController {
 
     handle = async(req: Request, res: Response): Promise<void> => {
         try {
-
+            console.log("its in backend veriy controller")
             console.log("req :", req.body)
             console.log('files: ', req.files)
             const userId = req.user?.userId
+            console.log("user id: ", userId)
             const files = req.files as Record<string, Express.Multer.File[]>
 
             const uploadDoc = async(field: string, label: string) => {
