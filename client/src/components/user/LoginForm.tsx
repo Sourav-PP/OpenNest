@@ -60,7 +60,7 @@ const LoginForm = () => {
           navigate('/psychologist/verification')
         }
       } else {
-        navigate("/home");
+        navigate("/");
       }
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;

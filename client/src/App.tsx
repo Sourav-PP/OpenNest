@@ -10,6 +10,7 @@ import PrivateRoute from './components/auth/PrivateRoute'
 import SignupPage from './pages/user/SignupPage'
 import LoginPage from './pages/user/LoginPage'
 import LandingPage from './pages/user/LandingPage'
+import TherapistPage from './pages/user/TherapistPage'
 
 // ------------ psychologist ---------------
 import VerificationPage from './pages/psychologist/VerificationPage'
@@ -43,6 +44,9 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         <Route path='/signup' element={<SignupPage />}/>
         <Route path='/login' element={<LoginPage />} />
+        <Route element={<PrivateRoute allowedRoles={['user']}/>}>
+          <Route path='/user/therapist' element={< TherapistPage/>} />
+        </Route>
 
         {/* psychologist routes */}
         <Route element={<PrivateRoute allowedRoles={['psychologist']}/>}>
