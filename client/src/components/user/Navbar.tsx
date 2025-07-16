@@ -69,7 +69,7 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <ul className="sm:ms-14 hidden md:flex gap-8 text-gray-700 font-medium">
-          <li className="cursor-pointer font-semibold transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
+          <li onClick={() => navigate('/')} className="cursor-pointer font-semibold transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
             Home
           </li>
           <li className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
@@ -115,7 +115,7 @@ const Navbar = () => {
                 <div className="absolute -top-2 right-4 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
                 <div className="pt-2 pb-1 bg-gradient-to-b from-gray-50 to-white rounded-xl">
                   <button
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate("/user/profile")}
                     className="block w-full text-left px-5 py-3 text-gray-700 font-medium text-base hover:bg-[#3EB1EB] hover:text-white transition-all duration-200 hover:scale-100 hover:rounded-lg transform origin-left"
                   >
                     Profile
@@ -156,7 +156,7 @@ const Navbar = () => {
               : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
           }`}
         >
-          <button className="cursor-pointer font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
+          <button onClick={() => navigate('/')} className="cursor-pointer font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
             Home
           </button>
           <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
@@ -174,7 +174,7 @@ const Navbar = () => {
           {accessToken ? (
             <>
               <button
-                onClick={() => navigate("/profile")}
+                onClick={() => navigate("/user/profile")}
                 className="text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
               >
                 Profile

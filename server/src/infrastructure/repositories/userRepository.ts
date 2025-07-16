@@ -2,6 +2,7 @@ import { IUser } from "../../domain/entities/user";
 import { UserRepository } from "../../domain/interfaces/userRepository";
 import { AuthAccountRepository } from "../../domain/interfaces/authAccountRepository";
 import { userModel } from "../database/models/user/UserModel";
+import { AppError } from "../../domain/errors/AppError";
 
 export class MongoUserRepository implements UserRepository   {
     async findByEmail(email: string): Promise<IUser | null> {
@@ -35,6 +36,17 @@ export class MongoUserRepository implements UserRepository   {
         return {
             ...userObj,
             _id: userObj._id.toString()
+        } as IUser
+    }
+
+    async updateProfile(id: string, updates: Partial<IUser>): Promise<IUser | null> {
+        const updated = await userModel.findByIdAndUpdate(id, updates, {new: true})
+        if(!updated) return null
+
+        const obj = updated.toObject()
+        return {
+            ...obj,
+            _id: obj._id.toString()
         } as IUser
     }
 }

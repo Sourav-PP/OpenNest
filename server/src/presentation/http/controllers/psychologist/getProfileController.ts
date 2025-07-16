@@ -8,6 +8,7 @@ export class GetProfileController {
     handle = async(req: Request, res: Response) => {
         try {
             const userId = req.user?.userId!
+            console.log("userid is = ", userId)
 
             const data = await this.getProfileUseCase.execute(userId)
             res.status(200).json(data)

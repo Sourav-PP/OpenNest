@@ -3,6 +3,7 @@ import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css"
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PrivateRoute from './components/auth/PrivateRoute'
+import PublicRoute from './components/auth/PublicRoute'
 
 // =============== PAGES =================
 
@@ -11,6 +12,7 @@ import SignupPage from './pages/user/SignupPage'
 import LoginPage from './pages/user/LoginPage'
 import LandingPage from './pages/user/LandingPage'
 import TherapistPage from './pages/user/TherapistPage'
+import UserProfilePage from './pages/user/UserProfilePage'
 
 // ------------ psychologist ---------------
 import VerificationPage from './pages/psychologist/VerificationPage'
@@ -41,12 +43,15 @@ function App() {
       />
       <Routes>
         {/* user routes */}
-        <Route path='/' element={<LandingPage />} />
-        <Route path='/signup' element={<SignupPage />}/>
-        <Route path='/login' element={<LoginPage />} />
-        <Route element={<PrivateRoute allowedRoles={['user']}/>}>
-          <Route path='/user/therapist' element={< TherapistPage/>} />
+        <Route element={<PublicRoute />}>
+          <Route path='/signup' element={<SignupPage />}/>
+          <Route path='/login' element={<LoginPage />} />
         </Route>
+        <Route path='/' element={<LandingPage />} />
+        <Route path='/user/therapist' element={< TherapistPage/>} />
+        <Route path='/user/profile' element={<UserProfilePage/>} />
+        {/* <Route element={<PrivateRoute allowedRoles={['user']}/>}>
+        </Route> */}
 
         {/* psychologist routes */}
         <Route element={<PrivateRoute allowedRoles={['psychologist']}/>}>
@@ -56,7 +61,9 @@ function App() {
         </Route>
 
         {/* admin routes */}
-        <Route path='/admin/login' element={< AdminLoginPage />} />
+        <Route element={<PublicRoute />}>
+          <Route path='/admin/login' element={< AdminLoginPage />} />
+        </Route>
         <Route element={<PrivateRoute allowedRoles={['admin']}/>}>
           <Route path='/admin/dashboard' element={< AdminDashboard />} />
           <Route path='/admin/services' element={<ServicePage />} />

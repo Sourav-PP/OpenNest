@@ -96,9 +96,11 @@ const SignupForm = () => {
       )
 
       toast.success("Signup successful!");
+
+      console.log("decoded role", decoded.role)
       
       if (decoded.role === "psychologist") {
-        navigate("/psychologist/verification");
+        navigate("/psychologist/verification'");
       } else {
         navigate("/home");
       }
@@ -152,7 +154,7 @@ const SignupForm = () => {
               disabled={otpLoading}
             >
              {otpLoading ? (
-                <span className="animate-spin w-4 h-4 border-2 border-t-transparent border-cyan-500 rounded-full"></span>
+                <span className="animate-spin w-4 h-4 border-2 mt-1 p-1 border-t-transparent border-cyan-500 rounded-full">Loading...</span>
              ) : (
                  "Send OTP"
              )}
@@ -183,7 +185,7 @@ const SignupForm = () => {
               disabled={verifyLoading}
             >
               {verifyLoading ? (
-                <span className="animate-spin w-4 h-4 border-2 border-t-transparent border-cyan-500 rounded-full"></span>
+                <span className="animate-spin w-4 h-4 border-2 border-t-transparent border-cyan-500 rounded-full">Loading...</span>
               ) : (
                 "Verify OTP"
               )}

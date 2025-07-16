@@ -17,7 +17,7 @@ const ServiceSession = () => {
       try {
         const response = await instance.get('/user/services')
 
-        const mapped = response.data.slice(0, 3).map((service: Service) => ({
+        const mapped = response.data.slice(1, 4).map((service: Service) => ({
           _id: service._id,
           name: service.name,
           description: service.description,

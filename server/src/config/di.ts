@@ -38,6 +38,9 @@ import { LoginUseCase } from "../useCases/user/login/loginUseCase";
 import { RefreshTokenUseCase } from "../useCases/refreshToken/refreshTokenUseCase";
 import { GetAllServiceUseCase } from "../useCases/user/services/getAllServicesUseCase";
 import { LogoutUseCase } from "../useCases/user/logoutUseCase";
+import { GetAllPsychologistUseCasee } from "../useCases/user/getPsychologists/getAllPsychologistUseCase";
+import { GetUserProfileUseCase } from "../useCases/user/getUserProfile/getUserProfileUseCase";
+import { UpdateUserProfileUseCase } from "../useCases/user/updateProfile/updateUserProfileUseCase";
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from "../useCases/psychologist/verifyPsychologist/verifyUseCase";
@@ -52,21 +55,24 @@ import { AdminLogoutUseCase } from "../useCases/admin/auth/logoutUseCase";
 //===================== CONTROLLERS =====================
 
 //---------------- user ------------------
-import { AuthController } from "../interface/http/controllers/authController";
-import { RefreshTokenController } from "../interface/http/controllers/refreshTokenController";
-import { GetAllServicesController } from "../interface/http/controllers/user/getAllServicesController";
+import { AuthController } from "../presentation/http/controllers/authController";
+import { RefreshTokenController } from "../presentation/http/controllers/refreshTokenController";
+import { GetAllServicesController } from "../presentation/http/controllers/user/getAllServicesController";
+import { GetAllPsychologistsController } from "../presentation/http/controllers/user/getAllPsychologistsController";
+import { GetUserProfileController } from "../presentation/http/controllers/user/getUserProfileController";
+import { UpdateUserProfileController } from "../presentation/http/controllers/user/updateUserProfileController";
 
 //---------------- psychologist -----------------
-import { VerifyPsychologistController } from "../interface/http/controllers/verifyPsychologistController";
-import { GetProfileController } from "../interface/http/controllers/psychologist/getProfileController";
+import { VerifyPsychologistController } from "../presentation/http/controllers/verifyPsychologistController";
+import { GetProfileController } from "../presentation/http/controllers/psychologist/getProfileController";
 
 //---------------- admin -------------------
-import { AdminAuthController } from "../interface/http/controllers/admin/adminAuthController";
-import { CreateServiceController } from "../interface/http/controllers/admin/createServiceController";
+import { AdminAuthController } from "../presentation/http/controllers/admin/adminAuthController";
+import { CreateServiceController } from "../presentation/http/controllers/admin/createServiceController";
 
 
 //===================== MIDDLEWARE ========================
-import { authMiddleware } from "../interface/http/middlewares/authMiddleware";
+import { authMiddleware } from "../presentation/http/middlewares/authMiddleware";
 
 
 // ======================= DI IMPLEMENTATION =======================
@@ -98,6 +104,9 @@ const sendOtpUseCase = new SendOtpUseCase(otpService);
 const verifyOtpUseCase = new VerifyOtpUseCase(otpService);
 const refreshTokenUseCase = new RefreshTokenUseCase(tokenService, userAuthRepository)
 const getAllServicesUseCase = new GetAllServiceUseCase(userServiceRepository)
+const getAllPsychologistUseCase = new GetAllPsychologistUseCasee(psychologistRepository)
+const getUserProfileUseCase = new GetUserProfileUseCase(userRepository)
+const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository)
 
 export const authController = new AuthController(
   signupUseCase,
@@ -108,6 +117,9 @@ export const authController = new AuthController(
 );
 export const refreshTokenController = new RefreshTokenController(refreshTokenUseCase, "refreshToken")
 export const userGetAllServicesController = new GetAllServicesController(getAllServicesUseCase)
+export const getAllPsychologistsController = new GetAllPsychologistsController(getAllPsychologistUseCase)
+export const getUserProfileController = new GetUserProfileController(getUserProfileUseCase)
+export const updateUserProfileController = new UpdateUserProfileController(updateUserProfileUseCase)
 
 
 // ---------- PSYCHOLOGIST ----------

@@ -20,6 +20,7 @@ const VerificationForm = () => {
     useEffect(() => {
       const fetchSpecialization = async () => {
         try {
+          console.log("in service form")
           const response = await instance.get('/user/services')
           const mapped = response.data.map((s:Specialization) => ({
             _id: s._id,

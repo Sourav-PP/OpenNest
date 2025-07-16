@@ -68,4 +68,44 @@ export class MongoPsychologistRepository implements PsychologistRepository {
         const specializations = await ServiceModel.find({_id: {$in: ids}}).select("name")
         return specializations.map(s => s.name)
     }
+
+    async getAllPsychologists(): Promise<IPsychologist[]> {
+        const docs = await PsychologistModel.aggregate([
+            // {$match: { isVerified: true }}
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userData"
+                }
+            },
+            {$unwind: "$userData"},
+            {
+                $lookup: {
+                    from: "services",
+                    localField: "specializations",
+                    foreignField: "_id",
+                    as: 'specializationData'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    aboutMe: 1,
+                    qualification: 1,
+                    defaultFee: 1,
+                    specializationFees: 1,
+                    user: {
+                        name: "$userData.name",
+                        email: "$userData.email",
+                        profileImage: "$userData.profileImage"
+                    },
+                    specializations: "$specializationData.name"
+                }
+            }
+        ])
+
+        return docs
+    }
 }

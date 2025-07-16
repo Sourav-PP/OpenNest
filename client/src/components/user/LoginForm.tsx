@@ -39,7 +39,12 @@ const LoginForm = () => {
       const res = await instance.post("/auth/login", data);
       const { accessToken, hasSubmittedVerificationForm  } = res.data;
 
+      console.log("hanssubmitted", hasSubmittedVerificationForm)
+
       const decoded = jwtDecode<TokenPayload>(accessToken)
+
+      console.log("Decoded JWT:", decoded);
+      console.log("Has submitted verification form:", hasSubmittedVerificationForm);
       
       dispatch(
         loginSuccess({
@@ -55,8 +60,10 @@ const LoginForm = () => {
       // navigation based on role
       if(decoded.role === 'psychologist') {
         if(hasSubmittedVerificationForm) {
+          console.log("Navigating to profile");
           navigate('/psychologist/profile')
         }else{
+          console.log("Navigating to verification");
           navigate('/psychologist/verification')
         }
       } else {

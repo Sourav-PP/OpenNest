@@ -6,4 +6,5 @@ export interface PsychologistRepository {
     updateByUserId(userId: string, updateData: Partial<IPsychologist>):Promise<IPsychologist | null>
     findByUserId(userId: string): Promise<IPsychologist | null>
     getSpecializationNamesByIds(ids: string[]): Promise<string[]>
+    getAllPsychologists(): Promise<IPsychologist[]>
 }

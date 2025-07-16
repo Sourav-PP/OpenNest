@@ -5,10 +5,10 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 
 //============ROUTES=============
-import authRoutes from './interface/http/routes/authRoutes'
-import adminRoutes from './interface/http/routes/adminRoutes'
-import userRoutes from './interface/http/routes/userRoutes'
-import psychologistRoutes from './interface/http/routes/psychologistRoutes'
+import authRoutes from './presentation/http/routes/authRoutes'
+import adminRoutes from './presentation/http/routes/adminRoutes'
+import userRoutes from './presentation/http/routes/userRoutes'
+import psychologistRoutes from './presentation/http/routes/psychologistRoutes'
 
 dotenv.config()
 

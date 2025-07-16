@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { VerifyPsychologistUseCase } from "../../../useCases/psychologist/verifyPsychologist/verifyUseCase";
 import { uploadToCloudinary } from "../../../utils/uploadToCloudinary";
+import { AppError } from "../../../domain/errors/AppError";
 
 export class VerifyPsychologistController {
     constructor(private verifyPsychologistUseCase: VerifyPsychologistUseCase) {}
@@ -44,10 +45,10 @@ export class VerifyPsychologistController {
                     kycStatus: kyc.kycStatus
                 }
             })
-        } catch (error) {
-            console.log("verify error: ", error)
-            res.status(500).json({message: "Internal server error"})
-            return
+        } catch (error: any) {
+            const status = error instanceof AppError ? error.statusCode : 500
+            const message = error.message || "Internal server error";
+            res.status(status).json({ message });
         }
     }
 }

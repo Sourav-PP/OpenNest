@@ -7,6 +7,7 @@ export class GetAllServicesController {
 
     handle = async(req: Request, res: Response): Promise<void> => {
         try {
+            console.log('its here in service controller')
             const services = await this.getAllServicesUseCase.execute()
             res.status(200).json(services)
             return
