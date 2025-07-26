@@ -1,13 +1,13 @@
 import { AdminModel } from "../../database/models/admin/adminModel";
-import { AuthAccountRepository } from "../../../domain/interfaces/authAccountRepository";
+import { IAuthAccountRepository } from "../../../domain/interfaces/IAuthAccountRepository";
 
-export class AdminAuthAccountRepository implements AuthAccountRepository {
-    async findById(id: string): Promise<{ _id: string; role: string; email: string; } | null> {
+export class AdminAuthAccountRepository implements IAuthAccountRepository {
+    async findById(id: string): Promise<{ id: string; role: string; email: string; } | null> {
         const admin = await AdminModel.findById(id)
         if (!admin) return null;
 
     return {
-      _id: admin._id?.toString() ?? "",
+      id: admin._id?.toString() ?? "",
       role: "admin",
       email: admin.email,
     };   

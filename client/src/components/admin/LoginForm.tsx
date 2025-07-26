@@ -3,12 +3,12 @@ import { loginSchema, type LoginData } from "../../lib/validations/user/loginVal
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "react-toastify"
 import type { AxiosError } from "axios"
-import instance from "../../lib/axios"
 import { assets } from "../../assets/assets"
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { loginSuccess } from "../../redux/slices/authSlice"
+import { adminApi } from "../../server/api/admin"
 
 interface TokenPayload {
   userId: string;
@@ -31,8 +31,8 @@ const LoginForm = () => {
 
     const onSubmit = async(data: LoginData) => {
         try {
-            const res = await instance.post('/admin/login', data)
-            const { accessToken } = res.data
+            const res = await adminApi.login(data)
+            const { accessToken } = res
             const decoded = jwtDecode<TokenPayload>(accessToken)
             
             dispatch(

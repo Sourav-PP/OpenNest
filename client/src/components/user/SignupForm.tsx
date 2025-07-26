@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "../../lib/validations/user/signupValidation";
 import type { SignupData } from "../../lib/validations/user/signupValidation";
-import instance from "../../lib/axios";
 import { useState } from "react";
 import type { AxiosError } from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -11,6 +10,7 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/slices/authSlice";
+import { authApi } from "../../server/api/auth";
 
 interface TokenPayload {
   userId: string;
@@ -22,7 +22,7 @@ interface TokenPayload {
 
 const SignupForm = () => {
   const [searchParams] = useSearchParams()
-  const roleFromUrl = searchParams.get('role')
+  const roleFromUrl = (searchParams.get('role') ?? "user") as "user" | "psychologist"
   const {
     register,
     handleSubmit,
@@ -44,7 +44,7 @@ const SignupForm = () => {
     if (!email) return toast.error("Enter email first");
     setOtpLoading(true);
     try {
-      await instance.post("/auth/send-otp", { email });
+      await authApi.sendOtp({email})
       setOtpSent(true);
       toast.success("OTP has been sent to your email");
     } catch (error) {
@@ -61,7 +61,7 @@ const SignupForm = () => {
     if (!email || !otp) toast.error("Provide email and otp");
     setVerifyLoading(true);
     try {
-      await instance.post("/auth/verify-otp", { email, otp });
+      await authApi.verifyOtp({email, otp})
       setOtpVerified(true);
       toast.success("Email has been verified");
     } catch (e) {
@@ -81,8 +81,9 @@ const SignupForm = () => {
     };
     
     try {
-      const res = await instance.post("/auth/signup", payload);
-      const accessToken = res.data.accessToken;
+      const res = await authApi.signup(payload)
+      console.log(res)
+      const accessToken = res.accessToken;
       
       const decoded = jwtDecode<TokenPayload>(accessToken)
 

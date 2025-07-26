@@ -1,38 +1,46 @@
-import { IService } from "../../domain/entities/service";
-import { ServiceRepository } from "../../domain/interfaces/serviceRepository";
+import { Service } from "../../domain/entities/Service";
+import { IServiceRepository } from "../../domain/interfaces/IServiceRepository";
 import { ServiceModel } from "../database/models/admin/serviceModel";
 
-export class MongoServiceRepository implements ServiceRepository {
-    async create(service: IService): Promise<IService> {
+export class ServiceRepository implements IServiceRepository {
+    async create(service: Service): Promise<Service> {
         const newService = new ServiceModel(service)
         await newService.save()
         return {
             ...newService.toObject(),
-            _id: newService._id.toString()
+            id: newService._id.toString()
         }
     }
 
-    async findByName(name: string): Promise<IService | null> {
+    async findByName(name: string): Promise<Service | null> {
         const result = await ServiceModel.findOne({ name: { $regex: `^${name}`, $options: 'i'}})
         if(!result) return null
         const obj = result.toObject()
 
         return {
-            _id: obj._id.toString(),
+            id: obj._id.toString(),
             name: obj.name,
             description: obj.description,
             bannerImage: obj.bannerImage
         }
     }
 
-    async getAllServices(): Promise<IService[]> {
-        const services = await ServiceModel.find()
-        return services.map((s) => {
-            const obj = s.toObject()
+    async getAllServices(limit: number, offset: number): Promise<{ services: Service[]; totalCount: number; }> {
+        const totalCount = await ServiceModel.countDocuments().exec()
+
+        const services = await ServiceModel.find().skip(offset).limit(limit).lean().exec()
+        const mappedServices: Service[] = services.map((s) => {
             return {
-                ...obj,
-                _id: obj._id.toString()
+                id: s._id.toString(),
+                name: s.name,
+                bannerImage: s.bannerImage,
+                description: s.description
             }
         })
+        return {
+            services: mappedServices,
+            totalCount
+        }
     }
+
 }

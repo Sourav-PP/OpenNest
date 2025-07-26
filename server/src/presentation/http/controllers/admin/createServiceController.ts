@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateServiceUseCase } from "../../../../useCases/admin/services/createServiceUseCase";
+import { CreateServiceUseCase } from "../../../../useCases/implementation/admin/management/createServiceUseCase";
 import { AppError } from "../../../../domain/errors/AppError";
 import { uploadToCloudinary } from "../../../../utils/uploadToCloudinary";
 

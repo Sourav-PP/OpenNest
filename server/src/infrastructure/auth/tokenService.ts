@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { TokenService } from '../../domain/interfaces/tokenService'
+import { TokenService } from '../../domain/interfaces/ITokenService'
 
 export class JwtTokenService implements TokenService {
     private accessTokenSecret: string

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { GetAllPsychologistUseCasee } from "../../../../useCases/user/getPsychologists/getAllPsychologistUseCase";
+import { GetAllPsychologistUseCasee } from "../../../../useCases/implementation/user/data/getAllPsychologistUseCase";
 import { AppError } from "../../../../domain/errors/AppError";
 
 export class GetAllPsychologistsController {
@@ -8,8 +8,12 @@ export class GetAllPsychologistsController {
     handle = async(req: Request, res: Response): Promise<void> => {
         try {
             const psychologists = await this.getAllPsychologistUseCase.execute()
+            const response = {
+                psychologists,
+                totalCount: psychologists.length
+            }
             console.log('psychologists: ', psychologists)
-            res.status(200).json(psychologists)
+            res.status(200).json(response)
             return 
         } catch (error: any) {
             const status = error instanceof AppError ? error.statusCode : 500

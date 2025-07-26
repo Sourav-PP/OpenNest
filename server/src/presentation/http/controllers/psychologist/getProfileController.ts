@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { GetProfileUseCase } from "../../../../useCases/psychologist/getProfileUseCase";
+import { GetProfileUseCase } from "../../../../useCases/implementation/psychologist/profile/getProfileUseCase";
 import { AppError } from "../../../../domain/errors/AppError";
 
 export class GetProfileController {
@@ -11,6 +11,7 @@ export class GetProfileController {
             console.log("userid is = ", userId)
 
             const data = await this.getProfileUseCase.execute(userId)
+            console.log("profile data: ", data)
             res.status(200).json(data)
         } catch (error: any) {
             const status = error instanceof AppError ? error.statusCode : 500

@@ -4,8 +4,8 @@ export interface SpeicalizationFee {
     fee: number
 }
 
-export interface IPsychologist {
-    _id?: string,
+export interface Psychologist {
+    id?: string,
     userId: string,
     aboutMe: string,
     qualification: string,

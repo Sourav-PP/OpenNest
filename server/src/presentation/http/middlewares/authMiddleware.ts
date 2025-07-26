@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { TokenService } from "../../../domain/interfaces/tokenService";
+import { ITokenService } from "../../../domain/interfaces/ITokenService";
 
 declare global {
     namespace Express {
@@ -14,7 +14,7 @@ declare global {
 }
 
 export const authMiddleware =
-  (jwtService: TokenService, allowedRoles: Array<"user" | "psychologist" | "admin">): RequestHandler =>
+  (jwtService: ITokenService, allowedRoles: Array<"user" | "psychologist" | "admin">): RequestHandler =>
   (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     console.log('authheader: ', authHeader)

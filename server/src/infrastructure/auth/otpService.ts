@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
-import { IOtpService } from '../../domain/interfaces/otpService'
-import { IOtpRepository } from '../../domain/interfaces/otpRepository'
+import { IOtpService } from '../../domain/interfaces/IOtpService'
+import { IOtpRepository } from '../../domain/interfaces/IOtpRepository'
 
 export class NodemailerOtpService implements IOtpService {
     constructor(private otpRepo: IOtpRepository){}

@@ -1,16 +1,16 @@
 import type { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import instance from "../../lib/axios";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { adminApi } from "../../server/api/admin";
 
 const Header = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const handleLogout = async() => {
     try {
-      await instance.post('/admin/logout')
+      await adminApi.logout()
 
       dispatch(logout())
       localStorage.removeItem("persist:root");

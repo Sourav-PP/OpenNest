@@ -1,5 +1,5 @@
-export interface IKyc  {
-    _id?: string,
+export interface Kyc  {
+    id?: string,
     psychologistId: string,
     identificationDoc: string,
     educationalCertification: string,
@@ -10,6 +10,6 @@ export interface IKyc  {
 }
 
 export interface publicKyc {
-    _id?: string,
+    id?: string,
     kycStatus: "pending" | "approved" | "rejected"
 }

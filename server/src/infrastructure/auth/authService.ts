@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { AuthService } from '../../domain/interfaces/authService'   
+import { AuthService } from '../../domain/interfaces/IAuthService'   
 
 export class BcryptAuthService implements AuthService {
     async hashPassword(password: string): Promise<string> {

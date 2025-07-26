@@ -1,9 +1,9 @@
-import { IAdmin } from "../../../domain/entities/admin";
-import { AdminRepository } from "../../../domain/interfaces/adminRepository";
+import { Admin } from "../../../domain/entities/Admin";
+import { IAdminRepository } from "../../../domain/interfaces/IAdminRepository";
 import { AdminModel } from "../../database/models/admin/adminModel";
 
-export class MongoAdminRepository implements AdminRepository {
-    async findByEmail(email: string): Promise<IAdmin | null> {
+export class AdminRepository implements IAdminRepository {
+    async findByEmail(email: string): Promise<Admin | null> {
         const adminDoc = await AdminModel.findOne({email}).select("+password")
         if(!adminDoc) return null
 
@@ -11,7 +11,7 @@ export class MongoAdminRepository implements AdminRepository {
          
         return {
             ...obj,
-            _id: obj._id.toString()
-        } as IAdmin
+            id: obj._id.toString()
+        }
     }
 }

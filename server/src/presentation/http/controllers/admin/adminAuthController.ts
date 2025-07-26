@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { AdminLoginUseCase } from "../../../../useCases/admin/auth/loginUseCase";
-import { AdminLogoutUseCase } from "../../../../useCases/admin/auth/logoutUseCase";
+import { AdminLoginUseCase } from "../../../../useCases/implementation/admin/auth/loginUseCase";
+import { AdminLogoutUseCase } from "../../../../useCases/implementation/admin/auth/logoutUseCase";
 import { AppError } from "../../../../domain/errors/AppError";
 
 export class AdminAuthController {
