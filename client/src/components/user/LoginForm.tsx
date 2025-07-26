@@ -5,11 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { assets } from "../../assets/assets";
 import type { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import instance from "../../lib/axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/slices/authSlice";
+import { authApi } from "../../server/api/auth";
 
 interface TokenPayload {
   userId: string;
@@ -36,15 +36,11 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const res = await instance.post("/auth/login", data);
-      const { accessToken, hasSubmittedVerificationForm  } = res.data;
-
-      console.log("hanssubmitted", hasSubmittedVerificationForm)
+      const res = await authApi.login(data)
+      console.log("response: ", res)
+      const { accessToken, hasSubmittedVerificationForm  } = res;
 
       const decoded = jwtDecode<TokenPayload>(accessToken)
-
-      console.log("Decoded JWT:", decoded);
-      console.log("Has submitted verification form:", hasSubmittedVerificationForm);
       
       dispatch(
         loginSuccess({

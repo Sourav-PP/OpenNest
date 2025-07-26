@@ -1,33 +1,19 @@
 import { useEffect, useState } from "react";
-import instance from "../../lib/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
-
-type PsychologistProfile = {
-  name: string;
-  email: string;
-  fees: number;
-  qualification: string;
-  aboutMe: string;
-  kycStatus: 'pending' | 'verified' | 'rejected';
-  dateOfBirth?: string;
-  specializations?: string[];
-  experience?: string;
-  profileImage?: string;
-};
+import { psychologistApi } from "../../server/api/psychologist";
+import type { IPsychologistProfileDto } from "../../types/pasychologist";
 
 const Profile = () => {
   const navigate = useNavigate()
-  const [profile, setProfile] = useState<PsychologistProfile | null>(null);
+  const [profile, setProfile] = useState<IPsychologistProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const res = await instance.get('/psychologist/profile');
-        console.log('res: ', res.data);
-        setProfile(res.data);
+        const res = await psychologistApi.getProfile()
+        setProfile(res);
       } catch (error) {
         toast.error("error fetching the profile");
         console.log('error fetching the profile: ', error);
@@ -45,7 +31,7 @@ const Profile = () => {
   const {
     name,
     email,
-    fees,
+    defaultFee,
     qualification,
     aboutMe,
     kycStatus,
@@ -83,7 +69,7 @@ const Profile = () => {
             <p className="text-sm text-gray-600 mt-1">{email}</p>
             <p className="text-sm text-gray-600">{qualification}</p>
             <p className="text-sm text-gray-600">{dateOfBirth}</p>
-            <p className="text-sm text-gray-600">Fees: ${fees}</p>
+            <p className="text-sm text-gray-600">Fees: ${defaultFee}</p>
             <p
               className={`text-sm font-medium mt-1 sm:hidden ${
                 kycStatus === "verified"

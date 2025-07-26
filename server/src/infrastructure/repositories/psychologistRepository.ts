@@ -1,26 +1,28 @@
-import { IPsychologist } from "../../domain/entities/psychologist";
-import { PsychologistRepository } from "../../domain/interfaces/psychologistRepository";
+import { Psychologist } from "../../domain/entities/Psychologist";
+import { IPsychologistListDto } from "../../domain/dtos/psychologist";
+import { IPsychologistRepository } from "../../domain/interfaces/IPsychologistRepository";
 import { ServiceModel } from "../database/models/admin/serviceModel";
 import { PsychologistModel } from "../database/models/psychologist/PsychologistModel";
+import { PsychologistAggregateModel } from "./types/psychologists";
 
-export class MongoPsychologistRepository implements PsychologistRepository {
-    async create(psychologist: IPsychologist): Promise<IPsychologist> {
+export class PsychologistRepository implements IPsychologistRepository {
+    async create(psychologist: Psychologist): Promise<Psychologist> {
         const createdPsychologist = await PsychologistModel.create(psychologist)
         const obj = createdPsychologist.toObject()
 
         return {
-            _id: obj._id.toString(),
+            id: obj._id.toString(),
             isVerified: obj.isVerified
-        } as IPsychologist
+        } as Psychologist
     }
 
-    async findById(psychologistId: string): Promise<IPsychologist | null> {
+    async findById(psychologistId: string): Promise<Psychologist | null> {
         const psychologistDoc = await PsychologistModel.findById(psychologistId)
         if(!psychologistDoc) return null
 
         const obj = psychologistDoc.toObject()
         return {
-            _id: obj._id.toString(),
+            id: obj._id.toString(),
             userId: obj.userId.toString(),
             aboutMe: obj.aboutMe,
             qualification: obj.qualification,
@@ -35,7 +37,7 @@ export class MongoPsychologistRepository implements PsychologistRepository {
         };
     }
 
-    async updateByUserId(userId: string, updateData: Partial<IPsychologist>): Promise<IPsychologist | null> {
+    async updateByUserId(userId: string, updateData: Partial<Psychologist>): Promise<Psychologist | null> {
         return PsychologistModel.findByIdAndUpdate(
             {userId},
             {$set: updateData},
@@ -43,13 +45,13 @@ export class MongoPsychologistRepository implements PsychologistRepository {
         )
     }
 
-    async findByUserId(userId: string): Promise<IPsychologist | null> {
+    async findByUserId(userId: string): Promise<Psychologist | null> {
         const doc = await PsychologistModel.findOne({userId})
         if(!doc) return null
 
         const obj = doc.toObject();
         return {
-            _id: obj._id.toString(),
+            id: obj._id.toString(),
             userId: obj.userId.toString(),
             aboutMe: obj.aboutMe,
             qualification: obj.qualification,
@@ -69,8 +71,8 @@ export class MongoPsychologistRepository implements PsychologistRepository {
         return specializations.map(s => s.name)
     }
 
-    async getAllPsychologists(): Promise<IPsychologist[]> {
-        const docs = await PsychologistModel.aggregate([
+    async getAllPsychologists(): Promise<IPsychologistListDto[]> {
+        const result: PsychologistAggregateModel[] = await PsychologistModel.aggregate([
             // {$match: { isVerified: true }}
             {
                 $lookup: {
@@ -92,6 +94,8 @@ export class MongoPsychologistRepository implements PsychologistRepository {
             {
                 $project: {
                     _id: 1,
+                    userId: 1,
+                    isVerified: 1,
                     aboutMe: 1,
                     qualification: 1,
                     defaultFee: 1,
@@ -106,6 +110,22 @@ export class MongoPsychologistRepository implements PsychologistRepository {
             }
         ])
 
-        return docs
+        const psychologists: IPsychologistListDto[] = result.map((p) => ({
+            id: p._id.toString(), // convert ObjectId to string
+            userId: p.userId.toString(),
+            isVerified: p.isVerified,
+            aboutMe: p.aboutMe,
+            qualification: p.qualification,
+            defaultFee: p.defaultFee,
+            specializationFees: p.specializationFees ?? [],
+            specializations: p.specializations,
+            user: {
+                name: p.user.name,
+                email: p.user.email,
+                profileImage: p.user.profileImage
+            }
+        }));
+
+        return psychologists;
     }
 }

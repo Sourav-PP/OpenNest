@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UpdateUserProfileUseCase } from "../../../../useCases/user/updateProfile/updateUserProfileUseCase";
+import { UpdateUserProfileUseCase } from "../../../../useCases/implementation/user/profile/updateUserProfileUseCase";
 import { uploadToCloudinary } from "../../../../utils/uploadToCloudinary";
 
 export class UpdateUserProfileController {
@@ -24,7 +24,8 @@ export class UpdateUserProfileController {
 
             console.log("userId", userId)
 
-            const updatedUser = await this.updateUserProfileUseCase.execute(userId, {
+            const updatedUser = await this.updateUserProfileUseCase.execute({
+                userId,
                 name,
                 email,
                 phone,

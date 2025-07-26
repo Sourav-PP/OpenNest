@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { GetUserProfileUseCase } from "../../../../useCases/user/getUserProfile/getUserProfileUseCase";
+import { GetUserProfileUseCase } from "../../../../useCases/implementation/user/profile/getUserProfileUseCase";
 import { AppError } from "../../../../domain/errors/AppError";
 
 export class GetUserProfileController {
@@ -9,7 +9,7 @@ export class GetUserProfileController {
         try {
             const id = req.user?.userId
             if(!id) throw new Error("no userId in the request while geting user profile")
-            const userProfile = await this.getUserProfile.execute(id)
+            const userProfile = await this.getUserProfile.execute({userId: id})
 
             res.status(200).json(userProfile)
         } catch (error: any) {

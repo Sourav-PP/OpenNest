@@ -1,5 +1,5 @@
-export interface IAdmin {
-    _id?: string,
+export interface Admin {
+    id?: string,
     email: string,
     password: string,
 }

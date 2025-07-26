@@ -1,32 +1,16 @@
 import { useEffect, useState } from "react";
-import instance from "../../lib/axios";
 import { toast } from "react-toastify";
-
-
-interface Psychologist {
-  _id: string;
-  aboutMe: string;
-  qualification: string;
-  defaultFee: number;
-  specializationFees: {
-    [specializationId: string]: number;
-  };
-  user: {
-    name: string;
-    email: string;
-    profileImage: string;
-  };
-  specializations: string[]; // Array of specialization names
-}
+import { userApi } from "../../server/api/user";
+import type { IPsychologistDto } from "../../types/pasychologist";
 
 const TherapistPageSection = () => {
-  const [psychologists, setPsychologists] = useState<Psychologist[]>([])
+  const [psychologists, setPsychologists] = useState<IPsychologistDto[]>([])
 
   useEffect(() => {
     const fetchPsychologists = async() => {
       try {
-        const res = await instance.get('/user/psychologists')
-        setPsychologists(res.data)
+        const res = await userApi.getAllPsychologists()
+        setPsychologists(res.psychologists)
       } catch (error) {
         toast.error("Failed to load specialization")
         console.error("Failed to fetch services:", error);
@@ -82,15 +66,15 @@ const TherapistPageSection = () => {
         {/* Therapist Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {psychologists.map((therapist) => (
-            <div key={therapist._id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-md transform transition-all hover:-translate-y-2 hover:shadow-lg">
-              <img src={therapist.user.profileImage} alt={therapist.user.name} className="w-full h-48 object-cover rounded-lg mb-3" />
+            <div key={therapist.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-md transform transition-all hover:-translate-y-2 hover:shadow-lg">
+              <img src={therapist?.profileImage} alt={therapist.name} className="w-full h-48 object-cover rounded-lg mb-3" />
               <div className="flex items-center justify-between pb-3 mb-2 border-b-2">
                 {/* {therapist.available && ( */}
                   <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Available</span>
                 {/* )} */}
                 <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full">★ 4.8</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-1">{therapist.user.name}</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-1">{therapist.name}</h3>
               <p className="text-blue-700 text-sm mb-1">{therapist.qualification}</p>
               <p className="text-gray-500 text-xs mb-4">{therapist.specializations.join(', ')}</p>
               <div className="group text-start">

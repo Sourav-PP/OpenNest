@@ -1,0 +1,22 @@
+import { IPsychologistRepository } from "../../../../domain/interfaces/IPsychologistRepository";
+import { Psychologist } from "../../../../domain/entities/Psychologist";
+import { IPsychologistResponseDto } from "../../../../domain/dtos/psychologist";
+
+export class GetAllPsychologistUseCasee {
+    constructor(private psychologistRepo: IPsychologistRepository) {}
+
+    async execute(): Promise<IPsychologistResponseDto[]> {
+        const psychologists = await this.psychologistRepo.getAllPsychologists()
+        return psychologists.map(p => ({
+            id: p.id,
+            email: p.user.email,
+            aboutMe: p.aboutMe,
+            defaultFee: p.defaultFee,
+            name: p.user.name,
+            profileImage: p.user.profileImage,
+            qualification: p.qualification,
+            specializations: p.specializations,
+            specializationFees: p.specializationFees
+        }))
+    }
+}

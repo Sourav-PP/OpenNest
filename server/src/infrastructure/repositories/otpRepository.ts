@@ -1,7 +1,7 @@
-import { IOtpRepository } from "../../domain/interfaces/otpRepository";
+import { IOtpRepository } from "../../domain/interfaces/IOtpRepository";
 import { OtpModel } from "../database/models/user/OtpModels";
 
-export class MongoOtpRepository implements IOtpRepository {
+export class OtpRepository implements IOtpRepository {
     async saveOtp(email: string, otp: string): Promise<void> {
          await OtpModel.findOneAndUpdate(
             { email },

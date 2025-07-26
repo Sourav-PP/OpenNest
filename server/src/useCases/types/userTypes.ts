@@ -1,0 +1,46 @@
+export interface PublicUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  gender?: string;
+  dateOfBirth?: Date;
+  profileImage?: string;
+  role: 'user' | 'psychologist' | 'admin';
+}
+
+export interface IUpdateUserProfileInput {
+  userId: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  gender?: string;
+  dateOfBirth?: Date;
+  profileImage?: string;
+}
+
+export interface IUpdateUserProfileOutput {
+    id?: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+    gender?: string;
+    dateOfBirth?: Date;
+    profileImage?: string;
+}
+
+export interface IGetUserProfileInput {
+  userId: string;
+}
+
+export interface IGetUserProfileOutput {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    role: 'user' | 'psychologist';
+    profileImage?: string;
+    dateOfBirth?: Date;
+    gender?: string;
+    isActive?: boolean;
+}

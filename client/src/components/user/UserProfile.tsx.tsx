@@ -2,18 +2,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import instance from "../../lib/axios";
 import { updateProfileSchema, type updateProfileData } from "../../lib/validations/user/updateUserProfileValidaton";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-type UserProfile = {
-  name: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  gender: "male" | "female" | "other";
-  profileImage?: string;
-};
+import { userApi } from "../../server/api/user";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -32,9 +23,8 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const res = await instance.get('/user/profile');
-        const profileData = res.data;
-        console.log("profileData", profileData)
+        const res = await userApi.getProfile()
+        const profileData = res
         setValue("name", profileData.name);
         setValue("email", profileData.email);
         setValue("phone", profileData.phone);
@@ -54,7 +44,6 @@ const UserProfile = () => {
 
   const onSubmit = async (data: updateProfileData) => {
     try {
-      console.log("data is", data)
       const formData = new FormData();
 
       formData.append("name", data.name)
@@ -68,15 +57,12 @@ const UserProfile = () => {
       }
 
       const file = data.profileImage?.[0]
-      console.log("file is :", file)
       if(file) {
         formData.append('file', file)
       }
       console.log("Sending to backend:", [...formData.entries()]);
 
-      await instance.put('/user/profile', formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await userApi.updateProfile(formData)
 
       toast.success("Profile updated successfully");
       navigate('/user/profile');
@@ -135,7 +121,7 @@ const UserProfile = () => {
                   }}
                   className="hidden"
                 />
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-camera-icon lucide-camera">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera-icon lucide-camera">
                   <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>
                 </svg>  
 

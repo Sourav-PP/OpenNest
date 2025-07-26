@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import instance from "../../lib/axios";
 import { toast } from "react-toastify";
+import { serviceApi } from "../../server/api/service";
 
 type Service = {
-  _id: string,
+  id: string,
   name: string,
   description: string,
   bannerImage: string
@@ -15,10 +15,10 @@ const ServiceSession = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await instance.get('/user/services')
+        const response = await serviceApi.getAll()
 
-        const mapped = response.data.slice(1, 4).map((service: Service) => ({
-          _id: service._id,
+        const mapped = response.services.slice(1, 4).map((service: Service) => ({
+          id: service.id,
           name: service.name,
           description: service.description,
           bannerImage: service.bannerImage,
@@ -40,7 +40,7 @@ const ServiceSession = () => {
         {/* Service Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-20 sm:gap-8 mb-12">
           {services.map((service) => (
-            <div key={service._id} className="relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-center items-center">
+            <div key={service.id} className="relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-center items-center">
               {/* Image */}
               <div className="absolute w-[230px] h-auto top-[-50px] left-1/2 transform -translate-x-1/2 mb-6 overflow-hidden rounded-2xl">
                 <img 

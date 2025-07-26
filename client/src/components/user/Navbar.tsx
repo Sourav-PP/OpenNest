@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import { type RootState } from "../../redux/store";
-import instance from "../../lib/axios";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
+import { authApi } from "../../server/api/auth";
 
 const Navbar = () => {
   const { accessToken } = useSelector((state: RootState) => state.auth);
@@ -24,7 +24,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await instance.post('/auth/logout');
+      await authApi.logout()
       dispatch(logout());
       localStorage.removeItem("persist:root");
       toast.success("Logout successfully");
@@ -65,7 +65,7 @@ const Navbar = () => {
     <div className="px-7 py-4 w-full sm:px-24 sm:py-6 fixed z-50">
       <nav className="relative flex justify-between items-center px-3 py-2 sm:px-2 sm:py-2 bg-white shadow-md border-[3px] border-[#3EB1EB] rounded-full">
         {/* Logo */}
-        <img src={assets.logo} alt="Logo" className="w-20 sm:w-28 ms-2" />
+        <img onClick={() => navigate('/')} src={assets.logo} alt="Logo" className="w-20 sm:w-28 ms-2 cursor-pointer" />
 
         {/* Desktop Menu */}
         <ul className="sm:ms-14 hidden md:flex gap-8 text-gray-700 font-medium">

@@ -1,11 +1,11 @@
-import { IUser } from "../../domain/entities/user";
-import { UserRepository } from "../../domain/interfaces/userRepository";
-import { AuthAccountRepository } from "../../domain/interfaces/authAccountRepository";
+import { User } from "../../domain/entities/User";
+import { IUserRepository } from "../../domain/interfaces/IUserRepository";
+import { IAuthAccountRepository } from "../../domain/interfaces/IAuthAccountRepository";
 import { userModel } from "../database/models/user/UserModel";
 import { AppError } from "../../domain/errors/AppError";
 
-export class MongoUserRepository implements UserRepository   {
-    async findByEmail(email: string): Promise<IUser | null> {
+export class UserRepository implements IUserRepository   {
+    async findByEmail(email: string): Promise<User | null> {
         const userDoc = await userModel.findOne({ email }).select("+password")
         if(!userDoc) return null
 
@@ -13,11 +13,11 @@ export class MongoUserRepository implements UserRepository   {
 
         return {
             ...userObj,
-            _id: userObj._id.toString()
-        } as IUser
+            id: userObj._id.toString()
+        } as User
     }
 
-    async findById(userId: string): Promise<IUser | null> {
+    async findById(userId: string): Promise<User | null> {
         const userDoc = await userModel.findById(userId)
         if(!userDoc) return null
 
@@ -25,28 +25,28 @@ export class MongoUserRepository implements UserRepository   {
 
         return {
             ...userObj,
-            _id: userObj._id.toString()
-        } as IUser
+            id: userObj._id.toString()
+        } as User
     }
 
-    async create(user: IUser): Promise<IUser> {
+    async create(user: User): Promise<User> {
         const createdUser = await userModel.create(user)
         const userObj = createdUser.toObject()
 
         return {
             ...userObj,
-            _id: userObj._id.toString()
-        } as IUser
+            id: userObj._id.toString()
+        } as User
     }
 
-    async updateProfile(id: string, updates: Partial<IUser>): Promise<IUser | null> {
+    async updateProfile(id: string, updates: Partial<User>): Promise<User | null> {
         const updated = await userModel.findByIdAndUpdate(id, updates, {new: true})
         if(!updated) return null
 
         const obj = updated.toObject()
         return {
             ...obj,
-            _id: obj._id.toString()
-        } as IUser
+            id: obj._id.toString()
+        } as User
     }
 }

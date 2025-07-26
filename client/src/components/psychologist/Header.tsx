@@ -1,10 +1,10 @@
 import type { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import instance from "../../lib/axios";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../../redux/store";
+import { authApi } from "../../server/api/auth";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await instance.post('/auth/logout');
+      await authApi.logout()
       dispatch(logout());
       localStorage.removeItem("persist:root");
       toast.success("Logout successfully");

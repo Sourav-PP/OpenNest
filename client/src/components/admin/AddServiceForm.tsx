@@ -2,8 +2,8 @@ import { useForm } from "react-hook-form"
 import { addServiceSchema, type addServiceData } from "../../lib/validations/admin/addServiceValidation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "react-toastify"
-import instance from "../../lib/axios"
 import type { AxiosError } from "axios"
+import { adminApi } from "../../server/api/admin"
 
 const AddServiceForm = () => {
 
@@ -24,11 +24,7 @@ const AddServiceForm = () => {
             formData.append('description',data.description)
             formData.append('file', data.bannerImage[0])
 
-            await instance.post('/admin/services', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            })
+            await adminApi.addService(formData)
 
             toast.success('Service created successfully')
             reset()

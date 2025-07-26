@@ -1,5 +1,5 @@
-export interface IService {
-    _id?: string,
+export interface Service {
+    id?: string,
     name: string,
     description: string,
     bannerImage: string

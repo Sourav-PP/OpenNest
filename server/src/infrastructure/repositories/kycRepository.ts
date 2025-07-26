@@ -1,15 +1,15 @@
-import { IKyc } from "../../domain/entities/kyc";
-import { KycRepository } from "../../domain/interfaces/kycRepository";
+import { Kyc } from "../../domain/entities/Kyc";
+import { IKycRepository } from "../../domain/interfaces/IKycRepository";
 import { KycModel } from "../database/models/psychologist/kycModel";
-import { publicKyc } from "../../domain/entities/kyc";
 
-export class MongoKycRepository implements KycRepository {
-    async create(data: IKyc): Promise<IKyc> {
+
+export class KycRepository implements IKycRepository {
+    async create(data: Kyc): Promise<Kyc> {
         const createdKyc = await KycModel.create(data)
         const obj = createdKyc.toObject()
 
         return {
-            _id: obj._id.toString(),
+            id: obj._id.toString(),
             psychologistId: obj.psychologistId.toString(),
             identificationDoc: obj.identificationDoc,
             educationalCertification: obj.educationalCertification,
@@ -20,14 +20,14 @@ export class MongoKycRepository implements KycRepository {
         }
     }
 
-    async findByPsychologistId(psychologistId: string): Promise<IKyc | null> {
+    async findByPsychologistId(psychologistId: string): Promise<Kyc | null> {
         const kycDoc = await KycModel.findOne({psychologistId})
         if(!kycDoc) return null
 
         const obj = kycDoc.toObject()
 
         return {
-             _id: obj._id.toString(),
+            id: obj._id.toString(),
             psychologistId: obj.psychologistId.toString(),
             identificationDoc: obj.identificationDoc,
             educationalCertification: obj.educationalCertification,
@@ -38,7 +38,7 @@ export class MongoKycRepository implements KycRepository {
         }
     }
 
-    async updateByPsychologistId(psychologistId: string | undefined, updateData: Partial<IKyc>): Promise<IKyc | null> {
+    async updateByPsychologistId(psychologistId: string | undefined, updateData: Partial<Kyc>): Promise<Kyc | null> {
         return KycModel.findByIdAndUpdate(
             {psychologistId},
             {$set: updateData},

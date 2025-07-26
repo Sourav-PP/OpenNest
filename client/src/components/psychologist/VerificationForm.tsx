@@ -5,12 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { assets } from '../../assets/assets'
 import { toast } from 'react-toastify'
 import type { AxiosError } from 'axios'
-import instance from '../../lib/axios'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { serviceApi } from '../../server/api/service'
+import { psychologistApi } from '../../server/api/psychologist'
 
 type Specialization = {
-  _id: string,
+  id: string,
   name: string
 }
 const VerificationForm = () => {
@@ -20,10 +21,10 @@ const VerificationForm = () => {
     useEffect(() => {
       const fetchSpecialization = async () => {
         try {
-          console.log("in service form")
-          const response = await instance.get('/user/services')
-          const mapped = response.data.map((s:Specialization) => ({
-            _id: s._id,
+          const response = await serviceApi.getAll()
+          console.log("resoponse ",response)
+          const mapped = response.services.map((s:Specialization) => ({
+            id: s.id,
             name: s.name
           }))
 
@@ -72,7 +73,7 @@ const VerificationForm = () => {
         formData.append("experienceCertificate", data.experienceCertificate[0])
         logFormData(formData)
         try {
-            const res = await instance.post('/auth/psychologist/verify-profile', formData)
+            const res = await psychologistApi.submitVerification(formData)
             console.log("verify res:  ", res)
             toast.success("Profile submitted successfully!");
             navigate('/psychologist/profile')
@@ -126,10 +127,10 @@ const VerificationForm = () => {
   </label>
   <div className="space-y-3 mb-6">
     {specializations.map((spec) => (
-      <label key={spec._id} className="relative flex items-center pl-10 cursor-pointer text-gray-700 text-sm select-none">
+      <label key={spec.id} className="relative flex items-center pl-10 cursor-pointer text-gray-700 text-sm select-none">
         <input
           type="checkbox"
-          value={spec._id}
+          value={spec.id}
           {...register("specializations")}
           className="peer absolute opacity-0 h-0 w-0"
         />
