@@ -75,13 +75,23 @@ const SignupForm = () => {
   const onSubmit = async (data: SignupData) => {
     if (!otpVerified) return toast.error("Please verify OTP first");
 
-    const payload = {
-      ...data,
-      role: roleFromUrl,
-    };
+    const formData = new FormData()
+
+    formData.append("name", data.name)
+    formData.append("email", data.email)
+    formData.append("phone", data.phone)
+    formData.append("password", data.password)
+    formData.append("confirmPassword", data.confirmPassword)
+    formData.append("role", roleFromUrl)
+
+    if(data.profileImage && data.profileImage.length > 0) {
+      formData.append("file", data.profileImage[0])
+    }
+
+    // console.log("request data: ", Object.entries(formData) )
     
     try {
-      const res = await authApi.signup(payload)
+      const res = await authApi.signup(formData)
       console.log(res)
       const accessToken = res.accessToken;
       
@@ -92,16 +102,19 @@ const SignupForm = () => {
           accessToken,
           email: decoded.email,
           role: decoded.role,
-          userId: decoded.userId
+          userId: decoded.userId,
+          isSubmittedVerification: false
         })
       )
 
       toast.success("Signup successful!");
 
-      console.log("decoded role", decoded.role)
+      console.log("decoded role in signup: ", decoded.role)
+      console.log("✅ Navigating to:", decoded.role === "psychologist" ? "/psychologist/verification" : "/home");
+
       
       if (decoded.role === "psychologist") {
-        navigate("/psychologist/verification'");
+        navigate("/psychologist/verification");
       } else {
         navigate("/home");
       }
@@ -209,6 +222,23 @@ const SignupForm = () => {
           {errors.phone?.message ?? ""}
         </p>
       </div>
+
+      {/* Profile Image Field */}
+      <div className="mb-1 w-full">
+        <div className="flex items-center gap-3 px-5 py-2.5 rounded-xl bg-slate-200">
+          <img src={assets.image} alt="" />
+          <input
+            type="file"
+            accept="image/*"
+            {...register("profileImage")}
+            className="w-full text-white text-center file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:bg-gray-400 file:text-white file:hover:bg-gray-500 file:transition-colors"
+          />
+        </div>
+        <p className="text-red-500 text-xs px-2 pt-1 min-h-[1rem]">
+          {errors.profileImage?.message ?? ""}
+        </p>
+      </div>
+
 
       {/* Password Field */}
       <div className="mb-1 w-full">

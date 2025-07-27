@@ -1,4 +1,4 @@
-import { Kyc } from "../../domain/entities/Kyc";
+import { Kyc } from "../../domain/entities/kyc";
 import { IKycRepository } from "../../domain/interfaces/IKycRepository";
 import { KycModel } from "../database/models/psychologist/kycModel";
 

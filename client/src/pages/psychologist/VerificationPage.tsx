@@ -1,6 +1,7 @@
 import VerificationForm from "../../components/psychologist/VerificationForm";
 
 export default function VerificationPage() {
+    console.log("📍 Loaded: VerificationPage");
     return (
         <div className="relative flex items-center justify-center min-h-screen px-5 sm:px-6 bg-auth bg-cover bg-center py-8 sm:py-12 overflow-auto">
             <div className="absolute inset-0 bg-white opacity-10 z-0"></div>

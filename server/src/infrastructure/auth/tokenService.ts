@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
-import { TokenService } from '../../domain/interfaces/ITokenService'
+import { ITokenService } from '../../domain/interfaces/ITokenService'
 
-export class JwtTokenService implements TokenService {
+export class JwtTokenService implements ITokenService {
     private accessTokenSecret: string
     private refreshTokenSecret: string
 

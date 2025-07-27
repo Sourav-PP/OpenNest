@@ -17,7 +17,7 @@ const Header = () => {
       dispatch(logout());
       localStorage.removeItem("persist:root");
       toast.success("Logout successfully");
-      navigate('/login?role=user');
+      navigate('/');
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
       console.log('error is admin: ', error);

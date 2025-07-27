@@ -44,6 +44,7 @@ export class SignupUseCase implements ISignupUseCase {
             password: hashPassword,
             role: request.role,
             isActive: true,
+            profileImage: request.profileImage
         }
 
         const savedUser = await this.userRepository.create(user)
@@ -57,7 +58,8 @@ export class SignupUseCase implements ISignupUseCase {
             user: {
                 name: savedUser.name,
                 email: savedUser.email,
-                role: savedUser.role
+                role: savedUser.role,
+                profileImage: savedUser.profileImage!
             },
             accessToken,
             refreshToken,

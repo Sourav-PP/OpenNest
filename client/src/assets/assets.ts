@@ -18,6 +18,7 @@ import facebook from './facebook.svg'
 import instagram from './instagram.svg'
 import youtube from './youtube.svg'
 import house from './house.svg'
+import image from './image.svg'
 
 export const assets = {
     arrow_icon,
@@ -39,5 +40,6 @@ export const assets = {
     instagram,
     youtube,
     logo_dark,
-    house
+    house,
+    image
 }

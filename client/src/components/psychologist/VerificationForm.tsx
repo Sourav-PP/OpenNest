@@ -9,12 +9,17 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { serviceApi } from '../../server/api/service'
 import { psychologistApi } from '../../server/api/psychologist'
+import { useDispatch } from 'react-redux'
+import { updateVerificationStatus } from '../../redux/slices/authSlice'
+
 
 type Specialization = {
   id: string,
   name: string
 }
 const VerificationForm = () => {
+    const dispatch = useDispatch()
+    console.log("📍 Loaded: verificationForm component");
     const navigate = useNavigate()
     const [specializations, sestSpecializations] = useState<Specialization[]>([])
 
@@ -75,6 +80,7 @@ const VerificationForm = () => {
         try {
             const res = await psychologistApi.submitVerification(formData)
             console.log("verify res:  ", res)
+            dispatch(updateVerificationStatus(true))
             toast.success("Profile submitted successfully!");
             navigate('/psychologist/profile')
         } catch (err) {
@@ -144,9 +150,9 @@ const VerificationForm = () => {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             className="absolute left-1.5 top-[3px] h-3 w-2 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100">
             <path d="M20 6 9 17l-5-5"/>
         </svg>
@@ -180,7 +186,7 @@ const VerificationForm = () => {
     <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-slate-100 border border-gray-300 shadow-sm">
         <div className="flex items-center gap-2">
         <img src={assets.doc} alt="" className="w-5 h-5" />
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 truncate max-w-[200px] block">
             {identificationDoc?.[0]?.name || "No file chosen"}
         </span>
         </div>
@@ -211,7 +217,7 @@ const VerificationForm = () => {
     <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-slate-100 border border-gray-300 shadow-sm">
         <div className="flex items-center gap-2">
         <img src={assets.doc} alt="" className="w-5 h-5" />
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 truncate max-w-[200px] block">
             {educationalCertification?.[0]?.name || "No file chosen"}
         </span>
         </div>
@@ -241,7 +247,7 @@ const VerificationForm = () => {
     <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-slate-100 border border-gray-300 shadow-sm">
         <div className="flex items-center gap-2">
         <img src={assets.doc} alt="" className="w-5 h-5" />
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 truncate max-w-[200px] block">
             {experienceCertificate?.[0]?.name || "No file chosen"}
         </span>
         </div>

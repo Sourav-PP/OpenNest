@@ -42,32 +42,29 @@ function App() {
         theme="colored"
       />
       <Routes>
-        {/* user routes */}
-        <Route element={<PublicRoute />}>
-          <Route path='/signup' element={<SignupPage />}/>
-          <Route path='/login' element={<LoginPage />} />
-        </Route>
+        {/* user auth routes */}
+        <Route path='/signup' element={<PublicRoute><SignupPage /></PublicRoute >}/>
+        <Route path='/login' element={<PublicRoute><LoginPage /></PublicRoute>} />
+ 
+        {/* user public pages */}
         <Route path='/' element={<LandingPage />} />
         <Route path='/user/therapist' element={< TherapistPage/>} />
         <Route path='/user/profile' element={<UserProfilePage/>} />
         {/* <Route element={<PrivateRoute allowedRoles={['user']}/>}>
         </Route> */}
 
-        {/* psychologist routes */}
-        <Route element={<PrivateRoute allowedRoles={['psychologist']}/>}>
-          <Route path='/psychologist/verification' element={< VerificationPage/>} />
-          <Route path='/psychologist/profile' element={< ProfilePage />} />
-          {/* <Route path='/psychologist/edit-profile' element={< EditProfilePage />} /> */}
-        </Route>
+        {/* psychologist protected routes */}
+        <Route path='/psychologist/verification' element={<PrivateRoute allowedRoles={['psychologist']}>< VerificationPage/></PrivateRoute>} />
+        <Route path='/psychologist/profile' element={<PrivateRoute allowedRoles={['psychologist']}>< ProfilePage /></PrivateRoute>} />
+        {/* <Route path='/psychologist/edit-profile' element={< EditProfilePage />} /> */}
+
 
         {/* admin routes */}
-        <Route element={<PublicRoute />}>
-          <Route path='/admin/login' element={< AdminLoginPage />} />
-        </Route>
-        <Route element={<PrivateRoute allowedRoles={['admin']}/>}>
-          <Route path='/admin/dashboard' element={< AdminDashboard />} />
-          <Route path='/admin/services' element={<ServicePage />} />
-        </Route>
+        <Route path='/admin/login' element={<PublicRoute>< AdminLoginPage /></PublicRoute>} />
+
+        <Route path='/admin/dashboard' element={<PrivateRoute allowedRoles={['admin']}>< AdminDashboard /></PrivateRoute>} />
+        <Route path='/admin/services' element={<PrivateRoute allowedRoles={['admin']}><ServicePage /></PrivateRoute>} />
+  
       </Routes>
     </BrowserRouter>
   )

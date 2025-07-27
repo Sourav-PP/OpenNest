@@ -1,4 +1,4 @@
-import { Psychologist } from "../../domain/entities/Psychologist";
+import { Psychologist } from "../../domain/entities/psychologist";
 import { IPsychologistListDto } from "../../domain/dtos/psychologist";
 import { IPsychologistRepository } from "../../domain/interfaces/IPsychologistRepository";
 import { ServiceModel } from "../database/models/admin/serviceModel";

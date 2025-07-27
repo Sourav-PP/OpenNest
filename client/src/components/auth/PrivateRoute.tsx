@@ -1,17 +1,24 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { type RootState } from "../../redux/store";
+import type { ReactNode } from "react";
 
 interface Props {
     allowedRoles: ("user" | "psychologist" | "admin")[]
+    children: ReactNode
 }
 
-const PrivateRoute: React.FC<Props> = ({allowedRoles}) => {
+const PrivateRoute = ({allowedRoles, children}: Props) => {
     const { accessToken, role } = useSelector((state: RootState) => state.auth)
+    console.log("private route hit")
+    console.log("accessToken in privateRoute: ", accessToken)
+    console.log("role in private Route: ", role)
     const location = useLocation()  
 
     if(!accessToken || !role) {
+        console.log("yes its here after signup")
         const path = location.pathname
+        console.log("path name: ", path)
 
         let redirect = '/login?role=user'
         if(path.includes('/admin')) {
@@ -24,6 +31,7 @@ const PrivateRoute: React.FC<Props> = ({allowedRoles}) => {
     }
 
     if (!allowedRoles.includes(role)) {
+        console.log("its here...")
         let loginRedirect = "/login?role=user"
         if (role === "admin") {
             loginRedirect = "/admin/login";
@@ -35,7 +43,7 @@ const PrivateRoute: React.FC<Props> = ({allowedRoles}) => {
         return <Navigate to={loginRedirect} replace />;
     }
 
-    return <Outlet />;
+    return <>{children}</>;
 }
 
 export default PrivateRoute;

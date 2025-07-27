@@ -4,6 +4,7 @@ export interface ISignupInput {
     phone: string,
     password: string,
     confirmPassword: string,
+    profileImage: string,
     role: "user" | "psychologist"
 }
 
@@ -11,7 +12,8 @@ export interface ISignupOutput {
     user: {
         name: string,
         email: string,
-        role: "user" | "psychologist"
+        role: "user" | "psychologist",
+        profileImage: string
     }
     accessToken: string,
     refreshToken: string

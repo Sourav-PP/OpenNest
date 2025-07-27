@@ -1,4 +1,4 @@
-import { User } from "../../domain/entities/User";
+import { User } from "../../domain/entities/user";
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
 import { IAuthAccountRepository } from "../../domain/interfaces/IAuthAccountRepository";
 import { userModel } from "../database/models/user/UserModel";

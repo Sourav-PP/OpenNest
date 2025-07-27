@@ -9,7 +9,7 @@ import { authenticatePsychologist } from '../../../config/di';
 import { authController } from '../../../config/di';
 import { refreshTokenController } from '../../../config/di';
 import { verifyPsychologistController } from '../../../config/di';
-import { uploadFields } from '../middlewares/multer';
+import { uploadFields, uploadSingle } from '../middlewares/multer';
 
 
 const router = express.Router()
@@ -21,7 +21,7 @@ const router = express.Router()
 
 router.post('/send-otp', authController.sendOtp)
 router.post('/verify-otp', authController.verifyOtp)
-router.post('/signup', signupValidator, validate, authController.signup)
+router.post('/signup',uploadSingle, signupValidator, validate, authController.signup)
 router.post('/login', loginValidator, loginValidate, authController.login)
 router.post('/logout', authController.logout)
 router.post('/refresh-token', refreshTokenController.handle)

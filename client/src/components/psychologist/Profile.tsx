@@ -5,6 +5,7 @@ import { psychologistApi } from "../../server/api/psychologist";
 import type { IPsychologistProfileDto } from "../../types/pasychologist";
 
 const Profile = () => {
+  console.log("📍 Loaded: ProfilePage component");
   const navigate = useNavigate()
   const [profile, setProfile] = useState<IPsychologistProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +39,7 @@ const Profile = () => {
     dateOfBirth,
     specializations,
     // experience,
-    // profileImage,
+    profileImage,
   } = profile;
 
   return (
@@ -62,7 +63,7 @@ const Profile = () => {
         </div>
         <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
           <div className="w-32 h-32 bg-gray-200 rounded-xl overflow-hidden ring-2 ring-blue-200">
-            {/* Placeholder for image */}
+            <img src={profileImage} alt="profile_image" className="w-full h-full object-cover object-center"/>
           </div>
           <div className="text-center sm:text-left">
             <h3 className="text-2xl font-semibold text-gray-900">{name}</h3>

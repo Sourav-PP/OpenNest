@@ -5,6 +5,7 @@ import { VerifyOtpUseCase } from "../../../../useCases/implementation/signup/ver
 import { LoginUseCase } from "../../../../useCases/implementation/auth/loginUseCase";
 import { LogoutUseCase } from "../../../../useCases/implementation/auth/logoutUseCase";
 import { AppError } from "../../../../domain/errors/AppError";
+import { uploadToCloudinary } from "../../../../utils/uploadToCloudinary";
 
 export class AuthController {
   constructor(
@@ -39,7 +40,20 @@ export class AuthController {
 
   signup = async(req: Request, res: Response): Promise<void> => {
     try {
-      const response = await this.signupUseCase.execute(req.body);
+      const file = req.file
+
+      if(!file) {
+        res.status(400).json({message: "Profile image is required"})
+        return
+      }
+
+      const cloudUrl = await uploadToCloudinary(file.buffer, file.originalname, "profile_images")
+
+      const payload = {
+        ...req.body,
+        profileImage: cloudUrl
+      }
+      const response = await this.signupUseCase.execute(payload);
 
       // set refresh token as http-only cookie
       res.cookie("refreshToken", response.refreshToken, {

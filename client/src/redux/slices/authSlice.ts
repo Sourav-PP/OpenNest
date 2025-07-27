@@ -6,7 +6,8 @@ interface AuthState {
     role: "user" | "psychologist" | "admin" | null,
     isAuthenticated: boolean
     email: string | null,
-    userId: string | null
+    userId: string | null,
+    isSubmittedVerification?: boolean;
 }
 
 const initialState: AuthState = {
@@ -14,7 +15,8 @@ const initialState: AuthState = {
     role: null,
     isAuthenticated: false,
     email: null,
-    userId: null
+    userId: null,
+    isSubmittedVerification: false
 }
 
 const authSlice = createSlice({
@@ -27,9 +29,12 @@ const authSlice = createSlice({
                 isAuthenticated: true
             }
         },
+        updateVerificationStatus: (state, action: PayloadAction<boolean>) => {
+            state.isSubmittedVerification = action.payload;
+        },
         logout: () =>initialState
     }
 })
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, updateVerificationStatus } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,4 +1,4 @@
-import { Service } from "../../domain/entities/Service";
+import { Service } from "../../domain/entities/service";
 import { IServiceRepository } from "../../domain/interfaces/IServiceRepository";
 import { ServiceModel } from "../database/models/admin/serviceModel";
 
