@@ -22,6 +22,7 @@ import ProfilePage from './pages/psychologist/ProfilePage'
 //------------- admin ---------------
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/Dashboard'
+import UserManagement from './pages/admin/UserManagement'
 import ServicePage from './pages/admin/ServicePage'
 
 
@@ -63,6 +64,7 @@ function App() {
         <Route path='/admin/login' element={<PublicRoute>< AdminLoginPage /></PublicRoute>} />
 
         <Route path='/admin/dashboard' element={<PrivateRoute allowedRoles={['admin']}>< AdminDashboard /></PrivateRoute>} />
+        <Route path='/admin/users' element={<PrivateRoute allowedRoles={['admin']}><UserManagement /></PrivateRoute>}/>
         <Route path='/admin/services' element={<PrivateRoute allowedRoles={['admin']}><ServicePage /></PrivateRoute>} />
   
       </Routes>

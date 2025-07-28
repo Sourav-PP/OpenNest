@@ -6,7 +6,7 @@ import { loginValidate, loginValidator } from "../validators/loginValidator";
 import { createServiceValidator, validateCreateService } from "../validators/createServiceValidator";
 
 //controllers
-import { adminAuthController } from "../../../config/di";
+import { adminAuthController, getAllUserController } from "../../../config/di";
 import { adminRefreshTokenController } from "../../../config/di";
 import { createServiceController } from "../../../config/di";
 
@@ -37,5 +37,5 @@ router.post(
   validateCreateService,
   createServiceController.handle
 )
-
+router.get("/users",  getAllUserController.handle)
 export default router;

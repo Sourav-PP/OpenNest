@@ -4,20 +4,20 @@ dotenv.config();
 // ====================   REPOSITORIES  ======================
 
 // --------------  user  ----------------
-import { UserRepository } from "../infrastructure/repositories/UserRepository";
-import { UserAuthAccountRepository } from "../infrastructure/repositories/UserAuthAccountRepository";
-import { OtpRepository } from "../infrastructure/repositories/OtpRepository";
+import { UserRepository } from "../infrastructure/repositories/userRepository";
+import { UserAuthAccountRepository } from "../infrastructure/repositories/userAuthAccountRepository";
+import { OtpRepository } from "../infrastructure/repositories/otpRepository";
 
 // -------------- psychologist ------------------
-import { KycRepository } from "../infrastructure/repositories/KycRepository";
-import { PsychologistRepository } from "../infrastructure/repositories/PsychologistRepository";
+import { KycRepository } from "../infrastructure/repositories/kycRepository";
+import { PsychologistRepository } from "../infrastructure/repositories/psychologistRepository";
 
 // -------------- admin ----------------
 import { AdminRepository } from "../infrastructure/repositories/admin/adminRepository";
 import { AdminAuthAccountRepository } from "../infrastructure/repositories/admin/adminAuthAccountRepository";
 
 // -------------- shared ---------------
-import { ServiceRepository } from "../infrastructure/repositories/ServiceRepository";
+import { ServiceRepository } from "../infrastructure/repositories/serviceRepository";
 
 
 //===================== SERVICES ======================
@@ -50,6 +50,7 @@ import { GetProfileUseCase } from "../useCases/implementation/psychologist/profi
 import { AdminLoginUseCase } from "../useCases/implementation/admin/auth/loginUseCase";
 import { CreateServiceUseCase } from "../useCases/implementation/admin/management/createServiceUseCase";
 import { AdminLogoutUseCase } from "../useCases/implementation/admin/auth/logoutUseCase";
+import { GetAllUserUseCase } from "../useCases/implementation/admin/management/getAllUserUseCase";
 
 
 //===================== CONTROLLERS =====================
@@ -57,22 +58,24 @@ import { AdminLogoutUseCase } from "../useCases/implementation/admin/auth/logout
 //---------------- user ------------------
 import { AuthController } from "../presentation/http/controllers/auth/AuthController";
 import { RefreshTokenController } from "../presentation/http/controllers/auth/RefreshTokenController";
-import { GetAllServicesController } from "../presentation/http/controllers/user/GetAllServicesController";
-import { GetAllPsychologistsController } from "../presentation/http/controllers/user/GetAllPsychologistsController";
-import { GetUserProfileController } from "../presentation/http/controllers/user/GetUserProfileController";
-import { UpdateUserProfileController } from "../presentation/http/controllers/user/UpdateUserProfileController";
+import { GetAllServicesController } from "../presentation/http/controllers/user/getAllServicesController";
+import { GetAllPsychologistsController } from "../presentation/http/controllers/user/getAllPsychologistsController";
+import { GetUserProfileController } from "../presentation/http/controllers/user/getUserProfileController";
+import { UpdateUserProfileController } from "../presentation/http/controllers/user/updateUserProfileController";
 
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
-import { GetProfileController } from "../presentation/http/controllers/psychologist/GetProfileController";
+import { GetProfileController } from "../presentation/http/controllers/psychologist/getProfileController";
 
 //---------------- admin -------------------
-import { AdminAuthController } from "../presentation/http/controllers/admin/AdminAuthController";
-import { CreateServiceController } from "../presentation/http/controllers/admin/CreateServiceController";
+import { AdminAuthController } from "../presentation/http/controllers/admin/adminAuthController";
+import { CreateServiceController } from "../presentation/http/controllers/admin/createServiceController";
+import { GetAllUserController } from "../presentation/http/controllers/admin/getAllUserController";
 
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from "../presentation/http/middlewares/authMiddleware";
+import { get } from "http";
 
 
 // ======================= DI IMPLEMENTATION =======================
@@ -142,7 +145,9 @@ const adminLoginUseCase = new AdminLoginUseCase(adminRepository, tokenService, a
 const adminLogoutUseCase = new AdminLogoutUseCase()
 const serviceRepository = new ServiceRepository()
 const createServiceUseCase = new CreateServiceUseCase(serviceRepository)
+const getAllUserUseCase = new GetAllUserUseCase(userRepository)
 
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase)
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, "adminRefreshToken")
 export const createServiceController = new CreateServiceController(createServiceUseCase)
+export const getAllUserController = new GetAllUserController(getAllUserUseCase)

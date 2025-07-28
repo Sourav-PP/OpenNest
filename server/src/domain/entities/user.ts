@@ -4,7 +4,7 @@ export interface User {
     email: string,
     phone: string,
     role: 'user' | 'psychologist',
-    password: string,
+    password?: string,
     profileImage?: string
     dateOfBirth?: Date,
     gender?: string,

@@ -1,6 +1,6 @@
 import { IServiceRepository } from "../../../../domain/interfaces/IServiceRepository";
 import { ICreateServiceUseCase } from "../../../interfaces/admin/management/ICreateServiceUseCase";
-import { Service } from "../../../../domain/entities/Service";
+import {Service } from "../../../../domain/entities/service";
 import { AppError } from "../../../../domain/errors/AppError";
 
 export class CreateServiceUseCase implements ICreateServiceUseCase {

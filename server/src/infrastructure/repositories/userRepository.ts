@@ -3,8 +3,59 @@ import { IUserRepository } from "../../domain/interfaces/IUserRepository";
 import { IAuthAccountRepository } from "../../domain/interfaces/IAuthAccountRepository";
 import { userModel } from "../database/models/user/UserModel";
 import { AppError } from "../../domain/errors/AppError";
+import { IUserDto } from "../../domain/dtos/user";
+import { FilterQuery } from "mongoose";
 
 export class UserRepository implements IUserRepository   {
+    async findAll(params: { search?: string; sort?: "asc" | "desc"; gender?: "Male" | "Female"; skip: number; limit: number; }): Promise<User[]> {
+        const filter: FilterQuery<User> = {role: "user"}
+
+        if(params.search) {
+            filter.name = { $regex: params.search, $options: 'i' }
+        }
+
+        if(params.gender) {
+            filter.gender = params.gender
+        }
+
+        const sortOrder = params.sort === 'asc' ? 1 : -1
+        
+        const users = await userModel.find(filter)
+        .sort({createdAt: sortOrder})
+        .skip(params.skip)
+        .limit(params.limit)
+
+        console.log("all users: ", users)
+
+        
+        return users.map( user => ({
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            dateOfBirth: user.dateOfBirth,
+            gender: user.gender,
+            isActive: user.isActive,
+            profileImage: user.profileImage,
+        }))
+    }
+
+    async countAll(params: { search?: string; gender?: "Male" | "Female"; }): Promise<number> {
+        const filter: FilterQuery<User> = {}
+
+        if(params.search) {
+            filter.name = { $regex: params.search, $options: 'i'}
+        }
+
+        if(params.gender) {
+            filter.gender = params.gender
+        }
+
+        return userModel.countDocuments(filter)
+    }
+
+
     async findByEmail(email: string): Promise<User | null> {
         const userDoc = await userModel.findOne({ email }).select("+password")
         if(!userDoc) return null

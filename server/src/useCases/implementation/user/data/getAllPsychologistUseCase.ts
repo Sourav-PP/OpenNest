@@ -1,5 +1,5 @@
 import { IPsychologistRepository } from "../../../../domain/interfaces/IPsychologistRepository";
-import { Psychologist } from "../../../../domain/entities/Psychologist";
+import { Psychologist } from "../../../../domain/entities/psychologist";
 import { IPsychologistResponseDto } from "../../../../domain/dtos/psychologist";
 
 export class GetAllPsychologistUseCasee {
