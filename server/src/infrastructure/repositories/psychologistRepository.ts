@@ -4,6 +4,7 @@ import { IPsychologistRepository } from "../../domain/interfaces/IPsychologistRe
 import { ServiceModel } from "../database/models/admin/serviceModel";
 import { PsychologistModel } from "../database/models/psychologist/PsychologistModel";
 import { PsychologistAggregateModel } from "./types/psychologists";
+import { FilterQuery } from "mongoose";
 
 export class PsychologistRepository implements IPsychologistRepository {
     async create(psychologist: Psychologist): Promise<Psychologist> {
@@ -14,6 +15,95 @@ export class PsychologistRepository implements IPsychologistRepository {
             id: obj._id.toString(),
             isVerified: obj.isVerified
         } as Psychologist
+    }
+
+    async findAllPsychologists(params: { search?: string; sort?: "asc" | "desc"; gender?: "Male" | "Female"; skip: number; limit: number; }): Promise<IPsychologistListDto[]> {
+        const matchStage: Record<string , unknown> = {'user.role': 'psychologist'}
+
+        if(params.search) {
+            matchStage['user.name'] = { $regex: params.search, $options: 'i' };
+        }
+
+        if(params.gender) {
+            matchStage['user.gender'] = params.gender;
+        }
+
+        const sortOrder = params.sort === 'asc' ? 1 : -1
+
+        const psychologists = await PsychologistModel.aggregate([
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            { $unwind: '$user' },
+            { $match: matchStage },
+            {
+                $lookup: {
+                    from: 'services',
+                    localField: 'specializations',
+                    foreignField: '_id',
+                    as: 'specializationData'   
+                }
+            },
+            { $sort: { createdAt: sortOrder } },
+            { $skip: params.skip },
+            { $limit: params.limit },
+            {
+                $project: {
+                    id: '$_id',
+                    userId: '$userId',
+                    aboutMe: 1,
+                    qualification: 1,
+                    defaultFee: 1,
+                    isVerified: 1,
+                    specializations: '$specializationData.name',
+                    specializationFees: 1,
+                    user: {
+                    name: '$user.name',
+                    email: '$user.email',
+                    phone: '$user.phone',
+                    isActive: '$user.isActive',
+                    profileImage: '$user.profileImage',
+                    }
+                }
+            }
+        ])
+
+        return psychologists
+    }
+
+    async countAllPsychologist(params: { search?: string; gender?: "Male" | "Female"; }): Promise<number> {
+        const matchStage: Record<string, unknown> = {
+            'user.role': 'psychologist',
+        };
+
+        if (params.search) {
+            matchStage['user.name'] = { $regex: params.search, $options: 'i' };
+        }
+
+        if (params.gender) {
+            matchStage['user.gender'] = params.gender;
+        }
+
+        const result = await PsychologistModel.aggregate([
+            {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user',
+            },
+            },
+            { $unwind: '$user' },
+            { $match: matchStage },
+            { $count: 'total' }
+        ]);
+
+        return result[0]?.total || 0;
     }
 
     async findById(psychologistId: string): Promise<Psychologist | null> {

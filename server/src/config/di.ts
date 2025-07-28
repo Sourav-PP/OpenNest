@@ -51,7 +51,7 @@ import { AdminLoginUseCase } from "../useCases/implementation/admin/auth/loginUs
 import { CreateServiceUseCase } from "../useCases/implementation/admin/management/createServiceUseCase";
 import { AdminLogoutUseCase } from "../useCases/implementation/admin/auth/logoutUseCase";
 import { GetAllUserUseCase } from "../useCases/implementation/admin/management/getAllUserUseCase";
-
+import { GetAllPsychologistsUseCase } from "../useCases/implementation/admin/management/getAllPsychologistsUseCase";
 
 //===================== CONTROLLERS =====================
 
@@ -71,6 +71,7 @@ import { GetProfileController } from "../presentation/http/controllers/psycholog
 import { AdminAuthController } from "../presentation/http/controllers/admin/adminAuthController";
 import { CreateServiceController } from "../presentation/http/controllers/admin/createServiceController";
 import { GetAllUserController } from "../presentation/http/controllers/admin/getAllUserController";
+import { GetAllPsychologistController } from "../presentation/http/controllers/admin/getAllPsychologistsController";
 
 
 //===================== MIDDLEWARE ========================
@@ -146,8 +147,10 @@ const adminLogoutUseCase = new AdminLogoutUseCase()
 const serviceRepository = new ServiceRepository()
 const createServiceUseCase = new CreateServiceUseCase(serviceRepository)
 const getAllUserUseCase = new GetAllUserUseCase(userRepository)
+const getAllPsychologistsUseCase = new GetAllPsychologistsUseCase(psychologistRepository)
 
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase)
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, "adminRefreshToken")
 export const createServiceController = new CreateServiceController(createServiceUseCase)
 export const getAllUserController = new GetAllUserController(getAllUserUseCase)
+export const getAllPsychologistController = new GetAllPsychologistController(getAllPsychologistsUseCase) 

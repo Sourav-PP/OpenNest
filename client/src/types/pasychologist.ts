@@ -23,3 +23,20 @@ export interface IPsychologistProfileDto {
   kycStatus: "verified" | "pending" | "rejected"
   specializationFees: string[]
 }
+
+export interface IGetAllPsychologistsDto {
+  id: string;
+  qualification: string;
+  defaultFee: number;
+  aboutMe: string;
+  specializationFees: string[]
+  specializations: string[];
+  isVerified: boolean;
+  user: {
+      name: string;
+      email: string;
+      phone: string;
+      isActive: string
+      profileImage: string;
+  }
+}

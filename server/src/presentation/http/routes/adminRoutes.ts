@@ -6,9 +6,14 @@ import { loginValidate, loginValidator } from "../validators/loginValidator";
 import { createServiceValidator, validateCreateService } from "../validators/createServiceValidator";
 
 //controllers
-import { adminAuthController, getAllUserController } from "../../../config/di";
-import { adminRefreshTokenController } from "../../../config/di";
-import { createServiceController } from "../../../config/di";
+import {
+  adminAuthController,
+  getAllUserController,
+  createServiceController,
+  adminRefreshTokenController,
+  getAllPsychologistController
+} from "../../../config/di";
+
 
 
 const router = express.Router();
@@ -37,5 +42,8 @@ router.post(
   validateCreateService,
   createServiceController.handle
 )
-router.get("/users",  getAllUserController.handle)
+router.get("/users", getAllUserController.handle)
+router.get("/psychologists", getAllPsychologistController.handle)
+
+
 export default router;

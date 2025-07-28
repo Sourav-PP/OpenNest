@@ -1,3 +1,4 @@
+import type { IGetAllPsychologistsDto } from "../pasychologist";
 import type { IUserDto } from "../user";
 
 export interface IAdminLoginRequest {
@@ -28,5 +29,18 @@ export interface IGetAllUserRequest {
 
 export interface IGetAllUserResponse {
     user: IUserDto[],
+    totalCount?: number
+}
+
+export interface IGetAllPsychologistsRequest {
+    search?: string;
+    sort?: "asc" | "desc";
+    gender?: "Male" | "Female" | "";
+    page?: number;
+    limit?: number
+}
+
+export interface IGetAllPsychologistResponse {
+    psychologists: IGetAllPsychologistsDto[],
     totalCount?: number
 }

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
-import type { IUserDto } from '../../types/user';
+import type { IGetAllPsychologistsDto } from '../../types/pasychologist';
 import type { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { adminApi } from '../../server/api/admin';
 
 
-const UserTable = () => {
-  const [user, setUser] = useState<IUserDto[]>([])
+const PsychologistTable = () => {
+  const [psychologists, setPsychologists] = useState<IGetAllPsychologistsDto[]>([])
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
@@ -27,10 +27,10 @@ const UserTable = () => {
   }, [searchTerm])
  
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchPsychologists = async () => {
       try {
       // setIsLoading(true)
-      const data = await adminApi.getAllUser({
+      const data = await adminApi.getAllPsychologists({
         page: currentPage,
         limit: itemsPerPage,
         gender: gender || undefined,
@@ -39,7 +39,7 @@ const UserTable = () => {
       })
       console.log("data: ", data)
 
-      setUser(data.user)
+      setPsychologists(data.psychologists)
       setTotalCount(data.totalCount ?? 0)
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
@@ -49,7 +49,7 @@ const UserTable = () => {
     }
     }
 
-    fetchUser()
+    fetchPsychologists()
     
   }, [currentPage, debouncedSearch, sortOrder, gender])
 
@@ -68,7 +68,7 @@ const UserTable = () => {
 
 return (
   <div className="px-4 sm:px-6 lg:px-8 py-8 mb-10">
-    <h2 className="text-2xl font-semibold text-white mb-6">User Management</h2>
+    <h2 className="text-2xl font-semibold text-white mb-6">Psychologist Management</h2>
 
     {/* Filters */}
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 p-4 bg-admin-bg-secondary rounded-x">
@@ -140,17 +140,17 @@ return (
             </tr>
           </thead>
           <tbody>
-            {user.map((u, i) => (
+            {psychologists.map((psychologist, i) => (
               <tr
-                key={u.id}
+                key={psychologist.id}
                 className={i % 2 === 0 ? 'bg-admin-bg-secondary' : 'bg-admin-bg-box'}
               >
                 <td className="px-6 py-4">
                   <div>
-                    {u.profileImage ? (
+                    {psychologist.user.profileImage ? (
                       <img
-                        src={u.profileImage}
-                        alt={`${u.name}'s profile`}
+                        src={psychologist.user.profileImage}
+                        alt={`${psychologist.user.name}'s profile`}
                         className="w-8 h-8 rounded-full object-cover border border-gray-600"
                       />
 
@@ -159,12 +159,12 @@ return (
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4">{u.id}</td>
-                <td className="px-6 py-4">{u.name}</td>
-                <td className="px-6 py-4">{u.email}</td>
-                <td className="px-6 py-4">{u.phone}</td>
+                <td className="px-6 py-4">{psychologist.id}</td>
+                <td className="px-6 py-4">{psychologist.user.name}</td>
+                <td className="px-6 py-4">{psychologist.user.email}</td>
+                <td className="px-6 py-4">{psychologist.user.phone}</td>
                 <td className="px-6 py-4">{
-                  u.isActive ? (
+                  psychologist.user.isActive ? (
                     <button className='bg-red-700 py-1 px-3 rounded-full bg-opacity-45'>Block</button>
                   ) : (
                     <button className='bg-green-700 py-1 px-3 rounded-full bg-opacity-45'>Unblock</button>
@@ -179,16 +179,14 @@ return (
 
       {/* Mobile View */}
         <div className="md:hidden space-y-4 p-4">
-          {user.map((u) => (
-            <div key={u.id} className="bg-transparent rounded-lg p-4 text-white border border-gray-700">
-              <p className="font-semibold">{u.name}</p>
-              <p className="text-gray-300 text-sm">{u.email}</p>
-              <p className="text-sm mt-2">Phone: {u.phone}</p>
-              <p className="text-sm">Gender: {u.gender || '—'}</p>
-              <p className="text-sm">Role: {u.role}</p>
+          {psychologists.map((psychologist) => (
+            <div key={psychologist.id} className="bg-transparent rounded-lg p-4 text-white border border-gray-700">
+              <p className="font-semibold">{psychologist.user.name}</p>
+              <p className="text-gray-300 text-sm">{psychologist.user.email}</p>
+              <p className="text-sm mt-2">Phone: {psychologist.user.phone}</p>
               <p className="text-sm mt-2">
                 Action:{' '}
-                {u.isActive ? (
+                {psychologist.user.isActive ? (
                   <button className='bg-red-700 py-0.5 px-3 rounded-full bg-opacity-45'>Block</button>
                 ) : (
                   <button className='bg-green-700 py-1 px-3 rounded-full bg-opacity-45'>Unblock</button>
@@ -227,4 +225,4 @@ return (
 );
 };
 
-export default UserTable;
+export default PsychologistTable;

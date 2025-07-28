@@ -42,7 +42,7 @@ export class UserRepository implements IUserRepository   {
     }
 
     async countAll(params: { search?: string; gender?: "Male" | "Female"; }): Promise<number> {
-        const filter: FilterQuery<User> = {}
+        const filter: FilterQuery<User> = {role: "user"}
 
         if(params.search) {
             filter.name = { $regex: params.search, $options: 'i'}
