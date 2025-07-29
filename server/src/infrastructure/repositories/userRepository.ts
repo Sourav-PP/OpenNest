@@ -100,4 +100,8 @@ export class UserRepository implements IUserRepository   {
             id: obj._id.toString()
         } as User
     }
+
+    async updateStatus(id: string, isActive: boolean): Promise<void> {
+        await userModel.findByIdAndUpdate(id, { isActive }, { new: true });
+    }
 }

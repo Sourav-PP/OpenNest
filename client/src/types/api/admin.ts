@@ -44,3 +44,11 @@ export interface IGetAllPsychologistResponse {
     psychologists: IGetAllPsychologistsDto[],
     totalCount?: number
 }
+
+export interface IToggleStatusRequest {
+  status: "active" | "inactive";
+}
+
+export interface IToggleStatusResponse {
+  message: string;
+}

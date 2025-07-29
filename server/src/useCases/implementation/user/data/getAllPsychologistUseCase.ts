@@ -9,6 +9,7 @@ export class GetAllPsychologistUseCasee {
         const psychologists = await this.psychologistRepo.getAllPsychologists()
         return psychologists.map(p => ({
             id: p.id,
+            userId: p.userId,
             email: p.user.email,
             aboutMe: p.aboutMe,
             defaultFee: p.defaultFee,

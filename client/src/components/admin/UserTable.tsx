@@ -4,6 +4,7 @@ import type { IUserDto } from '../../types/user';
 import type { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { adminApi } from '../../server/api/admin';
+import ConfirmModal from './ConfirmModal';
 
 
 const UserTable = () => {
@@ -13,6 +14,10 @@ const UserTable = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [gender, setGender] = useState<"Male" | "Female" | "">("")
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")  
+
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [isBlocking, setIsBlocking] = useState(false)
   // const [isLoading, setIsLoading] = useState(false)
 
   const [debouncedSearch, setDebouncedSearch] = useState("")
@@ -63,6 +68,35 @@ const UserTable = () => {
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
+
+  const handleBlockClick = (userId: string, currentlyActive: boolean) => {
+    setSelectedUserId(userId)
+    setIsBlocking(currentlyActive)
+    setModalOpen(true)
+  }
+
+  const confirmBlockUnblock = async () => {
+    try {
+      if (!selectedUserId) return
+
+      const newStatus = isBlocking ? "inactive" : "active";
+
+      await adminApi.toggleUserStatus(selectedUserId, {status: newStatus})
+      // await adminApi.toggleUserStatus(selectedUserId) // your PATCH/PUT API
+      toast.success(`User ${isBlocking ? 'blocked' : 'unblocked'} successfully`)
+      setModalOpen(false)
+
+      setUser((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === selectedUserId ? { ...user, isActive: !isBlocking } : user
+        )
+      );
+      
+    } catch (err) {
+      console.log(err)
+      toast.error("Failed to update user status")
+    }
+  }
 
   
 
@@ -163,14 +197,16 @@ return (
                 <td className="px-6 py-4">{u.name}</td>
                 <td className="px-6 py-4">{u.email}</td>
                 <td className="px-6 py-4">{u.phone}</td>
-                <td className="px-6 py-4">{
-                  u.isActive ? (
-                    <button className='bg-red-700 py-1 px-3 rounded-full bg-opacity-45'>Block</button>
-                  ) : (
-                    <button className='bg-green-700 py-1 px-3 rounded-full bg-opacity-45'>Unblock</button>
-                  )
-                }
-              </td>
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => handleBlockClick(u.id, u.isActive!)}
+                    className={`py-1 px-3 rounded-full bg-opacity-45 ${
+                      u.isActive ? 'bg-red-700' : 'bg-green-700'
+                    }`}
+                  >
+                    {u.isActive ? 'Block' : 'Unblock'}
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -223,6 +259,13 @@ return (
         </button>
       </div>
     </div>
+    <ConfirmModal
+      isOpen={modalOpen}
+      onClose={() => setModalOpen(false)}
+      onConfirm={confirmBlockUnblock}
+      message={`Are you sure you want to ${isBlocking ? 'block' : 'unblock'} the user?`}
+    />
+
   </div>
 );
 };

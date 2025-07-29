@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { userApi } from "../../server/api/user";
 import type { IPsychologistDto } from "../../types/pasychologist";
+import { Link } from "react-router-dom";
 
 const TherapistPageSection = () => {
   const [psychologists, setPsychologists] = useState<IPsychologistDto[]>([])
@@ -10,6 +11,7 @@ const TherapistPageSection = () => {
     const fetchPsychologists = async() => {
       try {
         const res = await userApi.getAllPsychologists()
+        console.log('res in page: ', res)
         setPsychologists(res.psychologists)
       } catch (error) {
         toast.error("Failed to load specialization")
@@ -78,11 +80,13 @@ const TherapistPageSection = () => {
               <p className="text-blue-700 text-sm mb-1">{therapist.qualification}</p>
               <p className="text-gray-500 text-xs mb-4">{therapist.specializations.join(', ')}</p>
               <div className="group text-start">
-        <button
-          className="btn-primary group-hover:animate-glow-ring mb-2"
-        >
-          View
-        </button>
+              <Link to={`/user/psychologists/${therapist.userId}`}>
+              <button
+                className="btn-primary group-hover:animate-glow-ring mb-2"
+              >
+                View
+              </button>
+              </Link>
       </div>
             </div>
           ))}

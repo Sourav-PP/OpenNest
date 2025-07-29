@@ -11,7 +11,8 @@ import {
   getAllUserController,
   createServiceController,
   adminRefreshTokenController,
-  getAllPsychologistController
+  getAllPsychologistController,
+  toggleUserStatusController
 } from "../../../config/di";
 
 
@@ -44,6 +45,7 @@ router.post(
 )
 router.get("/users", getAllUserController.handle)
 router.get("/psychologists", getAllPsychologistController.handle)
+router.patch('/users/:userId/status', toggleUserStatusController.handle)
 
 
 export default router;

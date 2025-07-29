@@ -41,6 +41,7 @@ import { LogoutUseCase } from "../useCases/implementation/auth/logoutUseCase";
 import { GetAllPsychologistUseCasee } from "../useCases/implementation/user/data/getAllPsychologistUseCase";
 import { GetUserProfileUseCase } from "../useCases/implementation/user/profile/getUserProfileUseCase";
 import { UpdateUserProfileUseCase } from "../useCases/implementation/user/profile/updateUserProfileUseCase";
+import { GetPsychologistDetailsUseCase } from "../useCases/implementation/user/data/getPsychologistDetails";
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from "../useCases/implementation/psychologist/profile/verifyUseCase";
@@ -52,6 +53,7 @@ import { CreateServiceUseCase } from "../useCases/implementation/admin/managemen
 import { AdminLogoutUseCase } from "../useCases/implementation/admin/auth/logoutUseCase";
 import { GetAllUserUseCase } from "../useCases/implementation/admin/management/getAllUserUseCase";
 import { GetAllPsychologistsUseCase } from "../useCases/implementation/admin/management/getAllPsychologistsUseCase";
+import { ToggleUserStatusUseCase } from "../useCases/implementation/admin/management/toggleUserStatusUseCase";
 
 //===================== CONTROLLERS =====================
 
@@ -62,6 +64,7 @@ import { GetAllServicesController } from "../presentation/http/controllers/user/
 import { GetAllPsychologistsController } from "../presentation/http/controllers/user/getAllPsychologistsController";
 import { GetUserProfileController } from "../presentation/http/controllers/user/getUserProfileController";
 import { UpdateUserProfileController } from "../presentation/http/controllers/user/updateUserProfileController";
+import { GetPsychologistDetailsController } from "../presentation/http/controllers/user/getPsychologistDetailsController";
 
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
@@ -72,6 +75,7 @@ import { AdminAuthController } from "../presentation/http/controllers/admin/admi
 import { CreateServiceController } from "../presentation/http/controllers/admin/createServiceController";
 import { GetAllUserController } from "../presentation/http/controllers/admin/getAllUserController";
 import { GetAllPsychologistController } from "../presentation/http/controllers/admin/getAllPsychologistsController";
+import { ToggleUserStatusController } from "../presentation/http/controllers/admin/toggleUserStatusController";
 
 
 //===================== MIDDLEWARE ========================
@@ -95,6 +99,8 @@ export const authenticateAll = authMiddleware(tokenService, ["user", "psychologi
 
 // ---------- user ------------
 
+const kycRepository = new KycRepository()
+
 const userRepository = new UserRepository();
 const userAuthRepository = new UserAuthAccountRepository()
 const userServiceRepository = new ServiceRepository()
@@ -111,6 +117,7 @@ const getAllServicesUseCase = new GetAllServiceUseCase(userServiceRepository)
 const getAllPsychologistUseCase = new GetAllPsychologistUseCasee(psychologistRepository)
 const getUserProfileUseCase = new GetUserProfileUseCase(userRepository)
 const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository)
+const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(psychologistRepository, kycRepository, userRepository)
 
 export const authController = new AuthController(
   signupUseCase,
@@ -124,11 +131,12 @@ export const userGetAllServicesController = new GetAllServicesController(getAllS
 export const getAllPsychologistsController = new GetAllPsychologistsController(getAllPsychologistUseCase)
 export const getUserProfileController = new GetUserProfileController(getUserProfileUseCase)
 export const updateUserProfileController = new UpdateUserProfileController(updateUserProfileUseCase)
+export const getPsychologistDetailsController = new GetPsychologistDetailsController(getPsychologistDetailsUseCase)
 
 
 // ---------- PSYCHOLOGIST ----------
 
-const kycRepository = new KycRepository()
+
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository)
 const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository)
@@ -148,9 +156,11 @@ const serviceRepository = new ServiceRepository()
 const createServiceUseCase = new CreateServiceUseCase(serviceRepository)
 const getAllUserUseCase = new GetAllUserUseCase(userRepository)
 const getAllPsychologistsUseCase = new GetAllPsychologistsUseCase(psychologistRepository)
+const toggleUserStatusUseCase = new ToggleUserStatusUseCase(userRepository)
 
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase)
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, "adminRefreshToken")
 export const createServiceController = new CreateServiceController(createServiceUseCase)
 export const getAllUserController = new GetAllUserController(getAllUserUseCase)
 export const getAllPsychologistController = new GetAllPsychologistController(getAllPsychologistsUseCase) 
+export const toggleUserStatusController = new ToggleUserStatusController(toggleUserStatusUseCase)

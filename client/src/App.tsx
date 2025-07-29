@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PrivateRoute from './components/auth/PrivateRoute'
 import PublicRoute from './components/auth/PublicRoute'
 
+
 // =============== PAGES =================
 
 // ------------ user -------------
@@ -13,6 +14,7 @@ import LoginPage from './pages/user/LoginPage'
 import LandingPage from './pages/user/LandingPage'
 import TherapistPage from './pages/user/TherapistPage'
 import UserProfilePage from './pages/user/UserProfilePage'
+import PsychologistDetailPage from './pages/user/PsychologistDetailPage'
 
 // ------------ psychologist ---------------
 import VerificationPage from './pages/psychologist/VerificationPage'
@@ -52,6 +54,7 @@ function App() {
         {/* user public pages */}
         <Route path='/' element={<LandingPage />} />
         <Route path='/user/therapist' element={< TherapistPage/>} />
+        <Route path='/user/psychologists/:id' element={< PsychologistDetailPage/>} />
         <Route path='/user/profile' element={<UserProfilePage/>} />
         {/* <Route element={<PrivateRoute allowedRoles={['user']}/>}>
         </Route> */}

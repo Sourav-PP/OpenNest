@@ -16,4 +16,5 @@ export interface IUserRepository {
     findById(id: string): Promise<User | null>
     create(user: User): Promise<User>
     updateProfile(id: string, updates: Partial<User>): Promise<User | null>
+    updateStatus(id: string,isActive: boolean): Promise<void>
 }

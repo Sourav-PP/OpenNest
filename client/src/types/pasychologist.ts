@@ -1,5 +1,6 @@
 export interface IPsychologistDto {
   id: string;
+  userId: string;
   name: string;
   email: string;
   profileImage?: string;
