@@ -72,7 +72,7 @@ const Navbar = () => {
           <li onClick={() => navigate('/')} className="cursor-pointer font-semibold transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
             Home
           </li>
-          <li className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
+          <li onClick={() => navigate('/user/services')} className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
             Services
           </li>
           <li onClick={() => navigate('/user/therapist')} className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">

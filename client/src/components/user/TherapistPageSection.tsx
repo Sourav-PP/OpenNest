@@ -87,7 +87,7 @@ const TherapistPageSection = () => {
                 View
               </button>
               </Link>
-      </div>
+              </div>
             </div>
           ))}
         </div>

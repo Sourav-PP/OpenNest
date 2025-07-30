@@ -47,7 +47,8 @@ const LoginForm = () => {
           accessToken,
           email: decoded.email,
           role: decoded.role,
-          userId: decoded.userId
+          userId: decoded.userId,
+          isSubmittedVerification: true
         })
       )
 
@@ -120,7 +121,7 @@ const LoginForm = () => {
         </button>
       </div>
       <div>
-      <p className="text-center cursor-pointer hover:text-[#70A5FF]">Forgot Password?</p>
+      
       <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer"
          onClick={() => navigate(`/signup?role=${roleFromUrl ?? "user"}`)}> Sign up</span></p>
       </div>
