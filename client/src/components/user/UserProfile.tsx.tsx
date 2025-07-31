@@ -25,6 +25,7 @@ const UserProfile = () => {
       try {
         const res = await userApi.getProfile()
         const profileData = res
+        console.log("profile Data: ", res)
         setValue("name", profileData.name);
         setValue("email", profileData.email);
         setValue("phone", profileData.phone);

@@ -18,7 +18,7 @@ export class NodemailerOtpService implements IOtpService {
     async sendOtp(email: string, otp: string): Promise<void> {
         try {
             console.log("email: ",email)
-        console.log("otp", otp)
+            console.log("otp", otp)
         await this.otpRepo.saveOtp(email, otp)
 
         await this.transporter.sendMail({
@@ -28,7 +28,7 @@ export class NodemailerOtpService implements IOtpService {
             html: `<p>Your Otp is <b>${otp}</b>. It will expire in 5 minutes.</p>`
         })
 
-        console.log("otp send or not")
+            console.log("otp send or not")
         } catch (error) {
             console.log("error otp: ", error)
         }

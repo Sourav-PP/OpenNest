@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      clipPath: {
+        squircle: `path('M0.5,16C0.5,7.16,7.16,0.5,16,0.5H96C104.84,0.5,111.5,7.16,111.5,16V96C111.5,104.84,104.84,111.5,96,111.5H16C7.16,111.5,0.5,104.84,0.5,96Z')`,
+      },
       colors: {
         primaryText: "#1A4384",
         'admin-bg-primary': '#0D0F10',

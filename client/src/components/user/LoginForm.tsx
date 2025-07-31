@@ -10,6 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/slices/authSlice";
 import { authApi } from "../../server/api/auth";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 interface TokenPayload {
   userId: string;
@@ -81,7 +82,7 @@ const LoginForm = () => {
     >
       {/* Email Field */}
       <div className="mb-1 w-full">
-        <div className="flex items-center gap-3 px-5 py-2.5 rounded-lg bg-slate-100">
+        <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-100">
           <img src={assets.mail} alt="" />
           <input
             {...register("email")}
@@ -96,7 +97,7 @@ const LoginForm = () => {
 
       {/* Password Field */}
       <div className="mb-1 w-full">
-        <div className="flex items-center gap-3 px-5 py-2.5 rounded-lg bg-slate-100">
+        <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-100">
           <img src={assets.lock} alt="" />
           <input
             type="password"
@@ -120,7 +121,9 @@ const LoginForm = () => {
           {isSubmitting ? "Loading..." : "Login"}
         </button>
       </div>
+        <GoogleLoginButton/>
       <div>
+
       
       <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer"
          onClick={() => navigate(`/signup?role=${roleFromUrl ?? "user"}`)}> Sign up</span></p>

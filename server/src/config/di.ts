@@ -7,7 +7,6 @@ dotenv.config();
 import { UserRepository } from "../infrastructure/repositories/userRepository";
 import { UserAuthAccountRepository } from "../infrastructure/repositories/userAuthAccountRepository";
 import { OtpRepository } from "../infrastructure/repositories/otpRepository";
-
 // -------------- psychologist ------------------
 import { KycRepository } from "../infrastructure/repositories/kycRepository";
 import { PsychologistRepository } from "../infrastructure/repositories/psychologistRepository";
@@ -23,6 +22,7 @@ import { ServiceRepository } from "../infrastructure/repositories/serviceReposit
 //===================== SERVICES ======================
 
 // shared services
+import { GoogleAuthService } from "../infrastructure/repositories/googleAuthService";
 import { BcryptAuthService } from "../infrastructure/auth/authService";
 import { JwtTokenService } from "../infrastructure/auth/tokenService";
 import { NodemailerOtpService } from "../infrastructure/auth/otpService";
@@ -42,6 +42,7 @@ import { GetAllPsychologistUseCasee } from "../useCases/implementation/user/data
 import { GetUserProfileUseCase } from "../useCases/implementation/user/profile/getUserProfileUseCase";
 import { UpdateUserProfileUseCase } from "../useCases/implementation/user/profile/updateUserProfileUseCase";
 import { GetPsychologistDetailsUseCase } from "../useCases/implementation/user/data/getPsychologistDetails";
+import { GoogleLoginUseCase } from "../useCases/implementation/auth/googleLoginUseCase";
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from "../useCases/implementation/psychologist/profile/verifyUseCase";
@@ -65,6 +66,7 @@ import { GetAllPsychologistsController } from "../presentation/http/controllers/
 import { GetUserProfileController } from "../presentation/http/controllers/user/getUserProfileController";
 import { UpdateUserProfileController } from "../presentation/http/controllers/user/updateUserProfileController";
 import { GetPsychologistDetailsController } from "../presentation/http/controllers/user/getPsychologistDetailsController";
+import { GoogleLoginController } from "../presentation/http/controllers/auth/GoogleLoginController";
 
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
@@ -100,6 +102,7 @@ export const authenticateAll = authMiddleware(tokenService, ["user", "psychologi
 // ---------- user ------------
 
 const kycRepository = new KycRepository()
+const googleAuthService = new GoogleAuthService()
 
 const userRepository = new UserRepository();
 const userAuthRepository = new UserAuthAccountRepository()
@@ -109,6 +112,7 @@ const psychologistRepository = new PsychologistRepository()
 
 const signupUseCase = new SignupUseCase( userRepository, authService, tokenService, otpService );
 const loginUseCase = new LoginUseCase( userRepository, authService, tokenService, psychologistRepository );
+const googleLoginUseCase = new GoogleLoginUseCase(tokenService,userRepository, googleAuthService, psychologistRepository )
 const logoutUseCase = new LogoutUseCase()
 const sendOtpUseCase = new SendOtpUseCase(otpService);
 const verifyOtpUseCase = new VerifyOtpUseCase(otpService);
@@ -124,8 +128,9 @@ export const authController = new AuthController(
   sendOtpUseCase,
   verifyOtpUseCase,
   loginUseCase,
-  logoutUseCase
+  logoutUseCase,
 );
+export const googleLoginController = new GoogleLoginController(googleLoginUseCase)
 export const refreshTokenController = new RefreshTokenController(refreshTokenUseCase, "refreshToken")
 export const userGetAllServicesController = new GetAllServicesController(getAllServicesUseCase)
 export const getAllPsychologistsController = new GetAllPsychologistsController(getAllPsychologistUseCase)
