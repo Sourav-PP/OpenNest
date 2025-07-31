@@ -11,7 +11,6 @@ export class JwtTokenService implements ITokenService {
     }
 
     generateAccessToken(userId: string, role: string, email: string): string {
-        console.log('hi token is:', this.accessTokenSecret)
         return jwt.sign({ userId, role, email }, this.accessTokenSecret, { expiresIn: '15m' })
     }
 

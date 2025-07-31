@@ -14,10 +14,9 @@ declare global {
 }
 
 export const authMiddleware =
-  (jwtService: ITokenService, allowedRoles: Array<"user" | "psychologist" | "admin">): RequestHandler =>
-  (req: Request, res: Response, next: NextFunction) => {
+  (jwtService: ITokenService, allowedRoles: Array<"user" | "psychologist" | "admin">): RequestHandler => (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
-    console.log('authheader: ', authHeader)
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       res.status(401).json({ message: "No token provided" });
       return 
@@ -28,7 +27,6 @@ export const authMiddleware =
     try {
       const payload = jwtService.verifyAccessToken(token);
 
-      console.log("payload ",payload)
       if (!payload || !payload.userId || !payload.email || !payload.role) {
         res.status(401).json({ message: "Invalid token structure" });
         return 

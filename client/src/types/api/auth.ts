@@ -15,6 +15,22 @@ export interface ILoginResponse {
     hasSubmittedVerificationForm: boolean
 }
 
+export interface IGoogleLoginInput {
+    credential: string;
+    role: "user" | "psychologist";
+}
+
+export interface IGoogleLoginResponse {
+  user: {
+    name: string;
+    email: string;
+    role: "user" | "psychologist";
+    profileImage?: string;
+  };
+  accessToken: string;
+  hasSubmittedVerificationForm: boolean;
+}
+
 export interface ISignupRequest {
     name: string;
     email: string;

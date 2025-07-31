@@ -4,11 +4,14 @@ import { loginValidate, loginValidator } from '../validators/loginValidator';
 import { verifyPsychologistValidator, validateVerifyPsychologist } from '../validators/verifyPsychologistValidator';
 import { validateFiles } from '../validators/validateFiles';
 
-import { authenticatePsychologist } from '../../../config/di';
+import {
+    authenticatePsychologist,
+    authController,
+    googleLoginController,
+    refreshTokenController,
+    verifyPsychologistController
+} from '../../../config/di';
 
-import { authController } from '../../../config/di';
-import { refreshTokenController } from '../../../config/di';
-import { verifyPsychologistController } from '../../../config/di';
 import { uploadFields, uploadSingle } from '../middlewares/multer';
 
 
@@ -23,6 +26,7 @@ router.post('/send-otp', authController.sendOtp)
 router.post('/verify-otp', authController.verifyOtp)
 router.post('/signup',uploadSingle, signupValidator, validate, authController.signup)
 router.post('/login', loginValidator, loginValidate, authController.login)
+router.post('/google-login', googleLoginController.handle)
 router.post('/logout', authController.logout)
 router.post('/refresh-token', refreshTokenController.handle)
 

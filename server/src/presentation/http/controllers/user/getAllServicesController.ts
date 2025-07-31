@@ -13,7 +13,6 @@ export class GetAllServicesController {
                 limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
                 page: req.query.page ? parseInt(req.query.page as string) : undefined,
             }
-            console.log('its here in service controller')
             const output = await this.getAllServicesUseCase.execute(input)
             res.status(200).json(output)
             return

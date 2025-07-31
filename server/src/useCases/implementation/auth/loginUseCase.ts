@@ -20,7 +20,7 @@ export class LoginUseCase implements ILoginUseCase {
             throw new AppError("Invalid email or password", 401)
         }
 
-        const isMatch = await this.authService.comparePassword(request.password, user.password)
+        const isMatch = await this.authService.comparePassword(request.password, user.password!)
         if(!isMatch) {
             throw new AppError("Invalid email or password", 401)
         }

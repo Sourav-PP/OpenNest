@@ -5,12 +5,13 @@ export interface IUserDocument extends Document {
   name: string;
   email: string;
   password?: string;
-  phone: string;
+  phone?: string;
   role: 'user' | 'psychologist';
-  profileImage: string,
-  dateOfBirth: Date,
-  gender: string,
-  isActive: boolean
+  profileImage?: string,
+  dateOfBirth?: Date,
+  gender?: string,
+  isActive: boolean,
+  googleId?: string
 }
 
 const userSchema = new Schema<IUserDocument>(
@@ -28,7 +29,7 @@ const userSchema = new Schema<IUserDocument>(
     },
     phone: {
         type: String,
-        required: true,
+        required: false,
     },
     role: {
       type: String,
@@ -50,8 +51,12 @@ const userSchema = new Schema<IUserDocument>(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
       select: false
+    },
+    googleId: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }

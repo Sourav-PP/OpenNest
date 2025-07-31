@@ -13,7 +13,7 @@ const LoginPage = () => {
     
     {/* Left: Form Side */}
     <div className="md:w-1/2 w-full items-center flex justify-start px-6">
-      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm text-gray-500 text-sm">
+      <div className="bg-white p-10 w-full max-w-sm rounded-[10%] overflow-hidden text-gray-500 text-sm shadow-[0_15px_30px_rgba(0,0,0,0.05)]">
         <div className="w-full flex justify-center mb-2">
           <img className="w-32" src={assets.logo} alt="Logo" />
         </div>
