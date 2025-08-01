@@ -29,7 +29,6 @@ export const signupSchema = z.object({
     .regex(/[0-9]/, { message: "Password must contain at least one number" })
     .regex(/[^a-zA-Z0-9]/, { message: "Password must contain at least one special character" }),
   confirmPassword: z.string().trim().min(6),
-  otp: z.string().trim().length(6 ,{ message: "OTP must be at least 6 characters long" }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords must match",
   path: ["confirmPassword"],

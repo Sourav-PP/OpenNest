@@ -31,6 +31,10 @@ export interface IGoogleLoginResponse {
   hasSubmittedVerificationForm: boolean;
 }
 
+export interface IPreSignupResponse {
+    signupToken: string
+}
+
 export interface ISignupRequest {
     name: string;
     email: string;
@@ -55,5 +59,15 @@ export interface ISendOtpRequest {
 
 export interface IVerifyOtpRequest {
     email: string,
-    otp: string
+    otp: string,
+    signupToken: string
+}
+
+export interface IVerifyOtpResponse {
+    user: {
+        name: string,
+        email: string,
+        role: "user" | "psychologist"
+    },
+    accessToken: string
 }

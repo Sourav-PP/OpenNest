@@ -4,10 +4,12 @@ import { ITokenService } from '../../domain/interfaces/ITokenService'
 export class JwtTokenService implements ITokenService {
     private accessTokenSecret: string
     private refreshTokenSecret: string
+    private generateSignupTokenSecret: string
 
     constructor() {
         this.accessTokenSecret =process.env.ACCESS_TOKEN_SECRET || '';
         this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || '';
+        this.generateSignupTokenSecret = process.env.SIGNUP_TOKEN_SECRET || "";
     }
 
     generateAccessToken(userId: string, role: string, email: string): string {
@@ -34,6 +36,19 @@ export class JwtTokenService implements ITokenService {
 
         } catch (error) {
             console.log('JWT verify error: ', error)
+            return null
+        }
+    }
+
+    generateSignupToken(email: string): string {
+        return jwt.sign({email}, this.generateSignupTokenSecret, { expiresIn: '10m' })
+    }
+
+    verifySignupToken(token: string): { email: string; } | null {
+        try {
+            return jwt.verify(token, this.generateSignupTokenSecret) as {email: string}
+        } catch (error) {
+            console.log('JWT verify signup token error: ', error)
             return null
         }
     }

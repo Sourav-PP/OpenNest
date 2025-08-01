@@ -1,4 +1,4 @@
-import { User } from "../../../../domain/entities/User";
+import { User } from "../../../../domain/entities/user";
 import { IUserRepository } from "../../../../domain/interfaces/IUserRepository";
 import { IUpdateUserProfileInput, IUpdateUserProfileOutput } from "../../../types/userTypes";
 import { IUpdateUserProfileUseCase } from "../../../interfaces/user/profile/IUpdateUserProfileUseCase";

@@ -35,6 +35,8 @@ export class NodemailerOtpService implements IOtpService {
     }
 
     async verifyOtp(email: string, otp: string): Promise<boolean> {
+        console.log("otp in serviedjfldkfjd: ", otp)
+        console.log("emai l in serfvd: ", email)
         return await this.otpRepo.verifyOtp(email, otp)
     }
 
