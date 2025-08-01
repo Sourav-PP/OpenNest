@@ -28,41 +28,26 @@ export class SignupUseCase implements ISignupUseCase {
             throw error
         }
 
-        const isVerified = await this.otpService.isVerified(request.email);
-        if (!isVerified) {
-            const error: Error & {statusCode?: number} = new Error("Email not verified with OTP")
-            error.statusCode = 400
-            throw error
-        }
+        // const isVerified = await this.otpService.isVerified(request.email);
+        // if (!isVerified) {
+        //     const error: Error & {statusCode?: number} = new Error("Email not verified with OTP")
+        //     error.statusCode = 400
+        //     throw error
+        // }
 
         const hashPassword = await this.authService.hashPassword(request.password)
 
-        const user: User = {
+        await this.userRepository.createPendingSignup({
             name: request.name,
             email: request.email,
             phone: request.phone,
-            password: hashPassword,
+            password: request.password,
             role: request.role,
-            isActive: true,
             profileImage: request.profileImage
-        }
+        })
 
-        const savedUser = await this.userRepository.create(user)
-        console.log('saved user: ', savedUser)
+        const signupToken = this.tokenService.generateSignupToken(request.email)
 
-        // generate tokens
-        const accessToken = this.tokenService.generateAccessToken(savedUser.id!, savedUser.role, savedUser.email)
-        const refreshToken = this.tokenService.generateRefreshToken(savedUser.id!, savedUser.role, savedUser.email)
-
-        return {
-            user: {
-                name: savedUser.name,
-                email: savedUser.email,
-                role: savedUser.role,
-                profileImage: savedUser.profileImage!
-            },
-            accessToken,
-            refreshToken,
-        }
+        return signupToken
     }
 }

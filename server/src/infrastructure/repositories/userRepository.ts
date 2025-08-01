@@ -5,6 +5,7 @@ import { userModel } from "../database/models/user/UserModel";
 import { AppError } from "../../domain/errors/AppError";
 import { IUserDto } from "../../domain/dtos/user";
 import { FilterQuery } from "mongoose";
+import { PendingSignupModel } from "../database/models/user/PendinSignupModel";
 
 export class UserRepository implements IUserRepository   {
     async findAll(params: { search?: string; sort?: "asc" | "desc"; gender?: "Male" | "Female"; skip: number; limit: number; }): Promise<User[]> {
@@ -78,6 +79,39 @@ export class UserRepository implements IUserRepository   {
             ...userObj,
             id: userObj._id.toString()
         } as User
+    }
+
+    async createPendingSignup(user: User): Promise<void> {
+        await PendingSignupModel.updateOne(
+            {email: user.email},
+            {
+                $set: {
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    password: user.password,
+                    role: user.role,
+                    profileImage: user.profileImage
+                }
+            },
+            {upsert: true}
+        )
+    }
+
+    async findPendingSignup(email: string): Promise<User | null> {
+        const userDoc = await PendingSignupModel.findOne({ email }).select("+password")
+        if(!userDoc) return null
+
+        const userObj = userDoc.toObject()
+
+        return {
+            ...userObj,
+            id: userObj._id.toString()
+        } as User
+    }
+
+    async deletePendingSignup(email: string): Promise<void> {
+        await PendingSignupModel.deleteOne({email})
     }
 
     async create(user: User): Promise<User> {

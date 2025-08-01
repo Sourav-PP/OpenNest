@@ -17,24 +17,42 @@ export class AuthController {
   ) {}
 
   sendOtp = async(req: Request, res: Response): Promise<void> => {
-    await this.sendOtpUseCase.execute(req.body.email)
-    res.status(200).json({ message: 'OTP sent' });
-    return
+    try {
+      console.log("its here in sendOtp")
+      console.log('email: ',req.body.email)
+      await this.sendOtpUseCase.execute(req.body.email)
+      res.status(200).json({ message: 'OTP sent' });
+      return
+    } catch (error) {
+      console.log("error in send otp: ", error)
+    }
   }
 
   verifyOtp = async(req: Request, res: Response): Promise<void> => {
-    const { email, otp } = req.body;
+    console.log("verifyyyyyyyyyyyyy")
+    const { email, otp, signupToken } = req.body;
+    console.log("otp in fdkfndofn: ", otp)
 
-    if (!email || !otp) {
+    console.log("signupToken:", signupToken)
+
+    if (!email || !otp || !signupToken){
       res.status(400).json({ message: 'Email and OTP are required' });
       return 
     }
-    const isValid = await this.verifyOtpUseCase.execute(req.body.email, req.body.otp);
-    if (!isValid) {
-      res.status(400).json({ message: 'Invalid OTP' });
-      return
-    }
-    res.status(200).json({ message: 'OTP verified' });
+
+    const response = await this.verifyOtpUseCase.execute(email, otp, signupToken);
+
+    res.cookie("refreshToken", response.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    
+    res.status(200).json({
+      accessToken: response.accessToken,
+      user: response.user
+    });
     return 
   }
 
@@ -53,20 +71,18 @@ export class AuthController {
         ...req.body,
         profileImage: cloudUrl
       }
-      const response = await this.signupUseCase.execute(payload);
+      const signupToken = await this.signupUseCase.execute(payload);
+      console.log("signup token in backend: ", signupToken)
 
-      // set refresh token as http-only cookie
-      res.cookie("refreshToken", response.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      // // set refresh token as http-only cookie
+      // res.cookie("refreshToken", response.refreshToken, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === "production",
+      //   sameSite: "strict",
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      // });
 
-      res.status(201).json({
-        user: response.user,
-        accessToken: response.accessToken,
-      });
+      res.status(201).json({signupToken});
     } catch (error: any) {
       const statusCode = error.statusCode | 500
       const message = error.message || "Internal server error"

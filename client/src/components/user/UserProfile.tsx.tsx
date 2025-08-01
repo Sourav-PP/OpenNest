@@ -80,11 +80,24 @@ const UserProfile = () => {
     }
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+ if (loading) return (
+  <div className="flex justify-center items-center min-h-screen bg-white">
+    <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
+      {[...Array(8)].map((_, index) => (
+        <div
+          key={index}
+          className="absolute h-2 w-2 bg-gray-300 rounded-full"
+          style={{
+            top: "50%",
+            left: "50%",
+            transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+          }}
+        ></div>
+      ))}
+      <span className="sr-only">Loading...</span>
     </div>
-  );
+  </div>
+);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-[#e9f1f4] to-[#f3feff] min-h-screen">

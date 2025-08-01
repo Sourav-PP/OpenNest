@@ -3,4 +3,6 @@ export interface ITokenService {
     generateRefreshToken(userId: string, role: string, email: string): string;
     verifyAccessToken(token: string): { userId: string, email: string, role: string } | null
     verifyRefreshToken(token: string): { userId: string, email: string, role: string } | null
+    generateSignupToken(email: string): string;
+    verifySignupToken(token: string): { email: string} | null
 }

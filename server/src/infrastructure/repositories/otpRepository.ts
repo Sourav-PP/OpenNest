@@ -11,10 +11,15 @@ export class OtpRepository implements IOtpRepository {
     }
 
     async verifyOtp(email: string, otp: string): Promise<boolean> {
+        console.log("its verify otp repo")
+        console.log("otp in repo")
+        console.log("email in repo: ", email)
         const record = await OtpModel.findOne({ email })
+        console.log("record in repo: ", record)
         const isValid = record?.otp === otp
         
         if(isValid) {
+            console.log("ist valid otp")
             await OtpModel.updateOne({email}, { verified: true})
         }
         return isValid

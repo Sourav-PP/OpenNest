@@ -8,13 +8,15 @@ export interface ISignupInput {
     role: "user" | "psychologist"
 }
 
-export interface ISignupOutput {
-    user: {
-        name: string,
-        email: string,
-        role: "user" | "psychologist",
-        profileImage: string
-    }
-    accessToken: string,
-    refreshToken: string
-}
+// export interface ISignupOutput {
+//     user: {
+//         name: string,
+//         email: string,
+//         role: "user" | "psychologist",
+//         profileImage: string
+//     }
+//     accessToken: string,
+//     refreshToken: string
+// }
+
+export type ISignupOutput = string;

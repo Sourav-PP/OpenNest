@@ -31,3 +31,14 @@ export interface IGoogleLoginOutput {
   refreshToken?: string;
   hasSubmittedVerificationForm: boolean;
 }
+
+export interface IVerifyOtpOutput {
+  user: {
+    name: string;
+    email: string;
+    role: "user" | "psychologist";
+    profileImage?: string;
+  };
+  accessToken: string;
+  refreshToken?: string;
+}
