@@ -14,6 +14,7 @@ const Profile = () => {
     const fetchProfileData = async () => {
       try {
         const res = await psychologistApi.getProfile()
+        console.log("res: ", res)
         setProfile(res);
       } catch (error) {
         toast.error("error fetching the profile");
@@ -26,7 +27,24 @@ const Profile = () => {
     fetchProfileData();
   }, []);
 
-  if (loading) return <p className="text-center py-10">Loading...</p>;
+ if (loading) return (
+    <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
+        {[...Array(8)].map((_, index) => (
+            <div
+            key={index}
+            className="absolute h-2 w-2 bg-gray-300 rounded-full"
+            style={{
+                top: "50%",
+                left: "50%",
+                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+            }}
+            ></div>
+        ))}
+        <span className="sr-only">Loading...</span>
+        </div>
+    </div>
+    );
   if (!profile) return null;
 
   const {
@@ -43,7 +61,7 @@ const Profile = () => {
   } = profile;
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-[#e9f1f4] to-[#f3feff] min-h-screen">
+    <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-indigo-50 to-white min-h-screen">
       <h2 className="text-3xl font-bold text-gray-800 mb-4">My Profile</h2>
       <p className="mb-6 text-gray-500">Hi, {name}, Welcome back!</p>
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-6 border border-gray-100">

@@ -128,7 +128,8 @@ export class PsychologistRepository implements IPsychologistRepository {
     }
 
     async updateByUserId(userId: string, updateData: Partial<Psychologist>): Promise<Psychologist | null> {
-        return PsychologistModel.findByIdAndUpdate(
+        console.log("user id in psychologist: ", userId)
+        return PsychologistModel.findOneAndUpdate(
             {userId},
             {$set: updateData},
             {new: true}

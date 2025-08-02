@@ -15,6 +15,8 @@ export interface IPsychologistProfileDto {
   id: string;
   name: string;
   email: string;
+  phone?: string;
+  gender?: "male" | "female" | "other"
   dateOfBirth: string;
   defaultFee: number;
   qualification: string;

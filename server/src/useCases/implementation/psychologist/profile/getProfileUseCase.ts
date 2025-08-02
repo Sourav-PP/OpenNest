@@ -27,6 +27,8 @@ export class GetProfileUseCase {
             id: psychologist.id,
             name: user?.name,
             email: user?.email,
+            phone: user.phone,
+            gender: user.gender,
             dateOfBirth: user?.dateOfBirth,
             defaultFee: psychologist.defaultFee,
             qualification: psychologist.qualification,

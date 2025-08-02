@@ -47,6 +47,7 @@ import { GoogleLoginUseCase } from "../useCases/implementation/auth/googleLoginU
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from "../useCases/implementation/psychologist/profile/verifyUseCase";
 import { GetProfileUseCase } from "../useCases/implementation/psychologist/profile/getProfileUseCase";
+import { UpdatePsychologistProfileUseCase } from "../useCases/implementation/psychologist/profile/updatePsychologistProfileUseCase";
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from "../useCases/implementation/admin/auth/loginUseCase";
@@ -71,6 +72,7 @@ import { GoogleLoginController } from "../presentation/http/controllers/auth/Goo
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
 import { GetProfileController } from "../presentation/http/controllers/psychologist/getProfileController";
+import { UpdatePsychologistProfileController } from "../presentation/http/controllers/psychologist/updatePsychologistProfileController";
 
 //---------------- admin -------------------
 import { AdminAuthController } from "../presentation/http/controllers/admin/adminAuthController";
@@ -145,9 +147,11 @@ export const getPsychologistDetailsController = new GetPsychologistDetailsContro
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository)
 const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository)
+const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(psychologistRepository, userRepository)
 
 export const verifyPsychologistController = new VerifyPsychologistController(verifyPsychologistUseCase)
 export const getProfileController = new GetProfileController(getProfileUseCase)
+export const updatePsychologistProfileController = new UpdatePsychologistProfileController(updatePsychologistProfileUseCase)
 
 
 // ---------- ADMIN ----------

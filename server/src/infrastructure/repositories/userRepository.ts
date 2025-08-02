@@ -125,6 +125,7 @@ export class UserRepository implements IUserRepository   {
     }
 
     async updateProfile(id: string, updates: Partial<User>): Promise<User | null> {
+        console.log("user id in user: ", id)
         const updated = await userModel.findByIdAndUpdate(id, updates, {new: true})
         if(!updated) return null
 

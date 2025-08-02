@@ -1,6 +1,6 @@
 // Input and Output types for Profile Use Cases
-import { Kyc } from "../../domain/entities/Kyc";
-import { Psychologist } from "../../domain/entities/Psychologist";
+import { Kyc } from "../../domain/entities/kyc";
+import { Psychologist } from "../../domain/entities/psychologist";
 
 export interface IVerifyProfileInput {
     userId: string;
@@ -22,4 +22,16 @@ export interface IVerifyProfileInput {
 export interface IVerifyProfileOutput {
     psychologist: Psychologist,
     kyc: Kyc
+}
+
+export interface IUpdatePsychologistProfileInput {
+    userId: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+    gender?: string;
+    dateOfBirth?: string;
+    profileImage?: string;
+    aboutMe?: string;
+    defaultFee?: number;
 }

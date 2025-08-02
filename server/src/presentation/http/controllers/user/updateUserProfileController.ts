@@ -18,7 +18,7 @@ export class UpdateUserProfileController {
                 profileImageUrl = await uploadToCloudinary(
                     req.file.buffer,
                     req.file.originalname,
-                    "user_profiles"
+                    "profile_images"
                 )
             }
 

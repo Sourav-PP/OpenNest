@@ -41,7 +41,6 @@ const SignupForm = () => {
   });
 
   const onSubmit = async (data: SignupData) => {
-    console.log("hiiiiiiiiiiii")
     try {
       const formData = new FormData()
   
@@ -57,8 +56,6 @@ const SignupForm = () => {
       }
 
       const res = await authApi.preSignuup(formData)
-      console.log("res.signupt token: ", res.signupToken)
-      console.log("res: ", res)
       setSignupToken(res.signupToken)
       setEmail(data.email)
       await authApi.sendOtp({email: data.email})
