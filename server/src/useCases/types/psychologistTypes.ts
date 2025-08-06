@@ -1,6 +1,7 @@
 // Input and Output types for Profile Use Cases
 import { Kyc } from "../../domain/entities/kyc";
 import { Psychologist } from "../../domain/entities/psychologist";
+import {Weekday} from 'rrule'
 
 export interface IVerifyProfileInput {
     userId: string;
@@ -34,4 +35,15 @@ export interface IUpdatePsychologistProfileInput {
     profileImage?: string;
     aboutMe?: string;
     defaultFee?: number;
+}
+
+export interface IRecurringSlotInput {
+    psychologistId: string;
+    fromDate: string;
+    toDate: string;
+    weekDays: Weekday[];
+    startTime: string;
+    endTime: string;
+    duration: number;
+    timeZone: string;
 }

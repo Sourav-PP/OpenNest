@@ -10,6 +10,7 @@ import { OtpRepository } from "../infrastructure/repositories/otpRepository";
 // -------------- psychologist ------------------
 import { KycRepository } from "../infrastructure/repositories/kycRepository";
 import { PsychologistRepository } from "../infrastructure/repositories/psychologistRepository";
+import { SlotRepository } from "../infrastructure/repositories/slotRepository";
 
 // -------------- admin ----------------
 import { AdminRepository } from "../infrastructure/repositories/admin/adminRepository";
@@ -48,6 +49,8 @@ import { GoogleLoginUseCase } from "../useCases/implementation/auth/googleLoginU
 import { VerifyPsychologistUseCase } from "../useCases/implementation/psychologist/profile/verifyUseCase";
 import { GetProfileUseCase } from "../useCases/implementation/psychologist/profile/getProfileUseCase";
 import { UpdatePsychologistProfileUseCase } from "../useCases/implementation/psychologist/profile/updatePsychologistProfileUseCase";
+import { CreateSlotUseCase } from "../useCases/implementation/psychologist/availability/CreateSlotUseCase";
+import { GetSlotByPsychologistUseCase } from "../useCases/implementation/psychologist/availability/GetSlotByPsychologistUseCase";
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from "../useCases/implementation/admin/auth/loginUseCase";
@@ -73,6 +76,8 @@ import { GoogleLoginController } from "../presentation/http/controllers/auth/Goo
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
 import { GetProfileController } from "../presentation/http/controllers/psychologist/getProfileController";
 import { UpdatePsychologistProfileController } from "../presentation/http/controllers/psychologist/updatePsychologistProfileController";
+import { CreateSlotController } from "../presentation/http/controllers/psychologist/createSlotController";
+import { GetSlotByPsychologistController } from "../presentation/http/controllers/psychologist/getSlotByPsychologistController";
 
 //---------------- admin -------------------
 import { AdminAuthController } from "../presentation/http/controllers/admin/adminAuthController";
@@ -143,15 +148,19 @@ export const getPsychologistDetailsController = new GetPsychologistDetailsContro
 
 // ---------- PSYCHOLOGIST ----------
 
-
+const slotRepository = new SlotRepository()
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository)
 const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository)
 const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(psychologistRepository, userRepository)
+const createSlotUseCase = new CreateSlotUseCase(slotRepository, psychologistRepository)
+const getSlotByPsychologistUseCase = new GetSlotByPsychologistUseCase(slotRepository)
 
 export const verifyPsychologistController = new VerifyPsychologistController(verifyPsychologistUseCase)
 export const getProfileController = new GetProfileController(getProfileUseCase)
 export const updatePsychologistProfileController = new UpdatePsychologistProfileController(updatePsychologistProfileUseCase)
+export const createSlotController = new CreateSlotController(createSlotUseCase, psychologistRepository)
+export const getSlotByPsychologistController = new GetSlotByPsychologistController(getSlotByPsychologistUseCase, psychologistRepository)
 
 
 // ---------- ADMIN ----------
