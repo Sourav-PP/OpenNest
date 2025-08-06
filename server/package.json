@@ -22,9 +22,11 @@
     "express-validator": "^7.2.1",
     "google-auth-library": "^10.2.0",
     "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.7.1",
     "mongoose": "^8.16.0",
     "multer": "^2.0.1",
-    "nodemailer": "^7.0.4"
+    "nodemailer": "^7.0.4",
+    "rrule": "^2.8.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -32,6 +34,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/luxon": "^3.7.1",
     "@types/mongoose": "^5.11.96",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.4",

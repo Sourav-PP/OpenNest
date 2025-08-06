@@ -21,6 +21,7 @@ import UserServicePage from './pages/user/UserServicePage'
 import VerificationPage from './pages/psychologist/VerificationPage'
 import ProfilePage from './pages/psychologist/ProfilePage'
 import EditProfilePage from './pages/psychologist/EditProfilePage'
+import CreateSlotPage from './pages/psychologist/CreateSlotPage'
 
 //------------- admin ---------------
 import AdminLoginPage from './pages/admin/AdminLoginPage'
@@ -65,6 +66,7 @@ function App() {
         <Route path='/psychologist/verification' element={<PrivateRoute allowedRoles={['psychologist']}>< VerificationPage/></PrivateRoute>} />
         <Route path='/psychologist/profile' element={<PrivateRoute allowedRoles={['psychologist']}>< ProfilePage /></PrivateRoute>} />
         <Route path='/psychologist/edit-profile' element={<PrivateRoute allowedRoles={['psychologist']}>< EditProfilePage /></PrivateRoute>} />
+        <Route path='/psychologist/slot' element={<PrivateRoute allowedRoles={['psychologist']}><CreateSlotPage/></PrivateRoute>} />
 
 
         {/* admin routes */}

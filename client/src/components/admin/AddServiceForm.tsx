@@ -30,9 +30,9 @@ const AddServiceForm = () => {
             reset()
         } catch (err) {
             const error = err as AxiosError<{ message: string }>;
-                toast.error(error.response?.data?.message || "Something went wrong");
-            }
+            toast.error(error.response?.data?.message || "Something went wrong");
         }
+      }
     
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
