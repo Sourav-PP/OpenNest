@@ -29,7 +29,11 @@ export class CreateSlotUseCase implements ICreateSlotUseCase {
             until: new Date(input.toDate)
         })
 
+        console.log("input: ", input)
+
         const recurringDates = rule.all()
+
+        console.log("recurring dates: ", recurringDates)
 
         if (recurringDates.length === 0) {
             throw new AppError(
@@ -53,6 +57,9 @@ export class CreateSlotUseCase implements ICreateSlotUseCase {
             let start = day.set({hour: startHour, minute: startMinute}).toUTC()
             let end = day.set({hour: endHour, minute: endMinute}).toUTC()
 
+            console.log('start: ', start)
+            console.log('end', end)
+
             while(start.plus({minutes: input.duration}) <= end) {
                 const slotEnd = start.plus({ minutes: input.duration })
 
@@ -68,6 +75,8 @@ export class CreateSlotUseCase implements ICreateSlotUseCase {
                         startDateTime: start.toJSDate(),
                         endDateTime: slotEnd.toJSDate(),
                     })
+                }else{
+                    throw new AppError("No slots were created due to conflicts", 409);
                 }
 
                 start = slotEnd
@@ -79,6 +88,6 @@ export class CreateSlotUseCase implements ICreateSlotUseCase {
             throw new AppError("No slots were created due to conflicts or invalid inputs.", 409);
         }
 
-        if(slots.length) await this.slotRepo.createSlot(slots)
+        await this.slotRepo.createSlot(slots)
     }
 }

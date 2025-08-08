@@ -51,6 +51,7 @@ import { GetProfileUseCase } from "../useCases/implementation/psychologist/profi
 import { UpdatePsychologistProfileUseCase } from "../useCases/implementation/psychologist/profile/updatePsychologistProfileUseCase";
 import { CreateSlotUseCase } from "../useCases/implementation/psychologist/availability/CreateSlotUseCase";
 import { GetSlotByPsychologistUseCase } from "../useCases/implementation/psychologist/availability/GetSlotByPsychologistUseCase";
+import { DeleteSlotUseCase } from "../useCases/implementation/psychologist/availability/DeleteSlotUseCase";
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from "../useCases/implementation/admin/auth/loginUseCase";
@@ -78,6 +79,7 @@ import { GetProfileController } from "../presentation/http/controllers/psycholog
 import { UpdatePsychologistProfileController } from "../presentation/http/controllers/psychologist/updatePsychologistProfileController";
 import { CreateSlotController } from "../presentation/http/controllers/psychologist/createSlotController";
 import { GetSlotByPsychologistController } from "../presentation/http/controllers/psychologist/getSlotByPsychologistController";
+import { DeleteSlotController } from "../presentation/http/controllers/psychologist/deleteSlotController";
 
 //---------------- admin -------------------
 import { AdminAuthController } from "../presentation/http/controllers/admin/adminAuthController";
@@ -155,12 +157,14 @@ const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepos
 const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(psychologistRepository, userRepository)
 const createSlotUseCase = new CreateSlotUseCase(slotRepository, psychologistRepository)
 const getSlotByPsychologistUseCase = new GetSlotByPsychologistUseCase(slotRepository)
+const deleteSlotUseCase = new DeleteSlotUseCase(slotRepository)
 
 export const verifyPsychologistController = new VerifyPsychologistController(verifyPsychologistUseCase)
 export const getProfileController = new GetProfileController(getProfileUseCase)
 export const updatePsychologistProfileController = new UpdatePsychologistProfileController(updatePsychologistProfileUseCase)
 export const createSlotController = new CreateSlotController(createSlotUseCase, psychologistRepository)
 export const getSlotByPsychologistController = new GetSlotByPsychologistController(getSlotByPsychologistUseCase, psychologistRepository)
+export const deleteSlotController = new DeleteSlotController(deleteSlotUseCase, psychologistRepository)
 
 
 // ---------- ADMIN ----------

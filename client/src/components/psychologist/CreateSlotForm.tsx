@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {format, parseISO} from 'date-fns'
+import CustomTimePicker from "./CustomTimePicker";
 
 import { useForm } from "react-hook-form";
 import {
@@ -97,7 +98,7 @@ const CreateSlotForm = () => {
     }
   };
   return (
-    <div className="max-w-2xl mx-auto mt-12 p-8 bg-gradient-to-br from-white to-gray-50 shadow-2xl rounded-3xl border border-gray-100">
+    <div className="max-w-2xl mx-auto mt-12 p-8 bg-gradient-to-br from-white to-gray-50 shadow-xl rounded-3xl border border-gray-100">
       <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 tracking-tight">
         Create New Slot
       </h2>
@@ -238,10 +239,9 @@ const CreateSlotForm = () => {
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">Start Time</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="time" 
-                          {...field} 
-                          className="w-full border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-lg"
+                        <CustomTimePicker
+                          value={field.value}
+                          onChange={field.onChange}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-sm mt-1" />
@@ -256,10 +256,9 @@ const CreateSlotForm = () => {
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">End Time</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="time" 
-                          {...field} 
-                          className="w-full border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-lg"
+                        <CustomTimePicker
+                          value={field.value}
+                          onChange={field.onChange}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500 text-sm mt-1" />
@@ -327,7 +326,7 @@ const CreateSlotForm = () => {
               </>
             )}
 
-            <Button type="submit" className="w-full mt-4">
+            <Button type="submit" className="w-full mt-4 bg-gradient-to-r from-[#5C68FF] to-[#70A5FF] rounded-xl py-5">
               Create Slot
             </Button>
           </form>

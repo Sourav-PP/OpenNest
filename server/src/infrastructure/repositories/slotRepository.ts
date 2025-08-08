@@ -27,4 +27,20 @@ export class SlotRepository implements ISlotRepository {
             bookedBy: slot.bookedBy?.toString() ?? null
         }))
     }
+
+    async findById(id: string): Promise<Slot | null> {
+        const slot = await SlotModel.findById(id).lean()
+        if(!slot) return null
+
+        return {
+            ...slot,
+            id: slot?._id.toString(),
+            psychologistId: slot.psychologistId.toString(),
+            bookedBy: slot.bookedBy?.toString() ?? null
+        }
+    }
+
+    async deleteById(id: string): Promise<void> {
+        await SlotModel.findByIdAndDelete(id)
+    }
 }

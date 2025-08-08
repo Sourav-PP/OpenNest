@@ -1,15 +1,22 @@
-import express from 'express'
-import { authenticatePsychologist, createSlotController, getSlotByPsychologistController, updatePsychologistProfileController } from '../../../config/di'
+import express from "express";
+import {
+  authenticatePsychologist,
+  createSlotController,
+  deleteSlotController,
+  getSlotByPsychologistController,
+  updatePsychologistProfileController,
+} from "../../../config/di";
 
 //-------------controller--------------
-import { getProfileController } from '../../../config/di'
-import { uploadSingle } from '../middlewares/multer'
+import { getProfileController } from "../../../config/di";
+import { uploadSingle } from "../middlewares/multer";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/profile', authenticatePsychologist, getProfileController.handle)
-router.put('/profile', authenticatePsychologist, uploadSingle, updatePsychologistProfileController.handle)
-router.post('/slot', authenticatePsychologist, createSlotController.handle )
-router.get('/slot', authenticatePsychologist, getSlotByPsychologistController.handle)
+router.get("/profile", authenticatePsychologist, getProfileController.handle);
+router.put("/profile",authenticatePsychologist, uploadSingle, updatePsychologistProfileController.handle);
+router.post("/slot", authenticatePsychologist, createSlotController.handle);
+router.get("/slot", authenticatePsychologist, getSlotByPsychologistController.handle);
+router.delete("/slot/:slotId", authenticatePsychologist, deleteSlotController.handle);
 
-export default router
+export default router;
