@@ -3,9 +3,8 @@ import Sidebar from "../../components/psychologist/Sidebar"
 import Profile from "../../components/psychologist/Profile"
 
 const ProfilePage = () => {
-  console.log("📍 Loaded: ProfilePage");
   return (
-    <div className="flex h-screen w-full bg-[#ECF1F3] text-primaryText overflow-hidden">
+    <div className="relative flex h-screen w-full bg-transparent text-primaryText">
       <Sidebar />
       <div className="flex-1 overflow-auto">
         <Header/>

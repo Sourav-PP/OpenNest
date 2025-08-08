@@ -1,6 +1,7 @@
 import Header from "../../components/psychologist/Header"
 import Sidebar from "../../components/psychologist/Sidebar"
 import CreateSlotForm from "../../components/psychologist/CreateSlotForm"
+import SlotCalendar from "@/components/psychologist/SlotCalendar"
 
 const CreateSlotPage = () => {
   return (
@@ -9,6 +10,7 @@ const CreateSlotPage = () => {
       <div className="flex-1 overflow-auto">
         <Header/>
         <CreateSlotForm />
+        <SlotCalendar />
       </div>
     </div>
   )

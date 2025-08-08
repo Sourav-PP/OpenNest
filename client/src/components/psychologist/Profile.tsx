@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { psychologistApi } from "../../server/api/psychologist";
 import type { IPsychologistProfileDto } from "../../types/pasychologist";
+import AnimatedTitle from "../animation/AnimatedTitle";
 
 const Profile = () => {
   console.log("📍 Loaded: ProfilePage component");
@@ -62,7 +63,7 @@ const Profile = () => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-indigo-50 to-white min-h-screen">
-      <h2 className="text-3xl font-bold text-gray-800 mb-4">My Profile</h2>
+      <AnimatedTitle><h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">My Profile</h2></AnimatedTitle>
       <p className="mb-6 text-gray-500">Hi, {name}, Welcome back!</p>
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-6 border border-gray-100">
         <div className="flex justify-end mb-4 sm:mb-0">

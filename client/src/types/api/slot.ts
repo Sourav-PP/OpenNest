@@ -12,3 +12,12 @@ export interface IRecurringSlotInput {
     duration: number;  
     timeZone: string;      
 }
+
+export interface IDeleteSlotInput {
+    slotId: string
+}
+
+export interface IDeleteSlotResponse {
+    success: boolean
+    message: string;
+}

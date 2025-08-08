@@ -47,3 +47,8 @@ export interface IRecurringSlotInput {
     duration: number;
     timeZone: string;
 }
+
+export interface IDeleteSlotInput {
+    slotId: string;
+    psychologistId: string;
+}

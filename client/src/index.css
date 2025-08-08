@@ -1,6 +1,9 @@
+@import 'react-datepicker/dist/react-datepicker.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 @layer components {
   .btn-primary {
@@ -20,8 +23,110 @@
   }
 }
 
+@layer utilities {
+  .fade-in {
+    animation: fadeIn 300ms ease-out forwards;
+  }
+  .fade-out {
+    animation: fadeOut 200ms ease-in forwards;
+  }
+  .scale-in {
+    animation: scaleIn 300ms ease-out forwards;
+  }
+  .scale-out {
+    animation: scaleOut 200ms ease-in forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes scaleOut {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.95); opacity: 0; }
+  }
+}
+
 body {
   @apply font-jakarta;
+}
+
+
+/* FullCalendar Toolbar Container */
+.fc-header-toolbar {
+  @apply flex flex-wrap justify-between items-center gap-2 sm:gap-4 mb-6 p-2 sm:p-4 bg-white rounded-lg shadow-sm;
+}
+
+/* Each section (left, center, right) */
+.fc-toolbar-chunk {
+  @apply flex flex-wrap items-center gap-1 sm:gap-2;
+}
+
+/* Buttons */
+.fc .fc-button {
+  @apply bg-gradient-to-r from-[#5C68FF] to-[#70A5FF] text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-lg border-none shadow-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-200 ease-in-out;
+}
+
+/* Active Button */
+.fc .fc-button.fc-button-active {
+  @apply bg-gradient-to-r from-[#5C68FF] to-[#70A5FF] text-white shadow-md transform scale-105 outline-none;
+}
+
+/* Disabled Button */
+.fc .fc-button:disabled {
+  @apply bg-gray-300 text-white cursor-not-allowed opacity-75;
+}
+
+/* Title (e.g., "August 2025") */
+.fc-toolbar-title {
+  font-size: 1rem !important;        /* text-base */
+  font-weight: 700 !important;       /* font-bold */
+  color: #111827 !important;         /* text-gray-900 */
+  letter-spacing: -0.015em !important; /* tracking-tight */
+  max-width: 150px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@media (min-width: 640px) {
+  .fc-toolbar-title {
+    font-size: 1.125rem !important;  /* text-lg */
+    max-width: 250px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .fc-toolbar-title {
+    font-size: 1.5rem !important;  /* text-xl */
+    max-width: none !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .fc-header-toolbar {
+    @apply p-2 mb-4;
+  }
+
+  .fc-toolbar-title {
+    @apply text-sm max-w-[120px];
+  }
+
+  .fc .fc-button {
+    @apply text-xs px-2 py-1;
+  }
 }
 
 

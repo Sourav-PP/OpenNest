@@ -1,6 +1,7 @@
 import { server } from "../server";
-import type { IPsychologistProfileDto } from "../../types/pasychologist";
-import type { IRecurringSlotInput, ISingleSlotInput } from "../../types/api/slot";
+import type { IPsychologistProfileDto } from "@/types/pasychologist";
+import type { IRecurringSlotInput, ISingleSlotInput, IDeleteSlotResponse, IDeleteSlotInput } from "@/types/api/slot";
+import type { ISlotDto } from "@/types/slot";
 
 export const psychologistApi = {
     getProfile: async() => server.get<IPsychologistProfileDto>("/psychologist/profile"),
@@ -9,5 +10,7 @@ export const psychologistApi = {
         headers: { "Content-Type" : "multipart/form-data" }
     }),
     createSingleSlot: async(data: ISingleSlotInput) => server.post('/psychologist/slot', data),
-    createRecurringSlot: async(data: IRecurringSlotInput) => server.post('/psychologist/slot', data)
+    createRecurringSlot: async(data: IRecurringSlotInput) => server.post('/psychologist/slot', data),
+    getPsychologistSlots: async() => server.get<ISlotDto[]>("/psychologist/slot"),
+    deleteSlotByPsychologist: async (input: IDeleteSlotInput) => server.delete<IDeleteSlotResponse>(`/psychologist/slot/${input.slotId}`)
 }
