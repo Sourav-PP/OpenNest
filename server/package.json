@@ -26,7 +26,8 @@
     "mongoose": "^8.16.0",
     "multer": "^2.0.1",
     "nodemailer": "^7.0.4",
-    "rrule": "^2.8.1"
+    "rrule": "^2.8.1",
+    "stripe": "^18.4.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

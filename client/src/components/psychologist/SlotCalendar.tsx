@@ -27,6 +27,7 @@ const SlotCalendar = () => {
   const fetchSlots = async () => {
     try {
       const slots = await psychologistApi.getPsychologistSlots();
+      console.log("slots: ", slots)
       const mapped = slots.map((slot: ISlotDto) => ({
         id: slot.id,
         title: slot.isBooked ? "Booked" : "Available",

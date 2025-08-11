@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ToggleUserStatusUseCase } from '../../../../useCases/implementation/admin/management/toggleUserStatusUseCase';
-import { UserRepository } from '../../../../infrastructure/repositories/userRepository';
+import { UserRepository } from '../../../../infrastructure/repositories/user/userRepository';
 
 export class ToggleUserStatusController {
     constructor(private toggleUserStatusUseCase: ToggleUserStatusUseCase) {}

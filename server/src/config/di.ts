@@ -1,12 +1,20 @@
 import dotenv from "dotenv";
 dotenv.config();
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion:  "2025-07-30.basil",
+})
 
 // ====================   REPOSITORIES  ======================
 
 // --------------  user  ----------------
-import { UserRepository } from "../infrastructure/repositories/userRepository";
-import { UserAuthAccountRepository } from "../infrastructure/repositories/userAuthAccountRepository";
+import { UserRepository } from "../infrastructure/repositories/user/userRepository";
+import { UserAuthAccountRepository } from "../infrastructure/repositories/user/userAuthAccountRepository";
 import { OtpRepository } from "../infrastructure/repositories/otpRepository";
+import { PaymentRepository } from "../infrastructure/repositories/user/paymentRepository";
+import { ConsultationRepository } from "../infrastructure/repositories/user/consultationRepository";
+
 // -------------- psychologist ------------------
 import { KycRepository } from "../infrastructure/repositories/kycRepository";
 import { PsychologistRepository } from "../infrastructure/repositories/psychologistRepository";
@@ -27,6 +35,7 @@ import { GoogleAuthService } from "../infrastructure/repositories/googleAuthServ
 import { BcryptAuthService } from "../infrastructure/auth/authService";
 import { JwtTokenService } from "../infrastructure/auth/tokenService";
 import { NodemailerOtpService } from "../infrastructure/auth/otpService";
+import { PaymentService } from "../infrastructure/services/paymentService";
 
 
 // ==================== USE CASES =======================
@@ -44,6 +53,9 @@ import { GetUserProfileUseCase } from "../useCases/implementation/user/profile/g
 import { UpdateUserProfileUseCase } from "../useCases/implementation/user/profile/updateUserProfileUseCase";
 import { GetPsychologistDetailsUseCase } from "../useCases/implementation/user/data/getPsychologistDetails";
 import { GoogleLoginUseCase } from "../useCases/implementation/auth/googleLoginUseCase";
+import { GetSlotForUserUseCase } from "../useCases/implementation/user/data/getSlotForUserUseCase";
+import { CreateCheckoutSessionUseCase } from "../useCases/implementation/user/payment/createCheckoutSessionUseCase";
+import { HandleWebhookUseCase } from "../useCases/implementation/user/payment/handleWebhookUseCase";
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from "../useCases/implementation/psychologist/profile/verifyUseCase";
@@ -72,6 +84,8 @@ import { GetUserProfileController } from "../presentation/http/controllers/user/
 import { UpdateUserProfileController } from "../presentation/http/controllers/user/updateUserProfileController";
 import { GetPsychologistDetailsController } from "../presentation/http/controllers/user/getPsychologistDetailsController";
 import { GoogleLoginController } from "../presentation/http/controllers/auth/GoogleLoginController";
+import { GetSlotsForUserController } from "../presentation/http/controllers/user/getSlotForUserController";
+import { PaymentController } from "../presentation/http/controllers/user/paymentController";
 
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
@@ -112,11 +126,15 @@ export const authenticateAll = authMiddleware(tokenService, ["user", "psychologi
 
 const kycRepository = new KycRepository()
 const googleAuthService = new GoogleAuthService()
+const slotRepository = new SlotRepository()
+const paymentService = new PaymentService(stripe)
 
 const userRepository = new UserRepository();
 const userAuthRepository = new UserAuthAccountRepository()
 const userServiceRepository = new ServiceRepository()
 const psychologistRepository = new PsychologistRepository()
+const paymentRespository = new PaymentRepository()
+const consultationRepository = new ConsultationRepository()
 
 
 const signupUseCase = new SignupUseCase( userRepository, authService, tokenService, otpService );
@@ -131,6 +149,9 @@ const getAllPsychologistUseCase = new GetAllPsychologistUseCasee(psychologistRep
 const getUserProfileUseCase = new GetUserProfileUseCase(userRepository)
 const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository)
 const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(psychologistRepository, kycRepository, userRepository)
+const getSlotsForUserUseCase = new GetSlotForUserUseCase(slotRepository, psychologistRepository)
+const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(paymentService, paymentRespository, slotRepository)
+const handleWebhookUseCase = new HandleWebhookUseCase(paymentRespository, paymentService, consultationRepository, slotRepository)
 
 export const authController = new AuthController(
   signupUseCase,
@@ -146,11 +167,11 @@ export const getAllPsychologistsController = new GetAllPsychologistsController(g
 export const getUserProfileController = new GetUserProfileController(getUserProfileUseCase)
 export const updateUserProfileController = new UpdateUserProfileController(updateUserProfileUseCase)
 export const getPsychologistDetailsController = new GetPsychologistDetailsController(getPsychologistDetailsUseCase)
+export const getSlotsForUserController = new GetSlotsForUserController(getSlotsForUserUseCase)
+export const paymentController = new PaymentController(createCheckoutSessionUseCase, handleWebhookUseCase, slotRepository)
 
 
 // ---------- PSYCHOLOGIST ----------
-
-const slotRepository = new SlotRepository()
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository)
 const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository)

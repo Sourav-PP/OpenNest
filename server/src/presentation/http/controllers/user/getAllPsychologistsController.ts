@@ -12,7 +12,6 @@ export class GetAllPsychologistsController {
                 psychologists,
                 totalCount: psychologists.length
             }
-            console.log('psychologists: ', psychologists)
             res.status(200).json(response)
             return 
         } catch (error: any) {

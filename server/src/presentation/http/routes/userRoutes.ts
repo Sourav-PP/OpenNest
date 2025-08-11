@@ -1,5 +1,6 @@
 import express from 'express'
-import { authenticateUser, getUserProfileController } from '../../../config/di'
+import { authenticateUser, getSlotsForUserController, getUserProfileController, paymentController } from '../../../config/di'
+import expressRaw from 'express';
 
 // -------------- controllers ----------------
 import { userGetAllServicesController } from '../../../config/di'
@@ -15,5 +16,8 @@ router.get('/psychologists', getAllPsychologistsController.handle )
 router.get('/psychologists/:id', getPsychologistDetailsController.handle)
 router.get('/profile', authenticateUser, getUserProfileController.handle)
 router.put('/profile', authenticateUser, uploadSingle, updateUserProfileController.handle)
+router.get('/psychologists/:userId/slots', authenticateUser, getSlotsForUserController.handle)
+router.post('/payment/create-checkout-session', authenticateUser, paymentController.createCheckoutSession)
+router.post('/payment/webhook', express.raw({type: 'application/json'}), paymentController.handleWebhook)
 
 export default router

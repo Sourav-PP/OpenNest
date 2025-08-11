@@ -13,3 +13,14 @@ export interface IGetAllPsychologistRequest {
     page?: number;
     limit?: number
 }
+
+export interface ICreateCheckoutSessionInput {
+    subscriptionId?: string;
+    slotId: string;
+    amount: number;
+    sessionGoal: string;
+}
+
+export interface ICreateCheckoutSessionResponse {
+    url: string
+}

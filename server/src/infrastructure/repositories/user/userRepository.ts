@@ -1,11 +1,11 @@
-import { User } from "../../domain/entities/user";
-import { IUserRepository } from "../../domain/interfaces/IUserRepository";
-import { IAuthAccountRepository } from "../../domain/interfaces/IAuthAccountRepository";
-import { userModel } from "../database/models/user/UserModel";
-import { AppError } from "../../domain/errors/AppError";
-import { IUserDto } from "../../domain/dtos/user";
+import { User } from "../../../domain/entities/user";
+import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
+import { IAuthAccountRepository } from "../../../domain/interfaces/IAuthAccountRepository";
+import { userModel } from "../../database/models/user/UserModel";
+import { AppError } from "../../../domain/errors/AppError";
+import { IUserDto } from "../../../domain/dtos/user";
 import { FilterQuery } from "mongoose";
-import { PendingSignupModel } from "../database/models/user/PendinSignupModel";
+import { PendingSignupModel } from "../../database/models/user/PendinSignupModel";
 
 export class UserRepository implements IUserRepository   {
     async findAll(params: { search?: string; sort?: "asc" | "desc"; gender?: "Male" | "Female"; skip: number; limit: number; }): Promise<User[]> {

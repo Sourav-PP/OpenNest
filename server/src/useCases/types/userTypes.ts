@@ -44,3 +44,8 @@ export interface IGetUserProfileOutput {
     gender?: string;
     isActive?: boolean;
 }
+
+export interface IGetSlotForUsertInput {
+  userId: string; //userId of psychologist
+  date?: Date
+}
