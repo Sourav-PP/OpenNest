@@ -14,7 +14,6 @@ const PsychologistDetailsSection = () => {
     const fetchPsychologist = async () => {
       try {
         const data = await userApi.getPsychologistById(id!);
-        console.log("data; ", data)
         setPsychologist(data);
       } catch (err) {
         console.log(err)
@@ -63,7 +62,7 @@ const PsychologistDetailsSection = () => {
 
             {/* Details Section */}
             <div className="w-full sm:w-2/3 space-y-4">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+              <h2 className="text-2xl sm:text-3xl font-bold text-primaryText mb-1">
                 {name}
               </h2>
               <p className="text-gray-500 text-sm mb-2">{email}</p>
@@ -76,7 +75,7 @@ const PsychologistDetailsSection = () => {
                 <span className="font-semibold">About:</span>{" "} {aboutMe}
               </p>
               <p className="text-gray-900 text-base font-semibold mt-6">
-                Consultation Fee: ₹{defaultFee}
+                Consultation Fee: ${defaultFee}
               </p>
             </div>
           </div>

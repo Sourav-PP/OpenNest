@@ -10,7 +10,6 @@ export class GetPsychologistDetailsController {
             const userId = req.params.id
 
             const data = await this.getPsychologistDetails.execute(userId)
-            console.log("profile data in details: ", data)
             res.status(200).json(data)
         } catch (error: any) {
             const status = error instanceof AppError ? error.statusCode : 500

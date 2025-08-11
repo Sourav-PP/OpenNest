@@ -16,6 +16,8 @@ import TherapistPage from './pages/user/TherapistPage'
 import UserProfilePage from './pages/user/UserProfilePage'
 import PsychologistDetailPage from './pages/user/PsychologistDetailPage'
 import UserServicePage from './pages/user/UserServicePage'
+import Success from './components/user/Success'
+import Cancel from './components/user/Cancel'
 
 // ------------ psychologist ---------------
 import VerificationPage from './pages/psychologist/VerificationPage'
@@ -57,8 +59,10 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         <Route path='/user/therapist' element={< TherapistPage/>} />
         <Route path='/user/psychologists/:id' element={< PsychologistDetailPage/>} />
+        <Route path='/user/success' element={<Success/>}/>
+        <Route path='/user/cancel' element={<Cancel/>}/>
         <Route path='/user/services' element={<UserServicePage/>} />
-        <Route path='/user/profile' element={<UserProfilePage/>} />
+        <Route path='/user/profile' element={<PrivateRoute allowedRoles={['user']}><UserProfilePage/></PrivateRoute>} />
         {/* <Route element={<PrivateRoute allowedRoles={['user']}/>}>
         </Route> */}
 

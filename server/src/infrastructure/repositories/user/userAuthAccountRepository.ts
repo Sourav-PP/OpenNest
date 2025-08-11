@@ -1,5 +1,5 @@
-import { userModel } from "../database/models/user/UserModel";
-import { IAuthAccountRepository } from "../../domain/interfaces/IAuthAccountRepository";
+import { userModel } from "../../database/models/user/UserModel";
+import { IAuthAccountRepository } from "../../../domain/interfaces/IAuthAccountRepository";
 
 export class UserAuthAccountRepository implements IAuthAccountRepository {
     async findById(id: string): Promise<{ id: string; role: string; email: string; } | null> {

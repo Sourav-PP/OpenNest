@@ -4,5 +4,7 @@ export interface ISlotDto {
     startDateTime: string;
     endDateTime: string;
     isBooked: boolean;
-    bookedBy?: string
+    bookedBy?: {
+        name?: string
+    }
 }
