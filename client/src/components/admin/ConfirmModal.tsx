@@ -1,14 +1,36 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 interface ConfirmModalProps {
   isOpen: boolean
   onClose: () => void
-  onConfirm: () => void
+  onConfirm: (reason?: string) => void
+  title?: string
   message?: string
+  requireReason?: boolean
 }
 
-const ConfirmModal = ({ isOpen, onClose, onConfirm, message }: ConfirmModalProps) => {
+const ConfirmModal = ({ isOpen, onClose, onConfirm,title, message, requireReason }: ConfirmModalProps) => {
+
+  const [reason, setReason] = useState('')
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if(!isOpen) {
+      setReason("")
+      setError("")
+    }
+  },[isOpen])
+
+  const handleConfirm = () => {
+    if(requireReason && !reason.trim()) {
+      setError("Reason is required to reject this KYC!")
+      return
+    }
+    setError("")
+    onConfirm(reason.trim())
+  }
+  
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -47,16 +69,30 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, message }: ConfirmModalProps
                 </button>
 
                 <Dialog.Title as="h3" className="text-2xl font-bold text-white mb-4 mt-4">
-                  Update Status?
+                  {title || "Update Status?"}
                 </Dialog.Title>
 
                 <p className="text-base text-gray-300 mb-8 leading-relaxed">
                   {message || 'Are you sure you want to perform this action?'}
                 </p>
 
+                {requireReason && (
+                  <div className='mb-6 text-left'>
+                    <textarea
+                      className="w-full p-3 bg-admin-bg-secondary text-whit mb-1 rounded-xl"
+                      placeholder="Enter rejection reason..."
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                    />
+                    {error && (
+                      <p className='text-red-500 text-sm'>{error}</p>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex justify-center gap-4">
                   <button
-                    onClick={onConfirm}
+                    onClick={handleConfirm}
                     className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-full transition-all duration-200 shadow-md hover:shadow-lg"
                   >
                     Confirm

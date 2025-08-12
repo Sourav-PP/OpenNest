@@ -52,3 +52,29 @@ export interface IToggleStatusRequest {
 export interface IToggleStatusResponse {
   message: string;
 }
+
+export interface IAdminKycDto {
+    id: string;
+    identificationDoc: string;
+    educationalCertification: string;
+    experienceCertificate: string;
+    psychologistId: string;
+    psychologistName: string;
+    psychologistEmail: string;
+    profileImage: string;
+    qualification: string;
+    kycStatus: 'pending' | 'approved' | 'rejected'
+}
+
+export interface IGetAllKycDetailsRequest {
+    search?: string;
+    sort?: "asc" | "desc";
+    status?: 'pending' | 'approved' | 'rejected' | 'all'
+    page?: number;
+    limit?: number
+}
+
+export interface IGetAllKycDetailsResponse {
+    kycs: IAdminKycDto[],
+    totalCount: number
+}

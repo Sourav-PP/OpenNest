@@ -33,6 +33,8 @@ import AdminDashboard from './pages/admin/Dashboard'
 import UserManagement from './pages/admin/UserManagement'
 import PsychologistManagement from './pages/admin/PsychologistManagement'
 import ServicePage from './pages/admin/ServicePage'
+import KycManagement from './pages/admin/KycManagement'
+import KycVerificationPage from './pages/admin/KycVerificationPage'
 
 
 
@@ -84,6 +86,8 @@ function App() {
         <Route path='/admin/dashboard' element={<PrivateRoute allowedRoles={['admin']}>< AdminDashboard /></PrivateRoute>} />
         <Route path='/admin/users' element={<PrivateRoute allowedRoles={['admin']}><UserManagement /></PrivateRoute>}/>
         <Route path='/admin/psychologists' element={<PrivateRoute allowedRoles={['admin']}><PsychologistManagement /></PrivateRoute>}/>
+        <Route path='/admin/kyc' element={<PrivateRoute allowedRoles={['admin']}><KycManagement /></PrivateRoute>}/>
+        <Route path='/admin/kyc/:psychologistId' element={<PrivateRoute allowedRoles={['admin']}><KycVerificationPage /></PrivateRoute>}/>
         <Route path='/admin/services' element={<PrivateRoute allowedRoles={['admin']}><ServicePage /></PrivateRoute>} />
   
       </Routes>

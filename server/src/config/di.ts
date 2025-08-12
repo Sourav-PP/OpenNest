@@ -74,6 +74,10 @@ import { AdminLogoutUseCase } from "../useCases/implementation/admin/auth/logout
 import { GetAllUserUseCase } from "../useCases/implementation/admin/management/getAllUserUseCase";
 import { GetAllPsychologistsUseCase } from "../useCases/implementation/admin/management/getAllPsychologistsUseCase";
 import { ToggleUserStatusUseCase } from "../useCases/implementation/admin/management/toggleUserStatusUseCase";
+import { GetAllKycUseCase } from "../useCases/implementation/admin/management/getAllKycUseCase";
+import { GetKycForPsychologistUseCase } from "../useCases/implementation/admin/management/getKycForPsychologistUseCase";
+import { ApproveKycUseCase } from "../useCases/implementation/admin/management/approveKycUseCase";
+import { RejectKycUseCase } from "../useCases/implementation/admin/management/rejectKycUseCase";
 
 //===================== CONTROLLERS =====================
 
@@ -90,6 +94,7 @@ import { GetSlotsForUserController } from "../presentation/http/controllers/user
 import { PaymentController } from "../presentation/http/controllers/user/paymentController";
 import { GetUserConsultationsController } from "../presentation/http/controllers/user/getUserConsultationsController";
 
+
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
 import { GetProfileController } from "../presentation/http/controllers/psychologist/getProfileController";
@@ -97,7 +102,7 @@ import { UpdatePsychologistProfileController } from "../presentation/http/contro
 import { CreateSlotController } from "../presentation/http/controllers/psychologist/createSlotController";
 import { GetSlotByPsychologistController } from "../presentation/http/controllers/psychologist/getSlotByPsychologistController";
 import { DeleteSlotController } from "../presentation/http/controllers/psychologist/deleteSlotController";
-import { GetKycDetailsController } from "../presentation/http/controllers/psychologist/GetKycDetailsController";
+import { GetKycDetailsController } from "../presentation/http/controllers/psychologist/getKycDetailsController";
 
 //---------------- admin -------------------
 import { AdminAuthController } from "../presentation/http/controllers/admin/adminAuthController";
@@ -105,6 +110,10 @@ import { CreateServiceController } from "../presentation/http/controllers/admin/
 import { GetAllUserController } from "../presentation/http/controllers/admin/getAllUserController";
 import { GetAllPsychologistController } from "../presentation/http/controllers/admin/getAllPsychologistsController";
 import { ToggleUserStatusController } from "../presentation/http/controllers/admin/toggleUserStatusController";
+import { GetAllKycController } from "../presentation/http/controllers/admin/getAllKycController";
+import { GetKycForPsychologistController } from "../presentation/http/controllers/admin/getKycForPsychologistController";
+import { ApproveKycController } from "../presentation/http/controllers/admin/approveKycController";
+import { RejectKycController } from "../presentation/http/controllers/admin/rejectKycController";
 
 
 //===================== MIDDLEWARE ========================
@@ -208,6 +217,10 @@ const createServiceUseCase = new CreateServiceUseCase(serviceRepository)
 const getAllUserUseCase = new GetAllUserUseCase(userRepository)
 const getAllPsychologistsUseCase = new GetAllPsychologistsUseCase(psychologistRepository)
 const toggleUserStatusUseCase = new ToggleUserStatusUseCase(userRepository)
+const getAllKycUseCase = new GetAllKycUseCase(kycRepository)
+const getKycForPsychologistUseCase = new GetKycForPsychologistUseCase(kycRepository)
+const approveKycUseCase = new ApproveKycUseCase(kycRepository)
+const rejectKycUseCase = new RejectKycUseCase(kycRepository)
 
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase)
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, "adminRefreshToken")
@@ -215,3 +228,7 @@ export const createServiceController = new CreateServiceController(createService
 export const getAllUserController = new GetAllUserController(getAllUserUseCase)
 export const getAllPsychologistController = new GetAllPsychologistController(getAllPsychologistsUseCase) 
 export const toggleUserStatusController = new ToggleUserStatusController(toggleUserStatusUseCase)
+export const getAllKycController = new GetAllKycController(getAllKycUseCase)
+export const getKycForPsychologistController = new GetKycForPsychologistController(getKycForPsychologistUseCase)
+export const approveKycController = new ApproveKycController(approveKycUseCase)
+export const rejectKycController = new RejectKycController(rejectKycUseCase)

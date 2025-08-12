@@ -1,6 +1,7 @@
 import { IUserDto } from "../../domain/dtos/user";
 import { IPsychologistListDto } from "../../domain/dtos/psychologist";
 import { SpeicalizationFee } from "../../domain/entities/psychologist";
+import { IKycDto } from "../../domain/dtos/kyc";
 
 export interface IAdminLoginRequest {
     email: string,
@@ -50,5 +51,18 @@ export interface IGetAllPsychologistDto {
 
 export interface IGetAllPsychologistResponse {
     psychologists: IGetAllPsychologistDto[];
+    totalCount?: number
+}
+
+export interface IGetAllKycRequest {
+    search?: string;
+    sort?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+    status?: 'pending' | 'approved' | 'rejected' | 'all';
+}
+
+export interface IGetAllKycResponse {
+    kycs: IKycDto[];
     totalCount?: number
 }
