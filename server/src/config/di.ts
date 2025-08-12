@@ -56,6 +56,7 @@ import { GoogleLoginUseCase } from "../useCases/implementation/auth/googleLoginU
 import { GetSlotForUserUseCase } from "../useCases/implementation/user/data/getSlotForUserUseCase";
 import { CreateCheckoutSessionUseCase } from "../useCases/implementation/user/payment/createCheckoutSessionUseCase";
 import { HandleWebhookUseCase } from "../useCases/implementation/user/payment/handleWebhookUseCase";
+import { GetUserConsultationsUseCase } from "../useCases/implementation/user/data/getUserConsultationsUseCase";
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from "../useCases/implementation/psychologist/profile/verifyUseCase";
@@ -86,6 +87,7 @@ import { GetPsychologistDetailsController } from "../presentation/http/controlle
 import { GoogleLoginController } from "../presentation/http/controllers/auth/GoogleLoginController";
 import { GetSlotsForUserController } from "../presentation/http/controllers/user/getSlotForUserController";
 import { PaymentController } from "../presentation/http/controllers/user/paymentController";
+import { GetUserConsultationsController } from "../presentation/http/controllers/user/getUserConsultationsController";
 
 //---------------- psychologist -----------------
 import { VerifyPsychologistController } from "../presentation/http/controllers/psychologist/VerifyPsychologistController";
@@ -152,6 +154,7 @@ const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(psycholo
 const getSlotsForUserUseCase = new GetSlotForUserUseCase(slotRepository, psychologistRepository)
 const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(paymentService, paymentRespository, slotRepository)
 const handleWebhookUseCase = new HandleWebhookUseCase(paymentRespository, paymentService, consultationRepository, slotRepository)
+const getUserConsultationsUseCase = new GetUserConsultationsUseCase(consultationRepository)
 
 export const authController = new AuthController(
   signupUseCase,
@@ -169,6 +172,7 @@ export const updateUserProfileController = new UpdateUserProfileController(updat
 export const getPsychologistDetailsController = new GetPsychologistDetailsController(getPsychologistDetailsUseCase)
 export const getSlotsForUserController = new GetSlotsForUserController(getSlotsForUserUseCase)
 export const paymentController = new PaymentController(createCheckoutSessionUseCase, handleWebhookUseCase, slotRepository)
+export const getUserConsultationsController = new GetUserConsultationsController(getUserConsultationsUseCase)
 
 
 // ---------- PSYCHOLOGIST ----------

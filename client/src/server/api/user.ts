@@ -1,5 +1,12 @@
 import type { ISlotDto } from "@/types/slot";
-import type { ICreateCheckoutSessionInput, ICreateCheckoutSessionResponse, IGetAllPsychologistRequest, IGetAllPsychologistResponse } from "../../types/api/user";
+import type {
+    IGetUserConsultationsResponse,
+    ICreateCheckoutSessionInput,
+    ICreateCheckoutSessionResponse,
+    IGetAllPsychologistRequest,
+    IGetAllPsychologistResponse,
+    IGetUserConsultationsRequest
+} from "../../types/api/user";
 import type { IPsychologistProfileDto } from "../../types/pasychologist";
 import type { IUserDto } from "../../types/user";
 import { server } from "../server";
@@ -14,5 +21,6 @@ export const userApi = {
     getSlotsByPsychologist: async(userId: string, date: string) => server.get<ISlotDto[]>(`/user/psychologists/${userId}/slots`, {
         params: {date}
     }),
-    createCheckoutSession: async(input: ICreateCheckoutSessionInput) => server.post<ICreateCheckoutSessionResponse, ICreateCheckoutSessionInput>('/user/payment/create-checkout-session', input)
+    createCheckoutSession: async(input: ICreateCheckoutSessionInput) => server.post<ICreateCheckoutSessionResponse, ICreateCheckoutSessionInput>('/user/payment/create-checkout-session', input),
+    getUserConsultations: async(params?: IGetUserConsultationsRequest) => server.get<IGetUserConsultationsResponse>("/user/consultations", {params}),
 }

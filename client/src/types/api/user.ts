@@ -1,3 +1,4 @@
+import type { IConsultationDto } from "../consultation";
 import type { IPsychologistDto } from "../pasychologist";
 
 export interface IGetAllPsychologistResponse {
@@ -23,4 +24,17 @@ export interface ICreateCheckoutSessionInput {
 
 export interface ICreateCheckoutSessionResponse {
     url: string
+}
+
+export interface IGetUserConsultationsRequest {
+    search?: string;
+    sort?: 'asc' | 'desc';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';
+    page?: number;
+    limit?: number;
+}
+
+export interface IGetUserConsultationsResponse {
+    consultations: IConsultationDto[],
+    totalCount: number
 }

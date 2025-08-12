@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../../../domain/interfaces/IUserRepository";
 import { IGetAllUserUseCase } from "../../../interfaces/admin/management/IGetAllUsersUseCase";
-import { IGetAllUserRequest, IGetAllUserResponse } from "../../../types/adminTypes";
+import { IGetAllUserRequest, IGetAllUserResponse } from "../../../types/adminTypes";''
 
 export class GetAllUserUseCase implements IGetAllUserUseCase {
     constructor(private userRepo: IUserRepository ) {}

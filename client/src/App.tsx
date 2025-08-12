@@ -18,6 +18,7 @@ import PsychologistDetailPage from './pages/user/PsychologistDetailPage'
 import UserServicePage from './pages/user/UserServicePage'
 import Success from './components/user/Success'
 import Cancel from './components/user/Cancel'
+import MySessionsPage from './pages/user/MySessionsPage'
 
 // ------------ psychologist ---------------
 import VerificationPage from './pages/psychologist/VerificationPage'
@@ -63,6 +64,8 @@ function App() {
         <Route path='/user/cancel' element={<Cancel/>}/>
         <Route path='/user/services' element={<UserServicePage/>} />
         <Route path='/user/profile' element={<PrivateRoute allowedRoles={['user']}><UserProfilePage/></PrivateRoute>} />
+        <Route path='/user/consultations' element={<PrivateRoute allowedRoles={['user']}><MySessionsPage/></PrivateRoute>} />
+
         {/* <Route element={<PrivateRoute allowedRoles={['user']}/>}>
         </Route> */}
 
