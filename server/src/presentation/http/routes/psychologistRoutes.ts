@@ -5,6 +5,7 @@ import {
   deleteSlotController,
   getSlotByPsychologistController,
   updatePsychologistProfileController,
+  getKycDetailsController
 } from "../../../config/di";
 
 //-------------controller--------------
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get("/profile", authenticatePsychologist, getProfileController.handle);
 router.put("/profile",authenticatePsychologist, uploadSingle, updatePsychologistProfileController.handle);
+router.get('/kyc', authenticatePsychologist, getKycDetailsController.handle)
 router.post("/slot", authenticatePsychologist, createSlotController.handle);
 router.get("/slot", authenticatePsychologist, getSlotByPsychologistController.handle);
 router.delete("/slot/:slotId", authenticatePsychologist, deleteSlotController.handle);

@@ -1,4 +1,4 @@
-import { Kyc } from "../entities/Kyc";
+import { Kyc } from "../entities/kyc";
 
 export interface IKycRepository {
     create(data: Kyc): Promise<Kyc>
