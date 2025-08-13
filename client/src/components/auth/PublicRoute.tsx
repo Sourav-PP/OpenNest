@@ -19,7 +19,6 @@ const PublicRoute = ({children}: PublicRouteProps) => {
   }, [])
 
   const authPages = ['/login', '/signup', '/admin/login']
-  console.log('🧪 PUBLIC ROUTE HIT', { accessToken, role });
 
   if (ready && accessToken && role && authPages.includes(location.pathname)) {
     switch (role) {

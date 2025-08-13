@@ -1,4 +1,5 @@
 import { IConsultationDto } from "../../domain/dtos/consultation";
+import { IPsychologistResponseDto } from "../../domain/dtos/psychologist";
 
 export interface PublicUser {
   id: string;
@@ -51,7 +52,19 @@ export interface IGetSlotForUsertInput {
   userId: string; //userId of psychologist
   date?: Date
 }
+export interface IGetAllPsychologistRequest {
+  search?: string;
+  sort?: "asc" | "desc";
+  gender?: "Male" | "Female" | "all",
+  expertise?: string  
+  page?: number;
+  limit?: number;
+}
 
+export interface IGetAllPsychologistResponse {
+  psychologists: IPsychologistResponseDto[],
+  totalCount: number
+}
 export interface IGetConsultationsRequest {
   patientId: string
   search?: string;

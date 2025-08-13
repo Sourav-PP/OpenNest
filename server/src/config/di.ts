@@ -118,7 +118,7 @@ import { RejectKycController } from "../presentation/http/controllers/admin/reje
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from "../presentation/http/middlewares/authMiddleware";
-import { get } from "http";
+import { checkBlockedMiddleware } from "../presentation/http/middlewares/checkBlockedMiddleware";
 
 
 // ======================= DI IMPLEMENTATION =======================
@@ -128,11 +128,14 @@ const authService = new BcryptAuthService();
 const tokenService = new JwtTokenService();
 const otpRepository = new OtpRepository();
 const otpService = new NodemailerOtpService(otpRepository);
+const userRepository = new UserRepository();
 
 export const authenticateUser = authMiddleware(tokenService, ["user"]);
 export const authenticatePsychologist = authMiddleware(tokenService, ["psychologist"]);
 export const authenticateAdmin = authMiddleware(tokenService, ["admin"]);
 export const authenticateAll = authMiddleware(tokenService, ["user", "psychologist", "admin"]);
+
+export const checkBlockedUser = checkBlockedMiddleware(userRepository)
 
 
 // ---------- user ------------
@@ -142,7 +145,6 @@ const googleAuthService = new GoogleAuthService()
 const slotRepository = new SlotRepository()
 const paymentService = new PaymentService(stripe)
 
-const userRepository = new UserRepository();
 const userAuthRepository = new UserAuthAccountRepository()
 const userServiceRepository = new ServiceRepository()
 const psychologistRepository = new PsychologistRepository()
@@ -219,8 +221,8 @@ const getAllPsychologistsUseCase = new GetAllPsychologistsUseCase(psychologistRe
 const toggleUserStatusUseCase = new ToggleUserStatusUseCase(userRepository)
 const getAllKycUseCase = new GetAllKycUseCase(kycRepository)
 const getKycForPsychologistUseCase = new GetKycForPsychologistUseCase(kycRepository)
-const approveKycUseCase = new ApproveKycUseCase(kycRepository)
-const rejectKycUseCase = new RejectKycUseCase(kycRepository)
+const approveKycUseCase = new ApproveKycUseCase(kycRepository,psychologistRepository)
+const rejectKycUseCase = new RejectKycUseCase(kycRepository,psychologistRepository)
 
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase)
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, "adminRefreshToken")

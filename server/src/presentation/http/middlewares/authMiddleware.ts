@@ -26,6 +26,7 @@ export const authMiddleware =
 
     try {
       const payload = jwtService.verifyAccessToken(token);
+
       if (!payload || !payload.userId || !payload.email || !payload.role) {
         res.status(401).json({ message: "Invalid token structure" });
         return 

@@ -106,6 +106,10 @@ export class PsychologistRepository implements IPsychologistRepository {
         return result[0]?.total || 0;
     }
 
+    async countAllVerified(): Promise<number> {
+        return await PsychologistModel.countDocuments({isVerified: true})
+    }
+
     async findById(psychologistId: string): Promise<Psychologist | null> {
         const psychologistDoc = await PsychologistModel.findById(psychologistId)
         if(!psychologistDoc) return null
@@ -128,9 +132,16 @@ export class PsychologistRepository implements IPsychologistRepository {
     }
 
     async updateByUserId(userId: string, updateData: Partial<Psychologist>): Promise<Psychologist | null> {
-        console.log("user id in psychologist: ", userId)
         return PsychologistModel.findOneAndUpdate(
             {userId},
+            {$set: updateData},
+            {new: true}
+        )
+    }
+
+    async updateById(id: string, updateData: Partial<Psychologist>): Promise<Psychologist | null> {
+        return PsychologistModel.findByIdAndUpdate(
+            id,
             {$set: updateData},
             {new: true}
         )
@@ -162,18 +173,28 @@ export class PsychologistRepository implements IPsychologistRepository {
         return specializations.map(s => s.name)
     }
 
-    async getAllPsychologists(): Promise<IPsychologistListDto[]> {
-        const result: PsychologistAggregateModel[] = await PsychologistModel.aggregate([
-            // {$match: { isVerified: true }}
-            {
+    async getAllPsychologists(params: {
+        search?: string;
+        sort?: "asc" | "desc";
+        gender?: "Male" | "Female" | 'all';
+        expertise?: string;
+        skip: number;
+        limit: number;
+    }): Promise<IPsychologistListDto[]> {
+        const matchStage: Record<string , unknown> = {isVerified: true}
+        const sortOrder = params.sort === 'asc' ? 1 : -1
+        
+        const pipeline: any[] = [
+           {$match: matchStage},
+           {
                 $lookup: {
                     from: "users",
                     localField: "userId",
                     foreignField: "_id",
                     as: "userData"
-                }
-            },
-            {$unwind: "$userData"},
+                }   
+           },
+           {$unwind: "$userData"},
             {
                 $lookup: {
                     from: "services",
@@ -182,24 +203,60 @@ export class PsychologistRepository implements IPsychologistRepository {
                     as: 'specializationData'
                 }
             },
-            {
-                $project: {
-                    _id: 1,
-                    userId: 1,
-                    isVerified: 1,
-                    aboutMe: 1,
-                    qualification: 1,
-                    defaultFee: 1,
-                    specializationFees: 1,
-                    user: {
-                        name: "$userData.name",
-                        email: "$userData.email",
-                        profileImage: "$userData.profileImage"
-                    },
-                    specializations: "$specializationData.name"
+        ]
+
+        if(params.gender && params.gender !== 'all') {
+            pipeline.push({
+                $match: {
+                    'userData.gender': params.gender
                 }
+            })
+        }
+
+         if(params.search && params.search !== '') {
+            pipeline.push({
+                $match: {
+                    'userData.name': {$regex: params.search, $options: 'i'}
+                }
+            })
+        }
+
+        if(params.expertise && params.expertise !== 'all') {
+            pipeline.push({
+                $match: {
+                    'specializationData.name': params.expertise
+                }
+            })
+        }
+        
+        pipeline.push({
+            $project: {
+                _id: 1,
+                userId: 1,
+                isVerified: 1,
+                aboutMe: 1,
+                qualification: 1,
+                defaultFee: 1,
+                specializationFees: 1,
+                user: {
+                    name: "$userData.name",
+                    email: "$userData.email",
+                    profileImage: "$userData.profileImage"
+                },
+                specializations: "$specializationData.name"
             }
-        ])
+        })
+
+        if(params.sort) {
+            pipeline.push({
+                $sort: {defaultFee: sortOrder}
+            })
+        }
+
+        pipeline.push({$skip: params.skip})
+        pipeline.push({$limit: params.limit})
+
+        const result: PsychologistAggregateModel[] = await PsychologistModel.aggregate(pipeline)
 
         const psychologists: IPsychologistListDto[] = result.map((p) => ({
             id: p._id.toString(), // convert ObjectId to string

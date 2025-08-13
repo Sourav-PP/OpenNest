@@ -12,7 +12,7 @@ const PsychologistTable = () => {
   const [totalCount, setTotalCount] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
   const [gender, setGender] = useState<"Male" | "Female" | "">("")
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")  
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc") 
   // const [isLoading, setIsLoading] = useState(false)
 
   const [debouncedSearch, setDebouncedSearch] = useState("")

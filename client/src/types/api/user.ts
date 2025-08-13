@@ -10,9 +10,10 @@ export interface IGetAllPsychologistRequest {
     search?: string;
     specialization?: string;
     sort?: "asc" | "desc";
-    gender?: "Male" | "Female";
+    gender: "Male" | "Female" | 'all';
     page?: number;
-    limit?: number
+    limit?: number,
+    expertise?: string
 }
 
 export interface ICreateCheckoutSessionInput {

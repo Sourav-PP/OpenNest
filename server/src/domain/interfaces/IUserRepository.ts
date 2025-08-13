@@ -12,6 +12,7 @@ export interface IUserRepository {
         search?: string;
         gender?: 'Male' | 'Female';
     }): Promise<number>
+    isUserBlocked(userId: string): Promise<boolean>
     findByEmail(email: string): Promise<User | null>
     findById(id: string): Promise<User | null>
     createPendingSignup(user: User): Promise<void>

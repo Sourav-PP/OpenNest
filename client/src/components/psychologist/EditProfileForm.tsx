@@ -6,6 +6,7 @@ import "flatpickr/dist/themes/material_blue.css";
 import { psychologistApi } from "../../server/api/psychologist";
 import { updatePsychologistSchema, type updatePsychologistData } from "../../lib/validations/psychologist/updatePsychologistValidation";
 import { useNavigate } from "react-router-dom";
+import AnimatedTitle from "../animation/AnimatedTitle";
 
 const EditProfileForm = () => {
   const navigate = useNavigate()
@@ -104,7 +105,7 @@ const EditProfileForm = () => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-indigo-50 to-white min-h-screen">
-      <h2 className="text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Edit Profile</h2>
+      <AnimatedTitle><h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">Edit Profile</h2></AnimatedTitle>
       <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6">

@@ -124,6 +124,15 @@ export class UserRepository implements IUserRepository   {
         } as User
     }
 
+    async isUserBlocked(userId: string): Promise<boolean> {
+        const user = await userModel.findById(userId)
+
+        if(!user || user.isActive === false) {
+            return true
+        }
+        return false
+    }
+
     async updateProfile(id: string, updates: Partial<User>): Promise<User | null> {
         console.log("user id in user: ", id)
         const updated = await userModel.findByIdAndUpdate(id, updates, {new: true})

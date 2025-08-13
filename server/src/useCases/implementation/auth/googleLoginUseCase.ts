@@ -41,6 +41,10 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
             user = await this.userRepo.create(newUser)
         }
 
+        if(!user.isActive) {
+            throw new AppError("Account is inactive. Please contact support", 403)
+        }
+
         const accessToken = this.tokenService.generateAccessToken(user.id!, user.role, user.email )
         const refreshToken = this.tokenService.generateRefreshToken(user.id!, user.role, user.email )
 

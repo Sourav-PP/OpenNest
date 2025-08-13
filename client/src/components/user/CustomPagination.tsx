@@ -20,7 +20,7 @@ const CustomPagination: React.FC<PaginationProps> = ({currentPage, totalPages, o
       <PaginationPrevious
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         aria-disabled={currentPage === 1}
-        className={currentPage === 1 ? "opacity-50 pointer-events-none" : ""}
+        className={currentPage === 1 ? "opacity-50 pointer-events-none" : "cursor-pointer"}
       >
         Previous
       </PaginationPrevious>
@@ -41,7 +41,7 @@ const CustomPagination: React.FC<PaginationProps> = ({currentPage, totalPages, o
       <PaginationNext
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         aria-disabled={currentPage === totalPages}
-        className={currentPage === totalPages ? "opacity-50 pointer-events-none" : ""}
+        className={currentPage === totalPages ? "opacity-50 pointer-events-none" : "cursor-pointer"}
       >
         Next
       </PaginationNext>

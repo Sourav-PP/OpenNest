@@ -1,6 +1,7 @@
 import express from 'express'
 import {
     authenticateUser,
+    checkBlockedUser,
     getSlotsForUserController,
     getUserConsultationsController,
     getUserProfileController,
@@ -20,11 +21,11 @@ const router = express.Router()
 router.get('/services', userGetAllServicesController.handle)
 router.get('/psychologists', getAllPsychologistsController.handle )
 router.get('/psychologists/:id', getPsychologistDetailsController.handle)
-router.get('/profile', authenticateUser, getUserProfileController.handle)
-router.put('/profile', authenticateUser, uploadSingle, updateUserProfileController.handle)
-router.get('/psychologists/:userId/slots', authenticateUser, getSlotsForUserController.handle)
-router.post('/payment/create-checkout-session', authenticateUser, paymentController.createCheckoutSession)
+router.get('/profile', authenticateUser, checkBlockedUser, getUserProfileController.handle)
+router.put('/profile', authenticateUser, checkBlockedUser, uploadSingle, updateUserProfileController.handle)
+router.get('/psychologists/:userId/slots', authenticateUser, checkBlockedUser, getSlotsForUserController.handle)
+router.post('/payment/create-checkout-session', authenticateUser, checkBlockedUser, paymentController.createCheckoutSession)
 router.post('/payment/webhook', express.raw({type: 'application/json'}), paymentController.handleWebhook)
-router.get('/consultations', authenticateUser, getUserConsultationsController.handle)
+router.get('/consultations', authenticateUser, checkBlockedUser, getUserConsultationsController.handle)
 
 export default router

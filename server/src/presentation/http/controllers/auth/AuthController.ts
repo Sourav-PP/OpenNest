@@ -109,9 +109,9 @@ export class AuthController {
         hasSubmittedVerificationForm: response.hasSubmittedVerificationForm
       });
     } catch (error: any) {
-      const statusCode = error.statusCode ||   500
-      const message = error.message || "Internal server error"
-      res.status(statusCode).json({ error: message });
+      const status = error instanceof AppError ? error.statusCode : 500
+      const message = error.message || "Internal server error";
+      res.status(status).json({ message });
     }
   }
 

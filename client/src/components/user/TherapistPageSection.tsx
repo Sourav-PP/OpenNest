@@ -3,29 +3,81 @@ import { toast } from "react-toastify";
 import { userApi } from "../../server/api/user";
 import type { IPsychologistDto } from "../../types/pasychologist";
 import { Link } from "react-router-dom";
+import type { AxiosError } from "axios";
+import CustomPagination from "./CustomPagination";
 
 const TherapistPageSection = () => {
   const [psychologists, setPsychologists] = useState<IPsychologistDto[]>([])
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0)
+  const [search, setSearch] = useState('')
+  const [gender, setGender] = useState<"Male" | "Female" | 'all'>("all")
+  const [sort, setSort] = useState<"asc" | "desc">("desc") 
+  const [expertise, setExpertise] = useState<string>("all");
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  const itemsPerPage = 4;
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setDebouncedSearch(search)
+      setCurrentPage(1)
+    }, 500)
+
+    return () => clearTimeout(delay)
+  }, [search])
 
   useEffect(() => {
     const fetchPsychologists = async() => {
       try {
-        const res = await userApi.getAllPsychologists()
+        setLoading(true)
+        const res = await userApi.getAllPsychologists({
+            page: currentPage,
+            limit: itemsPerPage,
+            gender: gender,
+            search: debouncedSearch,
+            sort: sort,
+            expertise: expertise !== "all" ? expertise : undefined,
+        })
         console.log('res in page: ', res)
         setPsychologists(res.psychologists)
-      } catch (error) {
-        toast.error("Failed to load specialization")
-        console.error("Failed to fetch services:", error);
+        setTotalCount(res.totalCount ?? 0)
+      } catch (err) {
+        const error = err as AxiosError<{ message: string }>;
+        toast.error(error.response?.data?.message || "Something went wrong");
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchPsychologists()
-  },[])
+  },[currentPage, debouncedSearch, sort, gender, expertise])
 
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
+        {[...Array(8)].map((_, index) => (
+            <div
+            key={index}
+            className="absolute h-2 w-2 bg-gray-300 rounded-full"
+            style={{
+                top: "50%",
+                left: "50%",
+                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+            }}
+            ></div>
+        ))}
+        <span className="sr-only">Loading...</span>
+        </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b bg-[#F3F7FF] p-4 sm:p-28 sm:pt-44">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto mb-6">
         <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-primaryText text-center">Explore Our Licensed Psychologists</h1>
         <p className="text-gray-600 mb-9 text-sm sm:text-base text-center">
           Our team of licensed psychologists is dedicated to providing personalized mental health support. Each therapist brings unique expertise and a compassionate approach to help you on your journey to better mental health.
@@ -37,7 +89,11 @@ const TherapistPageSection = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Enter the name"
+                placeholder="Search by name"
+                value={search}
+                onChange={(e) => {
+                        setSearch(e.target.value);
+                }}
                 className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md"
               />
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 lucide lucide-search-icon lucide-search">
@@ -46,21 +102,43 @@ const TherapistPageSection = () => {
             </div>
           </div>
           <div className="flex-1 flex gap-4">
-            <select className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
-              <option>Expertise</option>
-              <option>Anxiety</option>
-              <option>Stress</option>
-              <option>Trauma</option>
+            <select
+            value={expertise}
+            onChange={(e) => {
+              setExpertise(e.target.value)
+              setCurrentPage(1)
+            }}
+            className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white"
+            >
+              <option value="all">Expertise</option>
+              <option value="anxiety">Anxiety</option>
+              <option value="atress">Stress</option>
+              <option value="depression">Trauma</option>
             </select>
-            <select className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
-              <option>Gender</option>
-              <option>Male</option>
-              <option>Female</option>
+
+            {/* gender */}
+            <select
+            value={gender}
+            onChange={(e) => {
+              setGender(e.target.value as 'Male' | 'Female' | 'all')
+              setCurrentPage(1)
+            }}
+            className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
+              <option value="all">Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
             </select>
-            <select className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
-              <option>Price</option>
-              <option>Low to High</option>
-              <option>High to Low</option>
+
+            {/* Price */}
+            <select
+            value={sort}
+            onChange={(e) => {
+              setSort(e.target.value as 'asc' | 'desc')
+            }}
+            className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
+              <option value="desc">Price</option>
+              <option value="asc">Low to High</option>
+              <option value="desc">High to Low</option>
             </select>
           </div>
         </div>
@@ -92,6 +170,11 @@ const TherapistPageSection = () => {
           ))}
         </div>
       </div>
+      <CustomPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

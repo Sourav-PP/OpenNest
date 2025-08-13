@@ -1,6 +1,7 @@
 import axios, {AxiosError, type AxiosRequestConfig} from "axios";
 import { store } from "../redux/store";
 import { loginSuccess, logout } from "../redux/slices/authSlice";
+import { toast } from "react-toastify";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
@@ -26,6 +27,19 @@ instance.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as CustomAxiosRequestConfig
 
+        if(error.response?.status === 403) {
+             toast.error("Your account has been blocked. Please contact support.")
+             const role = store.getState().auth.role
+             store.dispatch(logout())
+
+             const loginRedirect = role === "psychologist" ? "/login?role=psychologist" : "/login?role=user";
+
+             setTimeout(() => {
+                window.location.href = loginRedirect;
+            }, 1800);
+             return Promise.reject(error)
+        }
+
         if(
             error.response?.status === 401 &&
             !originalRequest._retry &&
@@ -43,9 +57,7 @@ instance.interceptors.response.use(
 
             try {
                 const {data} = await instance.post(refreshEndpoint)
-                console.log("refresh_response: ", data)
                 const accessToken = data.accessToken.accessToken
-                console.log("accesstoken in refreshResponse: ", accessToken)
 
                 store.dispatch(
                     loginSuccess({
