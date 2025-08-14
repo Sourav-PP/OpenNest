@@ -29,7 +29,8 @@
     "multer": "^2.0.1",
     "nodemailer": "^7.0.4",
     "rrule": "^2.8.1",
-    "stripe": "^18.4.0"
+    "stripe": "^18.4.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
