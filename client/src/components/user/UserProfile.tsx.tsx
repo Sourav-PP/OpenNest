@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { updateProfileSchema, type updateProfileData } from "../../lib/validations/user/updateUserProfileValidaton";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { userApi } from "../../server/api/user";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { updateProfileSchema, type updateProfileData } from '../../lib/validations/user/updateUserProfileValidaton';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { userApi } from '../../server/api/user';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -23,18 +23,18 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const res = await userApi.getProfile()
-        const profileData = res
-        console.log("profile Data: ", res)
-        setValue("name", profileData.name);
-        setValue("email", profileData.email);
-        setValue("phone", profileData.phone);
-        setValue("dateOfBirth", profileData.dateOfBirth);
-        setValue("gender", profileData.gender);
+        const res = await userApi.getProfile();
+        const profileData = res;
+        console.log('profile Data: ', res);
+        setValue('name', profileData.name);
+        setValue('email', profileData.email);
+        setValue('phone', profileData.phone);
+        setValue('dateOfBirth', profileData.dateOfBirth);
+        setValue('gender', profileData.gender);
         setProfileImagePreview(profileData.profileImage || null);
       } catch (error) {
-        toast.error("Error fetching profile");
-        console.error("Error fetching profile:", error);
+        toast.error('Error fetching profile');
+        console.error('Error fetching profile:', error);
       } finally {
         setLoading(false);
       }
@@ -47,29 +47,29 @@ const UserProfile = () => {
     try {
       const formData = new FormData();
 
-      formData.append("name", data.name)
-      formData.append("email", data.email);
-      formData.append("phone", data.phone);
+      formData.append('name', data.name);
+      formData.append('email', data.email);
+      formData.append('phone', data.phone);
       if(data.dateOfBirth) {
-        formData.append("dateOfBirth", data.dateOfBirth);
+        formData.append('dateOfBirth', data.dateOfBirth);
       }
       if(data.gender) {
-        formData.append("gender", data.gender);
+        formData.append('gender', data.gender);
       }
 
-      const file = data.profileImage?.[0]
+      const file = data.profileImage?.[0];
       if(file) {
-        formData.append('file', file)
+        formData.append('file', file);
       }
-      console.log("Sending to backend:", [...formData.entries()]);
+      console.log('Sending to backend:', [...formData.entries()]);
 
-      await userApi.updateProfile(formData)
+      await userApi.updateProfile(formData);
 
-      toast.success("Profile updated successfully");
+      toast.success('Profile updated successfully');
       navigate('/user/profile');
     } catch (error) {
-      toast.error("Error updating profile");
-      console.error("Error updating profile:", error);
+      toast.error('Error updating profile');
+      console.error('Error updating profile:', error);
     }
   };
 
@@ -80,24 +80,24 @@ const UserProfile = () => {
     }
   };
 
- if (loading) return (
-  <div className="flex justify-center items-center min-h-screen bg-white">
-    <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
-      {[...Array(8)].map((_, index) => (
-        <div
-          key={index}
-          className="absolute h-2 w-2 bg-gray-300 rounded-full"
-          style={{
-            top: "50%",
-            left: "50%",
-            transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
-          }}
-        ></div>
-      ))}
-      <span className="sr-only">Loading...</span>
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen bg-white">
+      <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
+        {[...Array(8)].map((_, index) => (
+          <div
+            key={index}
+            className="absolute h-2 w-2 bg-gray-300 rounded-full"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+            }}
+          ></div>
+        ))}
+        <span className="sr-only">Loading...</span>
+      </div>
     </div>
-  </div>
-);
+  );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-[#e9f1f4] to-[#f3feff] min-h-screen">
@@ -130,7 +130,7 @@ const UserProfile = () => {
                     handleImageChange(e);
                     if (e.target.files?.[0]) {
                       const fileList = e.target.files;
-                      setValue("profileImage", fileList, { shouldValidate: true });
+                      setValue('profileImage', fileList, { shouldValidate: true });
                     }
                   }}
                   className="hidden"
@@ -154,7 +154,7 @@ const UserProfile = () => {
                   <input
                     id="name"
                     type="text"
-                    {...register("name")}
+                    {...register('name')}
                     className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
                     placeholder="Enter your name"
                   />
@@ -169,7 +169,7 @@ const UserProfile = () => {
                   <input
                     id="email"
                     type="email"
-                    {...register("email")}
+                    {...register('email')}
                     className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
                     placeholder="Enter your email"
                   />
@@ -184,7 +184,7 @@ const UserProfile = () => {
                   <input
                     id="phone"
                     type="text"
-                    {...register("phone")}
+                    {...register('phone')}
                     className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
                     placeholder="Enter your mobile number"
                   />
@@ -199,7 +199,7 @@ const UserProfile = () => {
                   <input
                     id="dateOfBirth"
                     type="date"
-                    {...register("dateOfBirth")}
+                    {...register('dateOfBirth')}
                     className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
                   />
                   {errors.dateOfBirth && (
@@ -212,7 +212,7 @@ const UserProfile = () => {
                   </label>
                   <select
                     id="gender"
-                    {...register("gender")}
+                    {...register('gender')}
                     className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
                   >
                     <option value="male">Male</option>

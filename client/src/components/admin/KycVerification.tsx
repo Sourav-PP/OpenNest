@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import type { IAdminKycDto } from "@/types/api/admin";
-import { toast } from "react-toastify";
-import { adminApi } from "@/server/api/admin";
-import ConfirmModal from "./ConfirmModal";
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import type { IAdminKycDto } from '@/types/api/admin';
+import { toast } from 'react-toastify';
+import { adminApi } from '@/server/api/admin';
+import ConfirmModal from './ConfirmModal';
 
 const KycVerification = () => {
   const { psychologistId } = useParams<{ psychologistId: string }>();
@@ -11,50 +11,50 @@ const KycVerification = () => {
   const [loading, setLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false)
-  const [action, setAction] = useState<'approved' | 'rejected' | null> (null)
-  const [message, setMessage] = useState('')
+  const [modalOpen, setModalOpen] = useState(false);
+  const [action, setAction] = useState<'approved' | 'rejected' | null> (null);
+  const [message, setMessage] = useState('');
 
   const fetchKyc = async () => {
-      try {
-        const data = await adminApi.getKycDetailsByPsychologistId(psychologistId!);
-        console.log('data: ', data)
-        setKyc(data);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch KYC for psychologist");
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      const data = await adminApi.getKycDetailsByPsychologistId(psychologistId!);
+      console.log('data: ', data);
+      setKyc(data);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to fetch KYC for psychologist');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchKyc();
   }, [psychologistId]);
 
   const handleAction = async (status: 'approved' | 'rejected', reason?: string) => {
-    if(!kyc) return
+    if(!kyc) return;
 
     try {
-        setActionLoading(true)
-        if(status === 'approved') {
-            await adminApi.approveKyc(psychologistId!)
-            toast.success('KYC approved successfully')
-        } else {
-          console.log("reason: ", reason)
-            await adminApi.rejectKyc(psychologistId!, reason!)
-            toast.success("KYC rejected successfully")
-        }
+      setActionLoading(true);
+      if(status === 'approved') {
+        await adminApi.approveKyc(psychologistId!);
+        toast.success('KYC approved successfully');
+      } else {
+        console.log('reason: ', reason);
+        await adminApi.rejectKyc(psychologistId!, reason!);
+        toast.success('KYC rejected successfully');
+      }
 
-        await fetchKyc()
+      await fetchKyc();
     } catch (err) {
-        console.log(err)
-        toast.error("Failed to do the action")
+      console.log(err);
+      toast.error('Failed to do the action');
     } finally {
-        setActionLoading(false)
-        setModalOpen(false);
+      setActionLoading(false);
+      setModalOpen(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -102,11 +102,11 @@ const KycVerification = () => {
             <span>Status:</span>
             <span
               className={`px-3 py-1 rounded-full text-sm ${
-                kyc.kycStatus === "pending"
-                  ? "bg-yellow-700"
-                  : kyc.kycStatus === "approved"
-                  ? "bg-green-700"
-                  : "bg-red-700"
+                kyc.kycStatus === 'pending'
+                  ? 'bg-yellow-700'
+                  : kyc.kycStatus === 'approved'
+                    ? 'bg-green-700'
+                    : 'bg-red-700'
               }`}
             >
               {kyc.kycStatus}
@@ -154,24 +154,24 @@ const KycVerification = () => {
       {/* Buttons */}
       <div className="flex gap-4 mt-6 justify-end">
         <button
-        disabled={kyc.kycStatus === 'approved' || actionLoading}
-        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full"
-        onClick={() => {
-            setAction('approved')
-            setMessage('Are you sure you want to approve this KYC?')
-            setModalOpen(true)
-        }}
+          disabled={kyc.kycStatus === 'approved' || actionLoading}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full"
+          onClick={() => {
+            setAction('approved');
+            setMessage('Are you sure you want to approve this KYC?');
+            setModalOpen(true);
+          }}
         >
           Approve
         </button>
         <button
-        disabled={kyc.kycStatus === 'rejected' || actionLoading}
-        className="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-full"
-        onClick={() => {
-            setAction('rejected')
-            setMessage('Please provide a reason for rejecting this KYC?')
-            setModalOpen(true)
-        }}
+          disabled={kyc.kycStatus === 'rejected' || actionLoading}
+          className="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-full"
+          onClick={() => {
+            setAction('rejected');
+            setMessage('Please provide a reason for rejecting this KYC?');
+            setModalOpen(true);
+          }}
         >
           Reject
         </button>
@@ -199,10 +199,10 @@ const KycVerification = () => {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={(reason) => action && handleAction(action, reason)}
-        title={action === 'approved' ? 'Approve KYC?' : "Reject KYC?"}
+        title={action === 'approved' ? 'Approve KYC?' : 'Reject KYC?'}
         message={message}
         requireReason={action === 'rejected'}
-        />
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { IGoogleLoginInput, IGoogleLoginOutput } from "../../types/authTypes";
+import { IGoogleLoginInput, IGoogleLoginOutput } from '../../types/authTypes';
 
 export interface IGoogleLoginUseCase {
     execute(input: IGoogleLoginInput): Promise<IGoogleLoginOutput>

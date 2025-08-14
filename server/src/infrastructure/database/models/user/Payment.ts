@@ -1,4 +1,4 @@
-import { Schema, model, Document, Model, Types } from "mongoose";
+import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IPaymentDocument extends Document {
     _id: Types.ObjectId;
@@ -7,7 +7,7 @@ export interface IPaymentDocument extends Document {
     amount: number;
     currency: string;
     paymentMethod: 'stripe' | 'wallet';
-    paymentStatus: "pending" | "succeeded" | "failed";
+    paymentStatus: 'pending' | 'succeeded' | 'failed';
     refunded: boolean;
     transactionId?: string;
     stripeSessionId?: string;
@@ -17,17 +17,17 @@ const PaymentSchema = new Schema<IPaymentDocument>(
     {
         consultationId: {
             type: Schema.Types.ObjectId,
-            ref: "Consultation",
-            required: false
+            ref: 'Consultation',
+            required: false,
         },
         userId: {
             type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true
+            ref: 'User',
+            required: true,
         },
         amount: {
             type: Number,
-            required: true
+            required: true,
         },
         currency: {
             type: String,
@@ -37,25 +37,25 @@ const PaymentSchema = new Schema<IPaymentDocument>(
         paymentMethod: {
             type: String,
             enum: ['stripe', 'wallet'],
-            required: true
+            required: true,
         },
         paymentStatus: {
             type: String,
-            enum: ["pending", "succeeded", "failed"],
-            required: true
+            enum: ['pending', 'succeeded', 'failed'],
+            required: true,
         },
         refunded: {
             type: Boolean,
-            default: false
+            default: false,
         },
         transactionId: {
-            type: String
+            type: String,
         },
         stripeSessionId: {
             type: String,
         },
     },
-    { timestamps: true }
-)
+    { timestamps: true },
+);
 
-export const PaymentModel: Model<IPaymentDocument> = model<IPaymentDocument>("Payment", PaymentSchema)
+export const PaymentModel: Model<IPaymentDocument> = model<IPaymentDocument>('Payment', PaymentSchema);

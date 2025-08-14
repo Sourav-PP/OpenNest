@@ -6,6 +6,6 @@ export interface IUserDto {
   role: 'user' | 'psychologist';
   profileImage?: string;
   dateOfBirth?: string;
-  gender?: "male" | "female" | "other"
+  gender?: 'male' | 'female' | 'other'
   isActive?: boolean;
 }

@@ -1,10 +1,10 @@
-import type { AxiosError } from "axios";
-import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/slices/authSlice";
-import { useNavigate } from "react-router-dom";
-import type { RootState } from "../../redux/store";
-import { authApi } from "../../server/api/auth";
+import type { AxiosError } from 'axios';
+import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
+import type { RootState } from '../../redux/store';
+import { authApi } from '../../server/api/auth';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -13,16 +13,16 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await authApi.logout()
+      await authApi.logout();
       dispatch(logout());
-      localStorage.removeItem("persist:root");
-      toast.success("Logout successfully");
+      localStorage.removeItem('persist:root');
+      toast.success('Logout successfully');
       navigate('/login?role=psychologist');
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
       console.log('error is admin: ', error);
       toast.error(
-        "Logout failed: " + error?.response?.data?.message || "Unknown error"
+        'Logout failed: ' + error?.response?.data?.message || 'Unknown error'
       );
     }
   };
@@ -36,12 +36,12 @@ const Header = () => {
           {email?.slice(0,2).toUpperCase()}
         </div>
         <div className="group text-center">
-        <button
-          onClick={handleLogout}
-          className="btn-logout flex rounded-full group-hover:animate-glow-ring"
-        >
+          <button
+            onClick={handleLogout}
+            className="btn-logout flex rounded-full group-hover:animate-glow-ring"
+          >
           Logout
-        </button>
+          </button>
         </div>
       </div>
     </div>

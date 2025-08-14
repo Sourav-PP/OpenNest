@@ -1,4 +1,4 @@
-import { Schema, Model, model, Types, Document } from "mongoose";
+import { Schema, Model, model, Types, Document } from 'mongoose';
 
 export interface IKycDocument extends Document {
   _id: Types.ObjectId;
@@ -14,36 +14,36 @@ export interface IKycDocument extends Document {
 }
 
 const KycSchema = new Schema<IKycDocument>(
-  {
-    psychologistId: {
-      type: Schema.Types.ObjectId,
-      required: true,
+    {
+        psychologistId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+        },
+        identificationDoc: {
+            type: String,
+            required: true,
+        },
+        educationalCertification: {
+            type: String,
+            required: true,
+        },
+        experienceCertificate: {
+            type: String,
+            required: true,
+        },
+        kycStatus: {
+            type: String,
+            enum: ['pending', 'approved', 'rejected'],
+            default: 'pending',
+        },
+        rejectionReason: {
+            type: String,
+        },
+        verifiedAt: {
+            type: Date,
+        },
     },
-    identificationDoc: {
-      type: String,
-      required: true,
-    },
-    educationalCertification: {
-      type: String,
-      required: true,
-    },
-    experienceCertificate: {
-      type: String,
-      required: true,
-    },
-    kycStatus: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
-    rejectionReason: {
-      type: String,
-    },
-    verifiedAt: {
-      type: Date,
-    },
-  },
-  { timestamps: true }
+    { timestamps: true },
 );
 
-export const KycModel: Model<IKycDocument> = model<IKycDocument>("Kyc", KycSchema)
+export const KycModel: Model<IKycDocument> = model<IKycDocument>('Kyc', KycSchema);

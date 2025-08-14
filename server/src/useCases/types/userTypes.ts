@@ -1,5 +1,5 @@
-import { IConsultationDto } from "../../domain/dtos/consultation";
-import { IPsychologistResponseDto } from "../../domain/dtos/psychologist";
+import { IConsultationDto } from '../../domain/dtos/consultation';
+import { IPsychologistResponseDto } from '../../domain/dtos/psychologist';
 
 export interface PublicUser {
   id: string;
@@ -54,8 +54,8 @@ export interface IGetSlotForUsertInput {
 }
 export interface IGetAllPsychologistRequest {
   search?: string;
-  sort?: "asc" | "desc";
-  gender?: "Male" | "Female" | "all",
+  sort?: 'asc' | 'desc';
+  gender?: 'Male' | 'Female' | 'all',
   expertise?: string  
   page?: number;
   limit?: number;
@@ -68,7 +68,7 @@ export interface IGetAllPsychologistResponse {
 export interface IGetConsultationsRequest {
   patientId: string
   search?: string;
-  sort?: "asc" | "desc";
+  sort?: 'asc' | 'desc';
   status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled';  
   page?: number;
   limit?: number; 

@@ -1,6 +1,6 @@
-import Sidebar from "../../components/admin/Sidebar";
-import Header from "../../components/admin/Header";
-import TopPsychologistTable from "../../components/admin/TopPsychologistTable";
+import Sidebar from '../../components/admin/Sidebar';
+import Header from '../../components/admin/Header';
+import TopPsychologistTable from '../../components/admin/TopPsychologistTable';
 
 const AdminDashboard = () => {
   return (

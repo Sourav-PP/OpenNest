@@ -1,4 +1,4 @@
-import { Schema, Model, model, Document, Types } from "mongoose";
+import { Schema, Model, model, Document, Types } from 'mongoose';
 
 export interface ISpecializationFee {
   specializationId: Types.ObjectId;
@@ -20,54 +20,54 @@ export interface IPsychologistDocument extends Document {
 }
 
 const SpecializationFeeSchema = new Schema<ISpecializationFee>(
-  {
-    specializationId: {
-      type: Schema.Types.ObjectId,
-      required: true,
+    {
+        specializationId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+        },
+        specializationName: {
+            type: String,
+        },
+        fee: {
+            type: Number,
+            required: true,
+        },
     },
-    specializationName: {
-      type: String,
-    },
-    fee: {
-      type: Number,
-      required: true,
-    },
-  },
-  { _id: false }
+    { _id: false },
 );
 
 const PsychologistSchema = new Schema<IPsychologistDocument>(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    {
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        aboutMe: {
+            type: String,
+            required: true,
+        },
+        qualification: {
+            type: String,
+            required: true,
+        },
+        specializations: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Service',
+            },
+        ],
+        defaultFee: {
+            type: Number,
+            required: true,
+        },
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
+        specializationFees: [SpecializationFeeSchema],
     },
-    aboutMe: {
-      type: String,
-      required: true,
-    },
-    qualification: {
-      type: String,
-      required: true,
-    },
-    specializations: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Service",
-      },
-    ],
-    defaultFee: {
-      type: Number,
-      required: true,
-    },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    specializationFees: [SpecializationFeeSchema],
-  },
-  { timestamps: true }
+    { timestamps: true },
 );
 
-export const PsychologistModel: Model<IPsychologistDocument> = model<IPsychologistDocument>("Psychologist", PsychologistSchema)
+export const PsychologistModel: Model<IPsychologistDocument> = model<IPsychologistDocument>('Psychologist', PsychologistSchema);

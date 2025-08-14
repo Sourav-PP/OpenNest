@@ -5,7 +5,7 @@ export interface Payment {
     amount: number;
     currency: string;
     paymentMethod: 'stripe' | 'wallet';
-    paymentStatus: "pending" | "succeeded" | "failed";
+    paymentStatus: 'pending' | 'succeeded' | 'failed';
     refunded: boolean;
     transactionId?: string;
     stripeSessionId?: string;

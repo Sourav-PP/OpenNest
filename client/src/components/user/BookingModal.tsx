@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { userApi } from '@/server/api/user';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../ui/dialog';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -30,30 +30,30 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
       paymentMethod: 'stripe',
       sessionGoal: ''
     }
-  })
+  });
 
   const onSubmit = async(data: FormData) => {
-    if(!slotId) return
+    if(!slotId) return;
 
     try {
       const response = await userApi.createCheckoutSession({
         slotId,
         amount,
         sessionGoal: data.sessionGoal
-      })
+      });
 
-      console.log("re: ", response)
+      console.log('re: ', response);
 
-      window.location.href = response.url
+      window.location.href = response.url;
 
       reset();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
-      console.log('error booking: ', error)
-       toast.error( "Booking failed");
+      console.log('error booking: ', error);
+      toast.error( 'Booking failed');
     }
-  }
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg rounded-lg bg-white p-6 shadow-lg">
@@ -71,7 +71,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
             </label>
             <textarea
               id="sessionGoal"
-              {...register("sessionGoal", { required: "Session goal is required" })}
+              {...register('sessionGoal', { required: 'Session goal is required' })}
               rows={3}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
@@ -87,7 +87,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
                 <input
                   type="radio"
                   value="stripe"
-                  {...register("paymentMethod", { required: true })}
+                  {...register('paymentMethod', { required: true })}
                   defaultChecked
                   className="form-radio text-blue-600"
                 />
@@ -98,7 +98,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
                 <input
                   type="radio"
                   value="wallet"
-                  {...register("paymentMethod", { required: true })}
+                  {...register('paymentMethod', { required: true })}
                   className="form-radio text-blue-600"
                 />
                 <span>Wallet</span>
@@ -120,13 +120,13 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
               disabled={isSubmitting}
               className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
-              {isSubmitting ? "Booking..." : `Pay ₹${amount}`}
+              {isSubmitting ? 'Booking...' : `Pay ₹${amount}`}
             </button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default BookingModal
+export default BookingModal;

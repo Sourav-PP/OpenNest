@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { psychologistApi } from "../../server/api/psychologist";
-import type { IPsychologistProfileDto } from "../../types/pasychologist";
-import AnimatedTitle from "../animation/AnimatedTitle";
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { psychologistApi } from '../../server/api/psychologist';
+import type { IPsychologistProfileDto } from '../../types/pasychologist';
+import AnimatedTitle from '../animation/AnimatedTitle';
 
 const Profile = () => {
-  console.log("📍 Loaded: ProfilePage component");
-  const navigate = useNavigate()
+  console.log('📍 Loaded: ProfilePage component');
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<IPsychologistProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const res = await psychologistApi.getProfile()
-        console.log("res: ", res)
+        const res = await psychologistApi.getProfile();
+        console.log('res: ', res);
         setProfile(res);
       } catch (error) {
-        toast.error("error fetching the profile");
+        toast.error('error fetching the profile');
         console.log('error fetching the profile: ', error);
       } finally {
         setLoading(false);
@@ -28,24 +28,24 @@ const Profile = () => {
     fetchProfileData();
   }, []);
 
- if (loading) return (
+  if (loading) return (
     <div className="flex justify-center items-center min-h-screen bg-white">
-        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
+      <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
         {[...Array(8)].map((_, index) => (
-            <div
+          <div
             key={index}
             className="absolute h-2 w-2 bg-gray-300 rounded-full"
             style={{
-                top: "50%",
-                left: "50%",
-                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
             }}
-            ></div>
+          ></div>
         ))}
         <span className="sr-only">Loading...</span>
-        </div>
+      </div>
     </div>
-    );
+  );
   if (!profile) return null;
 
   const {
@@ -69,15 +69,15 @@ const Profile = () => {
         <div className="flex justify-end mb-4 sm:mb-0">
           <p
             className={`text-sm font-medium px-3 py-1 rounded-full ${
-              kycStatus === "verified"
-                ? "bg-green-100 text-green-700"
-                : kycStatus === "rejected"
-                ? "bg-red-100 text-red-700"
-                : "bg-yellow-100 text-yellow-700"
+              kycStatus === 'verified'
+                ? 'bg-green-100 text-green-700'
+                : kycStatus === 'rejected'
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-yellow-100 text-yellow-700'
             } hidden sm:block`}
           >
             KYC Status: <span className="capitalize">{kycStatus}</span>
-            {kycStatus === "verified" && " ✓"}
+            {kycStatus === 'verified' && ' ✓'}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
@@ -92,15 +92,15 @@ const Profile = () => {
             <p className="text-sm text-gray-600">Fees: ${defaultFee}</p>
             <p
               className={`text-sm font-medium mt-1 sm:hidden ${
-                kycStatus === "verified"
-                  ? "text-green-600"
-                  : kycStatus === "rejected"
-                  ? "text-red-500"
-                  : "text-yellow-500"
+                kycStatus === 'verified'
+                  ? 'text-green-600'
+                  : kycStatus === 'rejected'
+                    ? 'text-red-500'
+                    : 'text-yellow-500'
               }`}
             >
               KYC Status: <span className="capitalize">{kycStatus}</span>
-              {kycStatus === "verified" && " ✓"}
+              {kycStatus === 'verified' && ' ✓'}
             </p>
           </div>
         </div>

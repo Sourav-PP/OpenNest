@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { serviceApi } from "../../server/api/service";
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { serviceApi } from '../../server/api/service';
 
 type Service = {
   id: string;
@@ -26,8 +26,8 @@ const ServiceList = () => {
 
         setServices(mapped);
       } catch (error) {
-        toast.error("Failed to load specialization");
-        console.error("Failed to fetch services:", error);
+        toast.error('Failed to load specialization');
+        console.error('Failed to fetch services:', error);
       }
     };
 

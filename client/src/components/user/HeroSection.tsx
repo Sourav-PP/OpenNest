@@ -1,10 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleTherapistLogin = () => {
-    navigate("/signup?role=psychologist");
+    navigate('/signup?role=psychologist');
   };
   return (
     <section className="relative w-full h-[60vh] sm:h-auto">

@@ -1,6 +1,5 @@
-import { Consultation } from "../entities/consultation";
-import { IConsultationDto } from "../dtos/consultation";
-import { IGetConsultationsRequest } from "../../useCases/types/userTypes";
+import { Consultation } from '../entities/consultation';
+import { IConsultationDto } from '../dtos/consultation';
 
 export interface IConsultationRepository {
     createConsultation(data: Consultation): Promise<Consultation>

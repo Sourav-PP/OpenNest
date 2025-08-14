@@ -1,7 +1,6 @@
-import { IUserDto } from "../../domain/dtos/user";
-import { IPsychologistListDto } from "../../domain/dtos/psychologist";
-import { SpeicalizationFee } from "../../domain/entities/psychologist";
-import { IKycDto } from "../../domain/dtos/kyc";
+import { IUserDto } from '../../domain/dtos/user';
+import { SpeicalizationFee } from '../../domain/entities/psychologist';
+import { IKycDto } from '../../domain/dtos/kyc';
 
 export interface IAdminLoginRequest {
     email: string,
@@ -15,8 +14,8 @@ export interface IAdminLoginResponse {
 
 export interface IGetAllUserRequest {
     search?: string;
-    sort?: "asc" | "desc";
-    gender?: "Male" | "Female";
+    sort?: 'asc' | 'desc';
+    gender?: 'Male' | 'Female';
     page?: number;
     limit?: number
 }
@@ -28,8 +27,8 @@ export interface IGetAllUserResponse {
 
 export interface IGetAllPsychologistRequest {
     search?: string;
-    sort?: "asc" | "desc";
-    gender?: "Male" | "Female";
+    sort?: 'asc' | 'desc';
+    gender?: 'Male' | 'Female';
     page?: number;
     limit?: number
 }

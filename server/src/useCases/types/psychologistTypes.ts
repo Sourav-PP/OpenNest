@@ -1,7 +1,7 @@
 // Input and Output types for Profile Use Cases
-import { Kyc } from "../../domain/entities/kyc";
-import { Psychologist } from "../../domain/entities/psychologist";
-import {Weekday} from 'rrule'
+import { Kyc } from '../../domain/entities/kyc';
+import { Psychologist } from '../../domain/entities/psychologist';
+import { Weekday } from 'rrule';
 
 export interface IVerifyProfileInput {
     userId: string;

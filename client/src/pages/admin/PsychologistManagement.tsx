@@ -1,6 +1,6 @@
-import Sidebar from "../../components/admin/Sidebar";
-import Header from "../../components/admin/Header";
-import PsychologistTable from "../../components/admin/PsychologistTable";
+import Sidebar from '../../components/admin/Sidebar';
+import Header from '../../components/admin/Header';
+import PsychologistTable from '../../components/admin/PsychologistTable';
 
 const PsychologistManagement = () => {
   return (

@@ -1,5 +1,5 @@
-import type { IGetAllPsychologistsDto } from "../pasychologist";
-import type { IUserDto } from "../user";
+import type { IGetAllPsychologistsDto } from '../pasychologist';
+import type { IUserDto } from '../user';
 
 export interface IAdminLoginRequest {
     email: string;
@@ -21,8 +21,8 @@ export interface IAddServiceResponse {
 
 export interface IGetAllUserRequest {
     search?: string;
-    sort?: "asc" | "desc";
-    gender?: "Male" | "Female" | "";
+    sort?: 'asc' | 'desc';
+    gender?: 'Male' | 'Female' | '';
     page?: number;
     limit?: number
 }
@@ -34,8 +34,8 @@ export interface IGetAllUserResponse {
 
 export interface IGetAllPsychologistsRequest {
     search?: string;
-    sort?: "asc" | "desc";
-    gender?: "Male" | "Female" | "";
+    sort?: 'asc' | 'desc';
+    gender?: 'Male' | 'Female' | '';
     page?: number;
     limit?: number
 }
@@ -46,7 +46,7 @@ export interface IGetAllPsychologistResponse {
 }
 
 export interface IToggleStatusRequest {
-  status: "active" | "inactive";
+  status: 'active' | 'inactive';
 }
 
 export interface IToggleStatusResponse {
@@ -68,7 +68,7 @@ export interface IAdminKycDto {
 
 export interface IGetAllKycDetailsRequest {
     search?: string;
-    sort?: "asc" | "desc";
+    sort?: 'asc' | 'desc';
     status?: 'pending' | 'approved' | 'rejected' | 'all'
     page?: number;
     limit?: number

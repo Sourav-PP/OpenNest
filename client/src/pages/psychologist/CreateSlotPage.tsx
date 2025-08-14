@@ -1,7 +1,7 @@
-import Header from "../../components/psychologist/Header"
-import Sidebar from "../../components/psychologist/Sidebar"
-import CreateSlotForm from "../../components/psychologist/CreateSlotForm"
-import SlotCalendar from "@/components/psychologist/SlotCalendar"
+import Header from '../../components/psychologist/Header';
+import Sidebar from '../../components/psychologist/Sidebar';
+import CreateSlotForm from '../../components/psychologist/CreateSlotForm';
+import SlotCalendar from '@/components/psychologist/SlotCalendar';
 
 const CreateSlotPage = () => {
   return (
@@ -13,7 +13,7 @@ const CreateSlotPage = () => {
         <SlotCalendar />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateSlotPage
+export default CreateSlotPage;

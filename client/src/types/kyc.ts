@@ -4,7 +4,7 @@ export interface IKycDto {
     identificationDoc: string,
     educationalCertification: string,
     experienceCertificate: string,
-    kycStatus: "pending" | "approved" | "rejected",
+    kycStatus: 'pending' | 'approved' | 'rejected',
     rejectionReason?: string,
     verifiedAt?: Date
 }

@@ -1,28 +1,34 @@
-import { Request, Response } from "express";
-import { UpdateUserProfileUseCase } from "../../../../useCases/implementation/user/profile/updateUserProfileUseCase";
-import { uploadToCloudinary } from "../../../../utils/uploadToCloudinary";
+import { Request, Response } from 'express';
+import { UpdateUserProfileUseCase } from '../../../../useCases/implementation/user/profile/updateUserProfileUseCase';
+import { uploadToCloudinary } from '../../../../utils/uploadToCloudinary';
 
 export class UpdateUserProfileController {
     constructor(private updateUserProfileUseCase: UpdateUserProfileUseCase) {}
 
     handle = async(req: Request, res: Response): Promise<void> => {
         try {
-            console.log("the request: ", req.body)
-            console.log("is here right?")
-            console.log("the file is : ",req.file)
-            const userId = req.user?.userId!
-            const {name, email, phone, gender, dateOfBirth} = req.body
-            let profileImageUrl
+            console.log('the request: ', req.body);
+            console.log('is here right?');
+            console.log('the file is : ',req.file);
+            const userId = req.user?.userId;
 
-            if(req.file) {
+            if (!userId) {
+                res.status(401).json({ success:false, message: 'Unauthorized user' });
+                return;
+            }
+
+            const { name, email, phone, gender, dateOfBirth } = req.body;
+            let profileImageUrl;
+
+            if (req.file) {
                 profileImageUrl = await uploadToCloudinary(
                     req.file.buffer,
                     req.file.originalname,
-                    "profile_images"
-                )
+                    'profile_images',
+                );
             }
 
-            console.log("userId", userId)
+            console.log('userId', userId);
 
             const updatedUser = await this.updateUserProfileUseCase.execute({
                 userId,
@@ -31,15 +37,15 @@ export class UpdateUserProfileController {
                 phone,
                 dateOfBirth,
                 gender,
-                profileImage: profileImageUrl
-            })
-            console.log("updated user: ",updatedUser)
+                profileImage: profileImageUrl,
+            });
+            console.log('updated user: ',updatedUser);
 
-            res.status(200).json({message: "profile updated successfully", user: updatedUser})
+            res.status(200).json({ message: 'profile updated successfully', user: updatedUser });
         } catch (error) {
-            console.log("verify error: ", error)
-            res.status(500).json({message: "Internal server error"})
-            return
+            console.log('verify error: ', error);
+            res.status(500).json({ message: 'Internal server error' });
+            return;
         }
-    }
+    };
 }

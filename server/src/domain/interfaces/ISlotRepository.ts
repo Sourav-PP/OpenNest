@@ -1,5 +1,5 @@
-import { Slot } from "../entities/slot";
-import { ISlotDto } from "../dtos/slot";
+import { Slot } from '../entities/slot';
+import { ISlotDto } from '../dtos/slot';
 
 export interface ISlotRepository {
     createSlot(slots: Slot[]): Promise<void>

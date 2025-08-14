@@ -5,7 +5,7 @@ export interface ISignupInput {
     password: string,
     confirmPassword: string,
     profileImage: string,
-    role: "user" | "psychologist"
+    role: 'user' | 'psychologist'
 }
 
 // export interface ISignupOutput {

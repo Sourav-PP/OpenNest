@@ -1,77 +1,77 @@
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { userApi } from "../../server/api/user";
-import type { IPsychologistDto } from "../../types/pasychologist";
-import { Link } from "react-router-dom";
-import type { AxiosError } from "axios";
-import CustomPagination from "./CustomPagination";
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { userApi } from '../../server/api/user';
+import type { IPsychologistDto } from '../../types/pasychologist';
+import { Link } from 'react-router-dom';
+import type { AxiosError } from 'axios';
+import CustomPagination from './CustomPagination';
 
 const TherapistPageSection = () => {
-  const [psychologists, setPsychologists] = useState<IPsychologistDto[]>([])
+  const [psychologists, setPsychologists] = useState<IPsychologistDto[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0)
-  const [search, setSearch] = useState('')
-  const [gender, setGender] = useState<"Male" | "Female" | 'all'>("all")
-  const [sort, setSort] = useState<"asc" | "desc">("desc") 
-  const [expertise, setExpertise] = useState<string>("all");
-  const [debouncedSearch, setDebouncedSearch] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [totalCount, setTotalCount] = useState(0);
+  const [search, setSearch] = useState('');
+  const [gender, setGender] = useState<'Male' | 'Female' | 'all'>('all');
+  const [sort, setSort] = useState<'asc' | 'desc'>('desc'); 
+  const [expertise, setExpertise] = useState<string>('all');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const itemsPerPage = 4;
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      setDebouncedSearch(search)
-      setCurrentPage(1)
-    }, 500)
+      setDebouncedSearch(search);
+      setCurrentPage(1);
+    }, 500);
 
-    return () => clearTimeout(delay)
-  }, [search])
+    return () => clearTimeout(delay);
+  }, [search]);
 
   useEffect(() => {
     const fetchPsychologists = async() => {
       try {
-        setLoading(true)
+        setLoading(true);
         const res = await userApi.getAllPsychologists({
-            page: currentPage,
-            limit: itemsPerPage,
-            gender: gender,
-            search: debouncedSearch,
-            sort: sort,
-            expertise: expertise !== "all" ? expertise : undefined,
-        })
-        console.log('res in page: ', res)
-        setPsychologists(res.psychologists)
-        setTotalCount(res.totalCount ?? 0)
+          page: currentPage,
+          limit: itemsPerPage,
+          gender: gender,
+          search: debouncedSearch,
+          sort: sort,
+          expertise: expertise !== 'all' ? expertise : undefined,
+        });
+        console.log('res in page: ', res);
+        setPsychologists(res.psychologists);
+        setTotalCount(res.totalCount ?? 0);
       } catch (err) {
         const error = err as AxiosError<{ message: string }>;
-        toast.error(error.response?.data?.message || "Something went wrong");
+        toast.error(error.response?.data?.message || 'Something went wrong');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchPsychologists()
-  },[currentPage, debouncedSearch, sort, gender, expertise])
+    fetchPsychologists();
+  },[currentPage, debouncedSearch, sort, gender, expertise]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-screen bg-white">
-        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
+      <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
         {[...Array(8)].map((_, index) => (
-            <div
+          <div
             key={index}
             className="absolute h-2 w-2 bg-gray-300 rounded-full"
             style={{
-                top: "50%",
-                left: "50%",
-                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
             }}
-            ></div>
+          ></div>
         ))}
         <span className="sr-only">Loading...</span>
-        </div>
+      </div>
     </div>
   );
 
@@ -92,7 +92,7 @@ const TherapistPageSection = () => {
                 placeholder="Search by name"
                 value={search}
                 onChange={(e) => {
-                        setSearch(e.target.value);
+                  setSearch(e.target.value);
                 }}
                 className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md"
               />
@@ -103,12 +103,12 @@ const TherapistPageSection = () => {
           </div>
           <div className="flex-1 flex gap-4">
             <select
-            value={expertise}
-            onChange={(e) => {
-              setExpertise(e.target.value)
-              setCurrentPage(1)
-            }}
-            className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white"
+              value={expertise}
+              onChange={(e) => {
+                setExpertise(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white"
             >
               <option value="all">Expertise</option>
               <option value="anxiety">Anxiety</option>
@@ -118,12 +118,12 @@ const TherapistPageSection = () => {
 
             {/* gender */}
             <select
-            value={gender}
-            onChange={(e) => {
-              setGender(e.target.value as 'Male' | 'Female' | 'all')
-              setCurrentPage(1)
-            }}
-            className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
+              value={gender}
+              onChange={(e) => {
+                setGender(e.target.value as 'Male' | 'Female' | 'all');
+                setCurrentPage(1);
+              }}
+              className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
               <option value="all">Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -131,11 +131,11 @@ const TherapistPageSection = () => {
 
             {/* Price */}
             <select
-            value={sort}
-            onChange={(e) => {
-              setSort(e.target.value as 'asc' | 'desc')
-            }}
-            className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value as 'asc' | 'desc');
+              }}
+              className="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3EB1EB] focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-white">
               <option value="desc">Price</option>
               <option value="asc">Low to High</option>
               <option value="desc">High to Low</option>
@@ -150,7 +150,7 @@ const TherapistPageSection = () => {
               <img src={therapist?.profileImage} alt={therapist.name} className="w-full h-48 object-cover rounded-lg mb-3" />
               <div className="flex items-center justify-between pb-3 mb-2 border-b-2">
                 {/* {therapist.available && ( */}
-                  <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Available</span>
+                <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Available</span>
                 {/* )} */}
                 <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full">★ 4.8</span>
               </div>
@@ -158,22 +158,22 @@ const TherapistPageSection = () => {
               <p className="text-blue-700 text-sm mb-1">{therapist.qualification}</p>
               <p className="text-gray-500 text-xs mb-4">{therapist.specializations.join(', ')}</p>
               <div className="group text-start">
-              <Link to={`/user/psychologists/${therapist.userId}`}>
-              <button
-                className="btn-primary group-hover:animate-glow-ring mb-2"
-              >
+                <Link to={`/user/psychologists/${therapist.userId}`}>
+                  <button
+                    className="btn-primary group-hover:animate-glow-ring mb-2"
+                  >
                 View
-              </button>
-              </Link>
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
         </div>
       </div>
       <CustomPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
     </div>
   );

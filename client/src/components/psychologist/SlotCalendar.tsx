@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { psychologistApi } from "@/server/api/psychologist";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import type { ISlotDto } from "@/types/slot";
-import { toast } from "react-toastify";
-import SlotDetailModal from "./SlotDetailModal";
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { psychologistApi } from '@/server/api/psychologist';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import type { ISlotDto } from '@/types/slot';
+import { toast } from 'react-toastify';
+import SlotDetailModal from './SlotDetailModal';
 
 type SlotEvent = {
   id: string;
@@ -24,10 +24,9 @@ const SlotCalendar = () => {
   const fetchSlots = async () => {
     try {
       const slots = await psychologistApi.getPsychologistSlots();
-      console.log("slots: ", slots);
       const mapped = slots.map((slot: ISlotDto) => ({
         id: slot.id,
-        title: slot.isBooked ? "Booked" : "Available",
+        title: slot.isBooked ? 'Booked' : 'Available',
         start: slot.startDateTime,
         end: slot.endDateTime,
         allDay: false,
@@ -40,7 +39,7 @@ const SlotCalendar = () => {
       }));
       setEvents(mapped);
     } catch (error) {
-      toast.error("Error fetching slots");
+      toast.error('Error fetching slots');
       console.log('Error fetching slots: ', error);
     }
   };
@@ -50,14 +49,9 @@ const SlotCalendar = () => {
   }, []);
 
   const handleDelete = async () => {
-    console.log("its here");
-    console.log("selected event: ", selectedEvent);
     if (!selectedEvent || !selectedEvent?.id) return;
-    console.log("its here also");
-
     try {
       const res = await psychologistApi.deleteSlotByPsychologist({ slotId: selectedEvent.id });
-      console.log('res: ', res);
       if (res.success) {
         toast.success(res.message);
         setIsModalOpen(false);
@@ -67,7 +61,7 @@ const SlotCalendar = () => {
         toast.error(res.message);
       }
     } catch (error) {
-      toast.error("Error deleting slots");
+      toast.error('Error deleting slots');
       console.log('Error fetching slots: ', error);
     }
   };
@@ -114,9 +108,9 @@ const SlotCalendar = () => {
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               initialView="timeGridWeek"
               headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay",
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay',
               }}
               allDaySlot={false}
               slotMinTime="08:00:00"
@@ -197,7 +191,7 @@ const SlotCalendar = () => {
               dayCellClassNames="border-gray-200"
               viewClassNames="bg-white rounded-lg"
               dayHeaderContent={({ date, view }) => {
-                const isDayView = view.type === "timeGridDay";
+                const isDayView = view.type === 'timeGridDay';
                 return (
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] sm:text-xs md:text-sm font-semibold">

@@ -39,9 +39,9 @@ const Sidebar = () => {
       >
         {/* Logo */}
         <NavLink to={'/admin/dashboard'}>
-        <div className="flex items-center gap-3 mb-6 cursor-pointer">
-          <img src={assets.logo} alt="OpenNest Logo" className="w-[160px]" />
-        </div>
+          <div className="flex items-center gap-3 mb-6 cursor-pointer">
+            <img src={assets.logo} alt="OpenNest Logo" className="w-[160px]" />
+          </div>
         </NavLink>
 
         {/* Navigation */}

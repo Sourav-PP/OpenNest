@@ -1,4 +1,4 @@
-import { SpeicalizationFee } from "../entities/psychologist";
+import { SpeicalizationFee } from '../entities/psychologist';
 
 export interface IPsychologistListDto {
   id: string;

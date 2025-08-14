@@ -7,7 +7,7 @@ export interface ILoginOutput {
   user: {
     name: string;
     email: string;
-    role: "user" | "psychologist";
+    role: 'user' | 'psychologist';
     profileImage?: string;
   };
   accessToken: string;
@@ -17,14 +17,14 @@ export interface ILoginOutput {
 
 export interface IGoogleLoginInput {
   credential: string;
-  role: "user" | "psychologist";
+  role: 'user' | 'psychologist';
 }
 
 export interface IGoogleLoginOutput {
   user: {
     name: string;
     email: string;
-    role: "user" | "psychologist";
+    role: 'user' | 'psychologist';
     profileImage?: string;
   };
   accessToken: string;
@@ -36,7 +36,7 @@ export interface IVerifyOtpOutput {
   user: {
     name: string;
     email: string;
-    role: "user" | "psychologist";
+    role: 'user' | 'psychologist';
     profileImage?: string;
   };
   accessToken: string;

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   Pagination,
   PaginationContent,
@@ -6,7 +6,7 @@ import {
   PaginationLink,
   PaginationPrevious,
   PaginationNext,
-} from "@/components/ui/pagination";
+} from '@/components/ui/pagination';
 
 interface PaginationProps {
   currentPage: number;
@@ -20,7 +20,7 @@ const CustomPagination: React.FC<PaginationProps> = ({currentPage, totalPages, o
       <PaginationPrevious
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         aria-disabled={currentPage === 1}
-        className={currentPage === 1 ? "opacity-50 pointer-events-none" : "cursor-pointer"}
+        className={currentPage === 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
       >
         Previous
       </PaginationPrevious>
@@ -41,12 +41,12 @@ const CustomPagination: React.FC<PaginationProps> = ({currentPage, totalPages, o
       <PaginationNext
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         aria-disabled={currentPage === totalPages}
-        className={currentPage === totalPages ? "opacity-50 pointer-events-none" : "cursor-pointer"}
+        className={currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
       >
         Next
       </PaginationNext>
     </Pagination>
-  )
-}
+  );
+};
 
-export default CustomPagination
+export default CustomPagination;

@@ -1,6 +1,6 @@
-import Header from "../../components/psychologist/Header"
-import Sidebar from "../../components/psychologist/Sidebar"
-import KycDetails from "@/components/psychologist/KycDetails"
+import Header from '../../components/psychologist/Header';
+import Sidebar from '../../components/psychologist/Sidebar';
+import KycDetails from '@/components/psychologist/KycDetails';
 
 const MyKycDetailsPage = () => {
   return (
@@ -11,7 +11,7 @@ const MyKycDetailsPage = () => {
         <KycDetails />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MyKycDetailsPage
+export default MyKycDetailsPage;

@@ -16,14 +16,14 @@ export interface IPsychologistProfileDto {
   name: string;
   email: string;
   phone?: string;
-  gender?: "male" | "female" | "other"
+  gender?: 'male' | 'female' | 'other'
   dateOfBirth: string;
   defaultFee: number;
   qualification: string;
   aboutMe: string;
   specializations: string[]
   profileImage: string
-  kycStatus: "verified" | "pending" | "rejected"
+  kycStatus: 'verified' | 'pending' | 'rejected'
   specializationFees: string[]
 }
 

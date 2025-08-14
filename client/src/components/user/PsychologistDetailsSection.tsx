@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import type { IPsychologistProfileDto } from "../../types/pasychologist";
-import { toast } from "react-toastify";
-import { userApi } from "../../server/api/user";
-import { FiStar } from "react-icons/fi";
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import type { IPsychologistProfileDto } from '../../types/pasychologist';
+import { toast } from 'react-toastify';
+import { userApi } from '../../server/api/user';
+import { FiStar } from 'react-icons/fi';
 
 const PsychologistDetailsSection = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,8 +16,8 @@ const PsychologistDetailsSection = () => {
         const data = await userApi.getPsychologistById(id!);
         setPsychologist(data);
       } catch (err) {
-        console.log(err)
-        toast.error("Failed to load psychologist details");
+        console.log(err);
+        toast.error('Failed to load psychologist details');
       } finally {
         setLoading(false);
       }
@@ -68,11 +68,11 @@ const PsychologistDetailsSection = () => {
               <p className="text-gray-500 text-sm mb-2">{email}</p>
               <p className="text-blue-700 text-base mb-1 font-medium">{qualification}</p>
               <p className="text-gray-600 text-base mb-4">
-                <span className="font-semibold">Specializations:</span>{" "}
-                {specializations.join(", ")}
+                <span className="font-semibold">Specializations:</span>{' '}
+                {specializations.join(', ')}
               </p>
               <p className="text-gray-600 text-base leading-relaxed">
-                <span className="font-semibold">About:</span>{" "} {aboutMe}
+                <span className="font-semibold">About:</span>{' '} {aboutMe}
               </p>
               <p className="text-gray-900 text-base font-semibold mt-6">
                 Consultation Fee: ${defaultFee}

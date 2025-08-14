@@ -1,40 +1,40 @@
-import './App.css'
-import { ToastContainer } from 'react-toastify'
-import "react-toastify/dist/ReactToastify.css"
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import PrivateRoute from './components/auth/PrivateRoute'
-import PublicRoute from './components/auth/PublicRoute'
+import './App.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import PrivateRoute from './components/auth/PrivateRoute';
+import PublicRoute from './components/auth/PublicRoute';
 
 
 // =============== PAGES =================
 
 // ------------ user -------------
-import SignupPage from './pages/user/SignupPage'
-import LoginPage from './pages/user/LoginPage'
-import LandingPage from './pages/user/LandingPage'
-import TherapistPage from './pages/user/TherapistPage'
-import UserProfilePage from './pages/user/UserProfilePage'
-import PsychologistDetailPage from './pages/user/PsychologistDetailPage'
-import UserServicePage from './pages/user/UserServicePage'
-import Success from './components/user/Success'
-import Cancel from './components/user/Cancel'
-import MySessionsPage from './pages/user/MySessionsPage'
+import SignupPage from './pages/user/SignupPage';
+import LoginPage from './pages/user/LoginPage';
+import LandingPage from './pages/user/LandingPage';
+import TherapistPage from './pages/user/TherapistPage';
+import UserProfilePage from './pages/user/UserProfilePage';
+import PsychologistDetailPage from './pages/user/PsychologistDetailPage';
+import UserServicePage from './pages/user/UserServicePage';
+import Success from './components/user/Success';
+import Cancel from './components/user/Cancel';
+import MySessionsPage from './pages/user/MySessionsPage';
 
 // ------------ psychologist ---------------
-import VerificationPage from './pages/psychologist/VerificationPage'
-import ProfilePage from './pages/psychologist/ProfilePage'
-import EditProfilePage from './pages/psychologist/EditProfilePage'
-import CreateSlotPage from './pages/psychologist/CreateSlotPage'
-import MyKycDetailsPage from './pages/psychologist/MyKycDetailsPage'
+import VerificationPage from './pages/psychologist/VerificationPage';
+import ProfilePage from './pages/psychologist/ProfilePage';
+import EditProfilePage from './pages/psychologist/EditProfilePage';
+import CreateSlotPage from './pages/psychologist/CreateSlotPage';
+import MyKycDetailsPage from './pages/psychologist/MyKycDetailsPage';
 
 //------------- admin ---------------
-import AdminLoginPage from './pages/admin/AdminLoginPage'
-import AdminDashboard from './pages/admin/Dashboard'
-import UserManagement from './pages/admin/UserManagement'
-import PsychologistManagement from './pages/admin/PsychologistManagement'
-import ServicePage from './pages/admin/ServicePage'
-import KycManagement from './pages/admin/KycManagement'
-import KycVerificationPage from './pages/admin/KycVerificationPage'
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboard from './pages/admin/Dashboard';
+import UserManagement from './pages/admin/UserManagement';
+import PsychologistManagement from './pages/admin/PsychologistManagement';
+import ServicePage from './pages/admin/ServicePage';
+import KycManagement from './pages/admin/KycManagement';
+import KycVerificationPage from './pages/admin/KycVerificationPage';
 
 
 
@@ -43,7 +43,7 @@ function App() {
 
   return (
     <BrowserRouter>
-    <ToastContainer
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
@@ -92,7 +92,7 @@ function App() {
   
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,5 @@
-import type { IConsultationDto } from "../consultation";
-import type { IPsychologistDto } from "../pasychologist";
+import type { IConsultationDto } from '../consultation';
+import type { IPsychologistDto } from '../pasychologist';
 
 export interface IGetAllPsychologistResponse {
     psychologists: IPsychologistDto[];
@@ -9,8 +9,8 @@ export interface IGetAllPsychologistResponse {
 export interface IGetAllPsychologistRequest {
     search?: string;
     specialization?: string;
-    sort?: "asc" | "desc";
-    gender: "Male" | "Female" | 'all';
+    sort?: 'asc' | 'desc';
+    gender: 'Male' | 'Female' | 'all';
     page?: number;
     limit?: number,
     expertise?: string

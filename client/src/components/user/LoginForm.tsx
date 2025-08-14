@@ -1,47 +1,47 @@
-import { useForm } from "react-hook-form";
-import { loginSchema } from "../../lib/validations/user/loginValidation";
-import type { LoginData } from "../../lib/validations/user/loginValidation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { assets } from "../../assets/assets";
-import type { AxiosError } from "axios";
-import { toast } from "react-toastify";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../redux/slices/authSlice";
-import { authApi } from "../../server/api/auth";
-import GoogleLoginButton from "./GoogleLoginButton";
+import { useForm } from 'react-hook-form';
+import { loginSchema } from '../../lib/validations/user/loginValidation';
+import type { LoginData } from '../../lib/validations/user/loginValidation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { assets } from '../../assets/assets';
+import type { AxiosError } from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../redux/slices/authSlice';
+import { authApi } from '../../server/api/auth';
+import GoogleLoginButton from './GoogleLoginButton';
 
 interface TokenPayload {
   userId: string;
   email: string;
-  role: "user" | "psychologist" | "admin";
+  role: 'user' | 'psychologist' | 'admin';
   exp: number;
   iat: number;
 }
 
 const LoginForm = () => {
-  const [searchParams] = useSearchParams()
-  const roleFromUrl = searchParams.get('role')
+  const [searchParams] = useSearchParams();
+  const roleFromUrl = searchParams.get('role');
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const { 
     register,
     handleSubmit,
     formState: {errors, isSubmitting}
-} = useForm<LoginData>({
+  } = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const res = await authApi.login(data)
-      console.log("response: ", res)
+      const res = await authApi.login(data);
+      console.log('response: ', res);
       const { accessToken, hasSubmittedVerificationForm  } = res;
 
-      const decoded = jwtDecode<TokenPayload>(accessToken)
+      const decoded = jwtDecode<TokenPayload>(accessToken);
       
       dispatch(
         loginSuccess({
@@ -51,27 +51,27 @@ const LoginForm = () => {
           userId: decoded.userId,
           isSubmittedVerification: true
         })
-      )
+      );
 
-      toast.success("Login successful");
+      toast.success('Login successful');
 
       // navigation based on role
       if(decoded.role === 'psychologist') {
         if(hasSubmittedVerificationForm) {
-          console.log("Navigating to profile");
-          navigate('/psychologist/profile')
+          console.log('Navigating to profile');
+          navigate('/psychologist/profile');
         }else{
-          console.log("Navigating to verification");
-          navigate('/psychologist/verification')
+          console.log('Navigating to verification');
+          navigate('/psychologist/verification');
         }
       } else {
-        navigate("/");
+        navigate('/');
       }
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;
-      console.log('error is: ', error)
+      console.log('error is: ', error);
       toast.error(
-        "Login failed: " + error?.response?.data?.error || "Unknown error"
+        'Login failed: ' + error?.response?.data?.error || 'Unknown error'
       );
     }
   };
@@ -85,13 +85,13 @@ const LoginForm = () => {
         <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-100">
           <img src={assets.mail} alt="" />
           <input
-            {...register("email")}
+            {...register('email')}
             placeholder="Email"
             className="input bg-transparent outline-none w-full"
           />
         </div>
         <p className="text-red-500 text-xs px-2 pt-1 min-h-[1rem]">
-          {errors.email?.message ?? ""}
+          {errors.email?.message ?? ''}
         </p>
       </div>
 
@@ -101,13 +101,13 @@ const LoginForm = () => {
           <img src={assets.lock} alt="" />
           <input
             type="password"
-            {...register("password")}
+            {...register('password')}
             placeholder="Password"
             className="input bg-transparent outline-none w-full"
           />
         </div>
         <p className="text-red-500 text-xs px-2 pt-1 min-h-[1rem]">
-          {errors.password?.message ?? ""}
+          {errors.password?.message ?? ''}
         </p>
       </div>
 
@@ -118,15 +118,15 @@ const LoginForm = () => {
           disabled={isSubmitting}
           className="btn-primary w-full group-hover:animate-glow-ring mb-2"
         >
-          {isSubmitting ? "Loading..." : "Login"}
+          {isSubmitting ? 'Loading...' : 'Login'}
         </button>
       </div>
-        <GoogleLoginButton/>
+      <GoogleLoginButton/>
       <div>
 
       
-      <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer"
-         onClick={() => navigate(`/signup?role=${roleFromUrl ?? "user"}`)}> Sign up</span></p>
+        <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer"
+          onClick={() => navigate(`/signup?role=${roleFromUrl ?? 'user'}`)}> Sign up</span></p>
       </div>
     </form>
   );

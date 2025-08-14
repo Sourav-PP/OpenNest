@@ -1,4 +1,4 @@
-import { Payment } from "../entities/payment";
+import { Payment } from '../entities/payment';
 
 export interface IPaymentRepository {
     create(paymentData: Payment): Promise<Payment>

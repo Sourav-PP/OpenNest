@@ -1,4 +1,4 @@
-import { Schema, model, Document, Model, Types } from "mongoose";
+import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IConsultaionDocument extends Document {
     _id: Types.ObjectId;
@@ -24,75 +24,75 @@ const ConsultationSchema = new Schema<IConsultaionDocument>(
     {
         patientId: {
             type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true
+            ref: 'User',
+            required: true,
         },
         psychologistId: {
             type: Schema.Types.ObjectId,
-            ref: "Psychologist",
-            required: true
+            ref: 'Psychologist',
+            required: true,
         },
         subscriptionId: {
             type: Schema.Types.ObjectId,
-            ref: "Subscription",
-            required: false
+            ref: 'Subscription',
+            required: false,
         },
         slotId: {
             type: Schema.Types.ObjectId,
-            ref: "Slot",
-            required: true
+            ref: 'Slot',
+            required: true,
         },
         startDateTime: {
             type: Date,
-            required: true
+            required: true,
         },
         endDateTime: {
             type: Date,
-            required: true
+            required: true,
         },
         sessionGoal: {
             type: String,
-            required: true
+            required: true,
         },
         issue: [
             {
                 type: Schema.Types.ObjectId,
-                ref: "Service",
-                default: []
-            }
+                ref: 'Service',
+                default: [],
+            },
         ],
         status: {
             type: String,
             enum: ['booked', 'cancelled', 'completed', 'rescheduled'],
-            default: "booked"
+            default: 'booked',
         },
         paymentStatus: {
             type: String,
             enum: ['pending', 'paid', 'failed'],
-            default: 'pending'
+            default: 'pending',
         },
         paymentMethod: {
             type: String,
-            enum: ["stripe", "wallet"]
+            enum: ['stripe', 'wallet'],
         },
         cancellationReason: { 
             type: String,
-            default: null 
+            default: null, 
         },
         cancelledAt: { 
             type: Date, 
-            default: null
+            default: null,
         },
         includedInPayout: {
             type: Boolean,
-            default: false
+            default: false,
         },
         meetingLink: {
             type: String, 
-            default: null 
-        }
+            default: null, 
+        },
     },
-    { timestamps: true }
-)
+    { timestamps: true },
+);
 
-export const ConsultationModel: Model<IConsultaionDocument> = model<IConsultaionDocument>("Consultation", ConsultationSchema)
+export const ConsultationModel: Model<IConsultaionDocument> = model<IConsultaionDocument>('Consultation', ConsultationSchema);

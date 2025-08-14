@@ -1,14 +1,14 @@
-import { IPsychologistRepository } from "../../../../domain/interfaces/IPsychologistRepository";
-import { IKycRepository } from "../../../../domain/interfaces/IKycRepository";
-import { Psychologist } from "../../../../domain/entities/Psychologist";
-import { IVerifyProfileInput, IVerifyProfileOutput } from "../../../types/psychologistTypes";
-import { IVerfiyPsychologistUseCase } from "../../../interfaces/psychologist/profile/IVerifyPsychologistUseCase";
-import { AppError } from "../../../../domain/errors/AppError";
+import { IPsychologistRepository } from '../../../../domain/interfaces/IPsychologistRepository';
+import { IKycRepository } from '../../../../domain/interfaces/IKycRepository';
+import { Psychologist } from '../../../../domain/entities/Psychologist';
+import { IVerifyProfileInput, IVerifyProfileOutput } from '../../../types/psychologistTypes';
+import { IVerfiyPsychologistUseCase } from '../../../interfaces/psychologist/profile/IVerifyPsychologistUseCase';
+import { AppError } from '../../../../domain/errors/AppError';
 
 export class VerifyPsychologistUseCase implements IVerfiyPsychologistUseCase {
     constructor(
         private psychologistRepository: IPsychologistRepository,
-        private kycRepository: IKycRepository
+        private kycRepository: IKycRepository,
     ) {}
 
     async execute(req: IVerifyProfileInput): Promise<IVerifyProfileOutput> {
@@ -18,52 +18,52 @@ export class VerifyPsychologistUseCase implements IVerfiyPsychologistUseCase {
             educationalCertification,
             experienceCertificate,
             ...profileData
-        } = req
+        } = req;
 
-        const existingPsychologist = await this.psychologistRepository.findById(userId)
-        let psychologist: Psychologist | null
+        const existingPsychologist = await this.psychologistRepository.findById(userId);
+        let psychologist: Psychologist | null;
 
-        if(existingPsychologist) {
+        if (existingPsychologist) {
             psychologist = await this.psychologistRepository.updateByUserId(userId, {
                 ...profileData,
-                isVerified: false
-            })
+                isVerified: false,
+            });
 
             await this.kycRepository.updateByPsychologistId(existingPsychologist.id,{
                 identificationDoc,
                 educationalCertification,
                 experienceCertificate,
-                kycStatus: "pending"
-            })
-        }else{
+                kycStatus: 'pending',
+            });
+        } else {
 
-            psychologist = await this.psychologistRepository.create({userId, ...profileData, isVerified: false})
+            psychologist = await this.psychologistRepository.create({ userId, ...profileData, isVerified: false });
     
             await this.kycRepository.create({
                 psychologistId: psychologist.id!,
                 identificationDoc,
                 educationalCertification,
                 experienceCertificate,
-                kycStatus: "pending"
-            })
+                kycStatus: 'pending',
+            });
         }
 
-        if(!psychologist) {
-            throw new AppError("Psychologist creation or updation failed")
+        if (!psychologist) {
+            throw new AppError('Psychologist creation or updation failed');
         }
 
-        console.log("psycholgist: ", psychologist)
+        console.log('psycholgist: ', psychologist);
 
         const kyc = await this.kycRepository.findByPsychologistId(psychologist.id!);
 
         if (!kyc) {
-            console.log("kyc is not here")
-            throw new AppError("KYC not found after creation");
+            console.log('kyc is not here');
+            throw new AppError('KYC not found after creation');
         }
 
         return {
             psychologist,
-            kyc
-        }
+            kyc,
+        };
     }
 }

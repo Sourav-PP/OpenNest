@@ -1,10 +1,10 @@
-import { User } from "../entities/user";
+import { User } from '../entities/user';
 
 export interface IUserRepository {
     findAll(params: {
         search?: string;
-        sort?: "asc" | "desc";
-        gender?: "Male" | "Female";
+        sort?: 'asc' | 'desc';
+        gender?: 'Male' | 'Female';
         skip: number;
         limit: number
     }): Promise<User[]>

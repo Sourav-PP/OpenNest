@@ -1,43 +1,43 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
-import "flatpickr/dist/themes/material_blue.css";
-import { psychologistApi } from "../../server/api/psychologist";
-import { updatePsychologistSchema, type updatePsychologistData } from "../../lib/validations/psychologist/updatePsychologistValidation";
-import { useNavigate } from "react-router-dom";
-import AnimatedTitle from "../animation/AnimatedTitle";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'react-toastify';
+import 'flatpickr/dist/themes/material_blue.css';
+import { psychologistApi } from '../../server/api/psychologist';
+import { updatePsychologistSchema, type updatePsychologistData } from '../../lib/validations/psychologist/updatePsychologistValidation';
+import { useNavigate } from 'react-router-dom';
+import AnimatedTitle from '../animation/AnimatedTitle';
 
 const EditProfileForm = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
 
   const {
-      register,
-      handleSubmit,
-      setValue,
-      formState: { errors },
-    } = useForm<updatePsychologistData>({
-      resolver: zodResolver(updatePsychologistSchema)
-    });
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<updatePsychologistData>({
+    resolver: zodResolver(updatePsychologistSchema)
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const profileRes = await psychologistApi.getProfile()
+        const profileRes = await psychologistApi.getProfile();
 
-        setValue("name", profileRes.name)
-        setValue("email", profileRes.email)
-        setValue("phone", profileRes.phone!)
-        setValue('dateOfBirth', profileRes.dateOfBirth)
-        setValue("gender", profileRes.gender)
-        setValue("defaultFee", profileRes.defaultFee)
-        setValue("aboutMe", profileRes.aboutMe)
-        setProfileImagePreview(profileRes.profileImage || null)
+        setValue('name', profileRes.name);
+        setValue('email', profileRes.email);
+        setValue('phone', profileRes.phone!);
+        setValue('dateOfBirth', profileRes.dateOfBirth);
+        setValue('gender', profileRes.gender);
+        setValue('defaultFee', profileRes.defaultFee);
+        setValue('aboutMe', profileRes.aboutMe);
+        setProfileImagePreview(profileRes.profileImage || null);
       } catch (error) {
-        console.log("error fetchi profile update page: ", error)
-        toast.error("Error fetching profile or specializations");
+        console.log('error fetchi profile update page: ', error);
+        toast.error('Error fetching profile or specializations');
       } finally {
         setLoading(false);
       }
@@ -47,35 +47,35 @@ const EditProfileForm = () => {
 
   const onSubmit = async (data: updatePsychologistData) => {
     try {
-        const formData = new FormData()
+      const formData = new FormData();
 
-        formData.append('name', data.name)
-        formData.append("email", data.email)
-        formData.append("phone", data.phone)
-        formData.append("defaultFee", data.defaultFee.toString())
-        formData.append("aboutMe", data.aboutMe)
-        if(data.dateOfBirth) {
-            formData.append("dateOfBirth", data.dateOfBirth);
-        }
-        if(data.gender) {
-            formData.append("gender", data.gender);
-        }
+      formData.append('name', data.name);
+      formData.append('email', data.email);
+      formData.append('phone', data.phone);
+      formData.append('defaultFee', data.defaultFee.toString());
+      formData.append('aboutMe', data.aboutMe);
+      if(data.dateOfBirth) {
+        formData.append('dateOfBirth', data.dateOfBirth);
+      }
+      if(data.gender) {
+        formData.append('gender', data.gender);
+      }
 
-        const file = data.profileImage?.[0]
-        if(file) {
-            formData.append('file', file)
-        }
-        console.log("Sending to backend:", [...formData.entries()]);
+      const file = data.profileImage?.[0];
+      if(file) {
+        formData.append('file', file);
+      }
+      console.log('Sending to backend:', [...formData.entries()]);
 
-        await psychologistApi.updatePsychologistProfile(formData)
-        toast.success("Profile updated successfully");
-        navigate('/psychologist/edit-profile')
+      await psychologistApi.updatePsychologistProfile(formData);
+      toast.success('Profile updated successfully');
+      navigate('/psychologist/edit-profile');
         
     } catch (error) {
-        toast.error("Error updating profile");
-        console.error("Error updating profile:", error);
+      toast.error('Error updating profile');
+      console.error('Error updating profile:', error);
     }
-  }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -86,22 +86,22 @@ const EditProfileForm = () => {
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-screen bg-white">
-        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
+      <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
         {[...Array(8)].map((_, index) => (
-            <div
+          <div
             key={index}
             className="absolute h-2 w-2 bg-gray-300 rounded-full"
             style={{
-                top: "50%",
-                left: "50%",
-                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
             }}
-            ></div>
+          ></div>
         ))}
         <span className="sr-only">Loading...</span>
-        </div>
+      </div>
     </div>
-    );
+  );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-indigo-50 to-white min-h-screen">
@@ -143,7 +143,7 @@ const EditProfileForm = () => {
                     handleImageChange(e);
                     if (e.target.files?.[0]) {
                       const fileList = e.target.files;
-                      setValue("profileImage", fileList, { shouldValidate: true });
+                      setValue('profileImage', fileList, { shouldValidate: true });
                     }
                   }}
                   className="hidden"
@@ -182,7 +182,7 @@ const EditProfileForm = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("name")}
+                    {...register('name')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="Enter name"
                   />
@@ -197,7 +197,7 @@ const EditProfileForm = () => {
                   </label>
                   <input
                     type="email"
-                    {...register("email")}
+                    {...register('email')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="Enter email"
                   />
@@ -212,7 +212,7 @@ const EditProfileForm = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("phone")}
+                    {...register('phone')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="Enter phone number"
                   />
@@ -227,7 +227,7 @@ const EditProfileForm = () => {
                   </label>
                   <input
                     type="date"
-                    {...register("dateOfBirth")}
+                    {...register('dateOfBirth')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                   />
                   {errors.dateOfBirth && (
@@ -240,7 +240,7 @@ const EditProfileForm = () => {
                     Gender
                   </label>
                   <select
-                    {...register("gender")}
+                    {...register('gender')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                   >
                     <option value="">Select gender</option>
@@ -259,7 +259,7 @@ const EditProfileForm = () => {
                   </label>
                   <input
                     type="number"
-                    {...register("defaultFee")}
+                    {...register('defaultFee')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="e.g. 500"
                   />
@@ -274,7 +274,7 @@ const EditProfileForm = () => {
                   About Me
                 </label>
                 <textarea
-                  {...register("aboutMe")}
+                  {...register('aboutMe')}
                   className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all h-24 resize-none"
                   placeholder="Describe yourself and your approach..."
                 />

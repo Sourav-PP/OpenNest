@@ -1,5 +1,5 @@
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useState } from 'react';
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -12,24 +12,24 @@ interface ConfirmModalProps {
 
 const ConfirmModal = ({ isOpen, onClose, onConfirm,title, message, requireReason }: ConfirmModalProps) => {
 
-  const [reason, setReason] = useState('')
-  const [error, setError] = useState('')
+  const [reason, setReason] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if(!isOpen) {
-      setReason("")
-      setError("")
+      setReason('');
+      setError('');
     }
-  },[isOpen])
+  },[isOpen]);
 
   const handleConfirm = () => {
     if(requireReason && !reason.trim()) {
-      setError("Reason is required to reject this KYC!")
-      return
+      setError('Reason is required to reject this KYC!');
+      return;
     }
-    setError("")
-    onConfirm(reason.trim())
-  }
+    setError('');
+    onConfirm(reason.trim());
+  };
   
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -69,7 +69,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm,title, message, requireReason
                 </button>
 
                 <Dialog.Title as="h3" className="text-2xl font-bold text-white mb-4 mt-4">
-                  {title || "Update Status?"}
+                  {title || 'Update Status?'}
                 </Dialog.Title>
 
                 <p className="text-base text-gray-300 mb-8 leading-relaxed">
@@ -110,7 +110,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm,title, message, requireReason
         </div>
       </Dialog>
     </Transition>
-  )
-}
+  );
+};
 
-export default ConfirmModal
+export default ConfirmModal;

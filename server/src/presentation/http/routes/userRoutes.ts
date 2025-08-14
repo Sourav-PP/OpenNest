@@ -1,31 +1,30 @@
-import express from 'express'
+import express from 'express';
 import {
     authenticateUser,
     checkBlockedUser,
     getSlotsForUserController,
     getUserConsultationsController,
     getUserProfileController,
-    paymentController
-} from '../../../config/di'
-import expressRaw from 'express';
+    paymentController,
+    userGetAllServicesController,
+    getAllPsychologistsController,
+    updateUserProfileController,
+    getPsychologistDetailsController,
+} from '../../../config/di';
 
-// -------------- controllers ----------------
-import { userGetAllServicesController } from '../../../config/di'
-import { getAllPsychologistsController } from '../../../config/di'
-import { updateUserProfileController, getPsychologistDetailsController } from '../../../config/di'
-import { uploadSingle } from '../middlewares/multer'
+import { uploadSingle } from '../middlewares/multer';
 
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/services', userGetAllServicesController.handle)
-router.get('/psychologists', getAllPsychologistsController.handle )
-router.get('/psychologists/:id', getPsychologistDetailsController.handle)
-router.get('/profile', authenticateUser, checkBlockedUser, getUserProfileController.handle)
-router.put('/profile', authenticateUser, checkBlockedUser, uploadSingle, updateUserProfileController.handle)
-router.get('/psychologists/:userId/slots', authenticateUser, checkBlockedUser, getSlotsForUserController.handle)
-router.post('/payment/create-checkout-session', authenticateUser, checkBlockedUser, paymentController.createCheckoutSession)
-router.post('/payment/webhook', express.raw({type: 'application/json'}), paymentController.handleWebhook)
-router.get('/consultations', authenticateUser, checkBlockedUser, getUserConsultationsController.handle)
+router.get('/services', userGetAllServicesController.handle);
+router.get('/psychologists', getAllPsychologistsController.handle );
+router.get('/psychologists/:id', getPsychologistDetailsController.handle);
+router.get('/profile', authenticateUser, checkBlockedUser, getUserProfileController.handle);
+router.put('/profile', authenticateUser, checkBlockedUser, uploadSingle, updateUserProfileController.handle);
+router.get('/psychologists/:userId/slots', authenticateUser, checkBlockedUser, getSlotsForUserController.handle);
+router.post('/payment/create-checkout-session', authenticateUser, checkBlockedUser, paymentController.createCheckoutSession);
+router.post('/payment/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
+router.get('/consultations', authenticateUser, checkBlockedUser, getUserConsultationsController.handle);
 
-export default router
+export default router;

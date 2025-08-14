@@ -9,7 +9,7 @@ export interface ILoginResponse {
     user: {
         name: string,
         email: string,
-        role: "user" | "psychologist"
+        role: 'user' | 'psychologist'
     },
     accessToken: string,
     hasSubmittedVerificationForm: boolean
@@ -17,14 +17,14 @@ export interface ILoginResponse {
 
 export interface IGoogleLoginInput {
     credential: string;
-    role: "user" | "psychologist";
+    role: 'user' | 'psychologist';
 }
 
 export interface IGoogleLoginResponse {
   user: {
     name: string;
     email: string;
-    role: "user" | "psychologist";
+    role: 'user' | 'psychologist';
     profileImage?: string;
   };
   accessToken: string;
@@ -41,14 +41,14 @@ export interface ISignupRequest {
     phone: string;
     password: string;
     confirmPassword: string;
-    role: "user" | "psychologist";
+    role: 'user' | 'psychologist';
 }
 
 export interface ISignupResponse {
     user: {
         name: string,
         email: string,
-        role: "user" | "psychologist"
+        role: 'user' | 'psychologist'
     },
     accessToken: string
 }
@@ -67,7 +67,7 @@ export interface IVerifyOtpResponse {
     user: {
         name: string,
         email: string,
-        role: "user" | "psychologist"
+        role: 'user' | 'psychologist'
     },
     accessToken: string
 }

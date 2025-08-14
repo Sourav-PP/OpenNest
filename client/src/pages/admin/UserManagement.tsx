@@ -1,6 +1,6 @@
-import Sidebar from "../../components/admin/Sidebar";
-import Header from "../../components/admin/Header";
-import UserTable from "../../components/admin/UserTable";
+import Sidebar from '../../components/admin/Sidebar';
+import Header from '../../components/admin/Header';
+import UserTable from '../../components/admin/UserTable';
 
 const UserManagement = () => {
   return (

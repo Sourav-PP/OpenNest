@@ -1,18 +1,18 @@
-import { IGetUserConsultationUseCase } from "../../../interfaces/user/data/IGetUserConsultationsUseCase";
-import { IConsultationRepository } from "../../../../domain/interfaces/IConsultationRepository";
-import { IGetConsultationsRequest, IGetConsultationsResponse } from "../../../types/userTypes";
+import { IGetUserConsultationUseCase } from '../../../interfaces/user/data/IGetUserConsultationsUseCase';
+import { IConsultationRepository } from '../../../../domain/interfaces/IConsultationRepository';
+import { IGetConsultationsRequest, IGetConsultationsResponse } from '../../../types/userTypes';
 
 export class GetUserConsultationsUseCase implements IGetUserConsultationUseCase {
     constructor(
-        private consultationRepo: IConsultationRepository
+        private consultationRepo: IConsultationRepository,
     ) {}
 
     async execute(input: IGetConsultationsRequest): Promise<IGetConsultationsResponse> {
-        const {search, sort, status, page = 1, limit = 10} = input
+        const { search, sort, status, page = 1, limit = 10 } = input;
 
-        const finalSort = (sort === "asc" || sort === "desc") ? sort : "desc"
-        const skip = (page - 1) * limit
-        const userId = input.patientId
+        const finalSort = (sort === 'asc' || sort === 'desc') ? sort : 'desc';
+        const skip = (page - 1) * limit;
+        const userId = input.patientId;
 
         const consultations = await this.consultationRepo.findByPatientId(userId, {
             search,
@@ -20,7 +20,7 @@ export class GetUserConsultationsUseCase implements IGetUserConsultationUseCase 
             limit,
             status,
             skip,
-        })
+        });
 
         const mappedConsultations = consultations.map(c => ({
             id: c.id,
@@ -30,14 +30,14 @@ export class GetUserConsultationsUseCase implements IGetUserConsultationUseCase 
             sessionGoal: c.sessionGoal,
             status: c.status,
             meetingLink: c.meetingLink,
-            psychologist: c.psychologist
-        }))
+            psychologist: c.psychologist,
+        }));
 
-        const totalCount = await this.consultationRepo.countAllByPatientId(userId)
-        console.log("totlcount of consultation: ", totalCount)
+        const totalCount = await this.consultationRepo.countAllByPatientId(userId);
+        console.log('totlcount of consultation: ', totalCount);
         return {
             consultations: mappedConsultations,
-            totalCount
-        }
+            totalCount,
+        };
     }
 }

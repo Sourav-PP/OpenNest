@@ -1,10 +1,10 @@
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { IGoogleAuthService } from "../../../domain/interfaces/IGoogleAuthService";import { IGoogleLoginUseCase } from "../../interfaces/auth/IGoogleLoginUseCase";
-import { IGoogleLoginInput, IGoogleLoginOutput } from "../../types/authTypes";
-import { AppError } from "../../../domain/errors/AppError";
-import { User } from "../../../domain/entities/user";
-import { ITokenService } from "../../../domain/interfaces/ITokenService";
-import { IPsychologistRepository } from "../../../domain/interfaces/IPsychologistRepository";
+import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
+import { IGoogleAuthService } from '../../../domain/interfaces/IGoogleAuthService';import { IGoogleLoginUseCase } from '../../interfaces/auth/IGoogleLoginUseCase';
+import { IGoogleLoginInput, IGoogleLoginOutput } from '../../types/authTypes';
+import { AppError } from '../../../domain/errors/AppError';
+import { User } from '../../../domain/entities/user';
+import { ITokenService } from '../../../domain/interfaces/ITokenService';
+import { IPsychologistRepository } from '../../../domain/interfaces/IPsychologistRepository';
 
 
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
@@ -12,48 +12,48 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         private tokenService: ITokenService,
         private userRepo: IUserRepository,
         private googleAuth: IGoogleAuthService,
-        private psychologistRepo: IPsychologistRepository
+        private psychologistRepo: IPsychologistRepository,
     ) {}
 
     async execute(input: IGoogleLoginInput): Promise<IGoogleLoginOutput> {
-        const {credential, role} = input
+        const { credential, role } = input;
 
-        const payload = await this.googleAuth.verifyToken(credential)
+        const payload = await this.googleAuth.verifyToken(credential);
 
-        if(!payload || !payload.email) {
-            throw new AppError("Ivalid google token", 404)
+        if (!payload || !payload.email) {
+            throw new AppError('Ivalid google token', 404);
         }
 
-        const {email, name, picture, sub: googleId} = payload
+        const { email, name, picture, sub: googleId } = payload;
 
-        let user = await this.userRepo.findByEmail(email)
+        let user = await this.userRepo.findByEmail(email);
 
-        if(!user) {
+        if (!user) {
             const newUser: User = {
-                name: name || "Google User",
+                name: name || 'Google User',
                 email: email,
                 role: role,
                 isActive: true,
                 profileImage: picture,
-                googleId
-            }
+                googleId,
+            };
 
-            user = await this.userRepo.create(newUser)
+            user = await this.userRepo.create(newUser);
         }
 
-        if(!user.isActive) {
-            throw new AppError("Account is inactive. Please contact support", 403)
+        if (!user.isActive) {
+            throw new AppError('Account is inactive. Please contact support', 403);
         }
 
-        const accessToken = this.tokenService.generateAccessToken(user.id!, user.role, user.email )
-        const refreshToken = this.tokenService.generateRefreshToken(user.id!, user.role, user.email )
+        const accessToken = this.tokenService.generateAccessToken(user.id!, user.role, user.email );
+        const refreshToken = this.tokenService.generateRefreshToken(user.id!, user.role, user.email );
 
-        let hasSubmittedVerificationForm = false
+        let hasSubmittedVerificationForm = false;
 
-        if(user.role === 'psychologist') {
-            const psychologist = await this.psychologistRepo.findByUserId(user.id!)
-            if(psychologist) {
-                hasSubmittedVerificationForm = true
+        if (user.role === 'psychologist') {
+            const psychologist = await this.psychologistRepo.findByUserId(user.id!);
+            if (psychologist) {
+                hasSubmittedVerificationForm = true;
             }
         }
         
@@ -62,11 +62,11 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                profileImage: user.profileImage!
+                profileImage: user.profileImage!,
             },
             accessToken,
             refreshToken,
-            hasSubmittedVerificationForm
-        }
+            hasSubmittedVerificationForm,
+        };
     }
 }

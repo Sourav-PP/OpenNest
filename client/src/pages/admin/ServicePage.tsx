@@ -1,6 +1,6 @@
-import AddServiceForm from "../../components/admin/AddServiceForm"
-import Header from "../../components/admin/Header"
-import Sidebar from "../../components/admin/Sidebar"
+import AddServiceForm from '../../components/admin/AddServiceForm';
+import Header from '../../components/admin/Header';
+import Sidebar from '../../components/admin/Sidebar';
 
 const ServicePage = () => {
   return (
@@ -11,7 +11,7 @@ const ServicePage = () => {
         <AddServiceForm/>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ServicePage
+export default ServicePage;

@@ -1,4 +1,4 @@
-import mongoose, {Document, mongo, Schema } from 'mongoose'
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface OtpDocument extends Document {
     email: string
@@ -11,21 +11,21 @@ const otpSchema = new Schema<OtpDocument>({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     otp: {
         type: String,
-        required: true
+        required: true,
     },
     verified: {
         type: Boolean,
-        default: false
+        default: false,
     },
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: 300
-    }
-})
+        expires: 300,
+    },
+});
 
-export const OtpModel = mongoose.model<OtpDocument>('otp', otpSchema)
+export const OtpModel = mongoose.model<OtpDocument>('otp', otpSchema);

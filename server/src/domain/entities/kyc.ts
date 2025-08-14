@@ -4,12 +4,12 @@ export interface Kyc  {
     identificationDoc: string,
     educationalCertification: string,
     experienceCertificate: string,
-    kycStatus: "pending" | "approved" | "rejected",
+    kycStatus: 'pending' | 'approved' | 'rejected',
     rejectionReason?: string,
     verifiedAt?: Date
 }
 
 export interface publicKyc {
     id?: string,
-    kycStatus: "pending" | "approved" | "rejected"
+    kycStatus: 'pending' | 'approved' | 'rejected'
 }

@@ -1,4 +1,4 @@
-import { IUpdatePsychologistProfileInput } from "../../../types/psychologistTypes";
+import { IUpdatePsychologistProfileInput } from '../../../types/psychologistTypes';
 
 export interface IUpdatePsychologistProfileUseCase {
     execute(input: IUpdatePsychologistProfileInput): Promise<void>

@@ -1,5 +1,5 @@
-import { Psychologist } from "../entities/psychologist";
-import { IPsychologistListDto } from "../dtos/psychologist";
+import { Psychologist } from '../entities/psychologist';
+import { IPsychologistListDto } from '../dtos/psychologist';
 
 export interface IPsychologistRepository {
     create(psychologist: Psychologist): Promise<Psychologist>
@@ -10,16 +10,16 @@ export interface IPsychologistRepository {
     getSpecializationNamesByIds(ids: string[]): Promise<string[]>
     getAllPsychologists(params: {
         search?: string;
-        sort?: "asc" | "desc";
-        gender?: "Male" | "Female" | 'all';
+        sort?: 'asc' | 'desc';
+        gender?: 'Male' | 'Female' | 'all';
         expertise?: string;
         skip: number;
         limit: number;
     }): Promise<IPsychologistListDto[]>
     findAllPsychologists(params: {
         search?: string;
-        sort?: "asc" | "desc";
-        gender?: "Male" | "Female";
+        sort?: 'asc' | 'desc';
+        gender?: 'Male' | 'Female';
         skip: number;
         limit: number
     }): Promise<IPsychologistListDto[]>
