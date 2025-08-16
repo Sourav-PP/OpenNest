@@ -10,7 +10,7 @@ import {
     getAllPsychologistsController,
     updateUserProfileController,
     getPsychologistDetailsController,
-} from '../../../config/di';
+} from '@/infrastructure/config/di';
 
 import { uploadSingle } from '../middlewares/multer';
 

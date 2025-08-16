@@ -1,8 +1,9 @@
 import { User } from '../../../domain/entities/user';
-import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
+import { IUserRepository } from '../../../domain/repositoryInterface/IUserRepository';
 import { userModel } from '../../database/models/user/UserModel';
 import { FilterQuery } from 'mongoose';
 import { PendingSignupModel } from '../../database/models/user/PendinSignupModel';
+import { PendingUser } from '@/domain/entities/pendingUser';
 
 export class UserRepository implements IUserRepository   {
     async findAll(params: { search?: string; sort?: 'asc' | 'desc'; gender?: 'Male' | 'Female'; skip: number; limit: number; }): Promise<User[]> {
@@ -78,7 +79,7 @@ export class UserRepository implements IUserRepository   {
         } as User;
     }
 
-    async createPendingSignup(user: User): Promise<void> {
+    async createPendingSignup(user: PendingUser): Promise<void> {
         await PendingSignupModel.updateOne(
             { email: user.email },
             {
@@ -95,7 +96,7 @@ export class UserRepository implements IUserRepository   {
         );
     }
 
-    async findPendingSignup(email: string): Promise<User | null> {
+    async findPendingSignup(email: string): Promise<Omit<User, 'isActive'> | null> {
         const userDoc = await PendingSignupModel.findOne({ email }).select('+password');
         if (!userDoc) return null;
 
@@ -104,14 +105,14 @@ export class UserRepository implements IUserRepository   {
         return {
             ...userObj,
             id: userObj._id.toString(),
-        } as User;
+        };
     }
 
     async deletePendingSignup(email: string): Promise<void> {
         await PendingSignupModel.deleteOne({ email });
     }
 
-    async create(user: User): Promise<User> {
+    async create(user: Omit<User ,'id'>): Promise<User> {
         const createdUser = await userModel.create(user);
         const userObj = createdUser.toObject();
 

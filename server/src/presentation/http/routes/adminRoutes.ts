@@ -18,7 +18,7 @@ import {
     getKycForPsychologistController,
     approveKycController,
     rejectKycController,
-} from '../../../config/di';
+} from '@/infrastructure/config/di';
 
 
 

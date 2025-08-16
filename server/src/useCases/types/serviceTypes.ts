@@ -3,7 +3,7 @@ export interface IGetAllServiceInput {
   page?: number;
 }
 
-export interface ServiceDTO {
+export interface IServiceDTO {
   id: string;
   name: string;
   description: string;
@@ -11,6 +11,6 @@ export interface ServiceDTO {
 }
 
 export interface IGetAllServiceOutput {
-  services: ServiceDTO[],
+  services: IServiceDTO[],
   totalCount?: number
 }

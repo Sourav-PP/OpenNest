@@ -1,5 +1,5 @@
-import { IConsultationDto } from '../../domain/dtos/consultation';
-import { IPsychologistResponseDto } from '../../domain/dtos/psychologist';
+import { IConsultationDto } from '../dtos/consultation';
+import { IPsychologistListUserDto } from '../dtos/psychologist';
 
 export interface PublicUser {
   id: string;
@@ -19,7 +19,7 @@ export interface IUpdateUserProfileInput {
   phone?: string;
   gender?: string;
   dateOfBirth?: Date;
-  profileImage?: string;
+  file?: Express.Multer.File;
 }
 
 export interface IUpdateUserProfileOutput {
@@ -48,7 +48,7 @@ export interface IGetUserProfileOutput {
     isActive?: boolean;
 }
 
-export interface IGetSlotForUsertInput {
+export interface IGetSlotForUserInput {
   userId: string; //userId of psychologist
   date?: Date
 }
@@ -62,7 +62,7 @@ export interface IGetAllPsychologistRequest {
 }
 
 export interface IGetAllPsychologistResponse {
-  psychologists: IPsychologistResponseDto[],
+  psychologists: IPsychologistListUserDto[],
   totalCount: number
 }
 export interface IGetConsultationsRequest {

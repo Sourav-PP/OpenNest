@@ -1,6 +1,6 @@
-import { IUserDto } from '../../domain/dtos/user';
-import { SpeicalizationFee } from '../../domain/entities/psychologist';
-import { IKycDto } from '../../domain/dtos/kyc';
+import { IUserDto } from '../dtos/user';
+import { IKycDto } from '../dtos/kyc';
+import { IPsychologistListDto } from '../dtos/psychologist';
 
 export interface IAdminLoginRequest {
     email: string,
@@ -33,23 +33,8 @@ export interface IGetAllPsychologistRequest {
     limit?: number
 }
 
-export interface IGetAllPsychologistDto {
-      id: string;
-      aboutMe: string;
-      qualification: string;
-      defaultFee: number;
-      isVerified: boolean;
-      user: {
-        name: string;
-        email: string;
-        profileImage?: string;
-      };
-      specializations: string[];
-      specializationFees: SpeicalizationFee[];
-}
-
 export interface IGetAllPsychologistResponse {
-    psychologists: IGetAllPsychologistDto[];
+    psychologists: IPsychologistListDto[]
     totalCount?: number
 }
 

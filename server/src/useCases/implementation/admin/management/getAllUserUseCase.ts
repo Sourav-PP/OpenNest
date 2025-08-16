@@ -1,9 +1,14 @@
-import { IUserRepository } from '../../../../domain/interfaces/IUserRepository';
-import { IGetAllUserUseCase } from '../../../interfaces/admin/management/IGetAllUsersUseCase';
+import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
+import { IGetAllUserUseCase } from '@/useCases/interfaces/admin/management/IGetAllUsersUseCase';
 import { IGetAllUserRequest, IGetAllUserResponse } from '../../../types/adminTypes';
+import { toUserDetailDto } from '@/useCases/mappers/userMapper';
 
 export class GetAllUserUseCase implements IGetAllUserUseCase {
-    constructor(private userRepo: IUserRepository ) {}
+    private _userRepo: IUserRepository;
+
+    constructor(private userRepo: IUserRepository ) {
+        this._userRepo = userRepo;
+    }
 
     async execute(input: IGetAllUserRequest): Promise<IGetAllUserResponse> {
         const { search, sort, gender, page = 1, limit = 10 } = input;
@@ -11,7 +16,7 @@ export class GetAllUserUseCase implements IGetAllUserUseCase {
         const finalSort = (sort === 'asc' || sort === 'desc') ? sort : 'desc';
         const skip = (page - 1) * limit;
 
-        const users = await this.userRepo.findAll({
+        const users = await this._userRepo.findAll({
             search,
             sort: finalSort,
             limit,
@@ -19,24 +24,12 @@ export class GetAllUserUseCase implements IGetAllUserUseCase {
             gender,
         });
 
-        console.log('users in useCase: ', users);
-        const mappedUser = users.map(user => ({
-            id: user.id!,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
-            profileImage: user.profileImage,
-            dateOfBirth: user.dateOfBirth,
-            gender: user.gender,
-            isActive: user.isActive,
-        }));
-        console.log('mapped user in useCase: ', mappedUser);
+        const mapped = users.map(user => toUserDetailDto(user));
 
         const totalCount = await this.userRepo.countAll({ search, gender });
 
         return {
-            user: mappedUser,
+            user: mapped,
             totalCount,
         };
     }

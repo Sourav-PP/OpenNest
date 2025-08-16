@@ -1,22 +1,24 @@
-import { Slot } from '../../../../domain/entities/slot';
-import { ISlotRepository } from '../../../../domain/interfaces/ISlotRepository';
-import { IGetSlotByPsychologistUseCase } from '../../../interfaces/psychologist/availability/IGetSlotByPsychologistUseCase';
+import { Slot } from '@/domain/entities/slot';
+import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
+import { IGetSlotByPsychologistUseCase } from '@/useCases/interfaces/psychologist/availability/IGetSlotByPsychologistUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class GetSlotByPsychologistUseCase implements IGetSlotByPsychologistUseCase {
-    constructor(
-        private slotRepo: ISlotRepository,
-    ) {}
+    private _slotRepo: ISlotRepository;
+
+    constructor(slotRepo: ISlotRepository) {
+        this._slotRepo = slotRepo;
+    }
 
     async execute(psychologistId: string): Promise<Slot[]> {
-        const slots = await this.slotRepo.getSlotByPsychologistId(psychologistId);
+        const slots = await this._slotRepo.getAllSlotsByPsychologistId(psychologistId);
 
-        return slots.map(slot => ({
-            id: slot.id,
-            psychologistId: slot.psychologistId,
-            startDateTime: slot.startDateTime,
-            endDateTime: slot.endDateTime,
-            isBooked: slot.isBooked,
-            bookedBy: slot.bookedBy,
-        }));
+        if (!slots || slots.length === 0) {
+            throw new AppError(psychologistMessages.ERROR.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND); 
+        }
+
+        return slots;
     }
 }

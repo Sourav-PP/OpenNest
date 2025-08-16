@@ -1,5 +1,5 @@
 export interface Consultation {
-    id?: string;
+    id: string;
     patientId: string;
     psychologistId: string;
     subscriptionId?: string;

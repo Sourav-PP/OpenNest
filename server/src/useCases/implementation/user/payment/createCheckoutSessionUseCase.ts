@@ -1,38 +1,50 @@
-import { ICreateCheckoutSessionUseCase } from '../../../interfaces/user/payment/ICreateCheckoutSessionUseCase';
-import { ICreateCheckoutSessionInput, ICreateCheckoutSessionOutput } from '../../../types/payment';
-import { IPaymentService } from '../../../../domain/services/IPaymentService';
-import { IPaymentRepository } from '../../../../domain/interfaces/IPaymentRepository';
-import { ISlotRepository } from '../../../../domain/interfaces/ISlotRepository';
-import { AppError } from '../../../../domain/errors/AppError';
-import { Payment } from '../../../../domain/entities/payment';
+import { ICreateCheckoutSessionUseCase } from '@/useCases/interfaces/user/payment/ICreateCheckoutSessionUseCase';
+import {
+    ICreateCheckoutSessionInput,
+    ICreateCheckoutSessionOutput,
+} from '@/useCases/types/payment';
+import { IPaymentService } from '@/domain/serviceInterface/IPaymentService';
+import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
+import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
+import { AppError } from '@/domain/errors/AppError';
+import { Payment } from '@/domain/entities/payment';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { appConfig } from '@/infrastructure/config/config';
+
+
+
 
 export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCase {
+    private _paymentService: IPaymentService;
+    private _paymentRepository: IPaymentRepository;
+    private _slotRepo: ISlotRepository;
+
     constructor(
-        private paymentService: IPaymentService,
-        private paymentRepository: IPaymentRepository,
-        private slotRepo: ISlotRepository,
-    ){}
-    async execute(input: ICreateCheckoutSessionInput): Promise<ICreateCheckoutSessionOutput> {
+        paymentService: IPaymentService,
+        paymentRepository: IPaymentRepository,
+        slotRepo: ISlotRepository,
+    ) {
+        this._paymentService = paymentService;
+        this._paymentRepository = paymentRepository;
+        this._slotRepo = slotRepo;
+    }
+
+    async execute( input: ICreateCheckoutSessionInput): Promise<ICreateCheckoutSessionOutput> {
         if (!input.userId) {
-            throw new AppError('Missing required userId', 400);
+            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
-        const slot = await this.slotRepo.findById(input.slotId);
+        const slot = await this._slotRepo.findById(input.slotId);
         if (!slot) {
-            throw new AppError('Slot not available', 404);
+            throw new AppError(psychologistMessages.ERROR.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        const currency = process.env.CURRENCY || 'usd';
-        const successUrl = process.env.FRONTEND_SUCCESS_URL!;
-        const cancelUrl = process.env.FRONTEND_CANCEL_URL!;
+        const currency = appConfig.stripe.currency || 'usd';
+        const successUrl = appConfig.stripe.frontendSuccessUrl;
+        const cancelUrl = appConfig.stripe.frontendCancelUrl;
 
-        console.log('currency', currency);
-        console.log('successurl:', successUrl);
-        console.log('cancelurl', cancelUrl);
-
-        console.log('slot starttimedate when passing to metadata: ', slot.startDateTime);
-        console.log('slot enddate time when passint to metadata', slot.endDateTime);
-
-        const metadata:{
+        const metadata: {
             patientId: string;
             psychologistId: string;
             slotId: string;
@@ -53,15 +65,19 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             metadata.subscriptionId = input.subscriptionId;
         }
 
-        console.log('metadata: ', metadata);
+        const { url, sessionId } = await this._paymentService.createCheckoutSession(
+            input.amount,
+            currency,
+            `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl,
+            metadata,
+        );
 
-        const { url, sessionId } = await this.paymentService.createCheckoutSession(input.amount,currency, `${successUrl}?session_id={CHECKOUT_SESSION_ID}`, cancelUrl, metadata );
-    
-        console.log('its here:',sessionId);
-        const payment: Payment = {
+
+        const payment: Omit<Payment, 'id'> = {
             userId: input.userId,
             amount: input.amount,
-            currency: process.env.CURRENCY || 'usd',
+            currency: appConfig.stripe.currency || 'usd',
             paymentMethod: 'stripe',
             paymentStatus: 'pending',
             refunded: false,
@@ -69,10 +85,7 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             stripeSessionId: sessionId,
         };
 
-        await this.paymentRepository.create(payment);
-        
-
-        console.log('checkout session created!');
+        await this._paymentRepository.create(payment);
 
         return {
             url: url,

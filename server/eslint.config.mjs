@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
+import unusedImports from 'eslint-plugin-unused-imports';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
@@ -19,11 +20,12 @@ export default defineConfig([
         plugins: {
             js,
             '@typescript-eslint': tseslint.plugin,
+            'unused-imports': unusedImports,
         },
         extends: [
-            prettier,
             js.configs.recommended,
             ...tseslint.configs.recommended,
+            prettier,
         ],
         rules: {
             // --- Formatting & Style ---
@@ -39,6 +41,12 @@ export default defineConfig([
             // --- Best Practices ---
             'no-unused-vars': 'off', // turn off base rule for TS
             '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+            'unused-imports/no-unused-imports': 'error',
+            'unused-imports/no-unused-vars': [
+                'warn',
+                { vars: 'all', varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+            ],
+            
             'no-console': 'off',
             eqeqeq: ['error', 'always'],
             'no-var': 'error',

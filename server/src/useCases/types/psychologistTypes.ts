@@ -1,7 +1,6 @@
 // Input and Output types for Profile Use Cases
 import { Kyc } from '../../domain/entities/kyc';
 import { Psychologist } from '../../domain/entities/psychologist';
-import { Weekday } from 'rrule';
 
 export interface IVerifyProfileInput {
     userId: string;
@@ -15,9 +14,7 @@ export interface IVerifyProfileInput {
         specializationName: string;
         fee: number;
     }[];
-    identificationDoc: string;
-    educationalCertification: string;
-    experienceCertificate: string;
+    files?: Record<string, Express.Multer.File[]>;
 }
 
 export interface IVerifyProfileOutput {
@@ -32,7 +29,7 @@ export interface IUpdatePsychologistProfileInput {
     phone?: string;
     gender?: string;
     dateOfBirth?: string;
-    profileImage?: string;
+    file?: Express.Multer.File;
     aboutMe?: string;
     defaultFee?: number;
 }
@@ -41,13 +38,18 @@ export interface IRecurringSlotInput {
     psychologistId: string;
     fromDate: string;
     toDate: string;
-    weekDays: Weekday[];
+    weekDays: string[];
     startTime: string;
     endTime: string;
     duration: number;
     timeZone: string;
 }
 
+export interface ISingleSlotInput {
+    psychologistId: string;
+    startDateTime: Date;
+    endDateTime: Date;
+}
 export interface IDeleteSlotInput {
     slotId: string;
     psychologistId: string;

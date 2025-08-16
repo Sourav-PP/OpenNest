@@ -1,36 +1,41 @@
-import { Request, Response } from 'express';
-import { IGetKycDetailsUseCase } from '../../../../useCases/interfaces/psychologist/profile/IGetKycDetailsUseCase';
-import { IPsychologistRepository } from '../../../../domain/interfaces/IPsychologistRepository';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { IGetKycDetailsUseCase } from '@/useCases/interfaces/psychologist/profile/IGetKycDetailsUseCase';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 
 export class GetKycDetailsController {
-    constructor(
-        private getKycDetailsUseCase: IGetKycDetailsUseCase,
-        private psychologistRepo: IPsychologistRepository,
-    ) {}
+    private _getKycDetailsUseCase: IGetKycDetailsUseCase;
+    private _psychologistRepo: IPsychologistRepository;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(
+        getKycDetailsUseCase: IGetKycDetailsUseCase,
+        psychologistRepo: IPsychologistRepository,
+    ) {
+        this._getKycDetailsUseCase = getKycDetailsUseCase;
+        this._psychologistRepo = psychologistRepo;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                res.status(401).json({ success: false, message: 'Unauthorized user' });
-                return;
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const psychologist = await this.psychologistRepo.findByUserId(userId);
+            const psychologist = await this._psychologistRepo.findByUserId(userId);
 
             if (!psychologist || !psychologist.id) {
-                res.status(404).json({ success: false, message: 'Psychologist not found' });
-                return;
+                throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
-            const kyc = await this.getKycDetailsUseCase.execute(psychologist.id);
+            const kyc = await this._getKycDetailsUseCase.execute(psychologist.id);
 
-            res.status(200).json(kyc);
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            res.status(HttpStatus.OK).json(kyc);
+        } catch (error) {
+            next(error);
         }
     };
 }

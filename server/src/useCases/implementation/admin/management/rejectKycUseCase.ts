@@ -1,22 +1,30 @@
-import { IRejectKycUseCase } from '../../../interfaces/admin/management/IRejectKycUseCase';
-import { IKycRepository } from '../../../../domain/interfaces/IKycRepository';
-import { IPsychologistRepository } from '../../../../domain/interfaces/IPsychologistRepository';
-import { AppError } from '../../../../domain/errors/AppError';
+import { IRejectKycUseCase } from '@/useCases/interfaces/admin/management/IRejectKycUseCase';
+import { IKycRepository } from '@/domain/repositoryInterface/IKycRepository';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { AppError } from '@/domain/errors/AppError';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class RejectKycUseCase implements IRejectKycUseCase {
+    private _kycRepo: IKycRepository;
+    private _psychologistRepo: IPsychologistRepository; 
+
     constructor(
-        private kycRepo: IKycRepository,
-        private psychologistRepo: IPsychologistRepository,
-    ) {}
+        kycRepo: IKycRepository,
+        psychologistRepo: IPsychologistRepository,
+    ) {
+        this._kycRepo = kycRepo;
+        this._psychologistRepo = psychologistRepo;
+    }
 
     async execute(psychologistId: string, reason: string): Promise<void> {
         if (!psychologistId) {
-            throw new AppError('Missing psychologist Id', 400);
+            throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
-        await this.kycRepo.rejectKyc(psychologistId, reason);
+        await this._kycRepo.rejectKyc(psychologistId, reason);
 
-        await this.psychologistRepo.updateById(psychologistId, {
+        await this._psychologistRepo.updateById(psychologistId, {
             isVerified: false,
         });
     }

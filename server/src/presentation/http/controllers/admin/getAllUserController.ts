@@ -1,16 +1,20 @@
-import { Request, Response } from 'express';
-import { GetAllUserUseCase } from '../../../../useCases/implementation/admin/management/getAllUserUseCase';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { IGetAllUserUseCase } from '@/useCases/interfaces/admin/management/IGetAllUsersUseCase';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class GetAllUserController {
-    constructor(private getAllUserUseCasee: GetAllUserUseCase) {}
+    private _getAllUserUseCase: IGetAllUserUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(getAllUserUseCase: IGetAllUserUseCase) {
+        this._getAllUserUseCase = getAllUserUseCase;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
-            const result = await this.getAllUserUseCasee.execute({
+            const result = await this._getAllUserUseCase.execute({
                 search: req.query.search as string,
                 sort: req.query.sort as 'asc' | 'desc',
                 gender: req.query.gender as 'Male' | 'Female',
@@ -18,12 +22,9 @@ export class GetAllUserController {
                 limit,
             });
 
-            console.log('result in controller: ', result);
-            res.status(200).json(result);
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            res.status(HttpStatus.OK).json(result);
+        } catch (error) {
+            next(error);
         }
     };
 }

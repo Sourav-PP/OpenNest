@@ -1,24 +1,17 @@
-import { Payment } from '../../../domain/entities/payment';
-import { IPaymentRepository } from '../../../domain/interfaces/IPaymentRepository';
-import { PaymentModel } from '../../database/models/user/Payment';
+import { Payment } from '@/domain/entities/payment';
+import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
+import { PaymentModel } from '@/infrastructure/database/models/user/Payment';
 
 export class PaymentRepository implements IPaymentRepository {
-    async create(paymentData: Payment): Promise<Payment> {
-        try {
-            console.log('is it coming in the repo');
-            const doc = await PaymentModel.create(paymentData);
-            console.log('doc:', doc);
-            const obj = doc.toObject();
-            return {
-                ...obj,
-                userId: doc.userId.toString(),
-                id: obj._id.toString(),
-                consultationId: obj.consultationId ? obj.consultationId.toString() : undefined,
-            };
-        } catch (err) {
-            console.error('Error in PaymentModel.create:', err);
-            throw err;
-        }
+    async create(paymentData: Omit<Payment, 'id'>): Promise<Payment> {
+        const doc = await PaymentModel.create(paymentData);
+        const obj = doc.toObject();
+        return {
+            ...obj,
+            userId: doc.userId.toString(),
+            id: obj._id.toString(),
+            consultationId: obj.consultationId ? obj.consultationId.toString() : undefined,
+        };
     }
 
     async updateBySessionId(sessionId: string, update: Partial<Payment>): Promise<Payment | null> {

@@ -1,25 +1,27 @@
-import { Request, Response } from 'express';
-import { GetProfileUseCase } from '../../../../useCases/implementation/psychologist/profile/getProfileUseCase';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { IGetProfileUseCase } from '@/useCases/interfaces/psychologist/profile/IGetProfileUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class GetProfileController {
-    constructor(private getProfileUseCase: GetProfileUseCase) {}
+    private _getProfileUseCase: IGetProfileUseCase;
 
-    handle = async(req: Request, res: Response) => {
+    constructor(getProfileUseCase: IGetProfileUseCase) {
+        this._getProfileUseCase = getProfileUseCase;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = req.user?.userId;
-
             if (!userId) {
-                res.status(401).json({ success:false, message: 'Unauthorized user' });
-                return;
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const data = await this.getProfileUseCase.execute(userId);
-            res.status(200).json(data);
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            const data = await this._getProfileUseCase.execute(userId);
+            res.status(HttpStatus.OK).json(data);
+        } catch (error) {
+            next(error);
         }
     };
 }

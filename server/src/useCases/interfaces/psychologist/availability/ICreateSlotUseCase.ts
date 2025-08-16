@@ -1,7 +1,6 @@
-import { Slot } from '../../../../domain/entities/slot';
-import { IRecurringSlotInput } from '../../../types/psychologistTypes';
+import { IRecurringSlotInput, ISingleSlotInput } from '@/useCases/types/psychologistTypes';
 
 export interface ICreateSlotUseCase {
-    executeSingle(input: Slot): Promise<void>
+    executeSingle(input: ISingleSlotInput): Promise<void>
     executeRecurring(input: IRecurringSlotInput): Promise<void>   
 }

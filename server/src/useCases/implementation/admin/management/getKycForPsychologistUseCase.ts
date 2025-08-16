@@ -1,24 +1,31 @@
-import { IGetKycForPsychologistUseCase } from '../../../interfaces/admin/management/IGetKycForPsychologistUseCase';
-import { IKycRepository } from '../../../../domain/interfaces/IKycRepository';
-import { IKycDto } from '../../../../domain/dtos/kyc';
-import { AppError } from '../../../../domain/errors/AppError';
+import { IGetKycForPsychologistUseCase } from '@/useCases/interfaces/admin/management/IGetKycForPsychologistUseCase';
+import { IKycRepository } from '@/domain/repositoryInterface/IKycRepository';
+import { IKycDto } from '@/useCases/dtos/kyc';
+import { AppError } from '@/domain/errors/AppError';
+import { toKycDto } from '@/useCases/mappers/kycMapper';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
 
 export class GetKycForPsychologistUseCase implements IGetKycForPsychologistUseCase {
-    constructor(
-        private kycRepo: IKycRepository,
-    ) {}
+    private _kycRepo: IKycRepository;
+
+    constructor(kycRepo: IKycRepository) {
+        this._kycRepo = kycRepo;
+    }
 
     async execute(psychologistId: string): Promise<IKycDto> {
         if (!psychologistId) {
-            throw new AppError('psychologistId not found', 404);
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        const kyc = await this.kycRepo.findByPsychologistIdForAdmin(psychologistId);
+        const entities = await this._kycRepo.findByPsychologistIdForAdmin(psychologistId);
 
-        if (!kyc) {
-            throw new AppError('No kyc found for the psychologist', 404);
+        if (!entities) {
+            throw new AppError(adminMessages.ERROR.KYC_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        return kyc;
+        return toKycDto(entities.kyc, entities.psychologist, entities.user);
+
     }
 }

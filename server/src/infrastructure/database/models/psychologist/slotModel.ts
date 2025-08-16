@@ -13,7 +13,7 @@ const slotSchema = new Schema<ISlotDocument>(
     {
         psychologistId: {
             type: Schema.Types.ObjectId,
-            requried: true,
+            required: true,
             ref: 'Psychologist',
         },
         startDateTime: {

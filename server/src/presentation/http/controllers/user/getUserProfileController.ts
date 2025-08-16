@@ -1,21 +1,25 @@
-import { Request, Response } from 'express';
-import { GetUserProfileUseCase } from '../../../../useCases/implementation/user/profile/getUserProfileUseCase';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { IGetUserProfileUseCase } from '@/useCases/interfaces/user/profile/IGetUserProfileUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class GetUserProfileController {
-    constructor(private getUserProfile: GetUserProfileUseCase) {}
+    private _getUserProfile: IGetUserProfileUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(getUserProfile: IGetUserProfileUseCase) {
+        this._getUserProfile = getUserProfile;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.user?.userId;
-            if (!id) throw new Error('no userId in the request while geting user profile');
-            const userProfile = await this.getUserProfile.execute({ userId: id });
+            if (!id) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+            const userProfile = await this._getUserProfile.execute({ userId: id });
 
-            res.status(200).json(userProfile);
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            res.status(HttpStatus.OK).json(userProfile);
+        } catch (error) {
+            next(error);
         }
     };
 }

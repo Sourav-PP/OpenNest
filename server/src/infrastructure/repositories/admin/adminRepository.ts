@@ -1,5 +1,5 @@
-import { Admin } from '../../../domain/entities/Admin';
-import { IAdminRepository } from '../../../domain/interfaces/IAdminRepository';
+import { Admin } from '../../../domain/entities/admin';
+import { IAdminRepository } from '@/domain/repositoryInterface/IAdminRepository';
 import { AdminModel } from '../../database/models/admin/adminModel';
 
 export class AdminRepository implements IAdminRepository {

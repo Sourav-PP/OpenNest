@@ -1,23 +1,23 @@
-import { Request, Response } from 'express';
-import { IGetSlotForUserUseCase } from '../../../../useCases/interfaces/user/data/IGetSlotForUserUseCase';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { IGetSlotForUserUseCase } from '@/useCases/interfaces/user/data/IGetSlotForUserUseCase';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class GetSlotsForUserController {
-    constructor(
-        private getSlotsForUserUseCase: IGetSlotForUserUseCase,
-    ) {}
+    private _getSlotsForUserUseCase: IGetSlotForUserUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(getSlotsForUserUseCase: IGetSlotForUserUseCase) {
+        this._getSlotsForUserUseCase = getSlotsForUserUseCase;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { userId } = req.params;
             const date = req.query.date ? new Date(req.query.date as string) : undefined;
 
-            const slots = await this.getSlotsForUserUseCase.execute({ userId, date });
-            res.status(200).json(slots);
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            const slots = await this._getSlotsForUserUseCase.execute({ userId, date });
+            res.status(HttpStatus.OK).json(slots);
+        } catch (error) {
+            next(error);
         }
 
     };

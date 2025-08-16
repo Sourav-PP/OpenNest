@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
-import { IConsultationDto } from '../../../domain/dtos/consultation';
-import { Consultation } from '../../../domain/entities/consultation';
-import { IConsultationRepository } from '../../../domain/interfaces/IConsultationRepository';
-import { ConsultationModel } from '../../database/models/user/Consultation';
+import { Consultation } from '@/domain/entities/consultation';
+import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
+import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
+import { Psychologist } from '@/domain/entities/psychologist';
+import { User } from '@/domain/entities/user';
 
 export class ConsultationRepository implements IConsultationRepository {
-    async createConsultation(data: Consultation): Promise<Consultation> {
+    async createConsultation(data: Omit<Consultation, 'id'>): Promise<Consultation> {
         const createdConsultation = await ConsultationModel.create(data);
         const consultationObj = createdConsultation.toObject();
 
@@ -32,7 +33,8 @@ export class ConsultationRepository implements IConsultationRepository {
         skip?: number,
         limit?: number,
         status: 'booked' | 'cancelled' | 'completed' | 'rescheduled'
-    }): Promise<IConsultationDto[]> {
+    }): Promise<{ consultation: Consultation; psychologist: Psychologist; user: User }[]> {
+
         const matchStage: Record<string , unknown> = { patientId: new mongoose.Types.ObjectId(patientId) };
 
         if (params.status) {
@@ -83,25 +85,28 @@ export class ConsultationRepository implements IConsultationRepository {
             pipeline.push({ $limit: params.limit });
         }
 
-        pipeline.push({
-            $project: {
-                id: '$_id',
-                patientId: 1,
-                startDateTime: 1,
-                endDateTime: 1,
-                sessionGoal: 1,
-                status: 1,
-                meetingLink: 1,
-                psychologist: {
-                    id: '$psychologist._id',
-                    name: '$psychologist.user.name',
-                },
-            },
-        });
+        const results = await ConsultationModel.aggregate(pipeline);
 
-        const consultations = await ConsultationModel.aggregate(pipeline);
-        console.log('consultations in the consultationrepository:', consultations);
-        return consultations;
+        return results.map(item => ({
+            consultation: {
+                id: item._id.toString(),
+                patientId: item.patientId.toString(),
+                startDateTime: item.startDateTime,
+                endDateTime: item.endDateTime,
+                sessionGoal: item.sessionGoal,
+                status: item.status,
+                meetingLink: item.meetingLink,
+                psychologistId: item.psychologist._id.toString(),
+            } as Consultation,
+            psychologist: {
+                id: item.psychologist._id.toString(),
+                userId: item.psychologist.userId.toString(),
+            } as Psychologist,
+            user: {
+                id: item.user._id.toString(),
+                name: item.user.name,
+            } as User,
+        }));
     }
 
     async countAllByPatientId(patientId: string): Promise<number> {

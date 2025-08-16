@@ -1,4 +1,4 @@
-import cloudinary from '../config/cloudinary';
+import cloudinary from '../infrastructure/config/cloudinary';
 import path from 'path';
 
 export const uploadToCloudinary = async(
@@ -12,7 +12,7 @@ export const uploadToCloudinary = async(
             { folder, public_id: baseFilename, resource_type: 'auto' },
             (error, result) => {
                 if (error) return reject(error);
-                resolve(result!.secure_url);
+                resolve(result!.public_id);
             },
         ).end(fileBuffer);
     });

@@ -1,42 +1,42 @@
-import { IPsychologistRepository } from '../../../../domain/interfaces/IPsychologistRepository';
-import { IKycRepository } from '../../../../domain/interfaces/IKycRepository';
-import { IUserRepository } from '../../../../domain/interfaces/IUserRepository';
-import { AppError } from '../../../../domain/errors/AppError';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { IKycRepository } from '@/domain/repositoryInterface/IKycRepository';
+import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
+import { AppError } from '@/domain/errors/AppError';
+import { toPsychologistProfileDto } from '@/useCases/mappers/psychologistMapper';
+import { IGetProfileUseCase } from '@/useCases/interfaces/psychologist/profile/IGetProfileUseCase';
+import { IPsychologistProfileDto } from '@/useCases/dtos/psychologist';
+import { userMessages } from '@/shared/constants/messages/userMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 
-export class GetProfileUseCase {
+export class GetProfileUseCase implements IGetProfileUseCase {
+    private _psychologistRepo: IPsychologistRepository;
+    private _kycRepo: IKycRepository;
+    private _userRepo: IUserRepository;
+
     constructor(
-        private psychologistRepo: IPsychologistRepository,
-        private kycRepo: IKycRepository,
-        private userRepo: IUserRepository,
-    ) {}
+        psychologistRepo: IPsychologistRepository,
+        kycRepo: IKycRepository,
+        userRepo: IUserRepository,
+    ) {
+        this._psychologistRepo = psychologistRepo;
+        this._kycRepo = kycRepo;
+        this._userRepo = userRepo;
+    }
 
-    async execute(userId: string) {
-        const user = await this.userRepo.findById(userId);
+    async execute(userId: string): Promise<IPsychologistProfileDto> {
+        const user = await this._userRepo.findById(userId);
 
-        if (!user) throw new AppError('User not found', 404);
+        if (!user) throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-        const psychologist = await this.psychologistRepo.findByUserId(userId);
+        const psychologist = await this._psychologistRepo.findByUserId(userId);
         if (!psychologist) {
-            throw new AppError('psychologist not found', 404);
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-        const specializationNames = await this.psychologistRepo.getSpecializationNamesByIds(psychologist.specializations);
+        const specializationNames = await this._psychologistRepo.getSpecializationNamesByIds(psychologist.specializations);
 
-        const kyc = await this.kycRepo.findByPsychologistId(psychologist.id!);
+        const kyc = await this._kycRepo.findByPsychologistId(psychologist.id);
 
-        return {
-            id: psychologist.id,
-            name: user?.name,
-            email: user?.email,
-            phone: user.phone,
-            gender: user.gender,
-            dateOfBirth: user?.dateOfBirth,
-            defaultFee: psychologist.defaultFee,
-            qualification: psychologist.qualification,
-            aboutMe: psychologist.aboutMe,
-            specializations: specializationNames,
-            profileImage: user?.profileImage,
-            kycStatus: kyc?.kycStatus || 'pending',
-            specializationFees: psychologist.specializationFees,
-        };
+        return toPsychologistProfileDto(user, psychologist, specializationNames, kyc);
     }
 }

@@ -1,31 +1,41 @@
-import { IAdminRepository } from '../../../../domain/interfaces/IAdminRepository';
-import { IAuthService } from '../../../../domain/interfaces/IAuthService';
-import { ITokenService } from '../../../../domain/interfaces/ITokenService';
-import { IAdminLoginResponse, IAdminLoginRequest } from '../../../types/adminTypes';
-import { IAdminLoginUseCase } from '../../../interfaces/admin/auth/ILoginUseCase';
-import { AppError } from '../../../../domain/errors/AppError';
+import { IAdminRepository } from '@/domain/repositoryInterface/IAdminRepository';
+import { IAuthService } from '@/domain/serviceInterface/IAuthService';
+import { ITokenService } from '@/domain/serviceInterface/ITokenService';
+import { IAdminLoginResponse, IAdminLoginRequest } from '@/useCases/types/adminTypes';
+import { IAdminLoginUseCase } from '@/useCases/interfaces/admin/auth/ILoginUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class AdminLoginUseCase implements IAdminLoginUseCase {
+    private _adminRepository: IAdminRepository;
+    private _tokenService: ITokenService;
+    private _authService: IAuthService;
+
     constructor(
-        private adminRepository: IAdminRepository,
-        private tokenService: ITokenService,
-        private authService: IAuthService,
-    ) {}
+        adminRepository: IAdminRepository,
+        tokenService: ITokenService,
+        authService: IAuthService,
+    ) {
+        this._adminRepository = adminRepository;
+        this._tokenService = tokenService;
+        this._authService = authService;
+    }
 
     async execute(request: IAdminLoginRequest): Promise<IAdminLoginResponse> {
 
-        const admin = await this.adminRepository.findByEmail(request.email);
+        const admin = await this._adminRepository.findByEmail(request.email);
         if (!admin) {
-            throw new AppError('Invalid email or password', 401);
+            throw new AppError(authMessages.ERROR.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
         }
 
-        const isMatch = await this.authService.comparePassword(request.password, admin.password);
+        const isMatch = await this._authService.comparePassword(request.password, admin.password);
         if (!isMatch) {
-            throw new AppError('Invalid email or password', 401);
+            throw new AppError(authMessages.ERROR.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
         }
 
-        const accessToken = this.tokenService.generateAccessToken(admin.id!, 'admin', admin.email);
-        const refreshToken = this.tokenService.generateRefreshToken(admin.id!, 'admin', admin.email);
+        const accessToken = this._tokenService.generateAccessToken(admin.id, 'admin', admin.email);
+        const refreshToken = this._tokenService.generateRefreshToken(admin.id, 'admin', admin.email);
 
         return {
             accessToken,

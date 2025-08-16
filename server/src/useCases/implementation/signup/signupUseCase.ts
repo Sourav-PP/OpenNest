@@ -1,51 +1,58 @@
-import { IAuthService } from '../../../domain/interfaces/IAuthService';
-import { ITokenService } from '../../../domain/interfaces/ITokenService';
-import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
-import { ISignupInput, ISignupOutput } from '../../types/signupTypes';
-import { ISignupUseCase } from '../../interfaces/signup/ISignupUseCase';
-import { IOtpService } from '../../../domain/interfaces/IOtpService';
+import { ITokenService } from '@/domain/serviceInterface/ITokenService';
+import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
+import { ISignupInput, ISignupOutput } from '@/useCases/types/signupTypes';
+import { ISignupUseCase } from '@/useCases/interfaces/signup/ISignupUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IFileStorage } from '@/useCases/interfaces/IFileStorage';
 
 export class SignupUseCase implements ISignupUseCase {
+    private _tokenService: ITokenService;
+    private _userRepository: IUserRepository;
+    private _fileStorage: IFileStorage;
+
     constructor(
-        private userRepository: IUserRepository,
-        private authService: IAuthService,
-        private tokenService: ITokenService,
-        private otpService: IOtpService,
-    ) {}
+        userRepository: IUserRepository,
+        tokenService: ITokenService,
+        fileStorage: IFileStorage,
+    ) {
+        this._userRepository = userRepository;
+        this._tokenService = tokenService;
+        this._fileStorage = fileStorage;
+    }
 
     async execute(request: ISignupInput): Promise<ISignupOutput> {
-        const existingUser = await this.userRepository.findByEmail(request.email);
+        const publicId = await this._fileStorage.upload(
+            request.file.buffer,
+            request.file.originalname,
+            'profile_images',
+        );
+
+        console.log('public Id: ', publicId);
+        const existingUser = await this._userRepository.findByEmail(request.email);
         if (existingUser) {
-            const error: Error & {statusCode?: number} = new Error('User with this email already exists');
-            error.statusCode = 400;
-            throw error;
+            throw new AppError(authMessages.ERROR.EMAIL_ALREADY_EXISTS, HttpStatus.CONFLICT);
         } 
 
         if (request.password !== request.confirmPassword) {
-            const error: Error & {statusCode?: number} = new Error('Password do not match');
-            error.statusCode = 400;
-            throw error;
+            throw new AppError(authMessages.ERROR.PASSWORDS_DO_NOT_MATCH, HttpStatus.BAD_REQUEST);
         }
 
-        // const isVerified = await this.otpService.isVerified(request.email);
-        // if (!isVerified) {
-        //     const error: Error & {statusCode?: number} = new Error("Email not verified with OTP")
-        //     error.statusCode = 400
-        //     throw error
-        // }
-
-        const hashPassword = await this.authService.hashPassword(request.password);
-
-        await this.userRepository.createPendingSignup({
+        await this._userRepository.createPendingSignup({
             name: request.name,
             email: request.email,
             phone: request.phone,
             password: request.password,
             role: request.role,
-            profileImage: request.profileImage,
+            profileImage: publicId,
         });
 
-        const signupToken = this.tokenService.generateSignupToken(request.email);
+        const signupToken = this._tokenService.generateSignupToken(request.email);
+
+        if (!signupToken) {
+            throw new AppError(authMessages.ERROR.TOKEN_GENERATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
+        };
 
         return signupToken;
     }

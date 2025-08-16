@@ -1,11 +1,12 @@
 import { createLogger, format, transports } from 'winston';
 import path from 'path';
+import { appConfig } from '@/infrastructure/config/config';
 
 const customFormat = format.printf(({ timestamp, level, message, stack }) => {
     return `${timestamp} ${level}: ${stack || message}`;
 });
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = appConfig.server.nodeEnv === 'development';
 
 const logger = createLogger({
     level: 'info',

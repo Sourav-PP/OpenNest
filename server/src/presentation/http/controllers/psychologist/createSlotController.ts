@@ -1,33 +1,38 @@
-import { Request, Response } from 'express';
-import { CreateSlotUseCase } from '../../../../useCases/implementation/psychologist/availability/CreateSlotUseCase';
-import { IPsychologistRepository } from '../../../../domain/interfaces/IPsychologistRepository';
-import { WEEKDAY_MAP } from '../../../../utils/constants';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { CreateSlotUseCase } from '@/useCases/implementation/psychologist/availability/CreateSlotUseCase';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 
 export class CreateSlotController {
-    constructor(
-        private createSlotUseCase: CreateSlotUseCase,
-        private psychologistRepo: IPsychologistRepository,
-    ) {}
+    private _createSlotUseCase: CreateSlotUseCase;
+    private _psychologistRepo: IPsychologistRepository;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
-        const userId = req.user?.userId;
+    constructor(createSlotUseCase: CreateSlotUseCase, psychologistRepo: IPsychologistRepository) {
+        this._createSlotUseCase = createSlotUseCase;
+        this._psychologistRepo = psychologistRepo;
+    }
 
-        if (!userId) {
-            res.status(401).json({ message: 'Unauthorized' });
-            return; 
-        }
-
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const psychologist = await this.psychologistRepo.findByUserId(userId);
-            if (!psychologist) {
-                res.status(404).json({ message: 'Psychologist not found' });
-                return; 
+            const userId = req.user?.userId;
+
+            if (!userId) {
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
-            const psychologistId = psychologist.id!;
+
+            const psychologist = await this._psychologistRepo.findByUserId(userId);
+
+            if (!psychologist) {
+                throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+            }
+
+            const psychologistId = psychologist.id;
 
             if (req.body.startDateTime && req.body.endDateTime) {
-                await this.createSlotUseCase.executeSingle({
+                await this._createSlotUseCase.executeSingle({
                     psychologistId,
                     startDateTime: new Date(req.body.startDateTime),
                     endDateTime: new Date(req.body.endDateTime),
@@ -35,22 +40,12 @@ export class CreateSlotController {
             } else {
                 // console.log('body: ',JSON.stringify(req.body, null, 2));
                 const { fromDate, toDate, weekDays, startTime, endTime, duration, timeZone } = req.body;
-                
-                const rruleWeekdays = weekDays.map((day: string) => {
-                    const weekday = WEEKDAY_MAP[day];
-                    if (!weekday) {
-                        res.status(404).json({ message: `Invalid weekday: ${weekday}` });
-                    }
-                    return weekday;
-                });
 
-                console.log('rrulesWeekdays: ', rruleWeekdays);
-
-                await this.createSlotUseCase.executeRecurring({
+                await this._createSlotUseCase.executeRecurring({
                     psychologistId,
                     fromDate,
                     toDate,
-                    weekDays: rruleWeekdays,
+                    weekDays,
                     startTime,
                     endTime,
                     duration,
@@ -58,13 +53,12 @@ export class CreateSlotController {
                 });
             }
 
-            console.log('slot created successfully');
-
-            res.status(201).json({ message: 'Slot created successfully' });
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            res.status(HttpStatus.CREATED).json({
+                success: true,
+                message: psychologistMessages.SUCCESS.SLOT_CREATED,
+            });
+        } catch (error) {
+            next(error);
         }
     };
 }

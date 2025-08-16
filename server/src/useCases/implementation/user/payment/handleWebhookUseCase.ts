@@ -1,24 +1,36 @@
-import { IHandleWebhookUseCase } from '../../../interfaces/user/payment/IHandleWebhookUseCase';
-import { IPaymentRepository } from '../../../../domain/interfaces/IPaymentRepository';
-import { IPaymentService } from '../../../../domain/services/IPaymentService';
-import { AppError } from '../../../../domain/errors/AppError';
+import { IHandleWebhookUseCase } from '@/useCases/interfaces/user/payment/IHandleWebhookUseCase';
+import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
+import { IPaymentService } from '@/domain/serviceInterface/IPaymentService';
+import { AppError } from '@/domain/errors/AppError';
 import Stripe from 'stripe';
-import { IConsultationRepository } from '../../../../domain/interfaces/IConsultationRepository';
-import { ISlotRepository } from '../../../../domain/interfaces/ISlotRepository';
+import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
+import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
+import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+
+
 
 export class HandleWebhookUseCase implements IHandleWebhookUseCase {
+    private _paymentRepo: IPaymentRepository;
+    private _paymentService: IPaymentService;
+    private _consultationRepo: IConsultationRepository;
+    private _slotRepo: ISlotRepository;
+
     constructor(
-        private paymentRepo: IPaymentRepository,
-        private paymentService: IPaymentService,
-        private consultationRepo: IConsultationRepository,
-        private slotRepo: ISlotRepository,
-    ) {}
+        paymentRepo: IPaymentRepository,
+        paymentService: IPaymentService,
+        consultationRepo: IConsultationRepository,
+        slotRepo: ISlotRepository,
+    ) {
+        this._paymentRepo = paymentRepo;
+        this._paymentService = paymentService;
+        this._consultationRepo = consultationRepo;
+        this._slotRepo = slotRepo;
+    }
 
     async execute(payload: Buffer, signature: string, endpointSecret: string): Promise<void> {
-        console.log('its here in webhook before verification');
-        const event = await this.paymentService.verifyWeebhookSignature(payload, signature, endpointSecret);
 
-        console.log('its here in webhook, event type : ', event.type);
+        const event = await this._paymentService.verifyWebhookSignature(payload, signature, endpointSecret);
 
         switch (event.type) {
         case 'checkout.session.completed': {
@@ -27,31 +39,27 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
             const sessionId = session.id;
             const meta = session.metadata || {};
 
-            console.log('meta in webhook', meta);
-
             if (!meta.psychologistId || !meta.slotId || !meta.startDateTime || !meta.endDateTime) {
-                throw new AppError('Missing required booking metadata', 400);
+                throw new AppError(bookingMessages.ERROR.MISSING_METADATA, HttpStatus.BAD_REQUEST);
             }
 
-            const payment = await this.paymentRepo.findBySessionId(sessionId);
+            const payment = await this._paymentRepo.findBySessionId(sessionId);
 
             if (!payment) {
-                throw new AppError('Payment not found for the session ID', 404);
+                throw new AppError(bookingMessages.ERROR.PAYMENT_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
-            const slot = await this.slotRepo.findById(meta.slotId);
+            const slot = await this._slotRepo.findById(meta.slotId);
             if (!slot || slot.isBooked) {
-                throw new AppError('Slot no longer available', 409);
+                throw new AppError(bookingMessages.ERROR.SLOT_NOT_AVAILABLE, HttpStatus.CONFLICT);
             }
 
             if (payment.consultationId) {
-                throw new AppError('Consultation already exists for payment');
+                throw new AppError(bookingMessages.ERROR.CONSULTATION_EXISTS, HttpStatus.CONFLICT);
             }
 
-            console.log('startdatetime: ',meta.stardDateTime);
-            console.log('endatetime: ', meta.endatetime);
             // create consultation
-            const consultation = await this.consultationRepo.createConsultation({
+            const consultation = await this._consultationRepo.createConsultation({
                 patientId: payment.userId,
                 psychologistId: meta.psychologistId,
                 subscriptionId: meta.subscriptionId,
@@ -71,9 +79,9 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
             payment.transactionId = session.payment_intent as string ?? null;
             payment.consultationId = consultation.id;
 
-            await this.paymentRepo.updateBySessionId(sessionId, payment);
+            await this._paymentRepo.updateBySessionId(sessionId, payment);
 
-            await this.slotRepo.markSlotAsBooked(meta.slotId, payment.userId);
+            await this._slotRepo.markSlotAsBooked(meta.slotId, payment.userId);
             console.log(`Consultation ${consultation.id} created for session ${sessionId}`);
             break;
 
@@ -83,13 +91,13 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
             const session = event.data.object as Stripe.Checkout.Session;
             const sessionId = session.id;
 
-            const payment = await this.paymentRepo.findBySessionId(sessionId);
+            const payment = await this._paymentRepo.findBySessionId(sessionId);
             if (!payment) {
-                throw new AppError('Payment not found for the session ID', 404);
+                throw new AppError(bookingMessages.ERROR.PAYMENT_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
             payment.paymentStatus = 'failed';
-            await this.paymentRepo.updateBySessionId(sessionId, payment);
+            await this._paymentRepo.updateBySessionId(sessionId, payment);
             break;
         }
         }

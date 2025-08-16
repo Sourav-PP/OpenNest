@@ -1,5 +1,5 @@
 export interface Payment {
-    id?: string;
+    id: string;
     userId: string;
     consultationId?: string;
     amount: number;

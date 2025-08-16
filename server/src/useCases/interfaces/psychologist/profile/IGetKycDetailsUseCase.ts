@@ -1,4 +1,4 @@
-import { Kyc } from '../../../../domain/entities/kyc';
+import { Kyc } from '@/domain/entities/kyc';
 
 export interface IGetKycDetailsUseCase {
     execute(psychologistId: string): Promise<Kyc>

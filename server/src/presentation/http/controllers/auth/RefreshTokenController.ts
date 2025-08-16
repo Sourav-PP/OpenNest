@@ -1,28 +1,37 @@
-import { Request, Response } from 'express';
-import { RefreshTokenUseCase } from '../../../../useCases/implementation/auth/refreshTokenUseCase';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { IRefreshTokenUseCase } from '@/useCases/interfaces/auth/IRefreshTokenUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class RefreshTokenController {
-    constructor(
-    private refreshTokenUseCase: RefreshTokenUseCase,
-    private cookieKey: string,
-    ) {}
+    private _refreshTokenUseCase: IRefreshTokenUseCase;
+    private _cookieKey: string;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(refreshTokenUseCase: IRefreshTokenUseCase, cookieKey: string) {
+        this._refreshTokenUseCase = refreshTokenUseCase;
+        this._cookieKey = cookieKey;
+    }
+
+    handle = async(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         try {
-            const refreshToken = req.cookies?.[this.cookieKey];
+            const refreshToken = req.cookies?.[this._cookieKey];
             if (!refreshToken) {
-                res.status(401).json({ message: 'No refresh token' });
-                return;
+                throw new AppError(authMessages.ERROR.REFRESH_TOKEN_REQUIRED, HttpStatus.UNAUTHORIZED);
             }
 
-            const accessToken = await this.refreshTokenUseCase.execute(refreshToken);
-            res.status(200).json({ accessToken });
-            return;
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            const accessToken = await this._refreshTokenUseCase.execute(refreshToken);
+            
+            res.status(HttpStatus.OK).json({
+                success: true,
+                accessToken,
+            });
+        } catch (error) {
+            next(error);
         }
     };
 }

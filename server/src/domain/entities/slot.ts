@@ -1,8 +1,8 @@
 export interface Slot {
-    id?: string;
+    id: string;
     psychologistId: string;
     startDateTime: Date;
     endDateTime: Date;
-    isBooked?: boolean;
+    isBooked: boolean;
     bookedBy?: string | null;
 }

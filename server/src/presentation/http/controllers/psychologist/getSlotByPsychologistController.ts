@@ -1,34 +1,39 @@
-import { Request, Response } from 'express';
-import { GetSlotByPsychologistUseCase } from '../../../../useCases/implementation/psychologist/availability/GetSlotByPsychologistUseCase';
-import { IPsychologistRepository } from '../../../../domain/interfaces/IPsychologistRepository';
-import { AppError } from '../../../../domain/errors/AppError';
+import { NextFunction, Request, Response } from 'express';
+import { IGetSlotByPsychologistUseCase } from '@/useCases/interfaces/psychologist/availability/IGetSlotByPsychologistUseCase';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 
 export class GetSlotByPsychologistController {
-    constructor(
-        private getSlotByPsychologistUseCase: GetSlotByPsychologistUseCase,
-        private psychologistRepo: IPsychologistRepository,
-    ) {}
+    private _getSlotByPsychologistUseCase: IGetSlotByPsychologistUseCase;
+    private _psychologistRepo: IPsychologistRepository;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(
+        getSlotByPsychologistUseCase: IGetSlotByPsychologistUseCase,
+        psychologistRepo: IPsychologistRepository,
+    ) {
+        this._getSlotByPsychologistUseCase = getSlotByPsychologistUseCase;
+        this._psychologistRepo = psychologistRepo;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
-                return; 
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const psychologist = await this.psychologistRepo.findByUserId(userId);
-            if (!psychologist?.id) {
-                res.status(404).json({ message: 'Psychologist not found' });
-                return; 
+            const psychologist = await this._psychologistRepo.findByUserId(userId);
+            if (!psychologist) {
+                throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
-            const slots = await this.getSlotByPsychologistUseCase.execute(psychologist.id);
-            res.json(slots);
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500;
-            const message = error.message || 'Internal server error';
-            res.status(status).json({ message });
+            const slots = await this._getSlotByPsychologistUseCase.execute(psychologist.id);
+            res.status(HttpStatus.OK).json(slots);
+        } catch (error) {
+            next(error);
         }
     };
 }

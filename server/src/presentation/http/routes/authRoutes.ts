@@ -10,7 +10,7 @@ import {
     googleLoginController,
     refreshTokenController,
     verifyPsychologistController,
-} from '../../../config/di';
+} from '@/infrastructure/config/di';
 
 import { uploadFields, uploadSingle } from '../middlewares/multer';
 

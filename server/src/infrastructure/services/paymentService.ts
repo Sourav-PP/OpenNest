@@ -1,10 +1,14 @@
 import Stripe from 'stripe';
-import { IPaymentService } from '../../domain/services/IPaymentService';
+import { IPaymentService } from '../../domain/serviceInterface/IPaymentService';
 
 export class PaymentService implements IPaymentService {
+    private _stripe: Stripe;
+
     constructor(
-    private stripe: Stripe,
-    ) {}
+        stripe: Stripe,
+    ) {
+        this._stripe = stripe;
+    }
 
     async createCheckoutSession(
         amount: number,
@@ -14,7 +18,7 @@ export class PaymentService implements IPaymentService {
         metadata?: Record<string, string>,
     ): Promise<{ url: string; sessionId: string }> {
 
-        const session = await this.stripe.checkout.sessions.create({
+        const session = await this._stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
                 {
@@ -38,13 +42,8 @@ export class PaymentService implements IPaymentService {
         };
     }
 
-    async verifyWeebhookSignature(payload: Buffer, signature: string, endpointSecret: string): Promise<Stripe.Event> {
-        try {    
-            const event = this.stripe.webhooks.constructEvent(payload, signature, endpointSecret);
-            return event;
-        } catch (err: any) {
-            console.error('Signature verification failed:', err.message);
-            throw err;
-        }
+    async verifyWebhookSignature(payload: Buffer, signature: string, endpointSecret: string): Promise<Stripe.Event> {
+        const event = this._stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+        return event;
     }
 }
