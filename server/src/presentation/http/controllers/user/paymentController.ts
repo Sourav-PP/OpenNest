@@ -1,79 +1,96 @@
-import { Request, Response } from "express";
-import { ICreateCheckoutSessionUseCase } from "../../../../useCases/interfaces/user/payment/ICreateCheckoutSessionUseCase";
-import { IHandleWebhookUseCase } from "../../../../useCases/interfaces/user/payment/IHandleWebhookUseCase";
-import { AppError } from "../../../../domain/errors/AppError";
-import { ISlotRepository } from "../../../../domain/interfaces/ISlotRepository";
+import { NextFunction, Request, Response } from 'express';
+import { ICreateCheckoutSessionUseCase } from '@/useCases/interfaces/user/payment/ICreateCheckoutSessionUseCase';
+import { IHandleWebhookUseCase } from '@/useCases/interfaces/user/payment/IHandleWebhookUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
+import { appConfig } from '@/infrastructure/config/config';
 
 export class PaymentController {
+    private _createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase;
+    private _handleWebhookUseCase: IHandleWebhookUseCase;
+
     constructor(
-        private createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase,
-        private handleWebhookUseCase: IHandleWebhookUseCase,
-        private slotRepo: ISlotRepository
-    ) {}
+        createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase,
+        handleWebhookUseCase: IHandleWebhookUseCase,
+    ) {
+        this._createCheckoutSessionUseCase = createCheckoutSessionUseCase;
+        this._handleWebhookUseCase = handleWebhookUseCase;
+    }
 
-    createCheckoutSession = async (req: Request, res: Response): Promise<void> => {
+    createCheckoutSession = async(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         try {
-            console.log("heree in createchecoutsession controller")
-            const {slotId, sessionGoal, amount} = req.body
-            const userId = req.user?.userId
+            const { slotId, sessionGoal, amount } = req.body;
+            const userId = req.user?.userId;
 
-            if(!userId) {
-                res.status(401).json({success: false, message:"unauthorized user"})
-                return
+            if (!userId) {
+                throw new AppError(
+                    authMessages.ERROR.UNAUTHORIZED,
+                    HttpStatus.UNAUTHORIZED,
+                );
             }
 
             if (!slotId || !sessionGoal || !amount) {
-                res.status(400).json({ success: false, message: "Missing required fields" });
-                return;
+                throw new AppError(
+                    bookingMessages.ERROR.MISSING_FIELDS,
+                    HttpStatus.BAD_REQUEST,
+                );
             }
 
-            const slot = await this.slotRepo.findById(slotId)
-
-            if(!slot) {
-                res.status(409).json({success: false, message: "Slot not found"})
-                return
-            }
-
-            if(slot.isBooked) {
-                res.status(404).json({success: false, message: "Slot is already booked"})
-                return
-            }
-
-            const result = await this.createCheckoutSessionUseCase.execute({
+            const result = await this._createCheckoutSessionUseCase.execute({
                 userId,
-                psychologistId: slot.psychologistId,
                 slotId,
                 amount,
-                sessionGoal
-            })
+                sessionGoal,
+            });
 
-            res.status(200).json({success: true, url: result.url})
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            res.status(status).json({ message });
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: bookingMessages.SUCCESS.CHECKOUT_SESSION_CREATED,
+                data: {
+                    url: result.url,
+                },
+            });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 
-    handleWebhook = async (req: Request, res: Response): Promise<void> => {
+    handleWebhook = async(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         try {
-            const payload = req.body
-            const signature = req.headers["stripe-signature"] as string;
-            const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+            console.log('webhook controller triggered');
+            const payload = req.body;
+            const signature = req.headers['stripe-signature'] as string;
+            const endpointSecret = appConfig.stripe.webhookSecret;
 
             if (!signature) {
-                res.status(400).json({ success: false, message: "Missing Stripe signature" });
-                return;
+                throw new AppError(
+                    bookingMessages.ERROR.MISSING_SIGNATURE,
+                    HttpStatus.BAD_REQUEST,
+                );
             }
 
-            await this.handleWebhookUseCase.execute(Buffer.from(payload),signature, endpointSecret)
+            await this._handleWebhookUseCase.execute(
+                Buffer.from(payload),
+                signature,
+                endpointSecret,
+            );
 
-            res.status(200).json({ success: true, message: "Webhook processed" });
-        } catch (error: any) {
-            console.error("Webhook error:", error);
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            res.status(status).json({ message });
+            res.status(200).json({
+                success: true,
+                message: bookingMessages.SUCCESS.WEBHOOK_PROCESSED,
+            });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 }

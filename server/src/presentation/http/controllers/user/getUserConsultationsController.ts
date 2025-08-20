@@ -1,38 +1,47 @@
-import { Request, Response } from "express";
-import { AppError } from "../../../../domain/errors/AppError";
-import { IGetUserConsultationUseCase } from "../../../../useCases/interfaces/user/data/IGetUserConsultationsUseCase";
+import { NextFunction, Request, Response } from 'express';
+import { AppError } from '@/domain/errors/AppError';
+import { IGetUserConsultationUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationsUseCase';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
+
+
 
 export class GetUserConsultationsController {
-    constructor(
-        private getUserConsultationsUseCase: IGetUserConsultationUseCase
-    ) {}
+    private _getUserConsultationsUseCase: IGetUserConsultationUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(getUserConsultationsUseCase: IGetUserConsultationUseCase) {
+        this._getUserConsultationsUseCase = getUserConsultationsUseCase;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user?.userId
-            const page = Number(req.query.page) || 1
-            const limit = Number(req.query.limit) || 10
+            const userId = req.user?.userId;
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
 
-            if(!userId) {
-                res.status(401).json({success: false, message:"user is unauthorized"})
-                return
-            }
+            if (!userId) {
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+            }   
 
-            const result = await this.getUserConsultationsUseCase.execute({
+            const result = await this._getUserConsultationsUseCase.execute({
                 patientId: userId,
                 search: req.query.search as string,
                 sort: req.query.sort as 'asc' | 'desc',
-                status: req.query.staus as 'booked' | 'cancelled' | 'completed' | 'rescheduled',
+                status: req.query.status as 'booked' | 'cancelled' | 'completed' | 'rescheduled',
                 page,
-                limit
-            })
+                limit,
+            });
 
-            console.log('result of getuserconsultation: ', result)
-            res.status(200).json(result)
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            res.status(status).json({ message });
+            console.log('consultations: ', result);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
+                data: result,
+            });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 }

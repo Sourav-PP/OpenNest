@@ -1,0 +1,25 @@
+export const psychologistMessages = {
+    SUCCESS: {
+        PROFILE_UPDATE: 'Psychologist profile updated successfully',
+        SLOT_CREATED: 'Available slot created successfully',
+        SLOT_UPDATED: 'Slot updated successfully',
+        SLOT_DELETED: 'Slot deleted successfully',
+        KYC_SUBMITTED: 'Psychologist verification profile submitted successfully',
+    },
+    ERROR: {
+        NOT_FOUND: 'Psychologist not found',
+        NO_SPECIALIZATIONS: 'No specializations found for this psychologist',
+        KYC_CREATION_FAILED: 'Unable to process your verification. Please try again later.',
+        SLOT_NOT_FOUND: 'Requested slot not found',
+        SLOT_ALREADY_BOOKED: 'This slot is already booked',
+        PROFILE_UPDATE_FAILED: 'Failed to update profile',
+        INVALID_INPUT_SINGLE: 'Invalid input for creating a single slot.',
+        INVALID_INPUT_RECURRING: 'Invalid input for creating recurring slots.',
+        FROM_AFTER_TO: 'From date must be before To date.',
+        INVALID_WEEKDAY: (day: string) => `Invalid weekday: ${day}`,
+        CONFLICT_SINGLE: 'A conflicting slot already exists for the selected time.',
+        CONFLICT_RECURRING: 'No slots were created due to conflicts with existing slots.',
+        NO_RECURRING_DATES: 'No valid recurring dates found for the given input.',
+        NO_VALID_SLOTS: 'No valid slots created due to conflicts.',
+    },
+} as const;

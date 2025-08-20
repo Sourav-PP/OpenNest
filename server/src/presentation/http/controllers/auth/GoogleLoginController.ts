@@ -1,39 +1,41 @@
-import { Request, Response } from "express";
-import { GoogleLoginUseCase } from "../../../../useCases/implementation/auth/googleLoginUseCase";
-import { AppError } from "../../../../domain/errors/AppError";
+import { NextFunction, Request, Response } from 'express';
+import { IGoogleLoginUseCase } from '@/useCases/interfaces/auth/IGoogleLoginUseCase';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { appConfig } from '@/infrastructure/config/config';
 
 export class GoogleLoginController {
-    constructor (
-        private googleLoginUseCase: GoogleLoginUseCase
-    ) {}
+    private _googleLoginUseCase: IGoogleLoginUseCase;
 
-    handle = async(req: Request, res: Response) => {
+    constructor(
+        googleLoginUseCase: IGoogleLoginUseCase,
+    ) {
+        this._googleLoginUseCase = googleLoginUseCase;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction) => {
         try {
-            const {credential, role} = req.body
+            const { credential, role } = req.body;
 
-            console.log("credential: ", credential)
+            const result = await this._googleLoginUseCase.execute({ credential, role });
 
-            const result = await this.googleLoginUseCase.execute({credential, role})
-
-            console.log("google login result: ", result)
-
-            res.cookie("refreshToken", result.refreshToken, {
+            res.cookie('refreshToken', result.refreshToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
+                secure: appConfig.server.nodeEnv === 'production',
+                sameSite: 'strict',
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
-            res.status(200).json({
+            res.status(HttpStatus.OK).json({
                 success: true,
-                message: "Login successfull",
-                user: result.user,
-                accessToken: result.accessToken,
-                hasSubmittedVerificationForm: result.hasSubmittedVerificationForm
+                message: authMessages.SUCCESS.LOGIN,
+                data: {
+                    user: result.user,
+                    accessToken: result.accessToken,
+                    hasSubmittedVerificationForm: result.hasSubmittedVerificationForm,
+                },
             });
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            res.status(status).json({ message });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 }

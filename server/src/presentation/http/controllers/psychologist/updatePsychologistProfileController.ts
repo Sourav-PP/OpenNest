@@ -1,45 +1,43 @@
-import { Request, Response } from "express";
-import { UpdatePsychologistProfileUseCase } from "../../../../useCases/implementation/psychologist/profile/updatePsychologistProfileUseCase";
-import { uploadToCloudinary } from "../../../../utils/uploadToCloudinary";
-import { AppError } from "../../../../domain/errors/AppError";
+import { NextFunction, Request, Response } from 'express';
+import { IUpdatePsychologistProfileUseCase } from '@/useCases/interfaces/psychologist/profile/IUpdatePsychologistProfileUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { userMessages } from '@/shared/constants/messages/userMessages';
 
 export class UpdatePsychologistProfileController {
-    constructor( private updatePsychologistUseCase: UpdatePsychologistProfileUseCase) {}
+    private _updatePsychologistUseCase: IUpdatePsychologistProfileUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(updatePsychologistUseCase: IUpdatePsychologistProfileUseCase) {
+        this._updatePsychologistUseCase = updatePsychologistUseCase;
+    }
+
+    handle = async(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         try {
-            const userId = req.user?.userId!
-            const {name, email, phone, gender, dateOfBirth, aboutMe, defaultFee} = req.body
-            let profileImageUrl
+            const userId = req.user?.userId;
 
-            if(req.file) {
-                profileImageUrl = await uploadToCloudinary(
-                    req.file.buffer,
-                    req.file.originalname,
-                    "profile_images"
-                )
+            if (!userId) {
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            console.log("uesrId: ", userId)
-
-            await this.updatePsychologistUseCase.execute({
+            const payload = {
                 userId,
-                name,
-                email,
-                phone,
-                gender,
-                dateOfBirth,
-                defaultFee: defaultFee ? Number(defaultFee) : undefined,
-                aboutMe,
-                profileImage: profileImageUrl
-            })
+                ...req.body,
+                file: req.file,
+            };
 
-            res.status(200).json({message: "profile updated successfully"})
-            return
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            res.status(status).json({ message });
+            await this._updatePsychologistUseCase.execute(payload);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: userMessages.SUCCESS.PROFILE_UPDATE,
+            });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 }

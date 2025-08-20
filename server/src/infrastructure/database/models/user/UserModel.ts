@@ -1,4 +1,4 @@
-import { Schema, model, Document, Model, Types } from "mongoose";
+import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IUserDocument extends Document {
   _id: Types.ObjectId;
@@ -15,51 +15,51 @@ export interface IUserDocument extends Document {
 }
 
 const userSchema = new Schema<IUserDocument>(
-  {
-    name: {
-      type: String,
-      required: true,
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+        },
+        phone: {
+            type: String,
+            required: false,
+        },
+        role: {
+            type: String,
+            enum: ['user', 'psychologist'],
+            required: true,
+        },
+        profileImage: {
+            type: String,
+        },
+        dateOfBirth: {
+            type: Date,
+        },
+        gender: {
+            type: String,
+        },
+        isActive: {
+            type: Boolean,
+            default: true,
+        },
+        password: {
+            type: String,
+            required: false,
+            select: false,
+        },
+        googleId: {
+            type: String,
+            required: false,
+        },
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    phone: {
-        type: String,
-        required: false,
-    },
-    role: {
-      type: String,
-      enum: ['user', 'psychologist'],
-      required: true
-    },
-    profileImage: {
-      type: String
-    },
-    dateOfBirth: {
-      type: Date
-    },
-    gender: {
-      type: String
-    },
-    isActive: {
-      type: Boolean,
-      default: true
-    },
-    password: {
-      type: String,
-      required: false,
-      select: false
-    },
-    googleId: {
-      type: String,
-      required: false,
-    },
-  },
-  { timestamps: true }
+    { timestamps: true },
 );
 
-export const userModel: Model<IUserDocument> = model<IUserDocument>('User', userSchema)
+export const userModel: Model<IUserDocument> = model<IUserDocument>('User', userSchema);

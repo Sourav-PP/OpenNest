@@ -1,134 +1,140 @@
-import { useForm } from "react-hook-form";
-import { loginSchema } from "../../lib/validations/user/loginValidation";
-import type { LoginData } from "../../lib/validations/user/loginValidation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { assets } from "../../assets/assets";
-import type { AxiosError } from "axios";
-import { toast } from "react-toastify";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../redux/slices/authSlice";
-import { authApi } from "../../server/api/auth";
-import GoogleLoginButton from "./GoogleLoginButton";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, type LoginData } from '@/lib/validations/user/loginValidation';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { toast } from 'react-toastify';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '@/redux/slices/authSlice';
+import { authApi } from '@/server/api/auth';
+import GoogleLoginButton from '@/components/user/GoogleLoginButton';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { Lock, Mail } from 'lucide-react';
+
+
 
 interface TokenPayload {
   userId: string;
   email: string;
-  role: "user" | "psychologist" | "admin";
+  role: 'user' | 'psychologist' | 'admin';
   exp: number;
   iat: number;
 }
 
 const LoginForm = () => {
-  const [searchParams] = useSearchParams()
-  const roleFromUrl = searchParams.get('role')
-
+  const location = useLocation();
+  const { role } = location.state || {};
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const { 
-    register,
-    handleSubmit,
-    formState: {errors, isSubmitting}
-} = useForm<LoginData>({
+  const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
+
+  const navigateAfterLogin = (role: string, hasSubmittedVerificationForm?: boolean) => {
+    if (role === 'psychologist') {
+      navigate(hasSubmittedVerificationForm ? '/psychologist/profile' : '/psychologist/verification');
+    } else {
+      navigate('/');
+    };
+  };
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const res = await authApi.login(data)
-      console.log("response: ", res)
-      const { accessToken, hasSubmittedVerificationForm  } = res;
+      const res = await authApi.login(data);
 
-      const decoded = jwtDecode<TokenPayload>(accessToken)
-      
+      if (!res.data) {
+        toast.error('No data received from server');
+        return;
+      }
+      const decoded = jwtDecode<TokenPayload>(res.data.accessToken);
+
       dispatch(
         loginSuccess({
-          accessToken,
-          email: decoded.email,
-          role: decoded.role,
+          accessToken: res.data.accessToken,
+          email: res.data.user.email,
+          role: res.data.user.role,
           userId: decoded.userId,
-          isSubmittedVerification: true
+          isSubmittedVerification: res.data.hasSubmittedVerificationForm,
         })
-      )
-
-      toast.success("Login successful");
-
-      // navigation based on role
-      if(decoded.role === 'psychologist') {
-        if(hasSubmittedVerificationForm) {
-          console.log("Navigating to profile");
-          navigate('/psychologist/profile')
-        }else{
-          console.log("Navigating to verification");
-          navigate('/psychologist/verification')
-        }
-      } else {
-        navigate("/");
-      }
-    } catch (err) {
-      const error = err as AxiosError<{ error: string }>;
-      console.log('error is: ', error)
-      toast.error(
-        "Login failed: " + error?.response?.data?.error || "Unknown error"
       );
+
+      toast.success(res.message);
+      navigateAfterLogin(res.data.user.role, res.data.hasSubmittedVerificationForm);
+    } catch (err) {
+      handleApiError(err, form.setError);
     }
   };
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-1 sm:space-y-3 max-w-md mx-auto"
-    >
-      {/* Email Field */}
-      <div className="mb-1 w-full">
-        <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-100">
-          <img src={assets.mail} alt="" />
-          <input
-            {...register("email")}
-            placeholder="Email"
-            className="input bg-transparent outline-none w-full"
-          />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-md mx-auto">
+        {/* Email Field */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input leftIcon={Mail} placeholder="Enter your email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Password Field */}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input leftIcon={Lock} type="password" placeholder="Enter your password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Submit Button */}
+        <div className='group'>
+          <Button size='lg' type="submit" className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? 'Loading...' : 'Login'}
+          </Button>
         </div>
-        <p className="text-red-500 text-xs px-2 pt-1 min-h-[1rem]">
-          {errors.email?.message ?? ""}
+
+        {/* Google Login */}
+        <GoogleLoginButton />
+
+        {/* Signup Link */}
+        
+        <p className="text-center text-sm">
+          <p
+            className="text-center text-sm text-blue-500 cursor-pointer hover:underline"
+            onClick={() => navigate('/forgot-password', {state: {role: role}})}
+          >
+            Forgot Password
+          </p>
+          Don't have an account?{' '}
+          <span
+            className="text-blue-500 cursor-pointer hover:underline"
+            onClick={() => navigate('/signup', {state: {role: role}})}
+          >
+            Sign up
+          </span>
         </p>
-      </div>
-
-      {/* Password Field */}
-      <div className="mb-1 w-full">
-        <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-100">
-          <img src={assets.lock} alt="" />
-          <input
-            type="password"
-            {...register("password")}
-            placeholder="Password"
-            className="input bg-transparent outline-none w-full"
-          />
-        </div>
-        <p className="text-red-500 text-xs px-2 pt-1 min-h-[1rem]">
-          {errors.password?.message ?? ""}
-        </p>
-      </div>
-
-      {/* Submit Button */}
-      <div className="group text-center">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="btn-primary w-full group-hover:animate-glow-ring mb-2"
-        >
-          {isSubmitting ? "Loading..." : "Login"}
-        </button>
-      </div>
-        <GoogleLoginButton/>
-      <div>
-
-      
-      <p className="text-center">Don't have an account?<span className="text-[#70A5FF] cursor-pointer"
-         onClick={() => navigate(`/signup?role=${roleFromUrl ?? "user"}`)}> Sign up</span></p>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 };
 

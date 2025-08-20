@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { FiStar, FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 
 const psychologists = [
-  { id: 1, name: "Dr. Ramesh Iyer", specialization: "Anxiety, Stress", rating: 4.8, consultations: 200, earnings: "₹24000" },
-  { id: 2, name: "Dr. Rekha Menon", specialization: "Anxiety, Stress", rating: 4.8, consultations: 200, earnings: "₹24000" },
-  { id: 3, name: "Dr. Ramesh Iyer", specialization: "Anxiety, Stress", rating: 4.8, consultations: 200, earnings: "₹24000" },
-  { id: 4, name: "Dr. Rekha Menon", specialization: "Anxiety, Stress", rating: 4.8, consultations: 200, earnings: "₹24000" },
-  { id: 5, name: "Dr. Ramesh Iyer", specialization: "Anxiety, Stress", rating: 4.8, consultations: 200, earnings: "₹24000" },
-  { id: 6, name: "Dr. Rekha Menon", specialization: "Anxiety, Stress", rating: 4.8, consultations: 200, earnings: "₹24000" },
-  { id: 7, name: "Dr. Ramesh Iyer", specialization: "Anxiety, Stress", rating: 4.8, consultations: 200, earnings: "₹24000" },
+  { id: 1, name: 'Dr. Ramesh Iyer', specialization: 'Anxiety, Stress', rating: 4.8, consultations: 200, earnings: '₹24000' },
+  { id: 2, name: 'Dr. Rekha Menon', specialization: 'Anxiety, Stress', rating: 4.8, consultations: 200, earnings: '₹24000' },
+  { id: 3, name: 'Dr. Ramesh Iyer', specialization: 'Anxiety, Stress', rating: 4.8, consultations: 200, earnings: '₹24000' },
+  { id: 4, name: 'Dr. Rekha Menon', specialization: 'Anxiety, Stress', rating: 4.8, consultations: 200, earnings: '₹24000' },
+  { id: 5, name: 'Dr. Ramesh Iyer', specialization: 'Anxiety, Stress', rating: 4.8, consultations: 200, earnings: '₹24000' },
+  { id: 6, name: 'Dr. Rekha Menon', specialization: 'Anxiety, Stress', rating: 4.8, consultations: 200, earnings: '₹24000' },
+  { id: 7, name: 'Dr. Ramesh Iyer', specialization: 'Anxiety, Stress', rating: 4.8, consultations: 200, earnings: '₹24000' },
 ];
 
 const TopPsychologistTable = () => {

@@ -1,11 +1,13 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
+import { IAdminLogoutUseCase } from '@/useCases/interfaces/admin/auth/ILogoutUseCase';
+import { appConfig } from '@/infrastructure/config/config';
 
-export class AdminLogoutUseCase {
+export class AdminLogoutUseCase implements IAdminLogoutUseCase {
     async execute(req: Request, res: Response): Promise<void> {
-        res.clearCookie("adminRefreshToken", {
+        res.clearCookie('adminRefreshToken', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+            secure: appConfig.server.nodeEnv === 'production',
+            sameSite: 'strict',
         });
     }
 }

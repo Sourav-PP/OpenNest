@@ -1,33 +1,39 @@
-import { Request, Response } from "express";
-import { AppError } from "../../../../domain/errors/AppError";
-import { IRejectKycUseCase } from "../../../../useCases/interfaces/admin/management/IRejectKycUseCase";
+import { NextFunction, Request, Response } from 'express';
+import { AppError } from '@/domain/errors/AppError';
+import { IRejectKycUseCase } from '@/useCases/interfaces/admin/management/IRejectKycUseCase';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class RejectKycController {
+    private _rejectKycUseCase: IRejectKycUseCase;
+
     constructor(
-        private rejectKycUseCase: IRejectKycUseCase
-    ) {}
-
-    handle = async(req: Request, res: Response): Promise<void> => {
-        try {
-            const psychologistId = req.params.psychologistId as string
-            const { reason } = req.body
-
-            if(!reason) {
-                res.status(404).json({success: false, message: "Reason is required to reject the kyc."})
-                return
-            }
-
-            if(!psychologistId) {
-                res.status(400).json({success: false, message: "psychologist id is required"})
-                return
-            }
-
-            await this.rejectKycUseCase.execute(psychologistId, reason)
-            res.status(200).json({ message: "KYC rejected successfully" });
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            res.status(status).json({ message });
-        }
+        rejectKycUseCase: IRejectKycUseCase,
+    ) {
+        this._rejectKycUseCase = rejectKycUseCase;
     }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const psychologistId = req.params.psychologistId as string;
+            const { reason } = req.body;
+
+            if (!reason) {
+                throw new AppError(adminMessages.ERROR.KYC_REASON_REQUIRED, HttpStatus.BAD_REQUEST);
+            }
+
+            if (!psychologistId) {
+                throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
+            }
+
+            await this._rejectKycUseCase.execute(psychologistId, reason);
+            
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.KYC_REJECTED,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
 }

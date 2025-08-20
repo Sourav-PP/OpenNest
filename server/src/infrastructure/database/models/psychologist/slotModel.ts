@@ -1,4 +1,4 @@
-import { Schema, Document, Types, Model, model } from "mongoose";
+import { Schema, Document, Types, Model, model } from 'mongoose';
 
 export interface ISlotDocument extends Document {
     _id: Types.ObjectId;
@@ -13,8 +13,8 @@ const slotSchema = new Schema<ISlotDocument>(
     {
         psychologistId: {
             type: Schema.Types.ObjectId,
-            requried: true,
-            ref: 'Psychologist'
+            required: true,
+            ref: 'Psychologist',
         },
         startDateTime: {
             type: Date,
@@ -22,19 +22,19 @@ const slotSchema = new Schema<ISlotDocument>(
         },
         endDateTime: {
             type: Date,
-            required: true
+            required: true,
         },
         isBooked: {
             type: Boolean,
-            default: false
+            default: false,
         },
         bookedBy: {
             type: Schema.Types.ObjectId,
-            ref: "User",
-            default: null   
+            ref: 'User',
+            default: null,   
         },
     },
-    { timestamps: true }
-)
+    { timestamps: true },
+);
 
-export const SlotModel: Model<ISlotDocument> = model<ISlotDocument>("Slot", slotSchema)
+export const SlotModel: Model<ISlotDocument> = model<ISlotDocument>('Slot', slotSchema);

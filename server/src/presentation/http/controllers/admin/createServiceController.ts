@@ -1,36 +1,38 @@
-import { Request, Response } from "express";
-import { CreateServiceUseCase } from "../../../../useCases/implementation/admin/management/createServiceUseCase";
-import { AppError } from "../../../../domain/errors/AppError";
-import { uploadToCloudinary } from "../../../../utils/uploadToCloudinary";
+import { NextFunction, Request, Response } from 'express';
+import { ICreateServiceUseCase } from '@/useCases/interfaces/admin/management/ICreateServiceUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
 
 export class CreateServiceController {
-    constructor(private createServiceUseCase: CreateServiceUseCase) {}
+    private _createServiceUseCase: ICreateServiceUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(createServiceUseCase: ICreateServiceUseCase) {
+        this._createServiceUseCase = createServiceUseCase;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { name, description } = req.body
-            const file = req.file
+            const { name, description } = req.body;
+            const file = req.file;
 
-            if(!file) {
-                res.status(400).json({message: "Banner image is required"})
-                return
+            if (!file) {
+                throw new AppError(adminMessages.ERROR.SERVICE_BANNER_REQUIRED, HttpStatus.BAD_REQUEST);
             }
 
-            const clooudUrl = await uploadToCloudinary(file.buffer, file.originalname, "services")
-
-            const service = await this.createServiceUseCase.execute({
+            const service = await this._createServiceUseCase.execute({
                 name,
                 description,
-                bannerImage: clooudUrl
-            })
+                file,
+            });
 
-            res.status(201).json({message: "Service created", data: service})
-            return
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            console.log("its here", message, status)
-            res.status(status).json({ message });
+            res.status(HttpStatus.CREATED).json({
+                success: true,
+                message: adminMessages.SUCCESS.SERVICE_CREATED,
+                data: service,
+            });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 }

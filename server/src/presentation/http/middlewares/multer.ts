@@ -1,11 +1,11 @@
-import multer from 'multer'
+import multer from 'multer';
 
-const memoryStorate = multer.memoryStorage()
+const memoryStorage = multer.memoryStorage();
 export const uploadFields = (fields: string[]) => {
-    return multer({ storage: memoryStorate }).fields(
-        fields.map((name) => ({ name, maxCount: 1}))
-    )
-}
+    return multer({ storage: memoryStorage }).fields(
+        fields.map((name) => ({ name, maxCount: 1 })),
+    );
+};
 
-export const uploadSingle = multer({ storage: memoryStorate }).single('file')
-export const uploadMultiple = multer({ storage: memoryStorate }).array('files')
+export const uploadSingle = multer({ storage: memoryStorage }).single('file');
+export const uploadMultiple = multer({ storage: memoryStorage }).array('files');

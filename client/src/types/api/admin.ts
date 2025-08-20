@@ -1,5 +1,6 @@
-import type { IGetAllPsychologistsDto } from "../pasychologist";
-import type { IUserDto } from "../user";
+import type { IGetAllPsychologistsDto } from '../dtos/psychologist';
+import type { IUserDto } from '../dtos/user';
+import type { BackendResponse } from './api';
 
 export interface IAdminLoginRequest {
     email: string;
@@ -21,36 +22,32 @@ export interface IAddServiceResponse {
 
 export interface IGetAllUserRequest {
     search?: string;
-    sort?: "asc" | "desc";
-    gender?: "Male" | "Female" | "";
+    sort?: 'asc' | 'desc';
+    gender: 'male' | 'female' | 'all';
     page?: number;
     limit?: number
 }
 
-export interface IGetAllUserResponse {
+export interface IGetAllUserResponseData {
     user: IUserDto[],
     totalCount?: number
 }
 
 export interface IGetAllPsychologistsRequest {
     search?: string;
-    sort?: "asc" | "desc";
-    gender?: "Male" | "Female" | "";
+    sort?: 'asc' | 'desc';
+    gender?: 'male' | 'female' | 'all';
     page?: number;
     limit?: number
 }
 
-export interface IGetAllPsychologistResponse {
+export interface IGetAllPsychologistResponseData {
     psychologists: IGetAllPsychologistsDto[],
     totalCount?: number
 }
 
 export interface IToggleStatusRequest {
-  status: "active" | "inactive";
-}
-
-export interface IToggleStatusResponse {
-  message: string;
+  status: 'active' | 'inactive';
 }
 
 export interface IAdminKycDto {
@@ -63,12 +60,12 @@ export interface IAdminKycDto {
     psychologistEmail: string;
     profileImage: string;
     qualification: string;
-    kycStatus: 'pending' | 'approved' | 'rejected'
+    status: 'pending' | 'approved' | 'rejected'
 }
 
 export interface IGetAllKycDetailsRequest {
     search?: string;
-    sort?: "asc" | "desc";
+    sort?: 'asc' | 'desc';
     status?: 'pending' | 'approved' | 'rejected' | 'all'
     page?: number;
     limit?: number
@@ -78,3 +75,6 @@ export interface IGetAllKycDetailsResponse {
     kycs: IAdminKycDto[],
     totalCount: number
 }
+
+export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>
+export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>

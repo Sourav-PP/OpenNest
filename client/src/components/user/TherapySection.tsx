@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 
 const TherapySection = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <div className="relative bg-gray-200 py-16 px-8 sm:px-6 lg:px-36 pt-10">
       <div className="max-w-7xl mx-auto">
@@ -47,14 +47,14 @@ const TherapySection = () => {
             
             {/* Button */}
             <div className="group text-center sm:text-start">
-            <button
-              onClick={() => navigate('/user/therapist')}
-              className="btn-primary px-6 py-2 sm:px-auto sm:py-auto text-white bg-[#3EB1EB] sm:bg-inherit hover:bg-[#2A9CDB] sm:hover:bg-inherit transition-colors duration-200 group-hover:animate-glow-ring"
-              aria-label="Login as Therapist"
-            >
+              <button
+                onClick={() => navigate('/user/therapist')}
+                className="btn-primary px-6 py-2 sm:px-auto sm:py-auto text-white bg-[#3EB1EB] sm:bg-inherit hover:bg-[#2A9CDB] sm:hover:bg-inherit transition-colors duration-200 group-hover:animate-glow-ring"
+                aria-label="Login as Therapist"
+              >
               See all Psychologists
-            </button>
-          </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>

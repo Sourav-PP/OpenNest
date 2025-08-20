@@ -1,5 +1,5 @@
-import { IVerifyProfileInput, IVerifyProfileOutput } from "../../../types/psychologistTypes";
+import { IVerifyProfileInput, IVerifyProfileOutput } from '@/useCases/types/psychologistTypes';
 
-export interface IVerfiyPsychologistUseCase {
+export interface IVerifyPsychologistUseCase {
     execute(input: IVerifyProfileInput): Promise<IVerifyProfileOutput>
 }

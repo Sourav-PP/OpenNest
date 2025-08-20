@@ -1,0 +1,20 @@
+export const bookingMessages = {
+    SUCCESS: {
+        WEBHOOK_PROCESSED: 'Stripe webhook processed successfully',
+        CHECKOUT_SESSION_CREATED: 'Checkout session created successfully',
+        PAYMENT_SUCCESS: 'Payment completed successfully',
+        BOOKING_CONFIRMED: 'Booking confirmed successfully',
+    },
+    ERROR: {
+        MISSING_METADATA: 'Missing required booking metadata',
+        PAYMENT_NOT_FOUND: 'Payment not found for the session ID',
+        SLOT_NOT_AVAILABLE: 'Selected slot is no longer available',
+        SLOT_JUST_BOOKED: 'Sorry, this slot has just been booked by someone else.',
+        CONSULTATION_EXISTS: 'Consultation already exists for this payment',
+        MISSING_FIELDS: 'Missing required payment details',
+        PAYMENT_FAILED: 'Payment failed, please try again',
+        SLOT_ALREADY_BOOKED: 'Selected slot is already booked',
+        MISSING_SIGNATURE: 'Stripe signature header is missing',
+        BOOKING_NOT_FOUND: 'Booking not found',
+    },
+} as const;

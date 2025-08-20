@@ -1,5 +1,6 @@
-import { Service } from "../../../../domain/entities/Service";
+import { Service } from '@/domain/entities/service';
+import { ICreateServiceDto } from '@/useCases/dtos/service';
 
 export interface ICreateServiceUseCase {
-    execute(input: Service): Promise<Service>
+    execute(input: ICreateServiceDto): Promise<Service>
 }

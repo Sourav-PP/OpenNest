@@ -57,7 +57,7 @@ const Footer = () => {
               href="#" 
               className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
             >
-                <img src={assets.instagram} alt="Instagram icon" />
+              <img src={assets.instagram} alt="Instagram icon" />
             </a>
             <a 
               href="#" 

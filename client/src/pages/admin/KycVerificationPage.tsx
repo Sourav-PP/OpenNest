@@ -1,6 +1,6 @@
-import Sidebar from "../../components/admin/Sidebar";
-import Header from "../../components/admin/Header";
-import KycVerification from "@/components/admin/KycVerification";
+import Sidebar from '../../components/admin/Sidebar';
+import Header from '../../components/admin/Header';
+import KycVerification from '@/components/admin/KycVerification';
 
 const KycVerificationPage = () => {
   return (
@@ -11,7 +11,7 @@ const KycVerificationPage = () => {
         <KycVerification/>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default KycVerificationPage
+export default KycVerificationPage;

@@ -1,26 +1,37 @@
-import { Request, Response } from 'express';
-import { ToggleUserStatusUseCase } from '../../../../useCases/implementation/admin/management/toggleUserStatusUseCase';
-import { UserRepository } from '../../../../infrastructure/repositories/user/userRepository';
+import { NextFunction, Request, Response } from 'express';
+import { IToggleUserStatusUseCase } from '@/useCases/interfaces/admin/management/IToggleUserStatusUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { generalMessages } from '@/shared/constants/messages/generalMessages';
+import { userMessages } from '@/shared/constants/messages/userMessages';
 
 export class ToggleUserStatusController {
-    constructor(private toggleUserStatusUseCase: ToggleUserStatusUseCase) {}
+    private _toggleUserStatusUseCase: IToggleUserStatusUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
-        const userId = req.params.userId;
-        const { status } = req.body;
-
-        if (!['active', 'inactive'].includes(status)) {
-            res.status(400).json({ message: 'Invalid status value' });
-            return 
-        }
-
-        try {
-            await this.toggleUserStatusUseCase.execute(userId, status);
-            res.status(200).json({ message: `User ${status} successfully` });
-            return 
-        } catch (error: any) {
-            res.status(500).json({ message: error.message });
-             return
-        }
+    constructor(toggleUserStatusUseCase: IToggleUserStatusUseCase) {
+        this._toggleUserStatusUseCase = toggleUserStatusUseCase;
     }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.params.userId;
+            const { status } = req.body;
+
+            console.log('status: : ', status);
+    
+            if (!['active', 'inactive'].includes(status)) {
+                throw new AppError(generalMessages.ERROR.INVALID_STATUS, HttpStatus.BAD_REQUEST);
+            }
+
+            await this._toggleUserStatusUseCase.execute(userId, status);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: userMessages.SUCCESS.USER_STATUS_UPDATED,
+            });
+            return; 
+        } catch (error) {
+            next(error);
+        }
+    };
 }

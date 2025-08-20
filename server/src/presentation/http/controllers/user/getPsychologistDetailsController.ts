@@ -1,20 +1,34 @@
-import { Request, Response } from "express";
-import { GetPsychologistDetailsUseCase } from "../../../../useCases/implementation/user/data/getPsychologistDetails";
-import { AppError } from "../../../../domain/errors/AppError";
+import { NextFunction, Request, Response } from 'express';
+import { IGetPsychologistDetailsUseCase } from '@/useCases/interfaces/user/data/IGetPsychologistDetailsUseCase';
+import { AppError } from '@/domain/errors/AppError';;
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class GetPsychologistDetailsController {
-    constructor(private getPsychologistDetails: GetPsychologistDetailsUseCase) {}
+    private _getPsychologistDetails: IGetPsychologistDetailsUseCase;
 
-    handle = async(req: Request, res: Response) => {
-        try {
-            const userId = req.params.id
-
-            const data = await this.getPsychologistDetails.execute(userId)
-            res.status(200).json(data)
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            res.status(status).json({ message });
-        }
+    constructor(getPsychologistDetails: IGetPsychologistDetailsUseCase) {
+        this._getPsychologistDetails = getPsychologistDetails;
     }
+
+    handle = async(req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.params.id;
+
+            if (!userId) {
+                throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
+            }
+
+            const psychologist = await this._getPsychologistDetails.execute(userId);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_PSYCHOLOGIST,
+                data: {
+                    psychologist,
+                },
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
 }

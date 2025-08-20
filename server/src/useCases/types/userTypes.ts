@@ -1,16 +1,5 @@
-import { IConsultationDto } from "../../domain/dtos/consultation";
-import { IPsychologistResponseDto } from "../../domain/dtos/psychologist";
-
-export interface PublicUser {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  gender?: string;
-  dateOfBirth?: Date;
-  profileImage?: string;
-  role: 'user' | 'psychologist' | 'admin';
-}
+import { IConsultationDto } from '../dtos/consultation';
+import { IPsychologistListUserDto } from '../dtos/psychologist';
 
 export interface IUpdateUserProfileInput {
   userId: string;
@@ -19,7 +8,7 @@ export interface IUpdateUserProfileInput {
   phone?: string;
   gender?: string;
   dateOfBirth?: Date;
-  profileImage?: string;
+  file?: Express.Multer.File;
 }
 
 export interface IUpdateUserProfileOutput {
@@ -48,27 +37,27 @@ export interface IGetUserProfileOutput {
     isActive?: boolean;
 }
 
-export interface IGetSlotForUsertInput {
+export interface IGetSlotForUserInput {
   userId: string; //userId of psychologist
   date?: Date
 }
 export interface IGetAllPsychologistRequest {
   search?: string;
-  sort?: "asc" | "desc";
-  gender?: "Male" | "Female" | "all",
+  sort?: 'asc' | 'desc';
+  gender?: 'Male' | 'Female' | 'all',
   expertise?: string  
   page?: number;
   limit?: number;
 }
 
 export interface IGetAllPsychologistResponse {
-  psychologists: IPsychologistResponseDto[],
+  psychologists: IPsychologistListUserDto[],
   totalCount: number
 }
 export interface IGetConsultationsRequest {
   patientId: string
   search?: string;
-  sort?: "asc" | "desc";
+  sort?: 'asc' | 'desc';
   status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled';  
   page?: number;
   limit?: number; 

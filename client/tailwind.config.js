@@ -59,6 +59,18 @@ export default {
   			}
   		},
   		keyframes: {
+				fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+				fadeInScale: {
+          '0%': { opacity: '0', transform: 'scale(0.8)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
   			'glow-ring': {
   				'0%': {
   					boxShadow: '0 0 0 0 #05bada66'
@@ -93,8 +105,11 @@ export default {
   			}
   		},
   		animation: {
+				fadeIn: 'fadeIn 0.5s ease-in-out',
   			'glow-ring': 'glow-ring 1.5s infinite',
-  			bellRing: 'bellRing 0.9s both'
+  			bellRing: 'bellRing 0.9s both',
+				fadeInScale: 'fadeInScale 0.5s ease-in-out',
+        fadeInUp: 'fadeInUp 0.5s ease-in-out 0.2s',
   		},
   		backgroundImage: {
   			auth: "url(/images/auth_bg.jpg)",
@@ -103,7 +118,7 @@ export default {
   		},
   		fontFamily: {
   			jakarta: [
-  				'Plus Jakarta Sans"',
+  				'Plus Jakarta Sans',
   				'sans-serif'
   			]
   		},

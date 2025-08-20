@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { psychologistApi } from "@/server/api/psychologist";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import type { ISlotDto } from "@/types/slot";
-import { toast } from "react-toastify";
-import SlotDetailModal from "./SlotDetailModal";
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { psychologistApi } from '@/server/api/psychologist';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import type { ISlotDto } from '@/types/dtos/slot';
+import { toast } from 'react-toastify';
+import SlotDetailModal from './SlotDetailModal';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 type SlotEvent = {
   id: string;
@@ -16,7 +17,11 @@ type SlotEvent = {
   end: string;
 };
 
-const SlotCalendar = () => {
+interface SlotCalendarProps {
+  slotsChanged: boolean;
+}
+
+const SlotCalendar: React.FC<SlotCalendarProps> = ({slotsChanged}) => {
   const [events, setEvents] = useState<SlotEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<ISlotDto | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,10 +29,16 @@ const SlotCalendar = () => {
   const fetchSlots = async () => {
     try {
       const slots = await psychologistApi.getPsychologistSlots();
-      console.log("slots: ", slots);
+
+      if (!slots || slots.length === 0) {
+        toast.info('No slots available.');
+        setEvents([]); 
+        return;
+      }
+
       const mapped = slots.map((slot: ISlotDto) => ({
         id: slot.id,
-        title: slot.isBooked ? "Booked" : "Available",
+        title: slot.isBooked ? 'Booked' : 'Available',
         start: slot.startDateTime,
         end: slot.endDateTime,
         allDay: false,
@@ -39,25 +50,24 @@ const SlotCalendar = () => {
         },
       }));
       setEvents(mapped);
-    } catch (error) {
-      toast.error("Error fetching slots");
-      console.log('Error fetching slots: ', error);
+    } catch (error: any) {
+      if (error.response?.data?.message === 'Requested slot not found') {
+        toast.info('No slots available.');
+        setEvents([]);
+      } else {
+        handleApiError(error);
+      }
     }
   };
 
   useEffect(() => {
     fetchSlots();
-  }, []);
+  }, [slotsChanged]);
 
   const handleDelete = async () => {
-    console.log("its here");
-    console.log("selected event: ", selectedEvent);
     if (!selectedEvent || !selectedEvent?.id) return;
-    console.log("its here also");
-
     try {
       const res = await psychologistApi.deleteSlotByPsychologist({ slotId: selectedEvent.id });
-      console.log('res: ', res);
       if (res.success) {
         toast.success(res.message);
         setIsModalOpen(false);
@@ -67,8 +77,7 @@ const SlotCalendar = () => {
         toast.error(res.message);
       }
     } catch (error) {
-      toast.error("Error deleting slots");
-      console.log('Error fetching slots: ', error);
+      handleApiError(error);
     }
   };
 
@@ -93,18 +102,18 @@ const SlotCalendar = () => {
       };
     } else {
       return {
-        backgroundColor: '#10b981', // Green for upcoming available
-        borderColor: '#059669',
+        backgroundColor: '#3b82f6', // Blue for upcoming available
+        borderColor: '#2563eb',
         textColor: '#ffffff',
       };
     }
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
-      <Card className="mt-12 mx-2 sm:mx-4 md:mx-6 lg:mx-auto max-w-7xl bg-gradient-to-br from-white to-gray-50 shadow-xl rounded-3xl border border-gray-100">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+    <div className="py-8 px-4 sm:px-6 md:px-8">
+      <Card className="mt-6 mx-auto max-w-7xl bg-white shadow-xl rounded-2xl border border-gray-100 animate-fadeIn">
+        <CardHeader className="pb-3 px-4 sm:px-6">
+          <CardTitle className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">
             My Slots
           </CardTitle>
         </CardHeader>
@@ -114,9 +123,9 @@ const SlotCalendar = () => {
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               initialView="timeGridWeek"
               headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay",
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay',
               }}
               allDaySlot={false}
               slotMinTime="08:00:00"
@@ -127,15 +136,21 @@ const SlotCalendar = () => {
                 const now = new Date();
                 const eventEnd = event.end ?? new Date();
                 const isPast = eventEnd < now;
-                const { isBooked, bookedBy, notes } = event.extendedProps;
-                const startTime = new Date(event.start!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const endTime = new Date(event.end!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const { isBooked, notes } = event.extendedProps;
+                const startTime = new Date(event.start!).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                });
+                const endTime = new Date(event.end!).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                });
 
                 const styles = getEventStyles(isPast, isBooked);
 
                 return (
                   <div
-                    className={`rounded px-2 py-1 text-[10px] sm:text-xs font-medium shadow-sm w-full h-full ${
+                    className={`rounded-md px-1.5 py-1 text-[9px] xs:text-[10px] sm:text-xs font-medium shadow-sm w-full h-full transition-all duration-200 ${
                       isPast ? 'opacity-75' : 'hover:opacity-90'
                     }`}
                     style={{
@@ -144,19 +159,21 @@ const SlotCalendar = () => {
                       border: `1px solid ${styles.borderColor}`,
                     }}
                   >
-                    <div className="font-semibold">
+                    <div className="font-semibold truncate">
                       {isPast && !isBooked ? 'Expired' : isBooked ? 'Booked' : 'Available'}
                     </div>
-                    <div className="opacity-90">
+                    <div className="opacity-90 truncate">
                       {startTime} - {endTime}
                     </div>
                     {/* {isBooked && bookedBy && (
-                      <div className="italic text-[10px] opacity-75">
-                        By: {bookedBy.name || "User"}
+                      <div className="italic text-[8px] xs:text-[9px] sm:text-[10px] opacity-75 truncate">
+                        By: {bookedBy.name || 'User'}
                       </div>
                     )} */}
                     {notes && (
-                      <div className="mt-1 text-[10px]">{notes}</div>
+                      <div className="mt-0.5 text-[8px] xs:text-[9px] sm:text-[10px] truncate">
+                        {notes}
+                      </div>
                     )}
                   </div>
                 );
@@ -171,14 +188,13 @@ const SlotCalendar = () => {
                   bookedBy: event.extendedProps.bookedBy,
                 };
                 setSelectedEvent(slotData);
-                console.log('events: ', event);
                 setIsModalOpen(true);
               }}
               eventClassNames={({ event }) => {
                 const now = new Date();
                 const isPast = (event.end ?? new Date()) < now;
                 const isBooked = event.extendedProps.isBooked;
-                let classes = 'rounded-xl transition-all duration-200 !bg-transparent ';
+                let classes = 'rounded-md transition-all duration-200 !bg-transparent ';
                 if (isPast && !isBooked) {
                   classes += 'pointer-events-none'; // Expired
                 } else if (isPast && isBooked) {
@@ -192,21 +208,25 @@ const SlotCalendar = () => {
               }}
               eventBorderColor="transparent"
               eventBackgroundColor="transparent"
-              dayHeaderClassNames="text-gray-700 font-medium bg-gray-50 text-xs sm:text-sm md:text-base"
-              slotLabelClassNames="text-gray-600 text-xs sm:text-sm"
-              dayCellClassNames="border-gray-200"
-              viewClassNames="bg-white rounded-lg"
+              dayHeaderClassNames="text-gray-800 font-semibold bg-gray-100 text-[10px] xs:text-xs sm:text-sm border-b border-gray-200 py-2"
+              slotLabelClassNames="text-gray-600 text-[10px] xs:text-xs sm:text-sm font-medium"
+              dayCellClassNames="border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200"
+              viewClassNames="bg-white rounded-lg shadow-sm"
               dayHeaderContent={({ date, view }) => {
-                const isDayView = view.type === "timeGridDay";
+                const isDayView = view.type === 'timeGridDay';
                 return (
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] sm:text-xs md:text-sm font-semibold">
+                  <div className="flex flex-col items-center py-1.5">
+                    <span className="text-[10px] xs:text-xs sm:text-sm font-semibold text-gray-800">
                       {isDayView
-                        ? new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                        ? new Date(date).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                        })
                         : new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
                     </span>
                     {!isDayView && (
-                      <span className="text-[10px] sm:text-xs md:text-sm text-gray-500">
+                      <span className="text-[10px] xs:text-xs sm:text-sm text-gray-600">
                         {new Date(date).getDate()}
                       </span>
                     )}
@@ -214,8 +234,12 @@ const SlotCalendar = () => {
                 );
               }}
               slotLabelContent={({ date }) => (
-                <span className="text-[10px] sm:text-xs md:text-sm">
-                  {date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                <span className="text-[10px] xs:text-xs sm:text-sm font-medium text-gray-600">
+                  {date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}
                 </span>
               )}
             />

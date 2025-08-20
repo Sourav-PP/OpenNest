@@ -1,16 +1,16 @@
-export interface SpeicalizationFee {
+export interface SpecializationFee {
     specializationId: string,
     specializationName: string,
     fee: number
 }
 
 export interface Psychologist {
-    id?: string,
+    id: string,
     userId: string,
     aboutMe: string,
     qualification: string,
     specializations: string[],
     defaultFee: number,
     isVerified: boolean,
-    specializationFees: SpeicalizationFee[]
+    specializationFees: SpecializationFee[]
 }   

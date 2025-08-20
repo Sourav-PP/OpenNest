@@ -1,0 +1,26 @@
+export const adminMessages = {
+    SUCCESS: {
+        KYC_APPROVED: 'KYC approved successfully',
+        KYC_REJECTED: 'KYC rejected successfully',
+        SERVICE_CREATED: 'Service created successfully',
+        SERVICE_DELETED: 'Service deleted successfully',
+        FETCHED_PSYCHOLOGISTS: 'psychologists fetched successfully',
+        FETCHED_PSYCHOLOGIST: 'Psychologist has been fetched successfully',
+        FETCHED_SERVICES: 'Services fetched successfully',
+        FETCHED_USERS: 'Users fetched successfully',
+        FETCHED_SLOTS: 'Slots fetched successfully',
+        FETCHED_CONSULTATIONS: 'Consultations fetched successfully',
+        FETCHED_USER_PROFILE: 'User profile fetched successfully',
+    },
+    ERROR: {
+        PSYCHOLOGIST_ID_REQUIRED: 'Psychologist ID is required',
+        USER_ID_REQUIRED: 'User ID is required',
+        PSYCHOLOGIST_NOT_FOUND: 'Psychologist not found',
+        SERVICE_BANNER_REQUIRED: 'Service banner image is required',
+        SERVICE_NOT_FOUND: 'Service not found',
+        SERVICE_ID_REQUIRED: 'Service id is required',
+        KYC_REASON_REQUIRED: 'Reason is required to reject the KYC',
+        KYC_NOT_FOUND: 'No KYC record found for the specified psychologist',
+        SERVICE_ALREADY_EXISTS: 'Service with this name already exists',
+    },
+} as const;

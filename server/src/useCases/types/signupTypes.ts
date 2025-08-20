@@ -4,8 +4,8 @@ export interface ISignupInput {
     phone: string,
     password: string,
     confirmPassword: string,
-    profileImage: string,
-    role: "user" | "psychologist"
+    file: Express.Multer.File,
+    role: 'user' | 'psychologist'
 }
 
 // export interface ISignupOutput {

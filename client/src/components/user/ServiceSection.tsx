@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { serviceApi } from "../../server/api/service";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { serviceApi } from '../../server/api/service';
+import { useNavigate } from 'react-router-dom';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 
 
 type Service = {
@@ -12,30 +14,33 @@ type Service = {
 }
 
 const ServiceSession = () => {
-  const navigate = useNavigate()
-  const [services, setServices] = useState<Service[]>([])
+  const navigate = useNavigate();
+  const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await serviceApi.getAll()
+        const response = await serviceApi.getAll();
 
-        const mapped = response.services.slice(1, 4).map((service: Service) => ({
+        if(!response.data) {
+          toast.error('Error fetching the services');
+          return;
+        }
+        const mapped = response.data.services.slice(1, 4).map((service: Service) => ({
           id: service.id,
           name: service.name,
           description: service.description,
           bannerImage: service.bannerImage,
         }));
 
-        setServices(mapped)
+        setServices(mapped);
       } catch (error) {
-        toast.error("Failed to load specialization")
-        console.error("Failed to fetch services:", error);
+        handleApiError(error);
       }
-    }
+    };
 
-    fetchServices()
-  },[])
+    fetchServices();
+  },[]);
 
   return (
     <div className="bg-gray-200 py-16 px-8 sm:px-6 lg:px-36 pt-32">
@@ -47,7 +52,7 @@ const ServiceSession = () => {
               {/* Image */}
               <div className="absolute w-[230px] h-auto top-[-50px] left-1/2 transform -translate-x-1/2 mb-6 overflow-hidden rounded-2xl">
                 <img 
-                  src={service.bannerImage} 
+                  src={getCloudinaryUrl(service.bannerImage) || undefined} 
                   alt={service.name}
                   className="w-[230px] h-auto object-cover"
                 />
@@ -76,7 +81,7 @@ const ServiceSession = () => {
         {/* See All Therapy Services Button */}
         <div className="group text-center sm:text-center">
           <button
-          onClick={() => navigate('/user/services')}
+            onClick={() => navigate('/user/services')}
             className="btn-primary px-6 py-2 sm:px-auto sm:py-auto text-white bg-[#3EB1EB] sm:bg-inherit hover:bg-[#2A9CDB] sm:hover:bg-inherit transition-colors duration-200 group-hover:animate-glow-ring"
             aria-label="Login as Therapist"
           >

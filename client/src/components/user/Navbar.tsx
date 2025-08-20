@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { assets } from "../../assets/assets";
-import { FiMenu, FiX } from "react-icons/fi";
-import BellButton from "./BellButton";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../redux/slices/authSlice";
-import { type RootState } from "../../redux/store";
-import { toast } from "react-toastify";
-import type { AxiosError } from "axios";
-import { authApi } from "../../server/api/auth";
+import { useState, useEffect } from 'react';
+import { assets } from '../../assets/assets';
+import { FiMenu, FiX } from 'react-icons/fi';
+import BellButton from './BellButton';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../redux/slices/authSlice';
+import { type RootState } from '../../redux/store';
+import { toast } from 'react-toastify';
+import { authApi } from '../../server/api/auth';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const Navbar = () => {
   const { accessToken } = useSelector((state: RootState) => state.auth);
@@ -19,22 +19,18 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/login?role=user');
+    navigate('/login', {state: { role: 'user'}});
   };
 
   const handleLogout = async () => {
     try {
-      await authApi.logout()
+      const res = await authApi.logout();
       dispatch(logout());
-      localStorage.removeItem("persist:root");
-      toast.success("Logout successfully");
+      localStorage.removeItem('persist:root');
+      toast.success(res.message);
       navigate('/');
     } catch (err) {
-      const error = err as AxiosError<{ message: string }>;
-      console.log('error is admin: ', error);
-      toast.error(
-        "Logout failed: " + error?.response?.data?.message || "Unknown error"
-      );
+      handleApiError(err);
     }
   };
 
@@ -106,7 +102,7 @@ const Navbar = () => {
               </button>
               <div
                 className={`absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-xl border border-gray-100 transition-all duration-300 ease-in-out transform ${
-                  dropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+                  dropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
                 }`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
@@ -115,7 +111,7 @@ const Navbar = () => {
                 <div className="absolute -top-2 right-4 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
                 <div className="pt-2 pb-1 bg-gradient-to-b from-gray-50 to-white rounded-xl">
                   <button
-                    onClick={() => navigate("/user/profile")}
+                    onClick={() => navigate('/user/profile')}
                     className="block w-full text-left px-5 py-3 text-gray-700 font-medium text-base hover:bg-[#3EB1EB] hover:text-white transition-all duration-200 hover:scale-100 hover:rounded-lg transform origin-left"
                   >
                     Profile
@@ -152,8 +148,8 @@ const Navbar = () => {
         <div
           className={`absolute top-full right-0 bg-white shadow-lg rounded-lg mt-2 p-6 flex flex-col gap-6 md:hidden transition-all duration-300 ease-in-out transform origin-top ${
             menuOpen
-              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+              ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
           }`}
         >
           <button onClick={() => navigate('/')} className="cursor-pointer font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
@@ -174,7 +170,7 @@ const Navbar = () => {
           {accessToken ? (
             <>
               <button
-                onClick={() => navigate("/user/profile")}
+                onClick={() => navigate('/user/profile')}
                 className="text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
               >
                 Profile

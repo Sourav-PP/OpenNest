@@ -8,8 +8,8 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
-} from "@/components/ui/alert-dialog"
-import type { ReactNode } from "react"
+} from '@/components/ui/alert-dialog';
+import type { ReactNode } from 'react';
 
 interface ConfirmationDialogProps {
   trigger: ReactNode
@@ -24,9 +24,9 @@ interface ConfirmationDialogProps {
 export const ConfirmationDialog = ({
   trigger,
   title,
-  description = "This action cannot be undone.",
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  description = 'This action cannot be undone.',
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
   onConfirm,
   loading = false,
 }: ConfirmationDialogProps) => {
@@ -45,10 +45,10 @@ export const ConfirmationDialog = ({
             disabled={loading}
             className="bg-red-600 hover:bg-red-700 text-white"
           >
-            {loading ? "Processing..." : confirmLabel}
+            {loading ? 'Processing...' : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
-}
+  );
+};

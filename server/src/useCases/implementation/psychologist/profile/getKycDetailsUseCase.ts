@@ -1,20 +1,34 @@
-import { IGetKycDetailsUseCase } from "../../../interfaces/psychologist/profile/IGetKycDetailsUseCase";
-import { IKycRepository } from "../../../../domain/interfaces/IKycRepository";
-import { Kyc } from "../../../../domain/entities/kyc";
-import { AppError } from "../../../../domain/errors/AppError";
+import { IGetKycDetailsUseCase } from '@/useCases/interfaces/psychologist/profile/IGetKycDetailsUseCase';
+import { IKycRepository } from '@/domain/repositoryInterface/IKycRepository';
+import { Kyc } from '@/domain/entities/kyc';
+import { AppError } from '@/domain/errors/AppError';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 
 export class GetKycDetailsUseCase implements IGetKycDetailsUseCase {
-    constructor(
-        private kycRepo: IKycRepository
-    ) {}
+    private _psychologistRepo: IPsychologistRepository;
+    private _kycRepo: IKycRepository;
 
-    async execute(psychologistId: string): Promise<Kyc> {
-        const kyc = await this.kycRepo.findByPsychologistId(psychologistId)
+    constructor(kycRepo: IKycRepository, psychologistRepo: IPsychologistRepository) {
+        this._kycRepo = kycRepo;
+        this._psychologistRepo = psychologistRepo;
+    }
 
-        if(!kyc) {
-            throw new AppError("No Kyc found, Please verify your account", 404)
+    async execute(userId: string): Promise<Kyc> {
+        const psychologist = await this._psychologistRepo.findByUserId(userId);
+
+        if (!psychologist) {
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        return kyc
+        const kyc = await this._kycRepo.findByPsychologistId(psychologist.id);
+
+        if (!kyc) {
+            throw new AppError(adminMessages.ERROR.KYC_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        return kyc;
     }
 }

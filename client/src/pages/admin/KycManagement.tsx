@@ -1,6 +1,7 @@
-import Sidebar from "../../components/admin/Sidebar";
-import Header from "../../components/admin/Header";
-import KycTable from "@/components/admin/KycTable";
+import Sidebar from '../../components/admin/Sidebar';
+import Header from '../../components/admin/Header';
+// import KycTable from '@/components/admin/KycTable';
+import KycTable from '@/components/admin/tables/KycTable';
 
 const KycManagement = () => {
   return (
@@ -11,7 +12,7 @@ const KycManagement = () => {
         <KycTable/>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default KycManagement
+export default KycManagement;

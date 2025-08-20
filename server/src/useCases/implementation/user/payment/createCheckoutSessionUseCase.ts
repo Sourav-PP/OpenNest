@@ -1,78 +1,113 @@
-import { ICreateCheckoutSessionUseCase } from "../../../interfaces/user/payment/ICreateCheckoutSessionUseCase";
-import { ICreateCheckoutSessionInput, ICreateCheckoutSessionOutput } from "../../../types/payment";
-import { IPaymentService } from "../../../../domain/services/IPaymentService";
-import { IPaymentRepository } from "../../../../domain/interfaces/IPaymentRepository";
-import { ISlotRepository } from "../../../../domain/interfaces/ISlotRepository";
-import { AppError } from "../../../../domain/errors/AppError";
-import { Payment } from "../../../../domain/entities/payment";
+import { ICreateCheckoutSessionUseCase } from '@/useCases/interfaces/user/payment/ICreateCheckoutSessionUseCase';
+import {
+    ICreateCheckoutSessionInput,
+    ICreateCheckoutSessionOutput,
+} from '@/useCases/types/payment';
+import { IPaymentService } from '@/domain/serviceInterface/IPaymentService';
+import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
+import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
+import { AppError } from '@/domain/errors/AppError';
+import { Payment } from '@/domain/entities/payment';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { appConfig } from '@/infrastructure/config/config';
+import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
+
+export type IStripeMetaData = {
+    patientId: string;
+    psychologistId: string;
+    slotId: string;
+    startDateTime: string;
+    endDateTime: string;
+    sessionGoal: string;
+    subscriptionId?: string;
+}
 
 export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCase {
+    private _paymentService: IPaymentService;
+    private _paymentRepository: IPaymentRepository;
+    private _slotRepo: ISlotRepository;
+
     constructor(
-        private paymentService: IPaymentService,
-        private paymentRepository: IPaymentRepository,
-        private slotRepo: ISlotRepository
-    ){}
-    async execute(input: ICreateCheckoutSessionInput): Promise<ICreateCheckoutSessionOutput> {
-        if(!input.userId) {
-            throw new AppError("Missing required userId", 400)
+        paymentService: IPaymentService,
+        paymentRepository: IPaymentRepository,
+        slotRepo: ISlotRepository,
+    ) {
+        this._paymentService = paymentService;
+        this._paymentRepository = paymentRepository;
+        this._slotRepo = slotRepo;
+    }
+
+    async execute( input: ICreateCheckoutSessionInput): Promise<ICreateCheckoutSessionOutput> {
+
+        if (!input.userId) {
+            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
-        const slot = await this.slotRepo.findById(input.slotId)
-        if(!slot) {
-            throw new AppError("Slot not available", 404)
+
+        const slot = await this._slotRepo.findById(input.slotId);
+
+        if (!slot) {
+            throw new AppError(
+                bookingMessages.ERROR.SLOT_NOT_AVAILABLE,
+                HttpStatus.NOT_FOUND,
+            );
         }
 
-        const currency = process.env.CURRENCY || 'usd'
-        const successUrl = process.env.FRONTEND_SUCCESS_URL!
-        const cancelUrl = process.env.FRONTEND_CANCEL_URL!
+        if (slot.isBooked) {
+            throw new AppError(
+                bookingMessages.ERROR.SLOT_ALREADY_BOOKED,
+                HttpStatus.CONFLICT,
+            );
+        }
 
-        console.log("currency", currency)
-        console.log('successurl:', successUrl)
-        console.log('cancelurl', cancelUrl)
+        const currency = appConfig.stripe.currency || 'usd';
+        const successUrl = appConfig.stripe.frontendSuccessUrl;
+        const cancelUrl = appConfig.stripe.frontendCancelUrl;
 
-        console.log('slot starttimedate when passing to metadata: ', slot.startDateTime)
-        console.log('slot enddate time when passint to metadata', slot.endDateTime)
-
-        const metadata:{
-            patientId: string;
-            psychologistId: string;
-            slotId: string;
-            startDateTime: string;
-            endDateTime: string;
-            sessionGoal: string;
-            subscriptionId?: string;
-        } = {
+        const metadata: IStripeMetaData = {
             patientId: input.userId,
-            psychologistId: input.psychologistId,
+            psychologistId: slot.psychologistId,
             slotId: input.slotId,
             startDateTime: slot.startDateTime.toISOString(),
             endDateTime: slot.endDateTime.toISOString(),
             sessionGoal: input.sessionGoal,
-        }
+        };
 
         if (input.subscriptionId) {
             metadata.subscriptionId = input.subscriptionId;
         }
 
-        console.log("metadata: ", metadata)
+        const { url, sessionId } = await this._paymentService.createCheckoutSession(
+            input.amount,
+            currency,
+            `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl,
+            metadata,
+        );
 
-        const {url, sessionId} = await this.paymentService.createCheckoutSession(input.amount,currency, `${successUrl}?session_id={CHECKOUT_SESSION_ID}`, cancelUrl, metadata )
-    
-        console.log('its here:',sessionId)
-        const payment: Payment = {
+        // create the payment document before success
+        const payment: Omit<Payment, 'id'> = {
             userId: input.userId,
             amount: input.amount,
-            currency: process.env.CURRENCY || "usd",
-            paymentMethod: "stripe",
-            paymentStatus: "pending",
+            currency: appConfig.stripe.currency || 'usd',
+            paymentMethod: 'stripe',
+            paymentStatus: 'pending',
             refunded: false,
             transactionId: undefined,
             stripeSessionId: sessionId,
+            slotId: input.slotId,
         };
 
-        await this.paymentRepository.create(payment)
-        
-
-        console.log('checkout session created!')
+        try {
+            await this._paymentRepository.create(payment);
+        } catch (error: any) {
+            if (error.code === 11000) {
+                throw new AppError(bookingMessages.ERROR.SLOT_JUST_BOOKED, HttpStatus.CONFLICT);
+            } else {
+                console.log('err: ', error);
+                throw error;
+            }
+        }
 
         return {
             url: url,

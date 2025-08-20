@@ -1,11 +1,11 @@
-import { jwtDecode } from 'jwt-decode'
-import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { loginSuccess } from '../../redux/slices/authSlice'
-import { toast } from 'react-toastify'
-import type { AxiosError } from 'axios'
-import { authApi } from '../../server/api/auth'
+import { jwtDecode } from 'jwt-decode';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { loginSuccess } from '../../redux/slices/authSlice';
+import { toast } from 'react-toastify';
+import { authApi } from '../../server/api/auth';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 declare global { 
     interface Window {
@@ -19,9 +19,9 @@ declare global {
                     renderButton: (
                         parent: HTMLElement,
                         options: {
-                        theme?: "outline" | "filled_blue" | "filled_black";
-                        shape: "pill"
-                        size?: "small" | "medium" | "large";
+                        theme?: 'outline' | 'filled_blue' | 'filled_black';
+                        shape: 'pill'
+                        size?: 'small' | 'medium' | 'large';
                         width?: string | number;
                         }
                     ) => void;
@@ -39,78 +39,73 @@ declare global {
 interface TokenPayload {
     userId: string;
     email: string;
-    role: "user" | "psychologist";
+    role: 'user' | 'psychologist';
     exp: number;
     iat: number;
 }
 
 const GoogleLoginButton = () => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
-    const [searchParams] = useSearchParams()
-    const role = (searchParams.get("role") as "user" | "psychologist") ?? "user"; 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const role = (searchParams.get('role') as 'user' | 'psychologist') ?? 'user'; 
 
-    useEffect(() => {
-        if(!window.google) return;
-        console.log("client id: ", )
-        window.google.accounts.id.initialize({
-            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            callback: async(response) => {
-                try {
-                    const result = await authApi.googleLogin({
-                        credential: response.credential,
-                        role
-                    })
+  useEffect(() => {
+    if(!window.google) return;
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: async(response) => {
+        try {
+          const res = await authApi.googleLogin({
+            credential: response.credential,
+            role
+          });
 
-                    console.log("result in frontend: ", result)
+          if(!res.data) {
+            toast.error('Failed to login, please try again!');
+            return;
+          }
 
-                    const { accessToken, hasSubmittedVerificationForm } = result
-                    const decoded = jwtDecode<TokenPayload>(accessToken)
+          const decoded = jwtDecode<TokenPayload>(res.data.accessToken);
 
-                    dispatch(loginSuccess({
-                        accessToken: accessToken,
-                        email: decoded.email,
-                        role: decoded.role,
-                        userId: decoded.userId,
-                        isSubmittedVerification: true,
-                    }))
+          dispatch(loginSuccess({
+            accessToken: res.data.accessToken,
+            email: res.data.user.email,
+            role: res.data.user.role,
+            userId: decoded.userId,
+            isSubmittedVerification: res.data.hasSubmittedVerificationForm,
+          }));
 
-                    toast.success("Login successful")
+          toast.success(res.message);
 
-                    // navigation based on role
-                    if(decoded.role === 'psychologist') {
-                        if(hasSubmittedVerificationForm) {
-                        console.log("Navigating to profile");
-                        navigate('/psychologist/profile')
-                        }else{
-                        console.log("Navigating to verification");
-                        navigate('/psychologist/verification')
-                        }
-                    } else {
-                        navigate("/");
-                    }
-                } catch(err) {
-                    const error = err as AxiosError<{ error: string }>;
-                    console.log('error is: ', error)
-                    toast.error(
-                    "Google Login failed: " + error?.response?.data?.error || "Unknown error"
-                    );
-                }
-            }
-        })
+          // navigation based on role
+          if(decoded.role === 'psychologist') {
+            navigate(
+              res.data.hasSubmittedVerificationForm
+                ? '/psychologist/profile'
+                : '/psychologist/verification'
+            );
+          } else {
+            navigate('/');
+          }
+        } catch(err) {
+          handleApiError(err);
+        }
+      }
+    });
 
-        window.google.accounts.id.renderButton(
-            document.getElementById("google-btn")!,
+    window.google.accounts.id.renderButton(
+            document.getElementById('google-btn')!,
             {
-                theme: "outline",
-                size: "large",
-                shape: "pill",
-                width: "100%"
+              theme: 'outline',
+              size: 'large',
+              shape: 'pill',
+              width: '100%'
             }
-        )
-    },[])
+    );
+  },[dispatch, navigate, role]);
 
   return <div id="google-btn" className="my-4\" />;
-}
+};
 
-export default GoogleLoginButton
+export default GoogleLoginButton;

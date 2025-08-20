@@ -4,18 +4,18 @@ const TestimonialSection = () => {
   const stats = [
     {
       id: 1,
-      number: "8,000+",
-      description: "No. of people healed"
+      number: '8,000+',
+      description: 'No. of people healed'
     },
     {
       id: 2,
-      number: "25+",
-      description: "Therapists ready to help"
+      number: '25+',
+      description: 'Therapists ready to help'
     },
     {
       id: 3,
-      number: "25,000+",
-      description: "No. of sessions given"
+      number: '25,000+',
+      description: 'No. of sessions given'
     }
   ];
 
@@ -43,6 +43,6 @@ const TestimonialSection = () => {
       </div>
     </div>
   );
-}
+};
 
-export default TestimonialSection
+export default TestimonialSection;

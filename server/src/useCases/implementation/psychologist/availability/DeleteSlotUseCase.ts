@@ -1,27 +1,38 @@
-import { AppError } from "../../../../domain/errors/AppError";
-import { ISlotRepository } from "../../../../domain/interfaces/ISlotRepository";
-import { IDeleteSlotUseCase } from "../../../interfaces/psychologist/availability/IDeleteSlotUseCase";
-import { IDeleteSlotInput } from "../../../types/psychologistTypes";
+import { AppError } from '@/domain/errors/AppError';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IDeleteSlotUseCase } from '@/useCases/interfaces/psychologist/availability/IDeleteSlotUseCase';
+import { IDeleteSlotInput } from '@/useCases/types/psychologistTypes';
 
 export class DeleteSlotUseCase implements IDeleteSlotUseCase {
-    constructor(
-        private slotRepo: ISlotRepository
-    ) {}
+    private _slotRepo: ISlotRepository;
+    private _psychologistRepo: IPsychologistRepository;
+
+    constructor(slotRepo: ISlotRepository, psychologistRepo: IPsychologistRepository) {
+        this._slotRepo = slotRepo;
+        this._psychologistRepo = psychologistRepo;
+    }
 
     async execute(input: IDeleteSlotInput): Promise<void> {
-        const slot = await this.slotRepo.findById(input.slotId)
+        const psychologist = await this._psychologistRepo.findByUserId(input.userId);
 
-        console.log('slot: ', slot)
-
-        if(!slot) {
-            throw new AppError("Slot not found", 404)
+        if (!psychologist) {
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        if(slot.psychologistId.toString() !== input.psychologistId) {
-            throw new AppError("Unauthorized", 401)
+        const slot = await this._slotRepo.findById(input.slotId);
+
+        if (!slot) {
+            throw new AppError(psychologistMessages.ERROR.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        await this.slotRepo.deleteById(input.slotId)
-        
+        if (slot.psychologistId.toString() !== psychologist.id) {
+            throw new AppError(authMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
+        }
+
+        await this._slotRepo.deleteById(input.slotId); 
     }
 }

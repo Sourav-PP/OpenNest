@@ -1,240 +1,267 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { updateProfileSchema, type updateProfileData } from "../../lib/validations/user/updateUserProfileValidaton";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { userApi } from "../../server/api/user";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { userApi } from '@/server/api/user';
+import { updateProfileSchema, type updateProfileData } from '@/lib/validations/user/updateUserProfileValidation';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import AnimatedTitle from '../animation/AnimatedTitle';
 
 const UserProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<updateProfileData>({
-    resolver: zodResolver(updateProfileSchema)
+  const form = useForm<updateProfileData>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      dateOfBirth: '',
+      gender: undefined,
+      profileImage: undefined,
+    },
   });
 
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchProfile = async () => {
       try {
-        const res = await userApi.getProfile()
-        const profileData = res
-        console.log("profile Data: ", res)
-        setValue("name", profileData.name);
-        setValue("email", profileData.email);
-        setValue("phone", profileData.phone);
-        setValue("dateOfBirth", profileData.dateOfBirth);
-        setValue("gender", profileData.gender);
-        setProfileImagePreview(profileData.profileImage || null);
-      } catch (error) {
-        toast.error("Error fetching profile");
-        console.error("Error fetching profile:", error);
+        const res = await userApi.getProfile();
+
+        if(!res.data) {
+          toast.error('Something went wrong');
+          return;
+        }
+
+        form.reset({
+          name: res.data.name,
+          email: res.data.email,
+          phone: res.data.phone,
+          dateOfBirth: res.data.dateOfBirth ? res.data.dateOfBirth.split('T')[0] : '',
+          gender: res.data.gender,
+        });
+        setProfileImagePreview(getCloudinaryUrl(res.data.profileImage));
+      } catch (err) {
+        handleApiError(err, form.setError);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProfileData();
-  }, [setValue]);
+    fetchProfile();
+  }, [form]);
 
   const onSubmit = async (data: updateProfileData) => {
     try {
       const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('email', data.email);
+      formData.append('phone', data.phone);
+      if (data.dateOfBirth) formData.append('dateOfBirth', data.dateOfBirth);
+      if (data.gender) formData.append('gender', data.gender);
 
-      formData.append("name", data.name)
-      formData.append("email", data.email);
-      formData.append("phone", data.phone);
-      if(data.dateOfBirth) {
-        formData.append("dateOfBirth", data.dateOfBirth);
-      }
-      if(data.gender) {
-        formData.append("gender", data.gender);
-      }
+      const file = data.profileImage?.[0];
+      if (file) formData.append('file', file);
 
-      const file = data.profileImage?.[0]
-      if(file) {
-        formData.append('file', file)
-      }
-      console.log("Sending to backend:", [...formData.entries()]);
-
-      await userApi.updateProfile(formData)
-
-      toast.success("Profile updated successfully");
+      const res = await userApi.updateProfile(formData);
+      toast.success(res.message);
       navigate('/user/profile');
-    } catch (error) {
-      toast.error("Error updating profile");
-      console.error("Error updating profile:", error);
+    } catch (err) {
+      handleApiError(err, form.setError);
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProfileImagePreview(URL.createObjectURL(file));
-    }
-  };
-
- if (loading) return (
-  <div className="flex justify-center items-center min-h-screen bg-white">
-    <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: "1.2s" }}>
-      {[...Array(8)].map((_, index) => (
-        <div
-          key={index}
-          className="absolute h-2 w-2 bg-gray-300 rounded-full"
-          style={{
-            top: "50%",
-            left: "50%",
-            transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
-          }}
-        ></div>
-      ))}
-      <span className="sr-only">Loading...</span>
-    </div>
-  </div>
-);
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
+          {[...Array(8)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute h-2 w-2 bg-gray-300 rounded-full"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+              }}
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-[#e9f1f4] to-[#f3feff] min-h-screen">
-      <h2 className="text-3xl font-bold text-gray-800 mb-2">My Profile</h2>
-      <p className="mb-6 text-gray-500 sm:text-lg text-sm">Update your personal information to keep your account current</p>
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 transform transition-all hover:shadow-xl">
-        <form onSubmit={handleSubmit(onSubmit)}  className="space-y-6">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6">
-            <div className="relative group">
-              <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden ring-2 ring-blue-200 transition-all group-hover:ring-blue-300">
-                {profileImagePreview ? (
-                  <img
-                    src={profileImagePreview}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                    <svg className="w-10 h-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8zm0-2a3 3 0 100-6 3 3 0 000 6zm-5 5s-1 2-1 4h12s-1-2-1-4H7z" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-              <label className="absolute bottom-2 right-2 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700 transition-colors duration-200 shadow-sm">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    handleImageChange(e);
-                    if (e.target.files?.[0]) {
-                      const fileList = e.target.files;
-                      setValue("profileImage", fileList, { shouldValidate: true });
-                    }
-                  }}
-                  className="hidden"
-                />
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera-icon lucide-camera">
-                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>
-                </svg>  
+    <div className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-br from-slate-200 to-white min-h-screen">
+      <AnimatedTitle><h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-3 tracking-tight text-start">My Profile</h2></AnimatedTitle>
+      <p className="mb-6 sm:mb-8 text-gray-600 text-sm sm:text-lg max-w-2xl">
+        Keep your personal information up to date to ensure your account stays current
+      </p>
 
-              </label>
-              {errors.profileImage && (
-                <p className="text-red-500 text-xs mt-2 text-center">{errors.profileImage.message}</p>
-              )}
-            </div>
-            <div className="flex-1 w-full">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Personal Details</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    {...register("name")}
-                    className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
-                    placeholder="Enter your name"
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-8 border border-gray-50 hover:shadow-2xl transition-shadow duration-300">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+            {/* Profile Image and Personal Info */}
+            <div className="flex flex-col items-start gap-6 sm:gap-8">
+              <div className="relative w-full max-w-[150px] sm:max-w-none">
+                <div className="w-32 h-32 sm:w-36 sm:h-36 bg-gray-50 rounded-2xl overflow-hidden ring-4 ring-blue-100 shadow-sm relative">
+                  {profileImagePreview ? (
+                    <img src={profileImagePreview} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm font-medium">
+                      No Image
+                    </div>
                   )}
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+                  <label className="absolute bottom-2 right-2 bg-blue-500 text-white rounded-full p-2 sm:p-3 cursor-pointer hover:bg-blue-600 shadow-md transition-colors duration-200">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setProfileImagePreview(URL.createObjectURL(file));
+                          form.setValue('profileImage', e.target.files as FileList, { shouldValidate: true });
+                        }
+                      }}
+                      className="hidden"
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 sm:h-6 sm:w-6"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
                   </label>
-                  <input
-                    id="email"
-                    type="email"
-                    {...register("email")}
-                    className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
-                    placeholder="Enter your email"
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-                  )}
                 </div>
-                <div>
-                  <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
-                    Mobile Number
-                  </label>
-                  <input
-                    id="phone"
-                    type="text"
-                    {...register("phone")}
-                    className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
-                    placeholder="Enter your mobile number"
-                  />
-                  {errors.phone && (
-                    <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
+                <FormMessage className="text-xs sm:text-sm text-red-500 mt-2" />
+              </div>
+
+              {/* Personal Info */}
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Full Name</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter your name" 
+                          {...field} 
+                          className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs sm:text-sm text-red-500" />
+                    </FormItem>
                   )}
-                </div>
-                <div>
-                  <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    id="dateOfBirth"
-                    type="date"
-                    {...register("dateOfBirth")}
-                    className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
-                  />
-                  {errors.dateOfBirth && (
-                    <p className="text-red-500 text-xs mt-1">{errors.dateOfBirth.message}</p>
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Email Address</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email" 
+                          placeholder="Enter your email" 
+                          {...field} 
+                          className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs sm:text-sm text-red-500" />
+                    </FormItem>
                   )}
-                </div>
-                <div>
-                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
-                    Gender
-                  </label>
-                  <select
-                    id="gender"
-                    {...register("gender")}
-                    className="w-full rounded-lg border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 p-3 bg-gray-50"
-                  >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                  {errors.gender && (
-                    <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Mobile Number</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter your mobile number" 
+                          {...field} 
+                          className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs sm:text-sm text-red-500" />
+                    </FormItem>
                   )}
-                </div>
+                />
+
+                <FormField
+                  control={form.control}
+                  name="dateOfBirth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Date of Birth</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          {...field} 
+                          className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs sm:text-sm text-red-500" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Gender</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value ?? undefined}>
+                        <FormControl>
+                          <SelectTrigger className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base">
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl">
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-xs sm:text-sm text-red-500" />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
-          </div>
-          <div className="flex justify-center sm:justify-end pt-4">
-            <button
-              type="submit"
-              className="w-full sm:w-auto px-8 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-            >
-              Update Profile
-            </button>
-          </div>
-        </form>
+
+            <div className="group flex justify-end pt-4 sm:pt-6">
+              <Button 
+                type="submit" 
+                className="btn-primary group-hover:animate-glow-ring rounded-full" 
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? 'Saving...' : 'Update Profile'}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

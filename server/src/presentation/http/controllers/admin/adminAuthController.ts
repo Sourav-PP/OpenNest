@@ -1,44 +1,54 @@
-import { Request, Response } from "express";
-import { AdminLoginUseCase } from "../../../../useCases/implementation/admin/auth/loginUseCase";
-import { AdminLogoutUseCase } from "../../../../useCases/implementation/admin/auth/logoutUseCase";
-import { AppError } from "../../../../domain/errors/AppError";
+import { NextFunction, Request, Response } from 'express';
+import { IAdminLoginUseCase } from '@/useCases/interfaces/admin/auth/ILoginUseCase';
+import { IAdminLogoutUseCase } from '@/useCases/interfaces/admin/auth/ILogoutUseCase';
+import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { appConfig } from '@/infrastructure/config/config';
 
 export class AdminAuthController {
+    private _adminLoginUseCase: IAdminLoginUseCase;
+    private _adminLogoutUseCase: IAdminLogoutUseCase;
+
     constructor(
-        private adminLoginUseCase: AdminLoginUseCase,
-        private adminLogoutUseCase: AdminLogoutUseCase
-    ) {}
+        adminLoginUseCase: IAdminLoginUseCase,
+        adminLogoutUseCase: IAdminLogoutUseCase,
+    ) {
+        this._adminLoginUseCase = adminLoginUseCase;
+        this._adminLogoutUseCase = adminLogoutUseCase;
+    }
 
-    login = async(req: Request, res: Response): Promise<void> => {
+    login = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { email, password } = req.body
-            const {accessToken, refreshToken} = await this.adminLoginUseCase.execute({email, password})
+            const { email, password } = req.body;
+            const { accessToken, refreshToken } =
+                await this._adminLoginUseCase.execute({ email, password });
 
-            res.cookie("adminRefreshToken", refreshToken, {
+            res.cookie('adminRefreshToken', refreshToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: appConfig.server.nodeEnv === 'production',
                 sameSite: 'strict',
                 maxAge: 7 * 24 * 60 * 60 * 1000,
-            })
+            });
 
-            res.status(200).json({accessToken})
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            console.log("its here", message, status)
-            res.status(status).json({ message });
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: authMessages.SUCCESS.LOGIN,
+                accessToken,
+            });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 
-    logout = async(req: Request, res: Response): Promise<void> => {
+    logout = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            await this.adminLogoutUseCase.execute(req, res)
-            res.status(200).json({message: "Admin logout successful"})
-        } catch (error: any) {
-            const status = error instanceof AppError ? error.statusCode : 500
-            const message = error.message || "Internal server error";
-            console.log("its here", message, status)
-            res.status(status).json({ message });
+            await this._adminLogoutUseCase.execute(req, res);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: authMessages.SUCCESS.LOGOUT,
+            });
+        } catch (error) {
+            next(error);
         }
-    }
+    };
 }

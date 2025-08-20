@@ -1,45 +1,44 @@
-import { Request, Response } from "express";
-import { UpdateUserProfileUseCase } from "../../../../useCases/implementation/user/profile/updateUserProfileUseCase";
-import { uploadToCloudinary } from "../../../../utils/uploadToCloudinary";
+import { NextFunction, Request, Response } from 'express';
+import { IUpdateUserProfileUseCase } from '@/useCases/interfaces/user/profile/IUpdateUserProfileUseCase';
+import { AppError } from '@/domain/errors/AppError';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { userMessages } from '@/shared/constants/messages/userMessages';
+import { authMessages } from '@/shared/constants/messages/authMessages';
 
 export class UpdateUserProfileController {
-    constructor(private updateUserProfileUseCase: UpdateUserProfileUseCase) {}
+    private _updateUserProfileUseCase: IUpdateUserProfileUseCase;
 
-    handle = async(req: Request, res: Response): Promise<void> => {
+    constructor(updateUserProfileUseCase: IUpdateUserProfileUseCase) {
+        this._updateUserProfileUseCase = updateUserProfileUseCase;
+    }
+
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log("the request: ", req.body)
-            console.log("is here right?")
-            console.log("the file is : ",req.file)
-            const userId = req.user?.userId!
-            const {name, email, phone, gender, dateOfBirth} = req.body
-            let profileImageUrl
+            const userId = req.user?.userId;
 
-            if(req.file) {
-                profileImageUrl = await uploadToCloudinary(
-                    req.file.buffer,
-                    req.file.originalname,
-                    "profile_images"
-                )
+            if (!userId) {
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            console.log("userId", userId)
+            const { name, email, phone, gender, dateOfBirth } = req.body;
 
-            const updatedUser = await this.updateUserProfileUseCase.execute({
+            const updatedUser = await this._updateUserProfileUseCase.execute({
                 userId,
                 name,
                 email,
                 phone,
                 dateOfBirth,
                 gender,
-                profileImage: profileImageUrl
-            })
-            console.log("updated user: ",updatedUser)
+                file: req.file,
+            });
 
-            res.status(200).json({message: "profile updated successfully", user: updatedUser})
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: userMessages.SUCCESS.PROFILE_UPDATE,
+                data: updatedUser,
+            });
         } catch (error) {
-            console.log("verify error: ", error)
-            res.status(500).json({message: "Internal server error"})
-            return
+            next(error);
         }
-    }
+    };
 }

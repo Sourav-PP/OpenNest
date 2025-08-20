@@ -1,6 +1,5 @@
 export interface ICreateCheckoutSessionInput {
     userId: string;
-    psychologistId: string;
     subscriptionId?: string;
     slotId: string;
     amount: number;

@@ -1,6 +1,6 @@
-import Header from "../../components/psychologist/Header"
-import Sidebar from "../../components/psychologist/Sidebar"
-import Profile from "../../components/psychologist/Profile"
+import Header from '../../components/psychologist/Header';
+import Sidebar from '../../components/psychologist/Sidebar';
+import Profile from '../../components/psychologist/Profile';
 
 const ProfilePage = () => {
   return (
@@ -11,7 +11,7 @@ const ProfilePage = () => {
         <Profile />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

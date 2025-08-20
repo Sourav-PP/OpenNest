@@ -1,7 +1,8 @@
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { authApi } from "../../server/api/auth";
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { authApi } from '../../server/api/auth';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 interface OtpModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface OtpModalProps {
 }
 
 const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalProps) => {
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,13 +40,12 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
   const handleResend = async () => {
     setIsLoading(true);
     try {
-      await authApi.sendOtp({email})
+      await authApi.sendOtp({email});
       setTimer(60);
       setCanResend(false);
-      toast.success("OTP has been resent to your email");
+      toast.success('OTP has been resent to your email');
     } catch (error) {
-      console.log(error);
-      toast.error("Error resending OTP");
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
@@ -53,20 +53,17 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
 
   const handleVerify = async () => {
     if (!otp) {
-      toast.error("Please enter the OTP");
+      toast.error('Please enter the OTP');
       return;
     }
     setIsLoading(true);
     try {
-      console.log("otppppppppppppppp", otp)
-      const res = await authApi.verifyOtp({email, otp, signupToken})
-      console.log("res otp: ", res)
-      toast.success("Email verified and signup complete!");
+      const res = await authApi.verifyOtp({email, otp, signupToken});
+      toast.success('Email verified and signup complete!');
       await onSuccess(res.accessToken);
       onClose();
     } catch (error) {
-      console.log(error);
-      toast.error("Invalid OTP");
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +101,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
                 </Dialog.Title>
                 <div className="mt-3">
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    A 6-digit OTP was sent to{" "}
+                    A 6-digit OTP was sent to{' '}
                     <span className="font-medium text-gray-800">{email}</span>.
                   </p>
                   <div className="mt-5">
@@ -150,11 +147,11 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
                           Sending...
                         </span>
                       ) : (
-                        "Resend OTP"
+                        'Resend OTP'
                       )}
                     </button>
                     <p className="text-gray-500">
-                      {timer > 0 ? `Expires in ${timer}s` : "OTP expired"}
+                      {timer > 0 ? `Expires in ${timer}s` : 'OTP expired'}
                     </p>
                   </div>
                   <div className="mt-6 flex justify-center gap-3 mb-2">
@@ -167,40 +164,40 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
                       Cancel
                     </button>
                     <div className="group text-center">
-                    <button
-                      type="button"
-                      onClick={handleVerify}
-                      disabled={isLoading}
-                      className="btn-primary group-hover:animate-glow-ring rounded-xl"
-                    >
-                      {isLoading ? (
-                        <span className="flex items-center">
-                          <svg
-                            className="animate-spin h-4 w-4 mr-2 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
-                            />
-                          </svg>
+                      <button
+                        type="button"
+                        onClick={handleVerify}
+                        disabled={isLoading}
+                        className="btn-primary group-hover:animate-glow-ring rounded-xl"
+                      >
+                        {isLoading ? (
+                          <span className="flex items-center">
+                            <svg
+                              className="animate-spin h-4 w-4 mr-2 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+                              />
+                            </svg>
                           Verifying...
-                        </span>
-                      ) : (
-                        "Verify OTP"
-                      )}
-                    </button>
+                          </span>
+                        ) : (
+                          'Verify OTP'
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -1,93 +1,138 @@
-import { RRule } from "rrule";
-import { Slot } from "../../../../domain/entities/slot";
-import { AppError } from "../../../../domain/errors/AppError";
-import { ISlotRepository } from "../../../../domain/interfaces/ISlotRepository";
-import { ICreateSlotUseCase } from "../../../interfaces/psychologist/availability/ICreateSlotUseCase";
-import { IRecurringSlotInput } from "../../../types/psychologistTypes";
-import { DateTime } from "luxon";
-import { IPsychologistRepository } from "../../../../domain/interfaces/IPsychologistRepository";
+import { RRule, Weekday } from 'rrule';
+import { AppError } from '@/domain/errors/AppError';
+import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
+import { ICreateSlotUseCase } from '@/useCases/interfaces/psychologist/availability/ICreateSlotUseCase';
+import {
+    IRecurringSlotInput,
+    ISingleSlotInput,
+} from '@/useCases/types/psychologistTypes';
+import { DateTime } from 'luxon';
+import { ICreateSlotDto } from '@/useCases/dtos/slot';
+import { WEEKDAY_MAP } from '@/utils/constants';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { Slot } from '@/domain/entities/slot';
+
 
 export class CreateSlotUseCase implements ICreateSlotUseCase {
-    constructor(
-        private slotRepo: ISlotRepository,
-        private psychologistRepo: IPsychologistRepository
-    ) {}
+    private _slotRepo: ISlotRepository;
+    private _psychologistRepo: IPsychologistRepository;
 
-    async executeSingle(input: Slot): Promise<void> {
-        const hasConflict = await this.slotRepo.checkConflict(input.psychologistId, input.startDateTime, input.endDateTime)
-        if(hasConflict) throw new AppError("A conflicting slot already exists.", 409)
+    constructor(slotRepo: ISlotRepository, psychologistRepo: IPsychologistRepository) {
+        this._slotRepo = slotRepo;
+        this._psychologistRepo = psychologistRepo;
+    }
 
-        await this.slotRepo.createSlot([input])
+    async executeSingle(input: ISingleSlotInput): Promise<void> {
+        const psychologist = await this._psychologistRepo.findByUserId(input.userId);
+
+        if (!psychologist) {
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        if (!psychologist.id || !input.startDateTime || !input.endDateTime) {
+            throw new AppError(psychologistMessages.ERROR.INVALID_INPUT_SINGLE, HttpStatus.BAD_REQUEST);
+        }
+
+        const hasConflict = await this._slotRepo.checkConflict(
+            psychologist.id,
+            input.startDateTime,
+            input.endDateTime,
+        );
+        if (hasConflict) throw new AppError(psychologistMessages.ERROR.CONFLICT_SINGLE, HttpStatus.CONFLICT);
+
+        const createSlotInput: Omit<Slot, 'id' | 'isBooked'> = {
+            psychologistId: psychologist.id,
+            startDateTime: input.startDateTime,
+            endDateTime: input.endDateTime,
+        } ;
+
+        await this._slotRepo.createSlot([createSlotInput]);
     }
 
     async executeRecurring(input: IRecurringSlotInput): Promise<void> {
-        const slots: Slot[] = []
+        const slots: ICreateSlotDto[] = [];
+
+        const { duration, endTime, fromDate, userId, startTime, timeZone, toDate, weekDays } = input;
+
+        const psychologist = await this._psychologistRepo.findByUserId(userId);
+
+        if (!psychologist) {
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        if (!psychologist.id || !fromDate || !toDate || !weekDays || !startTime || !endTime || !duration) {
+            throw new AppError(psychologistMessages.ERROR.INVALID_INPUT_RECURRING, HttpStatus.BAD_REQUEST);
+        }
+
+        if (new Date(fromDate) >= new Date(toDate)) {
+            throw new AppError(psychologistMessages.ERROR.FROM_AFTER_TO, HttpStatus.BAD_REQUEST);
+        }
+
+        const rruleWeekdays: Weekday[] = weekDays.map((day: string) => {
+            const weekday = WEEKDAY_MAP[day];
+            if (!weekday) {
+                if (!weekday) throw new AppError(psychologistMessages.ERROR.INVALID_WEEKDAY(day), HttpStatus.BAD_REQUEST);
+            }
+            return weekday;
+        });
+
         const rule = new RRule({
             freq: RRule.WEEKLY,
-            byweekday: input.weekDays,
+            byweekday: rruleWeekdays,
             dtstart: new Date(input.fromDate),
-            until: new Date(input.toDate)
-        })
+            until: new Date(input.toDate),
+        });
 
-        console.log("input: ", input)
-
-        const recurringDates = rule.all()
-
-        console.log("recurring dates: ", recurringDates)
+        const recurringDates = rule.all();
 
         if (recurringDates.length === 0) {
             throw new AppError(
-                "No matching recurring dates found in the selected date range. Please check your weekday selection.",
-                400
+                psychologistMessages.ERROR.NO_RECURRING_DATES,
+                HttpStatus.BAD_REQUEST,
             );
         }
 
-        const timeZone = input.timeZone
-        if (!timeZone) {
-            throw new AppError("Timezone is required for recurring slots", 400);
-        }
+        for (const date of recurringDates) {
+            const day = DateTime.fromJSDate(date, { zone: timeZone });
 
-        for( const date of recurringDates) {
-            const day = DateTime.fromJSDate(date, {zone: timeZone})
+            const [startHour, startMinute] = input.startTime.split(':').map(Number);
+            const [endHour, endMinute] = input.endTime.split(':').map(Number);
 
+            let start = day.set({ hour: startHour, minute: startMinute }).toUTC();
+            const end = day.set({ hour: endHour, minute: endMinute }).toUTC();
 
-            const [startHour, startMinute] = input.startTime.split(":").map(Number)
-            const [endHour, endMinute] = input.endTime.split(":").map(Number)
+            while (start.plus({ minutes: input.duration }) <= end) {
+                const slotEnd = start.plus({ minutes: input.duration });
 
-            let start = day.set({hour: startHour, minute: startMinute}).toUTC()
-            let end = day.set({hour: endHour, minute: endMinute}).toUTC()
-
-            console.log('start: ', start)
-            console.log('end', end)
-
-            while(start.plus({minutes: input.duration}) <= end) {
-                const slotEnd = start.plus({ minutes: input.duration })
-
-                const hasConflict = await this.slotRepo.checkConflict(
-                    input.psychologistId,
+                const hasConflict = await this._slotRepo.checkConflict(
+                    psychologist.id,
                     start.toJSDate(),
-                    slotEnd.toJSDate()
-                )
+                    slotEnd.toJSDate(),
+                );
 
-                if(!hasConflict) {
+                if (!hasConflict) {
                     slots.push({
-                        psychologistId: input.psychologistId,
+                        psychologistId: psychologist.id,
                         startDateTime: start.toJSDate(),
                         endDateTime: slotEnd.toJSDate(),
-                    })
-                }else{
-                    throw new AppError("No slots were created due to conflicts", 409);
+                    });
+                } else {
+                    throw new AppError(
+                        psychologistMessages.ERROR.CONFLICT_RECURRING,
+                        HttpStatus.BAD_REQUEST,
+                    );
                 }
 
-                start = slotEnd
+                start = slotEnd;
             }
-
         }
-        
+
         if (!slots.length) {
-            throw new AppError("No slots were created due to conflicts or invalid inputs.", 409);
+            throw new AppError(psychologistMessages.ERROR.NO_VALID_SLOTS, HttpStatus.CONFLICT);
         }
 
-        await this.slotRepo.createSlot(slots)
+        await this._slotRepo.createSlot(slots);
     }
 }
