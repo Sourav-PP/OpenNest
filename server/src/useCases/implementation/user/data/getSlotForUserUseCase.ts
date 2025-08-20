@@ -7,6 +7,7 @@ import { IGetSlotForUserInput } from '@/useCases/types/userTypes';
 import { toSlotDto } from '@/useCases/mappers/slotMapper';
 import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import logger from '@/utils/logger';
 
 export class GetSlotForUserUseCase implements IGetSlotForUserUseCase {
     private _slotRepo: ISlotRepository;
@@ -19,6 +20,7 @@ export class GetSlotForUserUseCase implements IGetSlotForUserUseCase {
 
     async execute(input: IGetSlotForUserInput): Promise<ISlotDto[]> {
         const date = input.date ?? new Date();
+        logger.info(date);
 
         const psychologist = await this._psychologistRepo.findByUserId(input.userId);
 

@@ -18,6 +18,7 @@ import {
     getKycForPsychologistController,
     approveKycController,
     rejectKycController,
+    deleteServiceController,
 } from '@/infrastructure/config/di';
 
 
@@ -48,6 +49,7 @@ router.post(
     validateCreateService,
     createServiceController.handle,
 );
+router.delete('/services/:id', authenticateAdmin, deleteServiceController.handle);
 router.get('/users', authenticateAdmin,  getAllUserController.handle);
 router.get('/psychologists', authenticateAdmin, getAllPsychologistController.handle);
 router.get('/kyc', authenticateAdmin, getAllKycController.handle);

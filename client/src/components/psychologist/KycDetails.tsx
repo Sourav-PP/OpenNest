@@ -1,7 +1,7 @@
 import { psychologistApi } from '@/server/api/psychologist';
-import type { IKycDto } from '@/types/kyc';
+import type { IKycDto } from '@/types/dtos/kyc';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+
 import {
   Card,
   CardContent,
@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import AnimatedTitle from '../animation/AnimatedTitle';
 import { Loader2 } from 'lucide-react';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const KycDetails = () => {
   const [kyc, setKyc] = useState<IKycDto | null>(null);
@@ -25,8 +27,7 @@ const KycDetails = () => {
         const kyc = await psychologistApi.getKycDetails();
         setKyc(kyc);
       } catch (error) {
-        toast.error('Error fetching KYC details');
-        console.log('Error fetching KYC: ', error);
+        handleApiError(error);
       } finally {
         setLoading(false);
       }
@@ -72,7 +73,7 @@ const KycDetails = () => {
           <CardHeader className="p-0 pb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <CardTitle className="text-2xl font-semibold text-gray-800">
-                                Documents
+               Documents
               </CardTitle>
               <Badge
                 className={`px-4 py-2 text-sm font-semibold capitalize rounded-full transition-colors duration-300 ${
@@ -90,9 +91,9 @@ const KycDetails = () => {
           <CardContent className="p-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { title: 'Identification Document', src: kyc.identificationDoc },
-                { title: 'Educational Certification', src: kyc.educationalCertification },
-                { title: 'Experience Certificate', src: kyc.experienceCertificate },
+                { title: 'Identification Document', src: getCloudinaryUrl(kyc.identificationDoc) },
+                { title: 'Educational Certification', src: getCloudinaryUrl(kyc.educationalCertification) },
+                { title: 'Experience Certificate', src: getCloudinaryUrl(kyc.experienceCertificate) },
               ].map((doc, index) => (
                 <Dialog key={index} open={openDoc === doc.src} onOpenChange={(open) => setOpenDoc(open ? doc.src : null)}>
                   <DialogTrigger asChild>
@@ -100,7 +101,7 @@ const KycDetails = () => {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">{doc.title}</h3>
                       <div className="relative overflow-hidden rounded-xl shadow-md border border-gray-200 hover:shadow-xl transition-all duration-300 aspect-[4/3]">
                         <img
-                          src={doc.src}
+                          src={doc.src || undefined}
                           alt={doc.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -114,7 +115,7 @@ const KycDetails = () => {
                   </DialogTrigger>
                   <DialogContent className="max-w-[90vw] max-h-[90vh] w-auto h-auto p-4 bg-white rounded-2xl shadow-2xl overflow-auto">
                     <img
-                      src={doc.src}
+                      src={doc.src || undefined}
                       alt={doc.title}
                       className="w-full h-auto max-h-[80vh] object-contain"
                     />

@@ -10,6 +10,9 @@ import {
     googleLoginController,
     refreshTokenController,
     verifyPsychologistController,
+    forgotPasswordController,
+    authenticateAll,
+    changePasswordController,
 } from '@/infrastructure/config/di';
 
 import { uploadFields, uploadSingle } from '../middlewares/multer';
@@ -29,6 +32,9 @@ router.post('/login', loginValidator, loginValidate, authController.login);
 router.post('/google-login', googleLoginController.handle);
 router.post('/logout', authController.logout);
 router.post('/refresh-token', refreshTokenController.handle);
+router.post('/forgot/verify-otp', forgotPasswordController.verifyOtp);
+router.post('/forgot/reset-password', forgotPasswordController.resetPassword);
+router.put('/change-password', authenticateAll, changePasswordController.handle);
 
 router.post('/psychologist/verify-profile',
     authenticatePsychologist,

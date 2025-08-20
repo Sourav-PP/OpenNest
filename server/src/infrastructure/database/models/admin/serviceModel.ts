@@ -11,7 +11,7 @@ const serviceSchema = new Schema<IServiceDocument>(
     {
         name: {
             type: String,
-            requierd: true,
+            required: true,
             unique: true,
         },
         description: {

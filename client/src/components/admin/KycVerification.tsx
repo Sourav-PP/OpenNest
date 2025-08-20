@@ -1,9 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { IAdminKycDto } from '@/types/api/admin';
 import { toast } from 'react-toastify';
 import { adminApi } from '@/server/api/admin';
 import ConfirmModal from './ConfirmModal';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+
 
 const KycVerification = () => {
   const { psychologistId } = useParams<{ psychologistId: string }>();
@@ -15,22 +18,20 @@ const KycVerification = () => {
   const [action, setAction] = useState<'approved' | 'rejected' | null> (null);
   const [message, setMessage] = useState('');
 
-  const fetchKyc = async () => {
+  const fetchKyc = useCallback(async () => {
     try {
       const data = await adminApi.getKycDetailsByPsychologistId(psychologistId!);
-      console.log('data: ', data);
       setKyc(data);
     } catch (err) {
-      console.error(err);
-      toast.error('Failed to fetch KYC for psychologist');
+      handleApiError(err);
     } finally {
       setLoading(false);
     }
-  };
+  },[psychologistId]);
 
   useEffect(() => {
     fetchKyc();
-  }, [psychologistId]);
+  }, [fetchKyc]);
 
   const handleAction = async (status: 'approved' | 'rejected', reason?: string) => {
     if(!kyc) return;
@@ -41,15 +42,13 @@ const KycVerification = () => {
         await adminApi.approveKyc(psychologistId!);
         toast.success('KYC approved successfully');
       } else {
-        console.log('reason: ', reason);
         await adminApi.rejectKyc(psychologistId!, reason!);
         toast.success('KYC rejected successfully');
       }
 
       await fetchKyc();
     } catch (err) {
-      console.log(err);
-      toast.error('Failed to do the action');
+      handleApiError(err);
     } finally {
       setActionLoading(false);
       setModalOpen(false);
@@ -80,7 +79,7 @@ const KycVerification = () => {
         {/* Left Section */}
         <div className="flex flex-col items-start gap-4 w-full lg:w-1/2">
           <img
-            src={kyc.profileImage}
+            src={getCloudinaryUrl(kyc.profileImage) || undefined}
             alt="Profile"
             className="w-32 h-32 object-cover rounded-lg"
           />
@@ -102,14 +101,14 @@ const KycVerification = () => {
             <span>Status:</span>
             <span
               className={`px-3 py-1 rounded-full text-sm ${
-                kyc.kycStatus === 'pending'
+                kyc.status === 'pending'
                   ? 'bg-yellow-700'
-                  : kyc.kycStatus === 'approved'
+                  : kyc.status === 'approved'
                     ? 'bg-green-700'
                     : 'bg-red-700'
               }`}
             >
-              {kyc.kycStatus}
+              {kyc.status}
             </span>
           </div>
         </div>
@@ -121,30 +120,30 @@ const KycVerification = () => {
             <div>
               <p className="mb-1">ID CARD:</p>
               <img
-                src={kyc.identificationDoc}
+                src={getCloudinaryUrl(kyc.identificationDoc) || undefined}
                 alt="ID Card"
                 className="w-full h-32 object-cover rounded-md bg-gray-600"
-                onClick={() => setPreviewUrl(kyc.identificationDoc)}
+                onClick={() => setPreviewUrl(getCloudinaryUrl(kyc.identificationDoc))}
               />
             </div>
 
             <div>
               <p className="mb-1">Educational Certificate:</p>
               <img
-                src={kyc.educationalCertification}
+                src={getCloudinaryUrl(kyc.educationalCertification) || undefined}
                 alt="Educational Certificate"
                 className="w-full h-32 object-cover rounded-md bg-gray-600"
-                onClick={() => setPreviewUrl(kyc.educationalCertification)}
+                onClick={() => setPreviewUrl(getCloudinaryUrl(kyc.educationalCertification))}
               />
             </div>
 
             <div>
               <p className="mb-1">Experience Certificate:</p>
               <img
-                src={kyc.experienceCertificate}
+                src={getCloudinaryUrl(kyc.experienceCertificate) || undefined}
                 alt="Experience Certificate"
                 className="w-full h-32 object-cover rounded-md bg-gray-600"
-                onClick={() => setPreviewUrl(kyc.experienceCertificate)}
+                onClick={() => setPreviewUrl(getCloudinaryUrl(kyc.experienceCertificate))}
               />
             </div>
           </div>
@@ -154,7 +153,7 @@ const KycVerification = () => {
       {/* Buttons */}
       <div className="flex gap-4 mt-6 justify-end">
         <button
-          disabled={kyc.kycStatus === 'approved' || actionLoading}
+          disabled={kyc.status === 'approved' || actionLoading}
           className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full"
           onClick={() => {
             setAction('approved');
@@ -165,7 +164,7 @@ const KycVerification = () => {
           Approve
         </button>
         <button
-          disabled={kyc.kycStatus === 'rejected' || actionLoading}
+          disabled={kyc.status === 'rejected' || actionLoading}
           className="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-full"
           onClick={() => {
             setAction('rejected');

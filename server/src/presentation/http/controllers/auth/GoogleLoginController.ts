@@ -28,9 +28,11 @@ export class GoogleLoginController {
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: authMessages.SUCCESS.LOGIN,
-                user: result.user,
-                accessToken: result.accessToken,
-                hasSubmittedVerificationForm: result.hasSubmittedVerificationForm,
+                data: {
+                    user: result.user,
+                    accessToken: result.accessToken,
+                    hasSubmittedVerificationForm: result.hasSubmittedVerificationForm,
+                },
             });
         } catch (error) {
             next(error);

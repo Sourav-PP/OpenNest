@@ -35,7 +35,8 @@ export class UpdateUserProfileController {
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: userMessages.SUCCESS.PROFILE_UPDATE,
-                user: updatedUser });
+                data: updatedUser,
+            });
         } catch (error) {
             next(error);
         }

@@ -1,9 +1,9 @@
-import type { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../server/api/admin';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -18,11 +18,7 @@ const Header = () => {
 
       navigate('/admin/login');
     } catch (err) {
-      const error = err as AxiosError<{ message: string }>;
-      console.log('error is admin: ', error);
-      toast.error(
-        'Admin Logout failed: ' + error?.response?.data?.message || 'Unknown error'
-      );
+      handleApiError(err);
     }
   };
 

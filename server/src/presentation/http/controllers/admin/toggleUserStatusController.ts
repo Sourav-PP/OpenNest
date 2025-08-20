@@ -16,6 +16,8 @@ export class ToggleUserStatusController {
         try {
             const userId = req.params.userId;
             const { status } = req.body;
+
+            console.log('status: : ', status);
     
             if (!['active', 'inactive'].includes(status)) {
                 throw new AppError(generalMessages.ERROR.INVALID_STATUS, HttpStatus.BAD_REQUEST);

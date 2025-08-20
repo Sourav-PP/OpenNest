@@ -7,8 +7,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
 import { type RootState } from '../../redux/store';
 import { toast } from 'react-toastify';
-import type { AxiosError } from 'axios';
 import { authApi } from '../../server/api/auth';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const Navbar = () => {
   const { accessToken } = useSelector((state: RootState) => state.auth);
@@ -19,22 +19,18 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/login?role=user');
+    navigate('/login', {state: { role: 'user'}});
   };
 
   const handleLogout = async () => {
     try {
-      await authApi.logout();
+      const res = await authApi.logout();
       dispatch(logout());
       localStorage.removeItem('persist:root');
-      toast.success('Logout successfully');
+      toast.success(res.message);
       navigate('/');
     } catch (err) {
-      const error = err as AxiosError<{ message: string }>;
-      console.log('error is admin: ', error);
-      toast.error(
-        'Logout failed: ' + error?.response?.data?.message || 'Unknown error'
-      );
+      handleApiError(err);
     }
   };
 

@@ -11,6 +11,7 @@ export interface IPaymentDocument extends Document {
     refunded: boolean;
     transactionId?: string;
     stripeSessionId?: string;
+    slotId: Types.ObjectId;
 }
 
 const PaymentSchema = new Schema<IPaymentDocument>(
@@ -54,8 +55,23 @@ const PaymentSchema = new Schema<IPaymentDocument>(
         stripeSessionId: {
             type: String,
         },
+        slotId: {
+            type: Schema.Types.ObjectId,
+            ref: 'slots',
+            required: true,
+        },
     },
     { timestamps: true },
 );
+
+PaymentSchema.index(
+    { slotId: 1, paymentStatus: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { paymentStatus: { $in: ['pending','succeeded'] } },
+        name: 'unique_slot_payment',
+    },
+);
+
 
 export const PaymentModel: Model<IPaymentDocument> = model<IPaymentDocument>('Payment', PaymentSchema);

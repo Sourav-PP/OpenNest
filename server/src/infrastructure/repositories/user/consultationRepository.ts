@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { PipelineStage } from 'mongoose';
 import { Consultation } from '@/domain/entities/consultation';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
@@ -32,18 +32,18 @@ export class ConsultationRepository implements IConsultationRepository {
         sort?:'asc' | 'desc',
         skip?: number,
         limit?: number,
-        status: 'booked' | 'cancelled' | 'completed' | 'rescheduled'
+        status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all'
     }): Promise<{ consultation: Consultation; psychologist: Psychologist; user: User }[]> {
 
         const matchStage: Record<string , unknown> = { patientId: new mongoose.Types.ObjectId(patientId) };
 
-        if (params.status) {
+        if (params.status && params.status !== 'all') {
             matchStage.status = params.status;
         }
 
         const sortOrder = params.sort === 'asc' ? 1 : -1;
 
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             { $match: matchStage },
 
             {
@@ -86,6 +86,7 @@ export class ConsultationRepository implements IConsultationRepository {
         }
 
         const results = await ConsultationModel.aggregate(pipeline);
+        console.log('the result: ', results);
 
         return results.map(item => ({
             consultation: {
@@ -103,8 +104,8 @@ export class ConsultationRepository implements IConsultationRepository {
                 userId: item.psychologist.userId.toString(),
             } as Psychologist,
             user: {
-                id: item.user._id.toString(),
-                name: item.user.name,
+                id: item.psychologist.user._id.toString(),
+                name: item.psychologist.user.name,
             } as User,
         }));
     }

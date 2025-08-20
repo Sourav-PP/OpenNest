@@ -1,15 +1,16 @@
+import type { BackendResponse } from './api';
+
 export interface ILoginRequest {
     email: string,
     password: string
 }
 
-export interface ILoginResponse {
-    success: boolean,
-    message: string;
+export interface ILoginResponseData {
     user: {
         name: string,
         email: string,
-        role: 'user' | 'psychologist'
+        role: 'user' | 'psychologist',
+        profileImage: string
     },
     accessToken: string,
     hasSubmittedVerificationForm: boolean
@@ -18,6 +19,11 @@ export interface ILoginResponse {
 export interface IGoogleLoginInput {
     credential: string;
     role: 'user' | 'psychologist';
+}
+
+export interface IChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface IGoogleLoginResponse {
@@ -31,7 +37,7 @@ export interface IGoogleLoginResponse {
   hasSubmittedVerificationForm: boolean;
 }
 
-export interface IPreSignupResponse {
+export interface IPreSignupResponseData {
     signupToken: string
 }
 
@@ -71,3 +77,16 @@ export interface IVerifyOtpResponse {
     },
     accessToken: string
 }
+
+export interface IVerifyForgotOtpRequest {
+  email: string;
+  otp: string;
+}
+
+export interface IResetPasswordRequest {
+    email: string;
+    password: string
+}
+
+export type ILoginResponse = BackendResponse<ILoginResponseData>
+export type IPreSignupResponse = BackendResponse<IPreSignupResponseData>

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { PipelineStage } from 'mongoose';
 import { Kyc } from '../../../domain/entities/kyc';
 import { IKycRepository } from '../../../domain/repositoryInterface/IKycRepository';
 import { KycModel } from '../../database/models/psychologist/kycModel';
@@ -46,7 +46,7 @@ export class KycRepository implements IKycRepository {
 
         const sortOrder = params.sort === 'asc' ? 1 : -1;
 
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             {
                 $lookup: {
                     from: 'psychologists',
@@ -67,20 +67,6 @@ export class KycRepository implements IKycRepository {
             { $unwind: '$user' },
             { $match: matchStage },
             {
-                $project: {
-                    id: '$_id',
-                    psychologistId: '$psychologistId',
-                    psychologistName: '$user.name',
-                    psychologistEmail: '$user.email',
-                    qualification: '$psychologist.qualification',
-                    kycStatus: 1,
-                    identificationDoc: 1,
-                    educationalCertification: 1,
-                    experienceCertificate: 1,
-                    status: 1,
-                },
-            },
-            {
                 $sort: { createdAt: sortOrder, _id: sortOrder },
             },
             { $skip: params.skip || 0 },
@@ -91,7 +77,7 @@ export class KycRepository implements IKycRepository {
 
         return result.map((item) => ({
             kyc: {
-                id: item.id.toString(),
+                id: item._id.toString(),
                 psychologistId: item.psychologistId.toString(),
                 identificationDoc: item.identificationDoc,
                 educationalCertification: item.educationalCertification,
@@ -124,7 +110,7 @@ export class KycRepository implements IKycRepository {
     async findByPsychologistIdForAdmin(psychologistId: string): Promise<{ kyc: Kyc; psychologist: Psychologist; user: User } | null> {
         const matchStage: Record<string , unknown> = { psychologistId: new mongoose.Types.ObjectId(psychologistId) };
 
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             { $match: matchStage },
             {
                 $lookup: {
@@ -144,21 +130,6 @@ export class KycRepository implements IKycRepository {
                 },
             },
             { $unwind: '$user' },
-            {
-                $project: {
-                    id: '$_id',
-                    psychologistId: '$psychologistId',
-                    psychologistName: '$user.name',
-                    psychologistEmail: '$user.email',
-                    profileImage: '$user.profileImage',
-                    qualification: '$psychologist.qualification',
-                    kycStatus: 1,
-                    identificationDoc: 1,
-                    educationalCertification: 1,
-                    experienceCertificate: 1,
-                    status: 1,
-                },
-            },
             { $limit: 1 },
         ];
 
@@ -170,7 +141,7 @@ export class KycRepository implements IKycRepository {
 
         return {
             kyc: {
-                id: obj.id.toString(),
+                id: obj._id.toString(),
                 psychologistId: obj.psychologistId.toString(),
                 identificationDoc: obj.identificationDoc,
                 educationalCertification: obj.educationalCertification,

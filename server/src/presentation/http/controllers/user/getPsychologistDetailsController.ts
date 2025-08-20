@@ -19,8 +19,14 @@ export class GetPsychologistDetailsController {
                 throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
             }
 
-            const data = await this._getPsychologistDetails.execute(userId);
-            res.status(HttpStatus.OK).json(data);
+            const psychologist = await this._getPsychologistDetails.execute(userId);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_PSYCHOLOGIST,
+                data: {
+                    psychologist,
+                },
+            });
         } catch (error) {
             next(error);
         }

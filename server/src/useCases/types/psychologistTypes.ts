@@ -35,7 +35,7 @@ export interface IUpdatePsychologistProfileInput {
 }
 
 export interface IRecurringSlotInput {
-    psychologistId: string;
+    userId: string;
     fromDate: string;
     toDate: string;
     weekDays: string[];
@@ -46,11 +46,11 @@ export interface IRecurringSlotInput {
 }
 
 export interface ISingleSlotInput {
-    psychologistId: string;
+    userId: string;
     startDateTime: Date;
     endDateTime: Date;
 }
 export interface IDeleteSlotInput {
     slotId: string;
-    psychologistId: string;
+    userId: string;
 }

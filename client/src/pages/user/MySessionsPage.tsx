@@ -1,6 +1,7 @@
 import Sidebar from '@/components/user/Sidebar';
 import Header from '@/components/user/Header';
-import UserConsultationsTable from '@/components/user/UserConsultationsTable';
+// import UserConsultationsTable from '@/components/user/UserConsultationsTable';
+import UserConsultationsTable from '@/components/user/tables/userConsultationsTable';
 
 const MySessionsPage = () => {
   return (

@@ -11,37 +11,58 @@ import { ICreateSlotDto } from '@/useCases/dtos/slot';
 import { WEEKDAY_MAP } from '@/utils/constants';
 import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { Slot } from '@/domain/entities/slot';
 
 
 export class CreateSlotUseCase implements ICreateSlotUseCase {
     private _slotRepo: ISlotRepository;
+    private _psychologistRepo: IPsychologistRepository;
 
-    constructor(slotRepo: ISlotRepository) {
+    constructor(slotRepo: ISlotRepository, psychologistRepo: IPsychologistRepository) {
         this._slotRepo = slotRepo;
+        this._psychologistRepo = psychologistRepo;
     }
 
     async executeSingle(input: ISingleSlotInput): Promise<void> {
-        if (!input.psychologistId || !input.startDateTime || !input.endDateTime) {
+        const psychologist = await this._psychologistRepo.findByUserId(input.userId);
+
+        if (!psychologist) {
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        if (!psychologist.id || !input.startDateTime || !input.endDateTime) {
             throw new AppError(psychologistMessages.ERROR.INVALID_INPUT_SINGLE, HttpStatus.BAD_REQUEST);
         }
 
         const hasConflict = await this._slotRepo.checkConflict(
-            input.psychologistId,
+            psychologist.id,
             input.startDateTime,
             input.endDateTime,
         );
-        if (hasConflict)
-            throw new AppError(psychologistMessages.ERROR.CONFLICT_SINGLE, HttpStatus.CONFLICT);
+        if (hasConflict) throw new AppError(psychologistMessages.ERROR.CONFLICT_SINGLE, HttpStatus.CONFLICT);
 
-        await this._slotRepo.createSlot([input]);
+        const createSlotInput: Omit<Slot, 'id' | 'isBooked'> = {
+            psychologistId: psychologist.id,
+            startDateTime: input.startDateTime,
+            endDateTime: input.endDateTime,
+        } ;
+
+        await this._slotRepo.createSlot([createSlotInput]);
     }
 
     async executeRecurring(input: IRecurringSlotInput): Promise<void> {
         const slots: ICreateSlotDto[] = [];
 
-        const { duration, endTime, fromDate, psychologistId, startTime, timeZone, toDate, weekDays } = input;
+        const { duration, endTime, fromDate, userId, startTime, timeZone, toDate, weekDays } = input;
 
-        if (!psychologistId || !fromDate || !toDate || !weekDays || !startTime || !endTime || !duration) {
+        const psychologist = await this._psychologistRepo.findByUserId(userId);
+
+        if (!psychologist) {
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        if (!psychologist.id || !fromDate || !toDate || !weekDays || !startTime || !endTime || !duration) {
             throw new AppError(psychologistMessages.ERROR.INVALID_INPUT_RECURRING, HttpStatus.BAD_REQUEST);
         }
 
@@ -86,14 +107,14 @@ export class CreateSlotUseCase implements ICreateSlotUseCase {
                 const slotEnd = start.plus({ minutes: input.duration });
 
                 const hasConflict = await this._slotRepo.checkConflict(
-                    input.psychologistId,
+                    psychologist.id,
                     start.toJSDate(),
                     slotEnd.toJSDate(),
                 );
 
                 if (!hasConflict) {
                     slots.push({
-                        psychologistId: input.psychologistId,
+                        psychologistId: psychologist.id,
                         startDateTime: start.toJSDate(),
                         endDateTime: slotEnd.toJSDate(),
                     });

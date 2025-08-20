@@ -1,9 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import type { IPsychologistProfileDto } from '../../types/pasychologist';
+import type { IPsychologistProfileDto } from '../../types/dtos/psychologist';
 import { toast } from 'react-toastify';
 import { userApi } from '../../server/api/user';
 import { FiStar } from 'react-icons/fi';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 
 const PsychologistDetailsSection = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,11 +15,14 @@ const PsychologistDetailsSection = () => {
   useEffect(() => {
     const fetchPsychologist = async () => {
       try {
-        const data = await userApi.getPsychologistById(id!);
-        setPsychologist(data);
+        const res = await userApi.getPsychologistById(id!);
+        if(!res.data) {
+          toast.error('Something went wrong');
+          return;
+        }
+        setPsychologist(res.data.psychologist);
       } catch (err) {
-        console.log(err);
-        toast.error('Failed to load psychologist details');
+        handleApiError(err);
       } finally {
         setLoading(false);
       }
@@ -26,8 +31,26 @@ const PsychologistDetailsSection = () => {
     fetchPsychologist();
   }, [id]);
 
-  if (loading) return <p className="text-white">Loading...</p>;
-  if (!psychologist) return <p className="text-white">Not found</p>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen bg-white">
+      <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
+        {[...Array(8)].map((_, index) => (
+          <div
+            key={index}
+            className="absolute h-2 w-2 bg-gray-300 rounded-full"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+            }}
+          ></div>
+        ))}
+        <span className="sr-only">Loading...</span>
+      </div>
+    </div>
+  );
+
+  if (!psychologist) return <p className="text-white">Psychologist not found!</p>;
 
   const {
     email,
@@ -40,7 +63,7 @@ const PsychologistDetailsSection = () => {
   } = psychologist;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F3F7FF] to-white p-4 sm:p-8 sm:pt-44">
+    <div className="bg-gradient-to-b from-slate-100 to-white p-4 sm:p-8 md:p-12 lg:p-10 xl:pt-28">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10 border border-gray-100 overflow-hidden transform transition-all duration-300 hover:shadow-xl">
           <div className="relative">
@@ -54,7 +77,7 @@ const PsychologistDetailsSection = () => {
             {/* Profile Image */}
             <div className="w-full sm:w-1/3 mt-8 sm:mt-0">
               <img
-                src={profileImage}
+                src={getCloudinaryUrl(profileImage) || undefined}
                 alt={`${name}'s profile`}
                 className="w-full h-80 object-cover rounded-xl transform transition-all duration-300 hover:scale-105 shadow-md"
               />

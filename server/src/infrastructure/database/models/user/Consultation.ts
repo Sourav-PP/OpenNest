@@ -1,6 +1,6 @@
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
-export interface IConsultaionDocument extends Document {
+export interface IConsultationDocument extends Document {
     _id: Types.ObjectId;
     patientId: Types.ObjectId;
     psychologistId: Types.ObjectId;
@@ -20,7 +20,7 @@ export interface IConsultaionDocument extends Document {
     meetingLink?: string;
 }
 
-const ConsultationSchema = new Schema<IConsultaionDocument>(
+const ConsultationSchema = new Schema<IConsultationDocument>(
     {
         patientId: {
             type: Schema.Types.ObjectId,
@@ -95,4 +95,4 @@ const ConsultationSchema = new Schema<IConsultaionDocument>(
     { timestamps: true },
 );
 
-export const ConsultationModel: Model<IConsultaionDocument> = model<IConsultaionDocument>('Consultation', ConsultationSchema);
+export const ConsultationModel: Model<IConsultationDocument> = model<IConsultationDocument>('Consultation', ConsultationSchema);

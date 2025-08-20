@@ -9,6 +9,7 @@ export const bookingMessages = {
         MISSING_METADATA: 'Missing required booking metadata',
         PAYMENT_NOT_FOUND: 'Payment not found for the session ID',
         SLOT_NOT_AVAILABLE: 'Selected slot is no longer available',
+        SLOT_JUST_BOOKED: 'Sorry, this slot has just been booked by someone else.',
         CONSULTATION_EXISTS: 'Consultation already exists for this payment',
         MISSING_FIELDS: 'Missing required payment details',
         PAYMENT_FAILED: 'Payment failed, please try again',

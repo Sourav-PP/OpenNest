@@ -6,19 +6,19 @@ import { PendingSignupModel } from '../../database/models/user/PendinSignupModel
 import { PendingUser } from '@/domain/entities/pendingUser';
 
 export class UserRepository implements IUserRepository   {
-    async findAll(params: { search?: string; sort?: 'asc' | 'desc'; gender?: 'Male' | 'Female'; skip: number; limit: number; }): Promise<User[]> {
+    async findAll(params: { search?: string; sort?: 'asc' | 'desc'; gender?: 'Male' | 'Female' | 'all'; skip: number; limit: number; }): Promise<User[]> {
         const filter: FilterQuery<User> = { role: 'user' };
 
         if (params.search) {
             filter.name = { $regex: params.search, $options: 'i' };
         }
 
-        if (params.gender) {
+        if (params.gender && params.gender !== 'all') {
             filter.gender = params.gender;
         }
 
         const sortOrder = params.sort === 'asc' ? 1 : -1;
-        
+
         const users = await userModel.find(filter)
             .sort({ createdAt: sortOrder })
             .skip(params.skip)
@@ -40,14 +40,14 @@ export class UserRepository implements IUserRepository   {
         }));
     }
 
-    async countAll(params: { search?: string; gender?: 'Male' | 'Female'; }): Promise<number> {
+    async countAll(params: { search?: string; gender?: 'Male' | 'Female' | 'all'; }): Promise<number> {
         const filter: FilterQuery<User> = { role: 'user' };
 
         if (params.search) {
             filter.name = { $regex: params.search, $options: 'i' };
         }
 
-        if (params.gender) {
+        if (params.gender && params.gender !== 'all') {
             filter.gender = params.gender;
         }
 
@@ -68,7 +68,7 @@ export class UserRepository implements IUserRepository   {
     }
 
     async findById(userId: string): Promise<User | null> {
-        const userDoc = await userModel.findById(userId);
+        const userDoc = await userModel.findById(userId).select('+password');;
         if (!userDoc) return null;
 
         const userObj = userDoc.toObject();
@@ -145,5 +145,13 @@ export class UserRepository implements IUserRepository   {
 
     async updateStatus(id: string, isActive: boolean): Promise<void> {
         await userModel.findByIdAndUpdate(id, { isActive }, { new: true });
+    }
+
+    async updatePassword(email: string, newPassword: string): Promise<void> {
+        await userModel.findOneAndUpdate(
+            { email },
+            { password: newPassword },
+            { new: true },
+        );
     }
 }

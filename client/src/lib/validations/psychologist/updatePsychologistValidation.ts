@@ -13,10 +13,28 @@ const imageFileSchema = z
   });
 
 export const updatePsychologistSchema = z.object({
-  name: z.string().trim().min(1, { message: 'Name is required' }),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().regex(/^[0-9]{10}$/, 'Invalid mobile number (10 digits required)'),
-  dateOfBirth: z.string().optional(),
+  name: z
+    .string()
+    .trim()
+    .min(2, { message: 'Name must be at least 2 characters' })
+    .max(50, { message: 'Name must be at most 50 characters' })
+    .regex(/^[a-zA-Z\s.'-]+$/, 'Name can only contain letters, spaces, dot, apostrophe, or hyphen'),
+  email: z.string().trim().email('Invalid email address'),
+  phone: z
+    .string()
+    .regex(/^[6-9][0-9]{9}$/, 'Invalid mobile number (must be 10 digits starting with 6-9)'),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message: 'Date of birth must be in YYYY-MM-DD format',
+    })
+    .refine((date) => {
+      const dob = new Date(date);
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      return age >= 18 && age < 100;
+    }, 'You must be at least 18 years old and less than 100 years old')
+    .optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   profileImage: imageFileSchema.optional(),
   defaultFee: z
@@ -24,14 +42,14 @@ export const updatePsychologistSchema = z.object({
       required_error: 'Default Fee is required',            
       invalid_type_error: 'Default Fee must be a number',
     })
-    .refine((val) => !isNaN(val) && val >= 0, {
-      message: 'Default Fee must be a non-negative number',
-    }),
+    .min(0, { message: 'Default Fee must be non-negative' })
+    .max(10000, { message: 'Default Fee cannot exceed 10,000' }),
   aboutMe: z
     .string()
     .trim()
-    .min(1, { message: 'aboutMe is required' })
-    .max(300, { message: 'aboutMe must be at most 300 characters' }),
+    .min(10, { message: 'About Me must be at least 10 characters' })
+    .max(300, { message: 'About Me must be at most 300 characters' })
+    .refine((val) => val.split(/\s/).some((w) => w.length > 0), { message: 'About Me cannot be empty' }),
 });
 
 export type updatePsychologistData = z.infer<typeof updatePsychologistSchema>

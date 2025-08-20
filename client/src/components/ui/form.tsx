@@ -10,7 +10,7 @@ import {
   type FieldValues,
 } from 'react-hook-form';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cn';
 import { Label } from '@/components/ui/label';
 
 const Form = FormProvider;
@@ -78,7 +78,14 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn('space-y-2', className)} {...props} />
+      <div
+        ref={ref}
+        className={cn(
+          'space-y-1 flex flex-col min-h-[3rem]', // Reduced min height
+          className
+        )}
+        {...props}
+      />
     </FormItemContext.Provider>
   );
 });
@@ -88,12 +95,15 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const {formItemId } = useFormField();
+  const { formItemId } = useFormField();
 
   return (
     <Label
       ref={ref}
-      className={cn(className)}
+      className={cn(
+        'text-sm font-medium text-gray-700',
+        className
+      )}
       htmlFor={formItemId}
       {...props}
     />
@@ -111,6 +121,10 @@ const FormControl = React.forwardRef<
     <Slot
       ref={ref}
       id={formItemId}
+      className={cn(
+        'rounded-md border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors',
+        error ? 'border-red-500' : 'border-gray-300'
+      )}
       aria-describedby={
         !error
           ? `${formDescriptionId}`
@@ -133,7 +147,10 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('text-[0.8rem] text-muted-foreground', className)}
+      className={cn(
+        'text-xs text-gray-500 mt-1',
+        className
+      )}
       {...props}
     />
   );
@@ -148,14 +165,17 @@ const FormMessage = React.forwardRef<
   const body = error ? String(error?.message ?? '') : children;
 
   if (!body) {
-    return null;
+    return null; // Remove placeholder to eliminate gap
   }
 
   return (
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('text-[0.8rem] font-medium text-destructive', className)}
+      className={cn(
+        'text-xs text-red-600 min-h-[1rem]',
+        className
+      )}
       {...props}
     >
       {body}

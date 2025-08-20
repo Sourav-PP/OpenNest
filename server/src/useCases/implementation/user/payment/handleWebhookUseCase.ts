@@ -30,6 +30,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
 
     async execute(payload: Buffer, signature: string, endpointSecret: string): Promise<void> {
 
+        console.log('webhook triggered!');
         const event = await this._paymentService.verifyWebhookSignature(payload, signature, endpointSecret);
 
         switch (event.type) {

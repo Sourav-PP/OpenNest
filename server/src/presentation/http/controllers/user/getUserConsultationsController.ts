@@ -3,6 +3,7 @@ import { AppError } from '@/domain/errors/AppError';
 import { IGetUserConsultationUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationsUseCase';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { authMessages } from '@/shared/constants/messages/authMessages';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
 
 
 
@@ -32,7 +33,13 @@ export class GetUserConsultationsController {
                 limit,
             });
 
-            res.status(HttpStatus.OK).json(result);
+            console.log('consultations: ', result);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
+                data: result,
+            });
         } catch (error) {
             next(error);
         }

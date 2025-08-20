@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { IGetAllPsychologistsForAdminUseCase } from '@/useCases/interfaces/admin/management/IGetAllPsychologistsForAdminUseCase';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
 
 export class GetAllPsychologistsForAdminController {
     private _getAllPsychologistsUseCase: IGetAllPsychologistsForAdminUseCase;
@@ -22,7 +23,11 @@ export class GetAllPsychologistsForAdminController {
                 page,
                 limit,
             });
-            res.status(HttpStatus.OK).json(result);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_PSYCHOLOGISTS,
+                data: result,
+            });
         } catch (error) {
             next(error);
         }

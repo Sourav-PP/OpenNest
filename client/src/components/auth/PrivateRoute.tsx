@@ -16,27 +16,41 @@ const PrivateRoute = ({allowedRoles, children}: Props) => {
   if(!accessToken || !role) {
     const path = location.pathname;
 
-    let redirect = '/login?role=user';
+    let redirect = '/login';
+    let redirectRole: 'user' | 'psychologist' = 'user';
     if(path.includes('/admin')) {
       redirect = '/admin/login';
     } else if( path.includes('/psychologist')) {
-      redirect = '/login?role=psychologist';
+      redirectRole = 'psychologist';
     }
 
-    return <Navigate to={redirect} replace/>;
+    return (
+      <Navigate
+        to={redirect}
+        state={{from: location, role: redirectRole}}
+        replace
+      />
+    );
   }
 
   if (!allowedRoles.includes(role)) {
-    console.log('its here...');
-    let loginRedirect = '/login?role=user';
+    let loginRedirect = '/login';
+    let redirectRole: 'user' | 'psychologist' = 'user';
+
     if (role === 'admin') {
       loginRedirect = '/admin/login';
     } 
     else if (role === 'psychologist') {
-      loginRedirect = '/login?role=psychologist';
+      redirectRole = 'psychologist';
     } 
 
-    return <Navigate to={loginRedirect} replace />;
+    return (
+      <Navigate
+        to={loginRedirect}
+        state={{ from: location, role: redirectRole }}
+        replace
+      />
+    );
   }
 
   return <>{children}</>;

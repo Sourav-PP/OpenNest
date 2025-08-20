@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { IGetAllUserUseCase } from '@/useCases/interfaces/admin/management/IGetAllUsersUseCase';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
 
 export class GetAllUserController {
     private _getAllUserUseCase: IGetAllUserUseCase;
@@ -22,7 +23,11 @@ export class GetAllUserController {
                 limit,
             });
 
-            res.status(HttpStatus.OK).json(result);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_USERS,
+                data: result,
+            });
         } catch (error) {
             next(error);
         }

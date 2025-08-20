@@ -2,8 +2,8 @@ import { useForm } from 'react-hook-form';
 import { addServiceSchema, type addServiceData } from '../../lib/validations/admin/addServiceValidation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
-import type { AxiosError } from 'axios';
 import { adminApi } from '../../server/api/admin';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const AddServiceForm = () => {
 
@@ -29,8 +29,7 @@ const AddServiceForm = () => {
       toast.success('Service created successfully');
       reset();
     } catch (err) {
-      const error = err as AxiosError<{ message: string }>;
-      toast.error(error.response?.data?.message || 'Something went wrong');
+      handleApiError(err);
     }
   };
     

@@ -2,6 +2,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { authApi } from '../../server/api/auth';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 interface OtpModalProps {
   isOpen: boolean;
@@ -44,8 +45,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
       setCanResend(false);
       toast.success('OTP has been resent to your email');
     } catch (error) {
-      console.log(error);
-      toast.error('Error resending OTP');
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
@@ -58,15 +58,12 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
     }
     setIsLoading(true);
     try {
-      console.log('otppppppppppppppp', otp);
       const res = await authApi.verifyOtp({email, otp, signupToken});
-      console.log('res otp: ', res);
       toast.success('Email verified and signup complete!');
       await onSuccess(res.accessToken);
       onClose();
     } catch (error) {
-      console.log(error);
-      toast.error('Invalid OTP');
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }

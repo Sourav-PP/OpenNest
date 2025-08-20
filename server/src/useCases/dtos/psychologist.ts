@@ -18,14 +18,15 @@ export interface IPsychologistProfileDto {
 
 export interface IPsychologistListDto {
     id: string;
-    userId: string;
     aboutMe: string;
     qualification: string;
     defaultFee: number;
     isVerified: boolean;
     user: {
+        id: string
         name: string;
         email: string;
+        isActive: boolean;
         profileImage?: string;
     };
     specializations: string[];

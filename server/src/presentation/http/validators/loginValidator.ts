@@ -27,7 +27,7 @@ export const loginValidate = (req: Request, res: Response, next: NextFunction): 
             field: (err as any).path,
             message: err.msg,
         }));
-        throw new AppError('Validation failed', HttpStatus.BAD_REQUEST, true, formattedErrors);
+        throw new AppError('Validation failed', HttpStatus.UNPROCESSABLE_ENTITY, true, formattedErrors);
     }
     next();
 };

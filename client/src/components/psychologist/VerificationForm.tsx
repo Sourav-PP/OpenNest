@@ -4,13 +4,13 @@ import { verificationSchema, type verificationData } from '../../lib/validations
 import { zodResolver } from '@hookform/resolvers/zod';
 import { assets } from '../../assets/assets';
 import { toast } from 'react-toastify';
-import type { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { serviceApi } from '../../server/api/service';
 import { psychologistApi } from '../../server/api/psychologist';
 import { useDispatch } from 'react-redux';
 import { updateVerificationStatus } from '../../redux/slices/authSlice';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 
 type Specialization = {
@@ -19,24 +19,25 @@ type Specialization = {
 }
 const VerificationForm = () => {
   const dispatch = useDispatch();
-  console.log('📍 Loaded: verificationForm component');
   const navigate = useNavigate();
-  const [specializations, sestSpecializations] = useState<Specialization[]>([]);
+  const [specializations, setSpecializations] = useState<Specialization[]>([]);
 
   useEffect(() => {
     const fetchSpecialization = async () => {
       try {
-        const response = await serviceApi.getAll();
-        console.log('resoponse ',response);
-        const mapped = response.services.map((s:Specialization) => ({
+        const res = await serviceApi.getAll();
+        if(!res.data) {
+          toast.error('Something went wrong');
+          return;
+        }
+        const mapped = res.data.services.map((s:Specialization) => ({
           id: s.id,
           name: s.name
         }));
 
-        sestSpecializations(mapped);
+        setSpecializations(mapped);
       } catch (error) {
-        toast.error('Failed to fetch specialization');
-        console.log(error);
+        handleApiError(error);
       }
     };
 
@@ -57,13 +58,11 @@ const VerificationForm = () => {
   });
 
   const onSubmit = async( data: verificationData ) => {
-    const logFormData = (formData: FormData) => {
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-    };
-    console.log('verify data: ', data);
-    console.log(data.qualification);
+    // const logFormData = (formData: FormData) => {
+    //   for (const [key, value] of formData.entries()) {
+    //     console.log(`${key}:`, value);
+    //   }
+    // };
     const formData = new FormData();
 
     formData.append('qualification', data.qualification);
@@ -76,16 +75,15 @@ const VerificationForm = () => {
     formData.append('identificationDoc', data.identificationDoc[0]);
     formData.append('educationalCertification', data.educationalCertification[0]);
     formData.append('experienceCertificate', data.experienceCertificate[0]);
-    logFormData(formData);
+    // logFormData(formData);
     try {
       const res = await psychologistApi.submitVerification(formData);
-      console.log('verify res:  ', res);
+
       dispatch(updateVerificationStatus(true));
-      toast.success('Profile submitted successfully!');
+      toast.success(res.message);
       navigate('/psychologist/profile');
     } catch (err) {
-      const error = err as AxiosError<{ error: string }>;
-      toast.error(error.response?.data?.error || 'Something went wrong');
+      handleApiError(err);
     }
   };
 

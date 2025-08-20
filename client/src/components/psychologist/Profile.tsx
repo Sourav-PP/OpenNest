@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { psychologistApi } from '../../server/api/psychologist';
-import type { IPsychologistProfileDto } from '../../types/pasychologist';
+import type { IPsychologistProfileDto } from '../../types/dtos/psychologist';
 import AnimatedTitle from '../animation/AnimatedTitle';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const Profile = () => {
-  console.log('📍 Loaded: ProfilePage component');
   const navigate = useNavigate();
   const [profile, setProfile] = useState<IPsychologistProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,11 +15,9 @@ const Profile = () => {
     const fetchProfileData = async () => {
       try {
         const res = await psychologistApi.getProfile();
-        console.log('res: ', res);
         setProfile(res);
       } catch (error) {
-        toast.error('error fetching the profile');
-        console.log('error fetching the profile: ', error);
+        handleApiError(error);
       } finally {
         setLoading(false);
       }
@@ -69,7 +67,7 @@ const Profile = () => {
         <div className="flex justify-end mb-4 sm:mb-0">
           <p
             className={`text-sm font-medium px-3 py-1 rounded-full ${
-              kycStatus === 'verified'
+              kycStatus === 'approved'
                 ? 'bg-green-100 text-green-700'
                 : kycStatus === 'rejected'
                   ? 'bg-red-100 text-red-700'
@@ -77,12 +75,12 @@ const Profile = () => {
             } hidden sm:block`}
           >
             KYC Status: <span className="capitalize">{kycStatus}</span>
-            {kycStatus === 'verified' && ' ✓'}
+            {kycStatus === 'approved' && ' ✓'}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
           <div className="w-32 h-32 bg-gray-200 rounded-xl overflow-hidden ring-2 ring-blue-200">
-            <img src={profileImage} alt="profile_image" className="w-full h-full object-cover object-center"/>
+            <img src={getCloudinaryUrl(profileImage) || undefined} alt="profile_image" className="w-full h-full object-cover object-center"/>
           </div>
           <div className="text-center sm:text-left">
             <h3 className="text-2xl font-semibold text-gray-900">{name}</h3>
@@ -92,7 +90,7 @@ const Profile = () => {
             <p className="text-sm text-gray-600">Fees: ${defaultFee}</p>
             <p
               className={`text-sm font-medium mt-1 sm:hidden ${
-                kycStatus === 'verified'
+                kycStatus === 'approved'
                   ? 'text-green-600'
                   : kycStatus === 'rejected'
                     ? 'text-red-500'
@@ -100,7 +98,7 @@ const Profile = () => {
               }`}
             >
               KYC Status: <span className="capitalize">{kycStatus}</span>
-              {kycStatus === 'verified' && ' ✓'}
+              {kycStatus === 'approved' && ' ✓'}
             </p>
           </div>
         </div>
@@ -125,13 +123,13 @@ const Profile = () => {
               Edit Profile
             </button>
           </div>
-          <div className="group text-center">
+          {/* <div className="group text-center">
             <button
               className="btn-primary w-full group-hover:animate-glow-ring mb-2"
             >
               Add Specialization Fee
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -44,8 +44,6 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
 
         let user = await this._userRepo.findByEmail(email);
 
-        console.log('user: ', user);
-
         if (!user) {
             const newUser: Omit<User, 'id'> = {
                 name: name || 'Google User',
@@ -60,8 +58,6 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         } else if (!user.googleId) {
             user.googleId = googleId;
             await this._userRepo.updateProfile(user.id, { googleId });
-        } else {
-            throw new AppError(authMessages.ERROR.EMAIL_ALREADY_EXISTS, HttpStatus.CONFLICT);
         }
 
         if (!user.isActive) {

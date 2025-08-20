@@ -8,6 +8,7 @@ export class PaymentRepository implements IPaymentRepository {
         const obj = doc.toObject();
         return {
             ...obj,
+            slotId: doc.slotId.toString(),
             userId: doc.userId.toString(),
             id: obj._id.toString(),
             consultationId: obj.consultationId ? obj.consultationId.toString() : undefined,
@@ -27,6 +28,7 @@ export class PaymentRepository implements IPaymentRepository {
 
         return {
             ...obj,
+            slotId: doc.slotId.toString(),
             userId: doc.userId.toString(),
             id: obj._id.toString(),
             consultationId: obj.consultationId.toString(),
@@ -39,6 +41,7 @@ export class PaymentRepository implements IPaymentRepository {
         if (!doc) return null;
         return {
             ...doc,
+            slotId: doc.slotId.toString(),
             userId: doc.userId.toString(),
             id: doc._id.toString(),
             consultationId: doc.consultationId ? doc.consultationId.toString() : undefined,

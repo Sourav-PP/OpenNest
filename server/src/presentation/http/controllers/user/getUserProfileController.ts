@@ -3,6 +3,7 @@ import { IGetUserProfileUseCase } from '@/useCases/interfaces/user/profile/IGetU
 import { AppError } from '@/domain/errors/AppError';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
 
 export class GetUserProfileController {
     private _getUserProfile: IGetUserProfileUseCase;
@@ -17,7 +18,11 @@ export class GetUserProfileController {
             if (!id) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             const userProfile = await this._getUserProfile.execute({ userId: id });
 
-            res.status(HttpStatus.OK).json(userProfile);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_USER_PROFILE,
+                data: userProfile,
+            });
         } catch (error) {
             next(error);
         }

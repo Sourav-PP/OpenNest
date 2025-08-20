@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { IGetAllPsychologistsForUserUseCase } from '@/useCases/interfaces/signup/IGetAllPsychologistsForUserUseCase';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { adminMessages } from '@/shared/constants/messages/adminMessages';
 
 export class GetAllPsychologistsForUserController {
     private _getAllPsychologistUseCase: IGetAllPsychologistsForUserUseCase;
@@ -22,11 +23,20 @@ export class GetAllPsychologistsForUserController {
                 page,
                 limit,
             });
-            const response = {
+
+            console.log('result: ', result);
+            const { psychologists, totalCount } = {
                 psychologists: result.psychologists,
                 totalCount: result.totalCount,
             };
-            res.status(HttpStatus.OK).json(response);
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_PSYCHOLOGISTS,
+                data: {        
+                    psychologists,
+                    totalCount,
+                },
+            });
         } catch (error) {
             next(error);
         }

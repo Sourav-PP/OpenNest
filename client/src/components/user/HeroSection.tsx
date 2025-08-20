@@ -4,7 +4,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   const handleTherapistLogin = () => {
-    navigate('/signup?role=psychologist');
+    navigate('/signup', {state: {role: 'psychologist'}});
   };
   return (
     <section className="relative w-full h-[60vh] sm:h-auto">

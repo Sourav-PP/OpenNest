@@ -1,7 +1,9 @@
-import type { IConsultationDto } from '../consultation';
-import type { IPsychologistDto } from '../pasychologist';
+import type { IConsultationDto } from '../dtos/consultation';
+import type { IPsychologistDto, IPsychologistProfileDto } from '../dtos/psychologist';
+import type { ISlotDto } from '../dtos/slot';
+import type { BackendResponse } from './api';
 
-export interface IGetAllPsychologistResponse {
+export interface IGetAllPsychologistResponseData {
     psychologists: IPsychologistDto[];
     totalCount?: number
 }
@@ -23,8 +25,20 @@ export interface ICreateCheckoutSessionInput {
     sessionGoal: string;
 }
 
-export interface ICreateCheckoutSessionResponse {
+export interface ICreateCheckoutSessionResponseData {
     url: string
+}
+
+export interface IGetUserProfileResponseData {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    role: 'user' | 'psychologist';
+    profileImage?: string;
+    dateOfBirth?: string;
+    gender?: 'male' | 'female' | 'other'
+    isActive?: boolean;
 }
 
 export interface IGetUserConsultationsRequest {
@@ -35,7 +49,18 @@ export interface IGetUserConsultationsRequest {
     limit?: number;
 }
 
-export interface IGetUserConsultationsResponse {
+export interface IGetUserConsultationsResponseData {
     consultations: IConsultationDto[],
     totalCount: number
 }
+
+export interface IGetPsychologistByIdResponseData {
+    psychologist: IPsychologistProfileDto
+}
+
+export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>
+export type IGetPsychologistByIdResponse = BackendResponse<IGetPsychologistByIdResponseData>
+export type IGetUserConsultationsResponse = BackendResponse<IGetUserConsultationsResponseData>
+export type IGetUserProfileResponse = BackendResponse<IGetUserProfileResponseData>
+export type ICreateCheckoutSessionResponse = BackendResponse<ICreateCheckoutSessionResponseData>
+export type IGetSlotsByPsychologistResponse = BackendResponse<ISlotDto[]>

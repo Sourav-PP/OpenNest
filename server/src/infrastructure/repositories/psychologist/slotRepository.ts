@@ -1,7 +1,7 @@
 import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
 import { Slot } from '@/domain/entities/slot';
 import { SlotModel } from '@/infrastructure/database/models/psychologist/slotModel';
-import { Types } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 import { User } from '@/domain/entities/user';
 
 export class SlotRepository implements ISlotRepository {
@@ -61,10 +61,10 @@ export class SlotRepository implements ISlotRepository {
 
     async getSlotByPsychologist(psychologistId: string, date: Date): Promise<{slot: Slot, user: User | null}[]> {
         const matchStage: Record<string, unknown> = { psychologistId: new Types.ObjectId(psychologistId) };
-
+        console.log('date in repo: ', date);
         if (date) {
-            const startOfDayUTC = new Date(date); // 2025-08-10T18:30:00.000Z
-            const endOfDayUTC = new Date(startOfDayUTC.getTime() + 24 * 60 * 60 * 1000); // +24 hours
+            const startOfDayUTC = new Date(date); // frontend sends date as midnight
+            const endOfDayUTC = new Date(startOfDayUTC.getTime() + 24 * 60 * 60 * 1000);
     
             matchStage.startDateTime = {
                 $gte: startOfDayUTC,
@@ -72,7 +72,7 @@ export class SlotRepository implements ISlotRepository {
             };
         }
 
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             { $match: matchStage },
             {
                 $lookup: {

@@ -36,9 +36,9 @@ export class AuthController {
         try {
             await this._sendOtpUseCase.execute(req.body.email);
             res.status(HttpStatus.OK).json({
+                success: true,
                 message: authMessages.SUCCESS.OTP_SENT,
             });
-            return;
         } catch (error) {
             next(error);
         }
@@ -98,7 +98,10 @@ export class AuthController {
 
             res.status(HttpStatus.CREATED).json({
                 success: true,
-                signupToken,
+                message: authMessages.SUCCESS.PENDING_SIGNUP,
+                data: {
+                    signupToken,
+                },
             });
         } catch (error) {
             next(error);
@@ -123,9 +126,12 @@ export class AuthController {
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: authMessages.SUCCESS.LOGIN,
-                user: response.user,
-                accessToken: response.accessToken,
-                hasSubmittedVerificationForm: response.hasSubmittedVerificationForm,
+                data: {
+                    user: response.user,
+                    accessToken: response.accessToken,
+                    hasSubmittedVerificationForm: response.hasSubmittedVerificationForm,
+                },
+                
             });
         } catch (error) {
             next(error);

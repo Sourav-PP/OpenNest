@@ -10,11 +10,18 @@ import { AppError } from '@/domain/errors/AppError';
 import { Payment } from '@/domain/entities/payment';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
-import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 import { appConfig } from '@/infrastructure/config/config';
+import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 
-
-
+export type IStripeMetaData = {
+    patientId: string;
+    psychologistId: string;
+    slotId: string;
+    startDateTime: string;
+    endDateTime: string;
+    sessionGoal: string;
+    subscriptionId?: string;
+}
 
 export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCase {
     private _paymentService: IPaymentService;
@@ -32,29 +39,34 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
     }
 
     async execute( input: ICreateCheckoutSessionInput): Promise<ICreateCheckoutSessionOutput> {
+
         if (!input.userId) {
             throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
+
         const slot = await this._slotRepo.findById(input.slotId);
+
         if (!slot) {
-            throw new AppError(psychologistMessages.ERROR.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new AppError(
+                bookingMessages.ERROR.SLOT_NOT_AVAILABLE,
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        if (slot.isBooked) {
+            throw new AppError(
+                bookingMessages.ERROR.SLOT_ALREADY_BOOKED,
+                HttpStatus.CONFLICT,
+            );
         }
 
         const currency = appConfig.stripe.currency || 'usd';
         const successUrl = appConfig.stripe.frontendSuccessUrl;
         const cancelUrl = appConfig.stripe.frontendCancelUrl;
 
-        const metadata: {
-            patientId: string;
-            psychologistId: string;
-            slotId: string;
-            startDateTime: string;
-            endDateTime: string;
-            sessionGoal: string;
-            subscriptionId?: string;
-        } = {
+        const metadata: IStripeMetaData = {
             patientId: input.userId,
-            psychologistId: input.psychologistId,
+            psychologistId: slot.psychologistId,
             slotId: input.slotId,
             startDateTime: slot.startDateTime.toISOString(),
             endDateTime: slot.endDateTime.toISOString(),
@@ -73,7 +85,7 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             metadata,
         );
 
-
+        // create the payment document before success
         const payment: Omit<Payment, 'id'> = {
             userId: input.userId,
             amount: input.amount,
@@ -83,9 +95,19 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             refunded: false,
             transactionId: undefined,
             stripeSessionId: sessionId,
+            slotId: input.slotId,
         };
 
-        await this._paymentRepository.create(payment);
+        try {
+            await this._paymentRepository.create(payment);
+        } catch (error: any) {
+            if (error.code === 11000) {
+                throw new AppError(bookingMessages.ERROR.SLOT_JUST_BOOKED, HttpStatus.CONFLICT);
+            } else {
+                console.log('err: ', error);
+                throw error;
+            }
+        }
 
         return {
             url: url,

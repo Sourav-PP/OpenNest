@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { serviceApi } from '../../server/api/service';
 import { useNavigate } from 'react-router-dom';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 
 
 type Service = {
@@ -20,7 +22,11 @@ const ServiceSession = () => {
       try {
         const response = await serviceApi.getAll();
 
-        const mapped = response.services.slice(1, 4).map((service: Service) => ({
+        if(!response.data) {
+          toast.error('Error fetching the services');
+          return;
+        }
+        const mapped = response.data.services.slice(1, 4).map((service: Service) => ({
           id: service.id,
           name: service.name,
           description: service.description,
@@ -29,8 +35,7 @@ const ServiceSession = () => {
 
         setServices(mapped);
       } catch (error) {
-        toast.error('Failed to load specialization');
-        console.error('Failed to fetch services:', error);
+        handleApiError(error);
       }
     };
 
@@ -47,7 +52,7 @@ const ServiceSession = () => {
               {/* Image */}
               <div className="absolute w-[230px] h-auto top-[-50px] left-1/2 transform -translate-x-1/2 mb-6 overflow-hidden rounded-2xl">
                 <img 
-                  src={service.bannerImage} 
+                  src={getCloudinaryUrl(service.bannerImage) || undefined} 
                   alt={service.name}
                   className="w-[230px] h-auto object-cover"
                 />

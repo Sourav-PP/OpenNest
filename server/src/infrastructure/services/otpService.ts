@@ -3,7 +3,11 @@ import { IOtpService } from '../../domain/serviceInterface/IOtpService';
 import { IOtpRepository } from '../../domain/repositoryInterface/IOtpRepository';
 
 export class NodemailerOtpService implements IOtpService {
-    constructor(private otpRepo: IOtpRepository){}
+    private _otpRepo: IOtpRepository;
+
+    constructor(otpRepo: IOtpRepository){
+        this._otpRepo = otpRepo;
+    }
 
     private _transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
@@ -17,9 +21,7 @@ export class NodemailerOtpService implements IOtpService {
 
     async sendOtp(email: string, otp: string): Promise<void> {
         try {
-            console.log('email: ',email);
-            console.log('otp', otp);
-            await this.otpRepo.saveOtp(email, otp);
+            await this._otpRepo.saveOtp(email, otp);
 
             await this._transporter.sendMail({
                 from: process.env.EMAIL_USER,
@@ -37,10 +39,10 @@ export class NodemailerOtpService implements IOtpService {
     async verifyOtp(email: string, otp: string): Promise<boolean> {
         console.log('otp in serviedjfldkfjd: ', otp);
         console.log('emai l in serfvd: ', email);
-        return await this.otpRepo.verifyOtp(email, otp);
+        return await this._otpRepo.verifyOtp(email, otp);
     }
 
     async isVerified(email: string): Promise<boolean> {
-        return await this.otpRepo.isVerified(email);    
+        return await this._otpRepo.isVerified(email);    
     }
 }

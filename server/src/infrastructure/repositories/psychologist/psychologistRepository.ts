@@ -3,6 +3,7 @@ import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsycholog
 import { ServiceModel } from '@/infrastructure/database/models/admin/serviceModel';
 import { PsychologistModel } from '@/infrastructure/database/models/psychologist/PsychologistModel';
 import { User } from '@/domain/entities/user';
+import { PipelineStage } from 'mongoose';
 
 export class PsychologistRepository implements IPsychologistRepository {
     async create(
@@ -21,7 +22,7 @@ export class PsychologistRepository implements IPsychologistRepository {
     async findAllPsychologists(params: {
         search?: string;
         sort?: 'asc' | 'desc';
-        gender?: 'Male' | 'Female';
+        gender?: 'Male' | 'Female' | 'all';
         expertise?: string;
         skip: number;
         limit: number;
@@ -34,13 +35,13 @@ export class PsychologistRepository implements IPsychologistRepository {
             matchStage['user.name'] = { $regex: params.search, $options: 'i' };
         }
 
-        if (params.gender) {
+        if (params.gender && params.gender !== 'all') {
             matchStage['user.gender'] = params.gender;
         }
 
         const sortOrder = params.sort === 'asc' ? 1 : -1;
 
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             {
                 $lookup: {
                     from: 'users',
@@ -80,16 +81,17 @@ export class PsychologistRepository implements IPsychologistRepository {
 
         const results = await PsychologistModel.aggregate(pipeline);
 
+        console.log('results::: ', results);
         return results.map(item => ({
             psychologist: {
-                id: item.id.toString(),
+                id: item._id.toString(),
                 userId: item.userId.toString(),
                 aboutMe: item.aboutMe,
                 qualification: item.qualification,
                 defaultFee: item.defaultFee,
                 isVerified: item.isVerified,
-                specializations: item.specializations.map((s: string) =>
-                    s.toString(),
+                specializations: item.specializationData.map((s: any) =>
+                    s.name,
                 ),
                 specializationFees: item.specializationFees || [],
             } as Psychologist,

@@ -1,17 +1,6 @@
 import { IConsultationDto } from '../dtos/consultation';
 import { IPsychologistListUserDto } from '../dtos/psychologist';
 
-export interface PublicUser {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  gender?: string;
-  dateOfBirth?: Date;
-  profileImage?: string;
-  role: 'user' | 'psychologist' | 'admin';
-}
-
 export interface IUpdateUserProfileInput {
   userId: string;
   name?: string;

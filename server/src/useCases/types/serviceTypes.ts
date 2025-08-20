@@ -1,6 +1,7 @@
 export interface IGetAllServiceInput {
   limit?: number;
   page?: number;
+  search?: string;
 }
 
 export interface IServiceDTO {

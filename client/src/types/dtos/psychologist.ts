@@ -17,13 +17,13 @@ export interface IPsychologistProfileDto {
   email: string;
   phone?: string;
   gender?: 'male' | 'female' | 'other'
-  dateOfBirth: string;
+  dateOfBirth?: string;
   defaultFee: number;
   qualification: string;
   aboutMe: string;
   specializations: string[]
   profileImage: string
-  kycStatus: 'verified' | 'pending' | 'rejected'
+  kycStatus: 'approved' | 'pending' | 'rejected'
   specializationFees: string[]
 }
 
@@ -36,10 +36,11 @@ export interface IGetAllPsychologistsDto {
   specializations: string[];
   isVerified: boolean;
   user: {
+      id: string
       name: string;
       email: string;
       phone: string;
-      isActive: string
+      isActive: boolean
       profileImage: string;
   }
 }

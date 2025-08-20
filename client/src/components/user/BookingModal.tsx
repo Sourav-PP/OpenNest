@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { userApi } from '@/server/api/user';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../ui/dialog';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -36,22 +37,24 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
     if(!slotId) return;
 
     try {
-      const response = await userApi.createCheckoutSession({
+      const res = await userApi.createCheckoutSession({
         slotId,
         amount,
         sessionGoal: data.sessionGoal
       });
 
-      console.log('re: ', response);
+      if(!res.data) {
+        toast.error('Something went wrong');
+        return;
+      }
 
-      window.location.href = response.url;
+      window.location.href = res.data.url;
 
       reset();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
-      console.log('error booking: ', error);
-      toast.error( 'Booking failed');
+      handleApiError(error);
     }
   };
   return (

@@ -32,14 +32,15 @@ export function toPsychologistDetailDto(
 ): IPsychologistListDto {
     return {
         id: psychologist.id,
-        userId: user.id,
         aboutMe: psychologist.aboutMe,
         qualification: psychologist.qualification,
         defaultFee: psychologist.defaultFee,
         isVerified: psychologist.isVerified,
         user: {
+            id: user.id,
             name: user.name,
             email: user.email,
+            isActive: user.isActive,
             profileImage: user.profileImage,
         },
         specializations: psychologist.specializations,
@@ -53,14 +54,15 @@ export function toPsychologistListDto(
 ): IPsychologistListDto {
     return {
         id: psychologist.id,
-        userId: user.id,
         aboutMe: psychologist.aboutMe,
         qualification: psychologist.qualification,
         defaultFee: psychologist.defaultFee,
         isVerified: psychologist.isVerified,
         user: {
+            id: user.id,
             name: user.name,
             email: user.email,
+            isActive: user.isActive,
             profileImage: user.profileImage,
         },
         specializations: psychologist.specializations,

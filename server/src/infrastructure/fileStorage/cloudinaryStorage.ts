@@ -9,18 +9,29 @@ cloudinary.config({
     api_secret: appConfig.cloudinary.apiSecret,
 });
 
-
 export class CloudinaryStorage implements IFileStorage {
-    async upload(fileBuffer: Buffer, filename: string, folder: string): Promise<string> {
+    async upload(
+        fileBuffer: Buffer,
+        filename: string,
+        folder: string,
+    ): Promise<string> {
         return new Promise((resolve, reject) => {
             const baseFilename = path.parse(filename).name;
-            cloudinary.uploader.upload_stream(
-                { folder, public_id: baseFilename, resource_type: 'auto' },
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result!.public_id);
-                },
-            ).end(fileBuffer);
+            cloudinary.uploader
+                .upload_stream(
+                    { folder, public_id: baseFilename, resource_type: 'auto' },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        if (!result || !result.public_id)
+                            return reject(
+                                new Error(
+                                    'Upload failed: no result returned from Cloudinary',
+                                ),
+                            );
+                        resolve(result.public_id);
+                    },
+                )
+                .end(fileBuffer);
         });
     }
 }

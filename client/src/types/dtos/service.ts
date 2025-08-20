@@ -1,6 +1,9 @@
+import type { BackendResponse } from '../api/api';
+
 export interface IGetAllServiceRequest {
     limit?: number;
-    page?: number
+    page?: number;
+    search?: string;
 }
 
 export interface IServiceDTO {
@@ -10,7 +13,9 @@ export interface IServiceDTO {
     bannerImage: string;
 }
 
-export interface IGetAllServiceResponse {
+export interface IGetAllServiceResponseData {
     services: IServiceDTO[];
     totalCount?: number
 }
+
+export type IGetAllServiceResponse = BackendResponse<IGetAllServiceResponseData>

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '@/domain/errors/AppError';
 import { generalMessages } from '@/shared/constants/messages/generalMessages';
+import logger from '@/utils/logger';
 
 export function errorHandler(
     err: unknown,
@@ -8,7 +9,14 @@ export function errorHandler(
     res: Response,
     next: NextFunction,
 ): void {
-    console.error('Error occurred:', err);
+    if (err instanceof Error) {
+        logger.error(`Error occurred on ${req.method} ${req.originalUrl}`, {
+            message: err.message,
+            stack: err.stack,
+        });
+    } else {
+        logger.error(`Unknown error on ${req.method} ${req.originalUrl}`, { err });
+    }
 
     if (err instanceof AppError) {
         res.status(err.statusCode).json({

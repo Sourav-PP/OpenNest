@@ -10,7 +10,7 @@ export interface IConsultationRepository {
         sort?:'asc' | 'desc',
         skip?: number,
         limit?: number,
-        status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled'
+        status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all'
     }): Promise<{ consultation: Consultation; psychologist: Psychologist; user: User }[]>
     countAllByPatientId(patientId: string): Promise<number>
 }

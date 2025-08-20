@@ -7,6 +7,8 @@ import { psychologistApi } from '../../server/api/psychologist';
 import { updatePsychologistSchema, type updatePsychologistData } from '../../lib/validations/psychologist/updatePsychologistValidation';
 import { useNavigate } from 'react-router-dom';
 import AnimatedTitle from '../animation/AnimatedTitle';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const EditProfileForm = () => {
   const navigate = useNavigate();
@@ -34,10 +36,9 @@ const EditProfileForm = () => {
         setValue('gender', profileRes.gender);
         setValue('defaultFee', profileRes.defaultFee);
         setValue('aboutMe', profileRes.aboutMe);
-        setProfileImagePreview(profileRes.profileImage || null);
+        setProfileImagePreview(getCloudinaryUrl(profileRes.profileImage) || null);
       } catch (error) {
-        console.log('error fetchi profile update page: ', error);
-        toast.error('Error fetching profile or specializations');
+        handleApiError(error);
       } finally {
         setLoading(false);
       }
@@ -65,15 +66,13 @@ const EditProfileForm = () => {
       if(file) {
         formData.append('file', file);
       }
-      console.log('Sending to backend:', [...formData.entries()]);
 
       await psychologistApi.updatePsychologistProfile(formData);
       toast.success('Profile updated successfully');
       navigate('/psychologist/edit-profile');
         
     } catch (error) {
-      toast.error('Error updating profile');
-      console.error('Error updating profile:', error);
+      handleApiError(error);
     }
   };
 

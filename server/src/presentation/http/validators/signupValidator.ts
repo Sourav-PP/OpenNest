@@ -47,7 +47,7 @@ export const validate = (req: Request, res: Response, next: NextFunction): void 
             field: (err as any).path,
             message: err.msg,
         }));
-        throw new AppError('Validation failed', HttpStatus.BAD_REQUEST, true, formattedErrors);
+        throw new AppError('Validation failed', HttpStatus.UNPROCESSABLE_ENTITY, true, formattedErrors);
     }
     next();
 };

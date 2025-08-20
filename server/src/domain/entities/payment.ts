@@ -9,5 +9,6 @@ export interface Payment {
     refunded: boolean;
     transactionId?: string;
     stripeSessionId?: string;
+    slotId: string;
 
 }

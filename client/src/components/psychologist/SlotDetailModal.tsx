@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
 import { Button } from '../ui/button';
-import type { ISlotDto } from '@/types/slot';
+import type { ISlotDto } from '@/types/dtos/slot';
 import { ConfirmationDialog } from './ConfirmationDialog';
 
 interface SlotDetailModalProps {

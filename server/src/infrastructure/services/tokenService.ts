@@ -21,23 +21,11 @@ export class JwtTokenService implements ITokenService {
     }
 
     verifyRefreshToken(token: string): { userId: string; role: string; email: string } | null {
-        try {
-            console.log('refresh token verified');
-            return jwt.verify(token, this._refreshTokenSecret) as { userId: string, role: string, email: string};
-        } catch (error) {
-            return null;
-        }
+        return jwt.verify(token, this._refreshTokenSecret) as { userId: string, role: string, email: string};
     }
 
     verifyAccessToken(token: string): { userId: string; email: string; role: string; } | null {
-        try {
-    
-            return jwt.verify(token, this._accessTokenSecret) as { userId: string, role: string, email: string};
-
-        } catch (error) {
-            console.log('JWT verify error: ', error);
-            return null;
-        }
+        return jwt.verify(token, this._accessTokenSecret) as { userId: string, role: string, email: string};
     }
 
     generateSignupToken(email: string): string {
@@ -45,11 +33,6 @@ export class JwtTokenService implements ITokenService {
     }
 
     verifySignupToken(token: string): { email: string; } | null {
-        try {
-            return jwt.verify(token, this._generateSignupTokenSecret) as {email: string};
-        } catch (error) {
-            console.log('JWT verify signup token error: ', error);
-            return null;
-        }
+        return jwt.verify(token, this._generateSignupTokenSecret) as {email: string};
     }
 }
