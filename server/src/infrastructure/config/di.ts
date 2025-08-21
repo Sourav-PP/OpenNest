@@ -163,7 +163,7 @@ const consultationRepository = new ConsultationRepository();
 
 const signupUseCase = new SignupUseCase(userRepository, tokenService, fileStorage);
 const loginUseCase = new LoginUseCase( userRepository, authService, tokenService, psychologistRepository );
-const googleLoginUseCase = new GoogleLoginUseCase(tokenService,userRepository, googleAuthService, psychologistRepository );
+const googleLoginUseCase = new GoogleLoginUseCase(tokenService,userRepository, googleAuthService, psychologistRepository, fileStorage);
 const verifyForgotPasswordUseCase = new VerifyForgotPasswordUseCase(otpRepository);
 const resetPasswordUseCase = new ResetPasswordUseCase(otpRepository, userRepository, authService);
 const changePasswordUseCase = new ChangePasswordUseCase(userRepository, authService);
@@ -207,7 +207,7 @@ export const getUserConsultationsController = new GetUserConsultationsController
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository, fileStorage);
 const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository);
-const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(psychologistRepository, userRepository);
+const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(psychologistRepository, userRepository, fileStorage);
 const createSlotUseCase = new CreateSlotUseCase(slotRepository, psychologistRepository);
 const getSlotByPsychologistUseCase = new GetSlotByPsychologistUseCase(slotRepository, psychologistRepository);
 const deleteSlotUseCase = new DeleteSlotUseCase(slotRepository, psychologistRepository);

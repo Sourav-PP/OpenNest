@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { userApi } from '@/server/api/user';
+import { userApi } from '@/services/api/user';
 import type { IPsychologistDto } from '@/types/dtos/psychologist';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { toast } from 'react-toastify';

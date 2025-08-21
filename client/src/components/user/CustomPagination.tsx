@@ -59,7 +59,7 @@ const CustomPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, 
               isActive={currentPage === page}
               className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${
                 currentPage === page
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'bg-primaryText text-white border-primaryText'
                   : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
               } border`}
             >

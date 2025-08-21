@@ -1,7 +1,7 @@
 // hooks/useServices.ts
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { serviceApi } from '@/server/api/service';
+import { serviceApi } from '@/services/api/service';
 import { handleApiError } from '@/lib/utils/handleApiError';
 
 export type Service = {

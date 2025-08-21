@@ -34,4 +34,29 @@ export class CloudinaryStorage implements IFileStorage {
                 .end(fileBuffer);
         });
     }
+
+    async uploadFromUrl(
+        url: string,
+        filename: string,
+        folder: string,
+    ): Promise<string> {
+        const baseFilename = path.parse(filename).name;
+        return new Promise((resolve, reject) => {
+            cloudinary.uploader.upload(
+                url,
+                {
+                    folder,
+                    public_id: baseFilename,
+                    resource_type: 'auto',
+                    overwrite: true,
+                },
+                (error, result) => {
+                    if (error) return reject(error);
+                    if (!result?.secure_url)
+                        return reject(new Error('Upload from URL failed: no result returned from Cloudinary'));
+                    resolve(result.public_id);
+                },
+            );
+        });
+    }
 }

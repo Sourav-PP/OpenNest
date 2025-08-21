@@ -1,12 +1,12 @@
 import PrivateRoute from '@/components/auth/PrivateRoute';
 import type { RouteObject } from 'react-router-dom';
 
-import VerificationPage from '@/pages/psychologist/VerificationPage';
-import ProfilePage from '@/pages/psychologist/ProfilePage';
-import EditProfilePage from '@/pages/psychologist/EditProfilePage';
-import CreateSlotPage from '@/pages/psychologist/CreateSlotPage';
-import MyKycDetailsPage from '@/pages/psychologist/MyKycDetailsPage';
-import ChangePsychologistPasswordPage from '@/pages/psychologist/ChangePsychologistPasswordPage';
+import VerificationPage from '@/features/psychologist/pages/VerificationPage';
+import ProfilePage from '@/features/psychologist/pages/ProfilePage';
+import EditProfilePage from '@/features/psychologist/pages/EditProfilePage';
+import CreateSlotPage from '@/features/psychologist/pages/CreateSlotPage';
+import MyKycDetailsPage from '@/features/psychologist/pages/MyKycDetailsPage';
+import ChangePsychologistPasswordPage from '@/features/psychologist/pages/ChangePsychologistPasswordPage';
 
 export const psychologistRoutes: RouteObject[] = [
   {

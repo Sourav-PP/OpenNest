@@ -1,12 +1,14 @@
 import PrivateRoute from '@/components/auth/PrivateRoute';
 import type { RouteObject } from 'react-router-dom';
 
-import AdminDashboard from '@/pages/admin/Dashboard';
-import UserManagement from '@/pages/admin/UserManagement';
-import PsychologistManagement from '@/pages/admin/PsychologistManagement';
-import ServicePage from '@/pages/admin/ServicePage';
-import KycManagement from '@/pages/admin/KycManagement';
-import KycVerificationPage from '@/pages/admin/KycVerificationPage';
+import AdminDashboard from '@/features/admin/pages/Dashboard';
+import UserManagement from '@/features/admin/pages/UserManagement';
+import PsychologistManagement from '@/features/admin/pages/PsychologistManagement';
+import ServicePage from '@/features/admin/pages/ServicePage';
+import KycManagement from '@/features/admin/pages/KycManagement';
+import KycVerificationPage from '@/features/admin/pages/KycVerificationPage';
+
+
 
 export const adminRoutes: RouteObject[] = [
   {

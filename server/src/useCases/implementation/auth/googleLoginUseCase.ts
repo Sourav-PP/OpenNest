@@ -11,24 +11,27 @@ import { ILoginOutputDto } from '@/useCases/dtos/user';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
-
+import { IFileStorage } from '@/useCases/interfaces/IFileStorage';
 
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
     private _tokenService: ITokenService;
     private _userRepo: IUserRepository;
     private _googleAuthService: IGoogleAuthService;
     private _psychologistRepo: IPsychologistRepository;
+    private _fileStorage: IFileStorage;
 
     constructor(
         tokenService: ITokenService,
         userRepo: IUserRepository,
         googleAuthService: IGoogleAuthService,
         psychologistRepo: IPsychologistRepository,
+        fileStorage: IFileStorage,
     ) {
         this._tokenService = tokenService;
         this._userRepo = userRepo;
         this._googleAuthService = googleAuthService;
         this._psychologistRepo = psychologistRepo;
+        this._fileStorage = fileStorage;
     }
 
     async execute(input: IGoogleLoginInput): Promise<ILoginOutputDto> {
@@ -37,7 +40,10 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         const payload = await this._googleAuthService.verifyToken(credential);
 
         if (!payload || !payload.email) {
-            throw new AppError(authMessages.ERROR.INVALID_GOOGLE_TOKEN, HttpStatus.UNAUTHORIZED);
+            throw new AppError(
+                authMessages.ERROR.INVALID_GOOGLE_TOKEN,
+                HttpStatus.UNAUTHORIZED,
+            );
         }
 
         const { email, name, picture, sub: googleId } = payload;
@@ -45,12 +51,29 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         let user = await this._userRepo.findByEmail(email);
 
         if (!user) {
+            let profileImageUrl: string | undefined;
+
+            if (picture) {
+                try {
+                    profileImageUrl = await this._fileStorage.uploadFromUrl(
+                        picture,
+                        googleId,
+                        'profile_images',
+                    );
+                } catch (err) {
+                    console.error(
+                        'Cloudinary upload failed, fallback to google picture',
+                        err,
+                    );
+                    profileImageUrl = picture; // fallback
+                }
+            }
             const newUser: Omit<User, 'id'> = {
                 name: name || 'Google User',
                 email: email,
                 role: role,
                 isActive: true,
-                profileImage: picture,
+                profileImage: profileImageUrl,
                 googleId,
             };
 
@@ -61,25 +84,46 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         }
 
         if (!user.isActive) {
-            throw new AppError(authMessages.ERROR.BLOCKED_USER, HttpStatus.FORBIDDEN);
+            throw new AppError(
+                authMessages.ERROR.BLOCKED_USER,
+                HttpStatus.FORBIDDEN,
+            );
         }
 
         if (!user.id) {
-            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
+            throw new AppError(
+                adminMessages.ERROR.USER_ID_REQUIRED,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
-        const accessToken = this._tokenService.generateAccessToken(user.id, user.role, user.email );
-        const refreshToken = this._tokenService.generateRefreshToken(user.id, user.role, user.email );
+        const accessToken = this._tokenService.generateAccessToken(
+            user.id,
+            user.role,
+            user.email,
+        );
+        const refreshToken = this._tokenService.generateRefreshToken(
+            user.id,
+            user.role,
+            user.email,
+        );
 
         let hasSubmittedVerificationForm = false;
 
         if (user.role === 'psychologist') {
-            const psychologist = await this._psychologistRepo.findByUserId(user.id);
+            const psychologist = await this._psychologistRepo.findByUserId(
+                user.id,
+            );
             if (psychologist) {
                 hasSubmittedVerificationForm = true;
             }
         }
 
-        return toLoginOutputDto(user, accessToken, refreshToken, hasSubmittedVerificationForm);
+        return toLoginOutputDto(
+            user,
+            accessToken,
+            refreshToken,
+            hasSubmittedVerificationForm,
+        );
     }
 }

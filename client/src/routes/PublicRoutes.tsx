@@ -1,14 +1,14 @@
 import PublicRoute from '@/components/auth/PublicRoute';
 import type { RouteObject } from 'react-router-dom';
 
-import LandingPage from '@/pages/user/LandingPage';
-import LoginPage from '@/pages/user/LoginPage';
-import AdminLoginPage from '@/pages/admin/AdminLoginPage';
-import SignupPage from '@/pages/user/SignupPage';
-import ForgotPasswordPage from '@/pages/user/ForgotPasswordPage';
-import VerifyForgotPasswordOtpPage from '@/pages/user/VerifyForgotPasswordOtpPage';
-import ResetPasswordPage from '@/pages/user/ResetPasswordPage';
-import LogoutPage from '@/pages/user/LogoutPage';
+import LandingPage from '@/features/user/pages/LandingPage';
+import LoginPage from '@/features/auth/pages/LoginPage';
+import AdminLoginPage from '@/features/admin/pages/AdminLoginPage';
+import SignupPage from '@/features/auth/pages/SignupPage';
+import ForgotPasswordPage from '@/features/user/pages/ForgotPasswordPage';
+import VerifyForgotPasswordOtpPage from '@/features/auth/pages/VerifyForgotPasswordOtpPage';
+import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage';
+import LogoutPage from '@/features/user/pages/LogoutPage';
 
 export const publicRoutes: RouteObject[] = [
   {

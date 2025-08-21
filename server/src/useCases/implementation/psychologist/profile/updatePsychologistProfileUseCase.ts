@@ -1,4 +1,3 @@
-import { uploadToCloudinary } from '@/utils/uploadToCloudinary';
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
 import { AppError } from '@/domain/errors/AppError';
@@ -8,17 +7,22 @@ import { IUpdatePsychologistProfileUseCase } from '@/useCases/interfaces/psychol
 import { IUpdatePsychologistProfileInput } from '@/useCases/types/psychologistTypes';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { userMessages } from '@/shared/constants/messages/userMessages';
+import { IFileStorage } from '@/useCases/interfaces/IFileStorage';
+
 
 export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProfileUseCase {
     private _psychologistRepo: IPsychologistRepository;
     private _userRepo: IUserRepository;
+    private _fileStorage: IFileStorage;
 
     constructor(
         psychologistRepo: IPsychologistRepository,
         userRepo: IUserRepository,
+        fileStorage: IFileStorage,
     ) {
         this._psychologistRepo = psychologistRepo;
         this._userRepo = userRepo;
+        this._fileStorage = fileStorage;
     }
 
     async execute(input: IUpdatePsychologistProfileInput): Promise<void> {
@@ -28,7 +32,7 @@ export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProf
         let profileImageUrl: string | undefined;
 
         if (input.file) {
-            profileImageUrl = await uploadToCloudinary(
+            profileImageUrl = await this._fileStorage.upload(
                 input.file.buffer,
                 input.file.originalname,
                 'profile_images',

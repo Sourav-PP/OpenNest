@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { assets } from '../../assets/assets';
 import { FiMenu, FiX } from 'react-icons/fi';
-import BellButton from './BellButton';
+import BellButton from '../../features/user/components/BellButton';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
 import { type RootState } from '../../redux/store';
 import { toast } from 'react-toastify';
-import { authApi } from '../../server/api/auth';
+import { authApi } from '../../services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
 
 const Navbar = () => {

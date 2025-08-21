@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { adminApi } from '../../server/api/admin';
+import { adminApi } from '../../services/api/admin';
 import { handleApiError } from '@/lib/utils/handleApiError';
 
 const Header = () => {
