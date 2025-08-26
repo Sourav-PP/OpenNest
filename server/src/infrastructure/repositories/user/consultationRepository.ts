@@ -6,7 +6,9 @@ import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
 
 export class ConsultationRepository implements IConsultationRepository {
-    async createConsultation(data: Omit<Consultation, 'id'>): Promise<Consultation> {
+    async createConsultation(
+        data: Omit<Consultation, 'id'>,
+    ): Promise<Consultation> {
         const createdConsultation = await ConsultationModel.create(data);
         const consultationObj = createdConsultation.toObject();
 
@@ -22,20 +24,112 @@ export class ConsultationRepository implements IConsultationRepository {
     }
 
     async isSlotBooked(slotId: string): Promise<boolean> {
-        const existing = await ConsultationModel.findOne({ slotId, status: 'booked' });
+        const existing = await ConsultationModel.findOne({
+            slotId,
+            status: 'booked',
+        });
 
         return existing ? true : false;
     }
 
-    async findByPatientId(patientId: string, params:{
-        search?: string,
-        sort?:'asc' | 'desc',
-        skip?: number,
-        limit?: number,
-        status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all'
-    }): Promise<{ consultation: Consultation; psychologist: Psychologist; user: User }[]> {
+    async findByPsychologistId(
+        psychologistId: string,
+        params: {
+            search?: string;
+            sort?: 'asc' | 'desc';
+            skip?: number;
+            limit?: number;
+            status:
+                | 'booked'
+                | 'cancelled'
+                | 'completed'
+                | 'rescheduled'
+                | 'all';
+        },
+    ): Promise<{ consultation: Consultation; patient: User }[]> {
+        const matchStage: Record<string, unknown> = {
+            psychologistId: new mongoose.Types.ObjectId(psychologistId),
+        };
 
-        const matchStage: Record<string , unknown> = { patientId: new mongoose.Types.ObjectId(patientId) };
+        if (params.status && params.status !== 'all') {
+            matchStage.status = params.status;
+        }
+
+        const sortOrder = params.sort === 'asc' ? 1 : -1;
+
+        const pipeline: PipelineStage[] = [
+            { $match: matchStage },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'patientId',
+                    foreignField: '_id',
+                    as: 'patient',
+                },
+            },
+            { $unwind: '$patient' },
+        ];
+
+        if (params.search) {
+            pipeline.push({
+                $match: {
+                    'patient.name': { $regex: params.search, $options: 'i' },
+                },
+            });
+        }
+
+        pipeline.push({ $sort: { startDateTime: sortOrder } });
+
+        if (typeof params.skip === 'number' && params.skip > 0) {
+            pipeline.push({ $skip: params.skip });
+        }
+
+        if (typeof params.limit === 'number' && params.limit > 0) {
+            pipeline.push({ $limit: params.limit });
+        }
+
+        const results = await ConsultationModel.aggregate(pipeline);
+
+        return results.map(item => ({
+            consultation: {
+                id: item._id.toString(),
+                patientId: item.patientId.toString(),
+                startDateTime: item.startDateTime,
+                endDateTime: item.endDateTime,
+                sessionGoal: item.sessionGoal,
+                status: item.status,
+                meetingLink: item.meetingLink,
+                psychologistId: item.psychologistId.toString(),
+            } as Consultation,
+            patient: {
+                id: item.patient._id.toString(),
+                name: item.patient.name,
+                profileImage: item.patient.profileImage,
+            } as User,
+        }));
+    }
+
+    async findByPatientId(
+        patientId: string,
+        params: {
+            search?: string;
+            sort?: 'asc' | 'desc';
+            skip?: number;
+            limit?: number;
+            status:
+                | 'booked'
+                | 'cancelled'
+                | 'completed'
+                | 'rescheduled'
+                | 'all';
+        },
+    ): Promise<
+        { consultation: Consultation; psychologist: Psychologist; user: User }[]
+    > {
+        const matchStage: Record<string, unknown> = {
+            patientId: new mongoose.Types.ObjectId(patientId),
+        };
 
         if (params.status && params.status !== 'all') {
             matchStage.status = params.status;
@@ -70,7 +164,10 @@ export class ConsultationRepository implements IConsultationRepository {
         if (params.search) {
             pipeline.push({
                 $match: {
-                    'psychologist.user.name': { $regex: params.search, $options: 'i' },
+                    'psychologist.user.name': {
+                        $regex: params.search,
+                        $options: 'i',
+                    },
                 },
             });
         }
@@ -106,11 +203,32 @@ export class ConsultationRepository implements IConsultationRepository {
             user: {
                 id: item.psychologist.user._id.toString(),
                 name: item.psychologist.user.name,
+                profileImage: item.psychologist.user.profileImage,
             } as User,
         }));
     }
 
+    async findById(id: string): Promise<Consultation | null> {
+        const consultation = await ConsultationModel.findById(id);
+        if (!consultation) return null;
+
+        const consultationObj = consultation.toObject();
+        return {
+            ...consultationObj,
+            patientId: consultationObj.patientId.toString(),
+            psychologistId: consultationObj.psychologistId.toString(),
+            subscriptionId: consultationObj.subscriptionId?.toString(),
+            slotId: consultationObj.slotId.toString(),
+            issue: consultationObj.issue?.map(i => i.toString()),
+            id: consultationObj._id.toString(),
+        };
+    }
+
     async countAllByPatientId(patientId: string): Promise<number> {
         return await ConsultationModel.countDocuments({ patientId });
+    }
+
+    async countAllByPsychologistId(psychologistId: string): Promise<number> {
+        return await ConsultationModel.countDocuments({ psychologistId });
     }
 }

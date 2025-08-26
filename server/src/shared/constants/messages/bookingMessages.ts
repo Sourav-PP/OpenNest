@@ -11,6 +11,8 @@ export const bookingMessages = {
         SLOT_NOT_AVAILABLE: 'Selected slot is no longer available',
         SLOT_JUST_BOOKED: 'Sorry, this slot has just been booked by someone else.',
         CONSULTATION_EXISTS: 'Consultation already exists for this payment',
+        CONSULTATION_NOT_FOUND: 'Consultation not found',
+        CONSULTATION_ID_REQUIRED: 'Consultation id is required',
         MISSING_FIELDS: 'Missing required payment details',
         PAYMENT_FAILED: 'Payment failed, please try again',
         SLOT_ALREADY_BOOKED: 'Selected slot is already booked',

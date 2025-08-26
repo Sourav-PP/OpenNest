@@ -9,11 +9,12 @@ import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
 import userRoutes from './routes/userRoutes';
 import psychologistRoutes from './routes/psychologistRoutes';
+import chatRoutes from './routes/chatRoutes';
 
 const app = express();
 
 app.use(cors({
-    origin: appConfig.cors.origins,
+    origin: appConfig.cors.origin,
     credentials: true,
 }));
 
@@ -32,6 +33,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes );
 app.use('/api/user', userRoutes);
 app.use('/api/psychologist', psychologistRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.use(errorHandler as ErrorRequestHandler);
 

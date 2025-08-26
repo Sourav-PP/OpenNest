@@ -9,6 +9,7 @@ import UserServicePage from '@/features/user/pages/UserServicePage';
 import Success from '@/features/user/components/Success';
 import Cancel from '@/features/user/components/Cancel';
 import MySessionsPage from '@/features/user/pages/MySessionsPage';
+import UserChatPage from '@/features/chat/pages/UserChatPage';
 
 export const userRoutes: RouteObject[] = [
   {
@@ -42,5 +43,13 @@ export const userRoutes: RouteObject[] = [
   {
     path: '/user/consultations',
     element: <PrivateRoute allowedRoles={['user']}><MySessionsPage /></PrivateRoute>
+  },
+  {
+    path: '/user/chat',
+    element: <PrivateRoute allowedRoles={['user']}><UserChatPage/></PrivateRoute>
+  },
+  {
+    path: '/user/chat/:consultationId',
+    element: <PrivateRoute allowedRoles={['user']}><UserChatPage/></PrivateRoute>
   }
 ];

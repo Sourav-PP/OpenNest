@@ -10,7 +10,7 @@ const Sidebar = () => {
     { name: 'My Profile', path: '/user/profile', icon: <Home className="w-5 h-5" /> },
     { name: 'Change Password', path: '/user/change-password', icon: <Lock className="w-5 h-5" /> },
     { name: 'My Sessions', path: '/user/consultations', icon: <Stethoscope className="w-5 h-5" /> },
-    { name: 'My Chats', path: '/user/chats', icon: <MessageSquare className="w-5 h-5" /> },
+    { name: 'My Chats', path: '/user/chat', icon: <MessageSquare className="w-5 h-5" /> },
     { name: 'Wallet', path: '/user/wallet', icon: <Wallet className="w-5 h-5" /> },
   ];
 
@@ -34,7 +34,7 @@ const Sidebar = () => {
       <aside
         className={`fixed lg:static top-0 left-0 h-screen bg-gradient-to-b from-slate-50 to-white text-gray-800 transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-64 p-6 flex flex-col gap-6 z-40 shadow-xl rounded-r-2xl`}
+        } lg:translate-x-0 w-64 p-6 flex flex-col gap-6 shadow-md border-r-2 border-slate-200 z-50`}
       >
         {/* Logo */}
         <NavLink to={'/admin/dashboard'} className="mb-8">

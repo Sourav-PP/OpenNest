@@ -7,6 +7,8 @@ import {
     updatePsychologistProfileController,
     getKycDetailsController,
     getProfileController,
+    checkBlockedUser,
+    getPsychologistConsultationsController,
 } from '@/infrastructure/config/di';
 
 import { uploadSingle } from '../middlewares/multer';
@@ -19,5 +21,6 @@ router.get('/kyc', authenticatePsychologist, getKycDetailsController.handle);
 router.post('/slot', authenticatePsychologist, createSlotController.handle);
 router.get('/slot', authenticatePsychologist, getSlotByPsychologistController.handle);
 router.delete('/slot/:slotId', authenticatePsychologist, deleteSlotController.handle);
+router.get('/consultations', authenticatePsychologist, checkBlockedUser, getPsychologistConsultationsController.handle);
 
 export default router;

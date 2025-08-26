@@ -30,6 +30,7 @@
     "multer": "^2.0.1",
     "nodemailer": "^7.0.4",
     "rrule": "^2.8.1",
+    "socket.io": "^4.8.1",
     "stripe": "^18.4.0",
     "winston": "^3.17.0"
   },
@@ -45,6 +46,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.4",
     "@types/nodemailer": "^6.4.17",
+    "@types/socket.io": "^3.0.1",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",

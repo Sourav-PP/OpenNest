@@ -1,6 +1,7 @@
 // Input and Output types for Profile Use Cases
 import { Kyc } from '../../domain/entities/kyc';
 import { Psychologist } from '../../domain/entities/psychologist';
+import { IPsychologistConsultationDto } from '../dtos/consultation';
 
 export interface IVerifyProfileInput {
     userId: string;
@@ -53,4 +54,18 @@ export interface ISingleSlotInput {
 export interface IDeleteSlotInput {
     slotId: string;
     userId: string;
+}
+
+export interface IGetConsultationsRequest {
+  psychologistId: string
+  search?: string;
+  sort?: 'asc' | 'desc';
+  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';  
+  page?: number;
+  limit?: number; 
+}
+
+export interface IGetConsultationsResponse {
+  consultations: IPsychologistConsultationDto[],
+  totalCount: number
 }
