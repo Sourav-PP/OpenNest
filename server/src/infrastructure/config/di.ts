@@ -85,10 +85,14 @@ import { ApproveKycUseCase } from '../../useCases/implementation/admin/managemen
 import { RejectKycUseCase } from '../../useCases/implementation/admin/management/rejectKycUseCase';
 
 //--------------- chat -------------------
+import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
+import { GetPsychologistChatConsultationsUseCase } from '@/useCases/implementation/chat/getPsychologistChatConsultationsUseCase';
 import { SendMessageUseCase } from '@/useCases/implementation/chat/sendMessageUseCase';
 import { GetHistoryUseCase } from '@/useCases/implementation/chat/getHistoryUseCase';
 import { ChatSocketHandler } from '@/presentation/socket/chatSocketHandler';
 import { EnsureMembershipUseCase } from '@/useCases/implementation/chat/ensureMembershipUseCase';
+import { GetUnreadCountUseCase } from '@/useCases/implementation/chat/getUnreadCountUseCase';
+import { MarkReadUseCase } from '@/useCases/implementation/chat/markReadUseCase';
 
 
 //===================== CONTROLLERS =====================
@@ -133,8 +137,12 @@ import { ApproveKycController } from '../../presentation/http/controllers/admin/
 import { RejectKycController } from '../../presentation/http/controllers/admin/rejectKycController';
 
 //---------------- chat -----------------------
+import { GetUserChatConsultationsController } from '@/presentation/http/controllers/chat/getUserChatConsultationsController';
+import { GetPsychologistChatConsultationsController } from '@/presentation/http/controllers/chat/getPsychologistChatConsultationsController';
 import { SendMessageController } from '@/presentation/http/controllers/chat/sendMessageController';
 import { GetHistoryController } from '@/presentation/http/controllers/chat/getHistoryController';
+import { GetUnreadCountController } from '@/presentation/http/controllers/chat/getUnreadCountController';
+import { MarkAsReadController } from '@/presentation/http/controllers/chat/markAsReadController';
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
@@ -146,7 +154,7 @@ import { MessageRepository } from '../repositories/user/messageRepository';
 
 // ---------- SERVICES ----------
 const authService = new BcryptAuthService();
-const tokenService = new JwtTokenService();
+export const tokenService = new JwtTokenService();
 const otpRepository = new OtpRepository();
 const otpService = new NodemailerOtpService(otpRepository);
 const userRepository = new UserRepository();
@@ -273,12 +281,20 @@ export const rejectKycController = new RejectKycController(rejectKycUseCase);
 
 const messageRepository = new MessageRepository();
 
+const getUserChatConsultationsUseCase = new GetUserChatConsultationsUseCase(consultationRepository);
+const getPsychologistChatConsultationsUseCase = new GetPsychologistChatConsultationsUseCase(consultationRepository, psychologistRepository);
 const ensureMembershipUseCase = new EnsureMembershipUseCase(consultationRepository, psychologistRepository);
 const sendMessageUseCase = new SendMessageUseCase(messageRepository, ensureMembershipUseCase);
 const getHistoryUseCase = new GetHistoryUseCase(messageRepository);
+const getUnreadCountUseCase = new GetUnreadCountUseCase(messageRepository, userRepository, psychologistRepository);
+const markReadUseCase = new MarkReadUseCase(messageRepository, psychologistRepository, userRepository);
 
+export const getUserChatConsultationsController = new GetUserChatConsultationsController(getUserChatConsultationsUseCase);
+export const getPsychologistChatConsultationsController = new GetPsychologistChatConsultationsController(getPsychologistChatConsultationsUseCase);
 export const sendMessageController = new SendMessageController(sendMessageUseCase);
 export const getHistoryController = new GetHistoryController(getHistoryUseCase);
+export const getUnreadCountController = new GetUnreadCountController(getUnreadCountUseCase);
+export const markAsReadController = new MarkAsReadController(markReadUseCase);
 
 // socket handler
-export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase);
+export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase);

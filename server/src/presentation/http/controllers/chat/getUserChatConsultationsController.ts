@@ -1,17 +1,15 @@
-import { NextFunction, Request, Response } from 'express';
 import { AppError } from '@/domain/errors/AppError';
-import { IGetUserConsultationUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationsUseCase';
-import { HttpStatus } from '@/shared/enums/httpStatus';
 import { authMessages } from '@/shared/constants/messages/authMessages';
-import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { chatMessages } from '@/shared/constants/messages/chatMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IGetUserChatConsultationsUseCase } from '@/useCases/interfaces/chat/IGetUserChatConsultationsUseCase';
+import { NextFunction, Request, Response } from 'express';
 
+export class GetUserChatConsultationsController {
+    private _getUserChatConsultationUseCase: IGetUserChatConsultationsUseCase;
 
-
-export class GetUserConsultationsController {
-    private _getUserConsultationsUseCase: IGetUserConsultationUseCase;
-
-    constructor(getUserConsultationsUseCase: IGetUserConsultationUseCase) {
-        this._getUserConsultationsUseCase = getUserConsultationsUseCase;
+    constructor(getUserChatConsultationUseCase: IGetUserChatConsultationsUseCase) {
+        this._getUserChatConsultationUseCase = getUserChatConsultationUseCase;
     }
 
     handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -22,9 +20,9 @@ export class GetUserConsultationsController {
 
             if (!userId) {
                 throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-            }   
+            } 
 
-            const result = await this._getUserConsultationsUseCase.execute({
+            const result = await this._getUserChatConsultationUseCase.execute({
                 patientId: userId,
                 search: req.query.search as string,
                 sort: req.query.sort as 'asc' | 'desc',
@@ -35,7 +33,7 @@ export class GetUserConsultationsController {
 
             res.status(HttpStatus.OK).json({
                 success: true,
-                message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
+                message: chatMessages.SUCCESS.FETCHED_CONSULTATIONS,
                 data: result,
             });
         } catch (error) {

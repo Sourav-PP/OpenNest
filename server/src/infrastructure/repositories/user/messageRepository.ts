@@ -28,6 +28,8 @@ export class MessageRepository implements IMessageRepository {
                     userId: r.userId.toString(),
                     emoji: r.emoji,
                 })) ?? [],
+            createdAt: doc.createdAt, 
+            updatedAt: doc.updatedAt,
         };
     }
 
@@ -55,6 +57,8 @@ export class MessageRepository implements IMessageRepository {
                     userId: r.userId.toString(),
                     emoji: r.emoji,
                 })) ?? [],
+            createdAt: doc.createdAt, 
+            updatedAt: doc.updatedAt,
         }));
     }
 
@@ -87,6 +91,8 @@ export class MessageRepository implements IMessageRepository {
                     userId: r.userId.toString(),
                     emoji: r.emoji,
                 })) ?? [],
+            createdAt: message.createdAt, 
+            updatedAt: message.updatedAt,
         };
     }
 
@@ -161,5 +167,20 @@ export class MessageRepository implements IMessageRepository {
                 $set: { status: 'delivered' },
             },
         ).exec();
+    }
+
+    async countUnread(consultationId: string, userId: string): Promise<number> {
+        return MessageModel.countDocuments({
+            consultationId,
+            receiverId: userId,
+            status: { $ne: 'read' },
+        });
+    }
+
+    async markAllAsRead(consultationId: string, userId: string): Promise<void> {
+        await MessageModel.updateMany(
+            { consultationId, receiverId: userId, status: { $ne: 'read' } },
+            { $set: { status: 'read', readAt: new Date() } },
+        );
     }
 }

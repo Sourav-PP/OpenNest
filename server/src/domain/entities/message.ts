@@ -13,4 +13,6 @@ export interface Message {
   deleted: boolean;
   replyToId?: string;
   reaction?: Array<{userId: string; emoji: string}>;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

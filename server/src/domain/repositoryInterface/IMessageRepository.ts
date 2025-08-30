@@ -7,4 +7,6 @@ export interface IMessageRepository {
     findHistory(consultationId: string,limit: number, before?: string ): Promise<Message[]>;
     markDelivered(consultationId: string, messageIds: string[], userId: string): Promise<void>;
     markRead(consultationId: string, messageIds: string[], userId: string): Promise<void>;
+    markAllAsRead(consultationId: string, userId: string): Promise<void>;
+    countUnread(consultationId: string, userId: string): Promise<number>;
 }

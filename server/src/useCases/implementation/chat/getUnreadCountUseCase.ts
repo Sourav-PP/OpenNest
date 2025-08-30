@@ -1,24 +1,28 @@
-import { IMarkReadUseCase } from '@/useCases/interfaces/chat/IMarkReadUseCase';
-import { IMessageRepository } from '@/domain/repositoryInterface/IMessageRepository';
-import { userMessages } from '@/shared/constants/messages/userMessages';
 import { AppError } from '@/domain/errors/AppError';
-import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IMessageRepository } from '@/domain/repositoryInterface/IMessageRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
 import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
 import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { userMessages } from '@/shared/constants/messages/userMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IGetUnreadCountUseCase } from '@/useCases/interfaces/chat/IGetUnreadCountUseCase';
 
-export class MarkReadUseCase implements IMarkReadUseCase {
+export class GetUnreadCountUseCase implements IGetUnreadCountUseCase {
     private _messageRepo: IMessageRepository;
-    private _psychologistRepo: IPsychologistRepository;
     private _userRepo: IUserRepository;
+    private _psychologistRepo: IPsychologistRepository;
 
-    constructor(messageRepo: IMessageRepository, psychologistRepo: IPsychologistRepository, userRepo: IUserRepository) {
+    constructor(
+        messageRepo: IMessageRepository,
+        userRepo: IUserRepository,
+        psychologistRepo: IPsychologistRepository,
+    ) {
         this._messageRepo = messageRepo;
-        this._psychologistRepo = psychologistRepo;
         this._userRepo = userRepo;
+        this._psychologistRepo = psychologistRepo;
     }
 
-    async execute(consultationId: string, userId: string): Promise<void> {
+    async execute(consultationId: string, userId: string): Promise<number> {
         const user = await this._userRepo.findById(userId);
 
         if (!user) {
@@ -51,6 +55,6 @@ export class MarkReadUseCase implements IMarkReadUseCase {
             );
         }
 
-        await this._messageRepo.markAllAsRead(consultationId, receiverId);
+        return await this._messageRepo.countUnread(consultationId, receiverId);
     }
 }

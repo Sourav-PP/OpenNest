@@ -14,18 +14,20 @@ export default function ChatWindow({
   userId: string;
   peerId: string;
 }) {
-  const { messages, sendMessage } = useChat(consultationId);
+  const { messages, sendMessage, isReady } = useChat(consultationId);
   const [text, setText] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (!text.trim()) return;
+    console.log('text: ', text);
     sendMessage({
       consultationId,
       senderId: userId,
       receiverId: peerId,
       content: text,
     });
+    console.log('send message', sendMessage);
     setText('');
   };
 
@@ -52,10 +54,12 @@ export default function ChatWindow({
         ref={scrollAreaRef}
       >
         <div className="space-y-4 p-4">
-          {messages.length > 0 ? (
-            messages.map((m, i) => (
+          {!isReady ? (
+            <div className="text-center text-gray-500 py-4">Loading chat...</div>
+          ) : messages.length > 0 ? (
+            messages.map((m) => (
               <div
-                key={i}
+                key={m.id} // Use m.id instead of index i
                 className={`flex ${m.senderId === userId ? 'justify-end' : 'justify-start'}`}
               >
                 <div
@@ -72,7 +76,11 @@ export default function ChatWindow({
               </div>
             ))
           ) : (
-            <div className="text-center text-gray-500 py-4">No messages yet.</div>
+            <div className="text-center text-gray-600 py-8">
+              <span className="inline-block px-6 py-3 bg-gray-50 border border-gray-200 rounded-lg font-medium text-sm shadow-sm">
+                No messages yet
+              </span>
+            </div>
           )}
         </div>
       </ScrollArea>
@@ -86,14 +94,15 @@ export default function ChatWindow({
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message..."
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSend();
+              if (e.key === 'Enter' && isReady && text.trim()) handleSend();
             }}
+            disabled={!isReady}
           />
           <Button
             className="rounded-full bg-green-600 hover:bg-green-700 p-2.5 transition-colors duration-200"
             size="icon"
             onClick={handleSend}
-            disabled={!text.trim()}
+            disabled={!isReady || !text.trim()}
           >
             <Send className="h-5 w-5 text-white" />
           </Button>

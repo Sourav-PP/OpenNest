@@ -17,7 +17,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     }
 
     async execute(data: ISendMessageInput): Promise<Message> {
-        console.log('dataaaa: ', data);
+        console.log('data in sendUseCase: ', data);
         if (!data.content && !data.mediaUrl) {
             throw new AppError(chatMessages.ERROR.EMPTY_MESSAGE, HttpStatus.BAD_REQUEST);
         }
@@ -27,7 +27,6 @@ export class SendMessageUseCase implements ISendMessageUseCase {
             data.senderId, 
             data.consultationId,
         );
-        console.log('data in usecase: ', data);
         return await this._messageRepo.create(data);
     }
 }

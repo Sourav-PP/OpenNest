@@ -1,4 +1,5 @@
 import { Consultation } from '../entities/consultation';
+import { Message } from '../entities/message';
 import { Psychologist } from '../entities/psychologist';
 import { User } from '../entities/user';
 
@@ -19,7 +20,7 @@ export interface IConsultationRepository {
                 | 'rescheduled'
                 | 'all';
         },
-    ): Promise<{ consultation: Consultation; patient: User }[]>;
+    ): Promise<{ consultation: Consultation; patient: User; lastMessage?: Message; lastMessageTime?: Date; unreadCount: number }[]>;
     findByPatientId(
         patientId: string,
         params: {
@@ -35,7 +36,9 @@ export interface IConsultationRepository {
                 | 'all';
         },
     ): Promise<
-        { consultation: Consultation; psychologist: Psychologist; user: User }[]
+        { consultation: Consultation; psychologist: Psychologist; user: User; lastMessage?: Message;
+                lastMessageTime?: Date;
+                unreadCount: number; }[]
     >;
     findById(id: string): Promise<Consultation | null>;
     countAllByPatientId(patientId: string): Promise<number>;

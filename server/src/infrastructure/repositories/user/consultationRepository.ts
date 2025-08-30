@@ -4,6 +4,7 @@ import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultat
 import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
+import { Message } from '@/domain/entities/message';
 
 export class ConsultationRepository implements IConsultationRepository {
     async createConsultation(
@@ -46,7 +47,7 @@ export class ConsultationRepository implements IConsultationRepository {
                 | 'rescheduled'
                 | 'all';
         },
-    ): Promise<{ consultation: Consultation; patient: User }[]> {
+    ): Promise<{ consultation: Consultation; patient: User; lastMessage?: Message; lastMessageTime?: Date; unreadCount: number }[]> {
         const matchStage: Record<string, unknown> = {
             psychologistId: new mongoose.Types.ObjectId(psychologistId),
         };
@@ -69,6 +70,52 @@ export class ConsultationRepository implements IConsultationRepository {
                 },
             },
             { $unwind: '$patient' },
+            {
+                $lookup: {
+                    from: 'messages',
+                    let: { consultationId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$consultationId', '$$consultationId'] },
+                            },
+                        },
+                        { $sort: { createdAt: -1 } },
+                        { $limit: 1 },
+                    ],
+                    as: 'lastMessage',
+                },
+            },
+            {
+                $addFields: {
+                    lastMessage: { $arrayElemAt: ['$lastMessage', 0] },
+                    lastMessageTime: { $arrayElemAt: ['$lastMessage.createdAt', 0] },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'messages',
+                    let: { consultationId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$consultationId', '$$consultationId'] },
+                                status: { $in: ['sent', 'delivered'] },
+                                receiverId: new mongoose.Types.ObjectId(psychologistId),
+                            },
+                        },
+                        { $count: 'unreadCount' },
+                    ],
+                    as: 'unread',
+                },
+            },
+            {
+                $addFields: {
+                    unreadCount: {
+                        $ifNull: [{ $arrayElemAt: ['$unread.unreadCount', 0] }, 0],
+                    },
+                },
+            },
         ];
 
         if (params.search) {
@@ -107,6 +154,9 @@ export class ConsultationRepository implements IConsultationRepository {
                 name: item.patient.name,
                 profileImage: item.patient.profileImage,
             } as User,
+            lastMessage: item.lastMessage ?? undefined,
+            lastMessageTime: item.lastMessageTime ?? undefined,
+            unreadCount: item.unreadCount ?? 0,
         }));
     }
 
@@ -125,7 +175,9 @@ export class ConsultationRepository implements IConsultationRepository {
                 | 'all';
         },
     ): Promise<
-        { consultation: Consultation; psychologist: Psychologist; user: User }[]
+        { consultation: Consultation; psychologist: Psychologist; user: User; lastMessage?: Message;
+        lastMessageTime?: Date;
+        unreadCount: number; }[]
     > {
         const matchStage: Record<string, unknown> = {
             patientId: new mongoose.Types.ObjectId(patientId),
@@ -159,6 +211,66 @@ export class ConsultationRepository implements IConsultationRepository {
                 },
             },
             { $unwind: '$psychologist.user' },
+            {
+                $lookup: {
+                    from: 'messages',
+                    let: { consultationId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: [
+                                        '$consultationId',
+                                        '$$consultationId',
+                                    ],
+                                },
+                            },
+                        },
+                        { $sort: { createdAt: -1 } },
+                        { $limit: 1 },
+                    ],
+                    as: 'lastMessage',
+                },
+            },
+            {
+                $addFields: {
+                    lastMessage: { $arrayElemAt: ['$lastMessage', 0] },
+                    lastMessageTime: {
+                        $arrayElemAt: ['$lastMessage.createdAt', 0],
+                    },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'messages',
+                    let: { consultationId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: [
+                                        '$consultationId',
+                                        '$$consultationId',
+                                    ],
+                                },
+                                status: { $in: ['sent', 'delivered'] },
+                                receiverId: new mongoose.Types.ObjectId(
+                                    patientId,
+                                ),
+                            },
+                        },
+                        { $count: 'unreadCount' },
+                    ],
+                    as: 'unread',
+                },
+            },
+            {
+                $addFields: {
+                    unreadCount: {
+                        $ifNull: [{ $arrayElemAt: ['$unread.unreadCount', 0] }, 0],
+                    },
+                },
+            },
         ];
 
         if (params.search) {
@@ -183,7 +295,6 @@ export class ConsultationRepository implements IConsultationRepository {
         }
 
         const results = await ConsultationModel.aggregate(pipeline);
-        console.log('the result: ', results);
 
         return results.map(item => ({
             consultation: {
@@ -200,11 +311,14 @@ export class ConsultationRepository implements IConsultationRepository {
                 id: item.psychologist._id.toString(),
                 userId: item.psychologist.userId.toString(),
             } as Psychologist,
-            user: {
+            user: { // user collection of psychologist
                 id: item.psychologist.user._id.toString(),
                 name: item.psychologist.user.name,
                 profileImage: item.psychologist.user.profileImage,
             } as User,
+            lastMessage: item.lastMessage ?? undefined,
+            lastMessageTime: item.lastMessageTime ?? undefined,
+            unreadCount: item.unreadCount ?? 0,
         }));
     }
 

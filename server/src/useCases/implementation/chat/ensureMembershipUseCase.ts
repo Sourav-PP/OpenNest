@@ -24,7 +24,6 @@ export class EnsureMembershipUseCase implements IEnsureMembershipUseCase {
         console.log('userid in membership: ', userId);
 
         const consultation = await this._consultationRepo.findById(consultationId);
-        console.log('consultation: ', consultation);
         if (!consultation) throw new AppError(bookingMessages.ERROR.CONSULTATION_NOT_FOUND, HttpStatus.NOT_FOUND);
         let isMember = false;
 

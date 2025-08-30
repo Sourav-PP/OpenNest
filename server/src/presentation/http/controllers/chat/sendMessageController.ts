@@ -15,6 +15,7 @@ export class SendMessageController {
         next: NextFunction,
     ): Promise<void> => {
         try {
+            console.log('is it coming here in the controller?');
             const message = await this._sendMessageUseCase.execute(req.body);
             res.status(200).json({
                 success: true,

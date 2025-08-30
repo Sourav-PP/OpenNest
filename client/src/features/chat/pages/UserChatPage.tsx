@@ -5,14 +5,14 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/redux/store';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { IConsultationDto, IPsychologistConsultationDto } from '@/types/dtos/consultation';
+import type { IPsychologistChatConsultationDto, IUserChatConsultationDto } from '@/types/dtos/consultation';
 import Sidebar from '@/components/user/Sidebar';
 import Header from '@/components/user/Header';
 
 export default function PsychologistChatPage() {
   const { role, userId } = useSelector((state: RootState) => state.auth);
   const [selectedConsultation, setSelectedConsultation] = useState<
-    IConsultationDto | IPsychologistConsultationDto | null
+    IUserChatConsultationDto | IPsychologistChatConsultationDto | null
   >(null);
   const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(false);
 
@@ -66,8 +66,8 @@ export default function PsychologistChatPage() {
                 userId={userId!}
                 peerId={
                   role === 'user'
-                    ? (selectedConsultation as IConsultationDto).psychologist.id
-                    : (selectedConsultation as IPsychologistConsultationDto).patient.id
+                    ? (selectedConsultation as IUserChatConsultationDto).psychologist.id
+                    : (selectedConsultation as IPsychologistChatConsultationDto).patient.id
                 }
               />
             ) : (

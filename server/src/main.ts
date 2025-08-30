@@ -4,7 +4,8 @@ import { connectDB } from './infrastructure/database/mongoose';
 import { app } from './presentation/http/server';
 import logger from './utils/logger';
 import { Server } from 'socket.io';
-import { chatSocketHandler } from './infrastructure/config/di';
+import { chatSocketHandler, tokenService } from './infrastructure/config/di';
+import { configureSocket } from './infrastructure/config/socket';
 
 async function startServer() {
     await connectDB();
@@ -15,12 +16,11 @@ async function startServer() {
         cors: {
             origin: appConfig.cors.origin,
             methods: ['GET', 'POST'],
+            credentials: true,
         },
     });
 
-    io.on('connection', socket => {
-        chatSocketHandler.register(io, socket);
-    });
+    configureSocket(io, chatSocketHandler, tokenService);
 
     httpServer.listen(appConfig.server.port, () => {
         logger.info(`Server running on port ${appConfig.server.port}`);

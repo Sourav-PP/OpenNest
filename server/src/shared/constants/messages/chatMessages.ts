@@ -2,6 +2,9 @@ export const chatMessages = {
     SUCCESS: {
         SENT: 'Message sent successfully',
         HISTORY_FETCHED: 'Chat history fetched successfully',
+        UNREAD_COUNT_FETCHED: 'Unread message count fetched successfully',
+        MARKED_AS_READ: 'Message successfully marked as read',
+        FETCHED_CONSULTATIONS: 'Consultations fetched successfully',
     },
     ERROR: {
         NOT_PAID: 'Chat not available until payment is completed',
