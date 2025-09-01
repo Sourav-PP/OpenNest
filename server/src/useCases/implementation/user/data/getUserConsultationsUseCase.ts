@@ -25,7 +25,6 @@ export class GetUserConsultationsUseCase implements IGetUserConsultationUseCase 
             skip,
         });
 
-
         const mappedConsultations = consultations.map(c => toConsultationDto(c.consultation, c.psychologist, c.user));
 
         const totalCount = await this._consultationRepo.countAllByPatientId(userId);

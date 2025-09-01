@@ -16,7 +16,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex justify-between items-center px-6 py-4 bg-white shadow-md">
+    <div className="flex justify-between items-center px-6 py-4 bg-white shadow-md z-40">
       <div className="text-xl font-semibold text-gray-800"></div>
       <div className="flex items-center gap-4">
         <p className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700">{email}</p>

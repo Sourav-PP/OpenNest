@@ -69,6 +69,7 @@ import { CreateSlotUseCase } from '../../useCases/implementation/psychologist/av
 import { GetSlotByPsychologistUseCase } from '../../useCases/implementation/psychologist/availability/GetSlotByPsychologistUseCase';
 import { DeleteSlotUseCase } from '../../useCases/implementation/psychologist/availability/DeleteSlotUseCase';
 import { GetKycDetailsUseCase } from '../../useCases/implementation/psychologist/profile/getKycDetailsUseCase';
+import { GetPsychologistConsultationUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistConsultationsUseCase';
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -82,6 +83,16 @@ import { GetAllKycUseCase } from '../../useCases/implementation/admin/management
 import { GetKycForPsychologistUseCase } from '../../useCases/implementation/admin/management/getKycForPsychologistUseCase';
 import { ApproveKycUseCase } from '../../useCases/implementation/admin/management/approveKycUseCase';
 import { RejectKycUseCase } from '../../useCases/implementation/admin/management/rejectKycUseCase';
+
+//--------------- chat -------------------
+import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
+import { GetPsychologistChatConsultationsUseCase } from '@/useCases/implementation/chat/getPsychologistChatConsultationsUseCase';
+import { SendMessageUseCase } from '@/useCases/implementation/chat/sendMessageUseCase';
+import { GetHistoryUseCase } from '@/useCases/implementation/chat/getHistoryUseCase';
+import { ChatSocketHandler } from '@/presentation/socket/chatSocketHandler';
+import { EnsureMembershipUseCase } from '@/useCases/implementation/chat/ensureMembershipUseCase';
+import { GetUnreadCountUseCase } from '@/useCases/implementation/chat/getUnreadCountUseCase';
+import { MarkReadUseCase } from '@/useCases/implementation/chat/markReadUseCase';
 
 
 //===================== CONTROLLERS =====================
@@ -110,6 +121,8 @@ import { CreateSlotController } from '../../presentation/http/controllers/psycho
 import { GetSlotByPsychologistController } from '../../presentation/http/controllers/psychologist/getSlotByPsychologistController';
 import { DeleteSlotController } from '../../presentation/http/controllers/psychologist/deleteSlotController';
 import { GetKycDetailsController } from '../../presentation/http/controllers/psychologist/getKycDetailsController';
+import { GetPsychologistConsultationsController } from '@/presentation/http/controllers/psychologist/getPsychologistConsultationsController';
+
 
 //---------------- admin -------------------
 import { AdminAuthController } from '../../presentation/http/controllers/admin/adminAuthController';
@@ -123,17 +136,25 @@ import { GetKycForPsychologistController } from '../../presentation/http/control
 import { ApproveKycController } from '../../presentation/http/controllers/admin/approveKycController';
 import { RejectKycController } from '../../presentation/http/controllers/admin/rejectKycController';
 
+//---------------- chat -----------------------
+import { GetUserChatConsultationsController } from '@/presentation/http/controllers/chat/getUserChatConsultationsController';
+import { GetPsychologistChatConsultationsController } from '@/presentation/http/controllers/chat/getPsychologistChatConsultationsController';
+import { SendMessageController } from '@/presentation/http/controllers/chat/sendMessageController';
+import { GetHistoryController } from '@/presentation/http/controllers/chat/getHistoryController';
+import { GetUnreadCountController } from '@/presentation/http/controllers/chat/getUnreadCountController';
+import { MarkAsReadController } from '@/presentation/http/controllers/chat/markAsReadController';
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
 import { checkBlockedMiddleware } from '../../presentation/http/middlewares/checkBlockedMiddleware';
+import { MessageRepository } from '../repositories/user/messageRepository';
 
 
 // ======================= DI IMPLEMENTATION =======================
 
 // ---------- SERVICES ----------
 const authService = new BcryptAuthService();
-const tokenService = new JwtTokenService();
+export const tokenService = new JwtTokenService();
 const otpRepository = new OtpRepository();
 const otpService = new NodemailerOtpService(otpRepository);
 const userRepository = new UserRepository();
@@ -212,6 +233,7 @@ const createSlotUseCase = new CreateSlotUseCase(slotRepository, psychologistRepo
 const getSlotByPsychologistUseCase = new GetSlotByPsychologistUseCase(slotRepository, psychologistRepository);
 const deleteSlotUseCase = new DeleteSlotUseCase(slotRepository, psychologistRepository);
 const getKycDetailsUseCase = new GetKycDetailsUseCase(kycRepository, psychologistRepository);
+const getPsychologistConsultationsUseCase = new GetPsychologistConsultationUseCase(consultationRepository, psychologistRepository);
 
 
 export const verifyPsychologistController = new VerifyPsychologistController(verifyPsychologistUseCase);
@@ -221,6 +243,7 @@ export const createSlotController = new CreateSlotController(createSlotUseCase);
 export const getSlotByPsychologistController = new GetSlotByPsychologistController(getSlotByPsychologistUseCase);
 export const deleteSlotController = new DeleteSlotController(deleteSlotUseCase);
 export const getKycDetailsController = new GetKycDetailsController(getKycDetailsUseCase);
+export const getPsychologistConsultationsController = new GetPsychologistConsultationsController(getPsychologistConsultationsUseCase);
 
 
 // ---------- ADMIN ----------
@@ -253,3 +276,25 @@ export const getAllKycController = new GetAllKycController(getAllKycUseCase);
 export const getKycForPsychologistController = new GetKycForPsychologistController(getKycForPsychologistUseCase);
 export const approveKycController = new ApproveKycController(approveKycUseCase);
 export const rejectKycController = new RejectKycController(rejectKycUseCase);
+
+//--------------- chat -----------------------
+
+const messageRepository = new MessageRepository();
+
+const getUserChatConsultationsUseCase = new GetUserChatConsultationsUseCase(consultationRepository);
+const getPsychologistChatConsultationsUseCase = new GetPsychologistChatConsultationsUseCase(consultationRepository, psychologistRepository);
+const ensureMembershipUseCase = new EnsureMembershipUseCase(consultationRepository, psychologistRepository);
+const sendMessageUseCase = new SendMessageUseCase(messageRepository, ensureMembershipUseCase);
+const getHistoryUseCase = new GetHistoryUseCase(messageRepository);
+const getUnreadCountUseCase = new GetUnreadCountUseCase(messageRepository, userRepository, psychologistRepository);
+const markReadUseCase = new MarkReadUseCase(messageRepository, psychologistRepository, userRepository);
+
+export const getUserChatConsultationsController = new GetUserChatConsultationsController(getUserChatConsultationsUseCase);
+export const getPsychologistChatConsultationsController = new GetPsychologistChatConsultationsController(getPsychologistChatConsultationsUseCase);
+export const sendMessageController = new SendMessageController(sendMessageUseCase);
+export const getHistoryController = new GetHistoryController(getHistoryUseCase);
+export const getUnreadCountController = new GetUnreadCountController(getUnreadCountUseCase);
+export const markAsReadController = new MarkAsReadController(markReadUseCase);
+
+// socket handler
+export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase);

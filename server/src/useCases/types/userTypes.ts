@@ -58,7 +58,7 @@ export interface IGetConsultationsRequest {
   patientId: string
   search?: string;
   sort?: 'asc' | 'desc';
-  status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled';  
+  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';  
   page?: number;
   limit?: number; 
 }
@@ -67,4 +67,6 @@ export interface IGetConsultationsResponse {
   consultations: IConsultationDto[],
   totalCount: number
 }
+
+
 

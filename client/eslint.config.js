@@ -31,7 +31,7 @@ export default defineConfig([
       'no-unused-vars': 'off', // use TS rule
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       eqeqeq: ['error', 'always'],
-      'no-console': 'warn',
+      'no-console': 'off',
       'prefer-const': 'error',
     },
   },

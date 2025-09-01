@@ -7,6 +7,7 @@ import EditProfilePage from '@/features/psychologist/pages/EditProfilePage';
 import CreateSlotPage from '@/features/psychologist/pages/CreateSlotPage';
 import MyKycDetailsPage from '@/features/psychologist/pages/MyKycDetailsPage';
 import ChangePsychologistPasswordPage from '@/features/psychologist/pages/ChangePsychologistPasswordPage';
+import PsychologistChatPage from '@/features/chat/pages/PsychologistChatPage';
 
 export const psychologistRoutes: RouteObject[] = [
   {
@@ -32,5 +33,13 @@ export const psychologistRoutes: RouteObject[] = [
   {
     path:'/psychologist/slot',
     element: <PrivateRoute allowedRoles={['psychologist']}><CreateSlotPage/></PrivateRoute>
+  },
+  {
+    path: '/psychologist/chat',
+    element: <PrivateRoute allowedRoles={['psychologist']}><PsychologistChatPage/></PrivateRoute>
+  },
+  {
+    path: '/psychologist/chat/:consultationId',
+    element: <PrivateRoute allowedRoles={['psychologist']}><PsychologistChatPage/></PrivateRoute>
   }
 ];

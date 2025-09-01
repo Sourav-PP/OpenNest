@@ -16,13 +16,22 @@ export const appConfig = {
     },
 
     cors: {
-        origins: process.env.FRONTEND_URLS?.split(',') || ['http://localhost:5173'],
+        origin: process.env.FRONTEND_URLS || 'http://localhost:5173',
     },
 
     jwt: {
-        accessTokenSecret: required('ACCESS_TOKEN_SECRET', process.env.ACCESS_TOKEN_SECRET),
-        refreshTokenSecret: required('REFRESH_TOKEN_SECRET', process.env.REFRESH_TOKEN_SECRET),
-        signupTokenSecret: required('SIGNUP_TOKEN_SECRET', process.env.SIGNUP_TOKEN_SECRET),
+        accessTokenSecret: required(
+            'ACCESS_TOKEN_SECRET',
+            process.env.ACCESS_TOKEN_SECRET,
+        ),
+        refreshTokenSecret: required(
+            'REFRESH_TOKEN_SECRET',
+            process.env.REFRESH_TOKEN_SECRET,
+        ),
+        signupTokenSecret: required(
+            'SIGNUP_TOKEN_SECRET',
+            process.env.SIGNUP_TOKEN_SECRET,
+        ),
     },
 
     db: {
@@ -37,9 +46,15 @@ export const appConfig = {
     },
 
     cloudinary: {
-        cloudName: required('CLOUDINARY_CLOUD_NAME', process.env.CLOUDINARY_CLOUD_NAME),
+        cloudName: required(
+            'CLOUDINARY_CLOUD_NAME',
+            process.env.CLOUDINARY_CLOUD_NAME,
+        ),
         apiKey: required('CLOUDINARY_API_KEY', process.env.CLOUDINARY_API_KEY),
-        apiSecret: required('CLOUDINARY_API_SECRET', process.env.CLOUDINARY_API_SECRET),
+        apiSecret: required(
+            'CLOUDINARY_API_SECRET',
+            process.env.CLOUDINARY_API_SECRET,
+        ),
     },
 
     google: {
@@ -48,9 +63,18 @@ export const appConfig = {
 
     stripe: {
         secretKey: required('STRIPE_SECRET_KEY', process.env.STRIPE_SECRET_KEY),
-        webhookSecret: required('STRIPE_WEBHOOK_SECRET', process.env.STRIPE_WEBHOOK_SECRET),
+        webhookSecret: required(
+            'STRIPE_WEBHOOK_SECRET',
+            process.env.STRIPE_WEBHOOK_SECRET,
+        ),
         currency: process.env.CURRENCY || 'usd',
-        frontendSuccessUrl: required('FRONTEND_SUCCESS_URL', process.env.FRONTEND_SUCCESS_URL),
-        frontendCancelUrl: required('FRONTEND_CANCEL_URL', process.env.FRONTEND_CANCEL_URL),
+        frontendSuccessUrl: required(
+            'FRONTEND_SUCCESS_URL',
+            process.env.FRONTEND_SUCCESS_URL,
+        ),
+        frontendCancelUrl: required(
+            'FRONTEND_CANCEL_URL',
+            process.env.FRONTEND_CANCEL_URL,
+        ),
     },
 };

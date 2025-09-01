@@ -33,8 +33,6 @@ export class GetUserConsultationsController {
                 limit,
             });
 
-            console.log('consultations: ', result);
-
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,

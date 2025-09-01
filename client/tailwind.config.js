@@ -114,7 +114,7 @@ export default {
   		backgroundImage: {
   			auth: "url(/images/auth_bg.jpg)",
   			login: "url(/images/login_bg.svg)",
-  			hero: 'url(/images/hero_banner.jpg)'
+				chat_doodle: 'url(/images/chat_doodle.png)'
   		},
   		fontFamily: {
   			jakarta: [
