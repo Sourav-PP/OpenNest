@@ -1,3 +1,4 @@
+import type { IConsultationDto } from '@/types/dtos/consultation';
 import type {
   IGetUserConsultationsResponse,
   ICreateCheckoutSessionInput,
@@ -7,7 +8,8 @@ import type {
   IGetUserConsultationsRequest,
   IGetPsychologistByIdResponse,
   IGetUserProfileResponse,
-  IGetSlotsByPsychologistResponse
+  IGetSlotsByPsychologistResponse,
+  IUserConsultationDetailsResponse
 } from '../../types/api/user';
 
 import { server } from '../server';
@@ -27,4 +29,6 @@ export const userApi = {
   }),
   createCheckoutSession: async(input: ICreateCheckoutSessionInput) => server.post<ICreateCheckoutSessionResponse, ICreateCheckoutSessionInput>('/user/payment/create-checkout-session', input),
   getUserConsultations: async(params?: IGetUserConsultationsRequest) => server.get<IGetUserConsultationsResponse>('/user/consultations', {params}),
+  UserConsultationsDetail: async(id: string) => server.get<IUserConsultationDetailsResponse>(`/user/consultation/${id}`),
+  cancelConsultation: async(id: string, reason: string) => server.put<BackendResponse<IConsultationDto>, { reason: string }>(`/user/consultation/${id}/cancel`, { reason }),
 };

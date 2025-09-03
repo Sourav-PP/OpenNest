@@ -1,8 +1,9 @@
-import { IConsultationDto, IPsychologistChatConsultationDto, IPsychologistConsultationDto, IUserChatConsultationDto } from '../dtos/consultation';
+import { IConsultationDto, IPsychologistChatConsultationDto, IPsychologistConsultationDto, IUserChatConsultationDto, IUserConsultationDetailsDto } from '../dtos/consultation';
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
 import { Consultation } from '@/domain/entities/consultation';
 import { Message } from '@/domain/entities/message';
+import { Slot } from '@/domain/entities/slot';
 
 export function toConsultationDto(
     consultation: Consultation,
@@ -100,3 +101,37 @@ export function toPsychologistChatConsultationDto(
     };
 }
 
+
+export function toUserConsultationDetail(
+    consultation: Consultation,
+    psychologist: Psychologist & User,
+    user: User,
+    slot: Slot,
+): IUserConsultationDetailsDto {
+    return {
+        id: consultation.id,
+        sessionGoal: consultation.sessionGoal,
+        status: consultation.status,
+        meetingLink: consultation.meetingLink,
+        startDateTime: consultation.startDateTime,
+        endDateTime: consultation.endDateTime,
+
+        psychologist: {
+            id: psychologist.id,
+            name: psychologist.name,
+            profileImage: psychologist.profileImage,
+        },
+        patient: {
+            id: user.id,
+            name: user.name,
+            profileImage: user.profileImage,
+        },
+        slot: {
+            id: slot.id,
+            startDateTime: slot.startDateTime,
+            endDateTime: slot.endDateTime,
+            isBooked: slot.isBooked,
+            bookedBy: slot.bookedBy,
+        },
+    };
+}

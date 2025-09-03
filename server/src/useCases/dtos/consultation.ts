@@ -56,3 +56,30 @@ export interface IPsychologistChatConsultationDto {
     lastMessageTime?: Date;
     unreadCount: number;
 }
+
+export interface IUserConsultationDetailsDto {
+    id: string;
+    sessionGoal: string,
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    meetingLink?: string;
+    startDateTime: Date;
+    endDateTime: Date;
+
+    psychologist: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    },
+    patient: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    },
+    slot: {
+        id: string;
+        startDateTime: Date;
+        endDateTime: Date;
+        isBooked: boolean;
+        bookedBy?: string | null;
+    },
+}

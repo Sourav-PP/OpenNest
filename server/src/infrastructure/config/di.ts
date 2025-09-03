@@ -14,6 +14,7 @@ import { OtpRepository } from '../repositories/user/otpRepository';
 import { PaymentRepository } from '../repositories/user/paymentRepository';
 import { ConsultationRepository } from '../repositories/user/consultationRepository';
 import { CloudinaryStorage } from '../fileStorage/cloudinaryStorage';
+import { WalletRepository } from '../repositories/user/walletRepository';
 
 // -------------- psychologist ------------------
 import { KycRepository } from '../repositories/psychologist/kycRepository';
@@ -60,6 +61,13 @@ import { GetSlotForUserUseCase } from '../../useCases/implementation/user/data/g
 import { CreateCheckoutSessionUseCase } from '../../useCases/implementation/user/payment/createCheckoutSessionUseCase';
 import { HandleWebhookUseCase } from '../../useCases/implementation/user/payment/handleWebhookUseCase';
 import { GetUserConsultationsUseCase } from '../../useCases/implementation/user/data/getUserConsultationsUseCase';
+import { CreateWalletUseCase } from '@/useCases/implementation/user/wallet/createWalletUseCase';
+import { GetWalletByIdUseCase } from '@/useCases/implementation/user/wallet/getWalletByIdUseCase';
+import { GetWalletByUserUseCase } from '@/useCases/implementation/user/wallet/getWalletByUserUseCase';
+import { CreateWalletTransactionUseCase } from '@/useCases/implementation/user/wallet/createWalletTransactionUseCase';
+import { ListWalletTransactionsUseCase } from '@/useCases/implementation/user/wallet/listWalletTransactionsUseCase';
+import { GetUserConsultationByIdUseCase } from '@/useCases/implementation/user/data/getUserConsultationByIdUseCase';
+import { CancelConsultationUseCase } from '@/useCases/implementation/user/data/cancelConsultationUseCase';
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from '../../useCases/implementation/psychologist/profile/verifyUseCase';
@@ -111,6 +119,13 @@ import { GoogleLoginController } from '../../presentation/http/controllers/auth/
 import { GetSlotsForUserController } from '../../presentation/http/controllers/user/getSlotForUserController';
 import { PaymentController } from '../../presentation/http/controllers/user/paymentController';
 import { GetUserConsultationsController } from '../../presentation/http/controllers/user/getUserConsultationsController';
+import { CreateWalletController } from '@/presentation/http/controllers/user/wallet/createWalletController';
+import { GetWalletByIdController } from '@/presentation/http/controllers/user/wallet/getWalletByIdController';
+import { GetWalletByUserController } from '@/presentation/http/controllers/user/wallet/getWalletByUserController';
+import { CreateWalletTransactionController } from '@/presentation/http/controllers/user/wallet/createWalletTransactionController';
+import { ListWalletTransactionController } from '@/presentation/http/controllers/user/wallet/listWalletTransactionController';
+import { GetUserConsultationDetailController } from '@/presentation/http/controllers/user/getUserConsultationDetailController';
+import { CancelConsultationController } from '@/presentation/http/controllers/user/cancelConsultationController';
 
 
 //---------------- psychologist -----------------
@@ -180,6 +195,7 @@ const userServiceRepository = new ServiceRepository();
 const psychologistRepository = new PsychologistRepository();
 const paymentRepository = new PaymentRepository();
 const consultationRepository = new ConsultationRepository();
+const walletRepository = new WalletRepository();
 
 
 const signupUseCase = new SignupUseCase(userRepository, tokenService, fileStorage);
@@ -199,8 +215,15 @@ const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository, fi
 const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(psychologistRepository, kycRepository, userRepository);
 const getSlotsForUserUseCase = new GetSlotForUserUseCase(slotRepository, psychologistRepository);
 const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(paymentService, paymentRepository, slotRepository);
-const handleWebhookUseCase = new HandleWebhookUseCase(paymentRepository, paymentService, consultationRepository, slotRepository);
+const handleWebhookUseCase = new HandleWebhookUseCase(paymentRepository, paymentService, consultationRepository, slotRepository, walletRepository);
 const getUserConsultationsUseCase = new GetUserConsultationsUseCase(consultationRepository);
+const createWalletUseCase = new CreateWalletUseCase(walletRepository);
+const getWalletByIdUseCase = new GetWalletByIdUseCase(walletRepository);
+const getWalletByUserUseCase = new GetWalletByUserUseCase(walletRepository);
+const createWalletTransactionUseCase = new CreateWalletTransactionUseCase(walletRepository);
+const listWalletTransactionsUseCase = new ListWalletTransactionsUseCase(walletRepository);
+const getUserConsultationByIdUseCase = new GetUserConsultationByIdUseCase(consultationRepository);
+const cancelConsultationUseCase = new CancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository);
 
 
 export const authController = new AuthController(
@@ -222,6 +245,13 @@ export const getPsychologistDetailsController = new GetPsychologistDetailsContro
 export const getSlotsForUserController = new GetSlotsForUserController(getSlotsForUserUseCase);
 export const paymentController = new PaymentController(createCheckoutSessionUseCase, handleWebhookUseCase);
 export const getUserConsultationsController = new GetUserConsultationsController(getUserConsultationsUseCase);
+export const createWalletController = new CreateWalletController(createWalletUseCase);
+export const getWalletByIdController = new GetWalletByIdController(getWalletByIdUseCase);
+export const getWalletByUserController = new GetWalletByUserController(getWalletByUserUseCase);
+export const createWalletTransactionController = new CreateWalletTransactionController(createWalletTransactionUseCase);
+export const listWalletTransactionController = new ListWalletTransactionController(listWalletTransactionsUseCase);
+export const getUserConsultationDetailController = new GetUserConsultationDetailController(getUserConsultationByIdUseCase);
+export const cancelConsultationController = new CancelConsultationController(cancelConsultationUseCase);
 
 
 // ---------- PSYCHOLOGIST ----------

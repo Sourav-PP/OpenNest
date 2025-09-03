@@ -40,7 +40,8 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
       const res = await userApi.createCheckoutSession({
         slotId,
         amount,
-        sessionGoal: data.sessionGoal
+        sessionGoal: data.sessionGoal,
+        purpose: 'consultation'
       });
 
       if(!res.data) {

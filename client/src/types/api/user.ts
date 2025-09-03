@@ -20,9 +20,10 @@ export interface IGetAllPsychologistRequest {
 
 export interface ICreateCheckoutSessionInput {
     subscriptionId?: string;
-    slotId: string;
+    slotId?: string;
     amount: number;
-    sessionGoal: string;
+    sessionGoal?: string;
+    purpose?: 'consultation' | 'wallet'
 }
 
 export interface ICreateCheckoutSessionResponseData {
@@ -54,6 +55,33 @@ export interface IGetUserConsultationsResponseData {
     totalCount: number
 }
 
+export interface IUserConsultationDetailsResponseData {
+    id: string;
+    sessionGoal: string,
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    meetingLink?: string;
+    startDateTime: Date;
+    endDateTime: Date;
+
+    psychologist: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    },
+    patient: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    },
+    slot: {
+        id: string;
+        startDateTime: Date;
+        endDateTime: Date;
+        isBooked: boolean;
+        bookedBy?: string | null;
+    },
+}
+
 export interface IGetPsychologistByIdResponseData {
     psychologist: IPsychologistProfileDto
 }
@@ -61,6 +89,7 @@ export interface IGetPsychologistByIdResponseData {
 export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>
 export type IGetPsychologistByIdResponse = BackendResponse<IGetPsychologistByIdResponseData>
 export type IGetUserConsultationsResponse = BackendResponse<IGetUserConsultationsResponseData>
+export type IUserConsultationDetailsResponse = BackendResponse<IUserConsultationDetailsResponseData>
 export type IGetUserProfileResponse = BackendResponse<IGetUserProfileResponseData>
 export type ICreateCheckoutSessionResponse = BackendResponse<ICreateCheckoutSessionResponseData>
 export type IGetSlotsByPsychologistResponse = BackendResponse<ISlotDto[]>

@@ -25,7 +25,7 @@ export class PaymentController {
         next: NextFunction,
     ): Promise<void> => {
         try {
-            const { slotId, sessionGoal, amount } = req.body;
+            const { slotId, sessionGoal, amount, purpose } = req.body;
             const userId = req.user?.userId;
 
             if (!userId) {
@@ -35,7 +35,17 @@ export class PaymentController {
                 );
             }
 
-            if (!slotId || !sessionGoal || !amount) {
+            if (!purpose || !amount) {
+                console.log('problem is here..');
+
+                throw new AppError(
+                    bookingMessages.ERROR.MISSING_FIELDS,
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
+
+            if (purpose === 'consultation' && (!slotId || !sessionGoal)) {
+                console.log('problem is here');
                 throw new AppError(
                     bookingMessages.ERROR.MISSING_FIELDS,
                     HttpStatus.BAD_REQUEST,
@@ -47,6 +57,7 @@ export class PaymentController {
                 slotId,
                 amount,
                 sessionGoal,
+                purpose,
             });
 
             res.status(HttpStatus.OK).json({

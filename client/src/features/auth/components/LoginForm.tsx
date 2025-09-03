@@ -13,6 +13,7 @@ import { authApi } from '@/services/api/auth';
 import GoogleLoginButton from './GoogleLoginButton';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { Lock, Mail } from 'lucide-react';
+import { walletApi } from '@/services/api/wallet';
 
 
 
@@ -65,6 +66,16 @@ const LoginForm = () => {
           isSubmittedVerification: res.data.hasSubmittedVerificationForm,
         })
       );
+
+      if(role === 'user') {
+        try {
+          await walletApi.create();
+        } catch (error) {
+          console.log('error: ', error);
+          console.log('sdfoisdfo jjj');
+          handleApiError(error);
+        }
+      }
 
       toast.success(res.message);
       navigateAfterLogin(res.data.user.role, res.data.hasSubmittedVerificationForm);

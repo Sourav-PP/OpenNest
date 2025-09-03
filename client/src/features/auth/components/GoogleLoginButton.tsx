@@ -6,6 +6,7 @@ import { loginSuccess } from '@/redux/slices/authSlice';
 import { toast } from 'react-toastify';
 import { authApi } from '@/services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { walletApi } from '@/services/api/wallet';
 
 declare global { 
     interface Window {
@@ -75,6 +76,12 @@ const GoogleLoginButton = () => {
             userId: decoded.userId,
             isSubmittedVerification: res.data.hasSubmittedVerificationForm,
           }));
+
+          try {
+            await walletApi.create();
+          } catch (error) {
+            handleApiError(error);
+          }
 
           toast.success(res.message);
 
