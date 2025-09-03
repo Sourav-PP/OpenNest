@@ -7,6 +7,7 @@ import ConsultationFilters from '@/components/user/ConsultationFilters';
 import ReusableTable from '@/components/user/ReusableTable';
 import CustomPagination from '@/components/user/CustomPagination';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
+import { useNavigate } from 'react-router-dom';
 
 const UserConsultationsTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
@@ -17,6 +18,7 @@ const UserConsultationsTable = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const itemsPerPage = 10;
 
   // debounce search
@@ -153,6 +155,9 @@ const UserConsultationsTable = () => {
         <ReusableTable
           data={consultations}
           columns={columns}
+          onRowClick={(consultation: IConsultationDto) => {
+            navigate(`/user/consultations/${consultation.id}`);
+          }}
           emptyMessage="No consultations found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />

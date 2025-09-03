@@ -19,9 +19,10 @@ interface ReusableTableProps<T> {
   columns: Column<T>[];
   emptyMessage: string;
   className?: string;
+  onRowClick?: (row: any) => void;
 }
 
-const ReusableTable = <T,>({ data, columns, emptyMessage, className }: ReusableTableProps<T>) => {
+const ReusableTable = <T,>({ data, columns, emptyMessage, className, onRowClick }: ReusableTableProps<T>) => {
   return (
     <div className={`w-full overflow-x-auto rounded-2xl shadow-lg bg-white ${className}`}>
       <Table className="min-w-full">
@@ -65,6 +66,9 @@ const ReusableTable = <T,>({ data, columns, emptyMessage, className }: ReusableT
                     } ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${
                       colIndex === 0 ? 'pl-6 sm:pl-8' : ''
                     }`}
+                    onClick={() => {
+                      if(onRowClick) onRowClick(item);
+                    }}
                   >
                     {col.render(item, index)}
                   </TableCell>

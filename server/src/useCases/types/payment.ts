@@ -4,6 +4,7 @@ export interface ICreateCheckoutSessionInput {
     slotId: string;
     amount: number;
     sessionGoal: string;
+    purpose: 'consultation' | 'wallet';
 }
 
 export interface ICreateCheckoutSessionOutput {

@@ -8,7 +8,7 @@ export class PaymentRepository implements IPaymentRepository {
         const obj = doc.toObject();
         return {
             ...obj,
-            slotId: doc.slotId.toString(),
+            slotId: doc.slotId ? doc.slotId.toString() : null,
             userId: doc.userId.toString(),
             id: obj._id.toString(),
             consultationId: obj.consultationId ? obj.consultationId.toString() : undefined,
@@ -41,10 +41,52 @@ export class PaymentRepository implements IPaymentRepository {
         if (!doc) return null;
         return {
             ...doc,
-            slotId: doc.slotId.toString(),
+            slotId: doc.slotId ? doc.slotId.toString() : null, 
             userId: doc.userId.toString(),
             id: doc._id.toString(),
             consultationId: doc.consultationId ? doc.consultationId.toString() : undefined,
+        };
+    }
+
+    async findById(id: string): Promise<Payment | null> {
+        const payment = await PaymentModel.findById(id);
+
+        if (!payment) return null;
+
+        return {
+            id: payment._id.toString(),
+            userId: payment.userId.toString(),
+            consultationId: payment.consultationId ? payment.consultationId.toString() : undefined,
+            amount: payment.amount,
+            currency: payment.currency,
+            paymentMethod: payment.paymentMethod,
+            paymentStatus: payment.paymentStatus,
+            refunded: payment.refunded,
+            transactionId: payment.transactionId,
+            stripeSessionId: payment.stripeSessionId,
+            slotId: payment.slotId ? payment.slotId.toString() : null,
+            purpose: payment.purpose,
+        };
+    }
+
+    async findByConsultationId(id: string): Promise<Payment | null> {
+        const payment = await PaymentModel.findOne({ consultationId: id }).lean();
+
+        if (!payment) return null;
+
+        return {
+            id: payment._id.toString(),
+            userId: payment.userId.toString(),
+            consultationId: payment.consultationId ? payment.consultationId.toString() : undefined,
+            amount: payment.amount,
+            currency: payment.currency,
+            paymentMethod: payment.paymentMethod,
+            paymentStatus: payment.paymentStatus,
+            refunded: payment.refunded,
+            transactionId: payment.transactionId,
+            stripeSessionId: payment.stripeSessionId,
+            slotId: payment.slotId ? payment.slotId.toString() : null,
+            purpose: payment.purpose,
         };
     }
 }

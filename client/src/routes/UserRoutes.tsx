@@ -10,6 +10,8 @@ import Success from '@/features/user/components/Success';
 import Cancel from '@/features/user/components/Cancel';
 import MySessionsPage from '@/features/user/pages/MySessionsPage';
 import UserChatPage from '@/features/chat/pages/UserChatPage';
+import WalletPage from '@/features/wallet/pages/WalletPage';
+import ConsultationDetailPage from '@/features/user/pages/ConsultationDetailPage';
 
 export const userRoutes: RouteObject[] = [
   {
@@ -45,11 +47,19 @@ export const userRoutes: RouteObject[] = [
     element: <PrivateRoute allowedRoles={['user']}><MySessionsPage /></PrivateRoute>
   },
   {
+    path: '/user/consultations/:id',
+    element: <PrivateRoute allowedRoles={['user']}><ConsultationDetailPage /></PrivateRoute>
+  },
+  {
     path: '/user/chat',
     element: <PrivateRoute allowedRoles={['user']}><UserChatPage/></PrivateRoute>
   },
   {
     path: '/user/chat/:consultationId',
     element: <PrivateRoute allowedRoles={['user']}><UserChatPage/></PrivateRoute>
-  }
+  },
+  {
+    path: '/user/wallet',
+    element: <PrivateRoute allowedRoles={['user']}><WalletPage/></PrivateRoute>
+  },
 ];

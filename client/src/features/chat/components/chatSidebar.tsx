@@ -34,7 +34,6 @@ export default function ChatSidebar({
           toast.error('Something went wrong');
           return;
         }
-        console.log('res:fdhdfd: ', res);
 
         setConsultations(res.data.consultations);
 
@@ -126,63 +125,67 @@ export default function ChatSidebar({
       {/* Chat List */}
       <ScrollArea className="flex-1">
         <div className="space-y-1 p-2">
-          {consultations.map(c => (
-            <div
-              key={c.id}
-              onClick={() => handleSelect(c)}
-              className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
-                selectedChatId === c.id
-                  ? 'bg-green-100 text-green-900'
-                  : 'hover:bg-gray-100 text-gray-900'
-              }`}
-            >
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={
-                    role === 'user'
-                      ? getCloudinaryUrl((c as IUserChatConsultationDto).psychologist.profileImage) ?? undefined
-                      : getCloudinaryUrl((c as IPsychologistChatConsultationDto).patient.profileImage) ?? undefined
-                  }
-                />
-                <AvatarFallback>
-                  {role === 'user'
-                    ? (c as IUserChatConsultationDto).psychologist.name[0]
-                    : (c as IPsychologistChatConsultationDto).patient.name[0]}
-                </AvatarFallback>
-              </Avatar>
-
-              {/* Name + Last Message */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {role === 'user'
-                    ? (c as IUserChatConsultationDto).psychologist.name
-                    : (c as IPsychologistChatConsultationDto).patient.name}
-                </p>
-                {c.lastMessage?.content && (
-                  <p className="text-xs text-gray-500 truncate max-w-[180px]">
-                    {c.lastMessage.content}
-                  </p>
-                )}
-              </div>
-              
-              {/* Last Message Time + Unread Badge */}
-              <div className="flex flex-col items-end space-y-1">
-                {c.lastMessageTime && (
-                  <span className="text-xs text-gray-400 whitespace-nowrap">
-                    {new Date(c.lastMessageTime).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </span>
-                )}
-                {c.unreadCount > 0 && (
-                  <span className="bg-green-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
-                    {c.unreadCount}
-                  </span>
-                )}
-              </div>
+          {consultations.length === 0 ? (
+            <div className="text-center text-gray-500 mt-4">
+              No consultations booked yet. Book a consultation to start chatting.
             </div>
-          ))}
+          ) : (
+            consultations.map(c => (
+              <div
+                key={c.id}
+                onClick={() => handleSelect(c)}
+                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
+                  selectedChatId === c.id
+                    ? 'bg-green-100 text-green-900'
+                    : 'hover:bg-gray-100 text-gray-900'
+                }`}
+              >
+                <Avatar className="h-10 w-10">
+                  <AvatarImage
+                    src={
+                      role === 'user'
+                        ? getCloudinaryUrl((c as IUserChatConsultationDto).psychologist.profileImage) ?? undefined
+                        : getCloudinaryUrl((c as IPsychologistChatConsultationDto).patient.profileImage) ?? undefined
+                    }
+                  />
+                  <AvatarFallback>
+                    {role === 'user'
+                      ? (c as IUserChatConsultationDto).psychologist.name[0]
+                      : (c as IPsychologistChatConsultationDto).patient.name[0]}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {role === 'user'
+                      ? (c as IUserChatConsultationDto).psychologist.name
+                      : (c as IPsychologistChatConsultationDto).patient.name}
+                  </p>
+                  {c.lastMessage?.content && (
+                    <p className="text-xs text-gray-500 truncate max-w-[180px]">
+                      {c.lastMessage.content}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col items-end space-y-1">
+                  {c.lastMessageTime && (
+                    <span className="text-xs text-gray-400 whitespace-nowrap">
+                      {new Date(c.lastMessageTime).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  )}
+                  {c.unreadCount > 0 && (
+                    <span className="bg-green-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
+                      {c.unreadCount}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </ScrollArea>
     </div>

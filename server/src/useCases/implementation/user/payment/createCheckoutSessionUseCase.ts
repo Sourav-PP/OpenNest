@@ -21,9 +21,11 @@ export type IStripeMetaData = {
     endDateTime: string;
     sessionGoal: string;
     subscriptionId?: string;
-}
+    purpose: 'consultation' | 'wallet';
+};
 
-export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCase {
+export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCase
+{
     private _paymentService: IPaymentService;
     private _paymentRepository: IPaymentRepository;
     private _slotRepo: ISlotRepository;
@@ -38,52 +40,71 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
         this._slotRepo = slotRepo;
     }
 
-    async execute( input: ICreateCheckoutSessionInput): Promise<ICreateCheckoutSessionOutput> {
-
+    async execute(
+        input: ICreateCheckoutSessionInput,
+    ): Promise<ICreateCheckoutSessionOutput> {
         if (!input.userId) {
-            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
-        }
-
-        const slot = await this._slotRepo.findById(input.slotId);
-
-        if (!slot) {
             throw new AppError(
-                bookingMessages.ERROR.SLOT_NOT_AVAILABLE,
-                HttpStatus.NOT_FOUND,
-            );
-        }
-
-        if (slot.isBooked) {
-            throw new AppError(
-                bookingMessages.ERROR.SLOT_ALREADY_BOOKED,
-                HttpStatus.CONFLICT,
+                adminMessages.ERROR.USER_ID_REQUIRED,
+                HttpStatus.BAD_REQUEST,
             );
         }
 
         const currency = appConfig.stripe.currency || 'usd';
-        const successUrl = appConfig.stripe.frontendSuccessUrl;
         const cancelUrl = appConfig.stripe.frontendCancelUrl;
 
-        const metadata: IStripeMetaData = {
-            patientId: input.userId,
-            psychologistId: slot.psychologistId,
-            slotId: input.slotId,
-            startDateTime: slot.startDateTime.toISOString(),
-            endDateTime: slot.endDateTime.toISOString(),
-            sessionGoal: input.sessionGoal,
-        };
+        let successUrl: string;
 
-        if (input.subscriptionId) {
-            metadata.subscriptionId = input.subscriptionId;
+        if (input.purpose === 'wallet') {
+            successUrl = `${appConfig.server.frontendUrl}/user/wallet?success=true&session_id={CHECKOUT_SESSION_ID}`;
+        } else {
+            successUrl = appConfig.stripe.frontendSuccessUrl;;
         }
 
-        const { url, sessionId } = await this._paymentService.createCheckoutSession(
-            input.amount,
-            currency,
-            `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl,
-            metadata,
-        );
+        let metadata: Record<string, string> = {
+            patientId: input.userId,
+            purpose: input.purpose,
+        };
+
+        if (input.purpose === 'consultation') {
+            const slot = await this._slotRepo.findById(input.slotId);
+
+            if (!slot) {
+                throw new AppError(
+                    bookingMessages.ERROR.SLOT_NOT_AVAILABLE,
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+
+            if (slot.isBooked) {
+                throw new AppError(
+                    bookingMessages.ERROR.SLOT_ALREADY_BOOKED,
+                    HttpStatus.CONFLICT,
+                );
+            }
+
+            metadata = {
+                ...metadata,
+                psychologistId: slot.psychologistId,
+                slotId: input.slotId,
+                startDateTime: slot.startDateTime.toISOString(),
+                endDateTime: slot.endDateTime.toISOString(),
+                sessionGoal: input.sessionGoal,
+            };
+
+            if (input.subscriptionId) {
+                metadata.subscriptionId = input.subscriptionId;
+            }
+        }
+
+        const { url, sessionId } =
+            await this._paymentService.createCheckoutSession(
+                input.amount,
+                currency,
+                `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+                cancelUrl,
+                metadata,
+            );
 
         // create the payment document before success
         const payment: Omit<Payment, 'id'> = {
@@ -95,14 +116,19 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             refunded: false,
             transactionId: undefined,
             stripeSessionId: sessionId,
-            slotId: input.slotId,
+            slotId: input.purpose === 'consultation' ? input.slotId : null,
+            purpose: input.purpose,
         };
 
         try {
+            console.log('Inserting payment:', payment);
             await this._paymentRepository.create(payment);
         } catch (error: any) {
-            if (error.code === 11000) {
-                throw new AppError(bookingMessages.ERROR.SLOT_JUST_BOOKED, HttpStatus.CONFLICT);
+            if (error.code === 11000 && input.purpose === 'consultation') {
+                throw new AppError(
+                    bookingMessages.ERROR.SLOT_JUST_BOOKED,
+                    HttpStatus.CONFLICT,
+                );
             } else {
                 console.log('err: ', error);
                 throw error;
@@ -110,7 +136,7 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
         }
 
         return {
-            url: url,
+            url,
         };
     }
 }

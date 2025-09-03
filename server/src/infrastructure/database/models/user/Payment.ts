@@ -12,6 +12,7 @@ export interface IPaymentDocument extends Document {
     transactionId?: string;
     stripeSessionId?: string;
     slotId: Types.ObjectId;
+    purpose: 'consultation' | 'wallet'
 }
 
 const PaymentSchema = new Schema<IPaymentDocument>(
@@ -58,6 +59,11 @@ const PaymentSchema = new Schema<IPaymentDocument>(
         slotId: {
             type: Schema.Types.ObjectId,
             ref: 'slots',
+            required: false,
+        },
+        purpose: {
+            type: String,
+            enum: ['consultation', 'wallet'],
             required: true,
         },
     },
@@ -68,10 +74,12 @@ PaymentSchema.index(
     { slotId: 1, paymentStatus: 1 },
     {
         unique: true,
-        partialFilterExpression: { paymentStatus: { $in: ['pending','succeeded'] } },
-        name: 'unique_slot_payment',
+        partialFilterExpression: {
+            purpose: 'consultation', 
+            paymentStatus: { $in: ['pending', 'succeeded'] },
+        },
+        name: 'unique_slot_payment_consultation',
     },
 );
-
 
 export const PaymentModel: Model<IPaymentDocument> = model<IPaymentDocument>('Payment', PaymentSchema);

@@ -18,5 +18,6 @@ export const bookingMessages = {
         SLOT_ALREADY_BOOKED: 'Selected slot is already booked',
         MISSING_SIGNATURE: 'Stripe signature header is missing',
         BOOKING_NOT_FOUND: 'Booking not found',
+        ONLY_BOOKED_CANCEL: 'Only booked consultation can be canceled',
     },
 } as const;

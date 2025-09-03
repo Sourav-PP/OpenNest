@@ -1,6 +1,7 @@
 import { Consultation } from '../entities/consultation';
 import { Message } from '../entities/message';
 import { Psychologist } from '../entities/psychologist';
+import { Slot } from '../entities/slot';
 import { User } from '../entities/user';
 
 export interface IConsultationRepository {
@@ -41,6 +42,8 @@ export interface IConsultationRepository {
                 unreadCount: number; }[]
     >;
     findById(id: string): Promise<Consultation | null>;
+    findByIdWithDetails(id: string): Promise<{ consultation: Consultation, psychologist: Psychologist & User, user: User, slot: Slot } | null>
     countAllByPatientId(patientId: string): Promise<number>;
     countAllByPsychologistId(psychologistId: string): Promise<number>
+    update(consultation: Consultation): Promise<Consultation | null>;
 }
