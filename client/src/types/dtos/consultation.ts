@@ -35,6 +35,7 @@ export interface IPsychologistConsultationDto {
 //chat consultations
 export interface IUserChatConsultationDto {
   id: string;
+  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
   patientId: string;
   psychologist: {
     id: string;
@@ -48,6 +49,7 @@ export interface IUserChatConsultationDto {
 
 export interface IPsychologistChatConsultationDto {
   id: string;
+  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
   psychologistId: string;
   patient: {
     id: string;

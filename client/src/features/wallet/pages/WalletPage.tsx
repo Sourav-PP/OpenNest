@@ -9,11 +9,16 @@ import type { IWallet, IWalletTransaction } from '@/types/dtos/wallet';
 import { toast } from 'react-toastify';
 import Header from '@/components/user/Header';
 import Sidebar from '@/components/user/Sidebar';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const WalletPage = () => {
   const [wallet, setWallet] = useState<IWallet | null>(null);
   const [transactions, setTransactions] = useState<IWalletTransaction[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const itemsPerPage = 5;
 
   const fetchWallet = async () => {
     try {
@@ -24,15 +29,9 @@ const WalletPage = () => {
         return;
       }
       setWallet(res.data);
-      if (res.data.id) {
-        const transactionRes = await walletApi.listTransactions(res.data.id);
 
-        if(!transactionRes.data) {
-          toast.error('Something went wrong');
-          return;
-        }
-        console.log('tsx: ', transactionRes.data.transactions);
-        setTransactions(transactionRes.data.transactions);
+      if (res.data.id) {
+        fetchTransactions(res.data.id, currentPage);
       }
     } catch (err) {
       console.error(err);
@@ -40,9 +39,33 @@ const WalletPage = () => {
     }
   };
 
+  const fetchTransactions = async(walletId: string, page: number) => {
+    setLoading(true);
+    try {
+      const res = await walletApi.listTransactions(walletId, page, itemsPerPage); 
+      console.log('res transaction: ', res);
+      if (!res.data) {
+        toast.error('Failed to fetch transactions');
+        return;
+      }
+      setTransactions(res.data.transactions);
+      setTotalCount(res.data.totalCount);
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchWallet();
   }, []);
+
+  useEffect(() => {
+    if(wallet?.id) {
+      fetchTransactions(wallet?.id, currentPage);
+    }
+  }, [currentPage, wallet?.id]);
 
   return (
     <div className="flex h-screen w-full bg-[#ECF1F3] text-primaryText overflow-hidden">
@@ -58,7 +81,14 @@ const WalletPage = () => {
             />
           )}
 
-          <WalletTransactions transactions={transactions} />
+          <WalletTransactions
+            transactions={transactions}
+            currentPage={currentPage}
+            totalCount={totalCount}
+            itemsPerPage={itemsPerPage}
+            onPageChange={page => setCurrentPage(page)}
+            loading={loading}  
+          />
 
           <AddFundsModal open={showModal} onClose={() => setShowModal(false)} />
         </div>

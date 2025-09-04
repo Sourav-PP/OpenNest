@@ -64,6 +64,8 @@ export default function ChatSidebar({
           }
         });
 
+        console.log('res: ', res);
+
       } catch (error) {
         handleApiError(error);
       }
@@ -144,7 +146,7 @@ export default function ChatSidebar({
               No consultations booked yet!
             </div>
           ) : (
-            consultations.map(c => (
+            consultations.filter(c => c.status !== 'cancelled').map(c => (
               <div
                 key={c.id}
                 onClick={() => handleSelect(c)}

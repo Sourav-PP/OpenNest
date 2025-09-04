@@ -33,6 +33,7 @@ export interface IPsychologistConsultationDto {
 // chat consultations
 export interface IUserChatConsultationDto {
     id?: string;
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
     patientId: string;
     psychologist: {
         id: string;
@@ -46,6 +47,7 @@ export interface IUserChatConsultationDto {
 
 export interface IPsychologistChatConsultationDto {
     id?: string;
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
     psychologistId: string;
     patient: {
         id: string;
@@ -59,7 +61,7 @@ export interface IPsychologistChatConsultationDto {
 
 export interface IUserConsultationDetailsDto {
     id: string;
-    sessionGoal: string,
+    sessionGoal: string;
     status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
     meetingLink?: string;
     startDateTime: Date;
@@ -69,17 +71,17 @@ export interface IUserConsultationDetailsDto {
         id: string;
         name: string;
         profileImage?: string;
-    },
+    };
     patient: {
         id: string;
         name: string;
         profileImage?: string;
-    },
+    };
     slot: {
         id: string;
         startDateTime: Date;
         endDateTime: Date;
         isBooked: boolean;
         bookedBy?: string | null;
-    },
+    };
 }

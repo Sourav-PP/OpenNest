@@ -58,6 +58,7 @@ export function toUserChatConsultationDto(
 ): IUserChatConsultationDto {
     return {
         id: consultation.id,
+        status: consultation.status,
         patientId: consultation.patientId,        
         psychologist: {
             id: psychologist.id,
@@ -84,6 +85,7 @@ export function toPsychologistChatConsultationDto(
 ): IPsychologistChatConsultationDto {
     return {
         id: consultation.id,
+        status: consultation.status,
         psychologistId: consultation.psychologistId,
         patient: {
             id: patient.id,
