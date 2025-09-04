@@ -71,7 +71,7 @@ export function useChat(consultationId: string) {
   }) => {
     if (!isReady) {
       console.warn('Chat not ready yet, cannot send message');
-      return; // Or show a toast/UI feedback
+      return; 
     }
     sendMessage(data);
   };

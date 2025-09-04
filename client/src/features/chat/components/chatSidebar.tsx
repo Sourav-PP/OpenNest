@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { getSocket, onMessage, joinConsultation } from '@/services/api/socket';
 import type { IMessageDto } from '@/types/dtos/message';
+import { uniqBy } from 'lodash';
 
 export default function ChatSidebar({
   userId,
@@ -35,7 +36,20 @@ export default function ChatSidebar({
           return;
         }
 
-        setConsultations(res.data.consultations);
+        let chats;
+        if (role === 'psychologist') {
+          chats = uniqBy(
+            res.data.consultations as IPsychologistChatConsultationDto[],
+            c => c.patient.id
+          );
+        } else {
+          chats = uniqBy(
+            res.data.consultations as IUserChatConsultationDto[],
+            c => c.psychologist.id
+          );
+        }
+
+        setConsultations(chats);
 
         // join all rooms immediately for real-time updates
         const socket = getSocket();
@@ -127,7 +141,7 @@ export default function ChatSidebar({
         <div className="space-y-1 p-2">
           {consultations.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
-              No consultations booked yet. Book a consultation to start chatting.
+              No consultations booked yet!
             </div>
           ) : (
             consultations.map(c => (

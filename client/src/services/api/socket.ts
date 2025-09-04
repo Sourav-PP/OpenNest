@@ -6,10 +6,8 @@ let socket: Socket | null = null;
 const messageHandlers: ((msg: IMessageDto) => void)[] = [];
 const errorListeners: ((err: IChatError) => void)[] = [];
 
-/**
- * Connect to the socket server.
- * Ensures only a single socket instance is active (singleton).
- */
+
+// Connect to the socket server
 export function connectSocket(token: string) {
   if (socket) {
     if (socket.connected) {
@@ -53,7 +51,7 @@ export function connectSocket(token: string) {
   return socket;
 }
 
-/** Disconnect the socket and clean up listeners */
+// Disconnect the socket and clean up listeners
 export function disconnectSocket() {
   if (socket) {
     console.log('Disconnecting socket:', socket.id);
@@ -65,12 +63,12 @@ export function disconnectSocket() {
   }
 }
 
-/** Get current socket instance */
+// Get current socket instance 
 export function getSocket() {
   return socket;
 }
 
-/** Register a message listener */
+// Register a message listener 
 export function onMessage(cb: (msg: IMessageDto) => void) {
   if (!messageHandlers.includes(cb)) {
     messageHandlers.push(cb);
@@ -81,7 +79,7 @@ export function onMessage(cb: (msg: IMessageDto) => void) {
   };
 }
 
-/** Register an error listener */
+// Registering the error listener 
 export function onError(cb: (err: IChatError) => void) {
   if (!errorListeners.includes(cb)) {
     errorListeners.push(cb);
@@ -92,7 +90,7 @@ export function onError(cb: (err: IChatError) => void) {
   };
 }
 
-/** Join a consultation room */
+
 export const joinConsultation = (consultationId: string) => {
   const socket = getSocket();
   if (!socket) throw new Error('Socket not connected');
@@ -116,7 +114,7 @@ export const joinConsultation = (consultationId: string) => {
   });
 };
 
-/** Send a chat message */
+//sending message
 export const sendMessage = (data: {
   consultationId: string;
   senderId: string;
