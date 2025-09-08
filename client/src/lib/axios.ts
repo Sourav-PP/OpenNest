@@ -12,9 +12,7 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 let baseURL = import.meta.env.VITE_API_BASE_URL;
 
 if (window.location.hostname.includes('devtunnels.ms')) {
-  console.log('hello its tunnel');
   baseURL = 'https://mc7th69v-5006.inc1.devtunnels.ms/api';
-  
 }
 
 const instance = axios.create({

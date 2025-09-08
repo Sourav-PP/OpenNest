@@ -1,9 +1,11 @@
 import { Loader2 } from 'lucide-react';
 import { useServices } from '@/hooks/useServices';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import { useNavigate } from 'react-router-dom';
 
 const ServiceList = () => {
   const { services, loading } = useServices();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -54,7 +56,9 @@ const ServiceList = () => {
 
               {/* Button */}
               <div className="text-center">
-                <button className="text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors duration-300 hover:underline">
+                <button className="text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors duration-300 hover:underline"
+                  onClick={() => navigate('/user/therapist')}
+                >
                   Show Psychologists
                 </button>
               </div>

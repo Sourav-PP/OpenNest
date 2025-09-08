@@ -70,7 +70,9 @@ const ServiceSession = () => {
               
               {/* Button */}
               <div className="text-center">
-                <button className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors duration-200">
+                <button className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors duration-200"
+                  onClick={() => navigate('/user/therapist')}
+                >
                   Show Psychologists
                 </button>
               </div>
