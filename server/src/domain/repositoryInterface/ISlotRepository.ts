@@ -9,4 +9,6 @@ export interface ISlotRepository {
     findById(id: string): Promise<Slot | null>
     deleteById(id: string): Promise<void>
     markSlotAsBooked(slotId:string, patientId: string): Promise<void>
+    markSlotAsAvailable(slotId: string): Promise<void>
+    markSlotAsNotAvailable(slotId: string): Promise<void>
 }

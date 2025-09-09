@@ -36,12 +36,10 @@ export class GetPsychologistConsultationUseCase implements IGetPsychologistConsu
             status,
             skip,
         });
-
-        const mappedConsultations = consultations.map(c => toPsychologistConsultationDto(c.consultation, c.patient));
-
+        const mappedConsultations = consultations.map(c => toPsychologistConsultationDto(c.consultation, c.patient, c.payment));
+  
         const totalCount = await this._consultationRepo.countAllByPsychologistId(id);
 
-        console.log('totalCount: ', totalCount);
         return {
             consultations: mappedConsultations,
             totalCount,

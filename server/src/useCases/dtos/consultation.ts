@@ -28,6 +28,13 @@ export interface IPsychologistConsultationDto {
         name: string;
         profileImage?: string;
     };
+    payment?: {
+        amount: number;
+        currency: string;
+        paymentMethod: 'stripe' | 'wallet' | null;
+        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        refunded: boolean;
+    };
 }
 
 // chat consultations
@@ -83,5 +90,12 @@ export interface IUserConsultationDetailsDto {
         endDateTime: Date;
         isBooked: boolean;
         bookedBy?: string | null;
+    };
+    payment: {  
+        amount: number;
+        currency: string;
+        paymentMethod: 'stripe' | 'wallet';
+        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        refunded: boolean;
     };
 }

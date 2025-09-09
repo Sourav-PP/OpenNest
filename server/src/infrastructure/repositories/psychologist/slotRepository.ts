@@ -27,6 +27,7 @@ export class SlotRepository implements ISlotRepository {
             psychologistId: slot.psychologistId.toString(),
             startDateTime: slot.startDateTime,
             endDateTime: slot.endDateTime,
+            isAvailable: slot.isAvailable,
             isBooked: slot.isBooked,
             bookedBy: slot.bookedBy?.toString() ?? null,
         }));
@@ -54,6 +55,26 @@ export class SlotRepository implements ISlotRepository {
             {
                 isBooked: true,
                 bookedBy: patientId,
+            },
+            { new: true },
+        );
+    }
+
+    async markSlotAsAvailable(slotId: string): Promise<void> {
+        await SlotModel.findByIdAndUpdate(
+            slotId,
+            { isBooked: false, bookedBy: null },
+            { new: true },
+        );
+    }   
+
+    async markSlotAsNotAvailable(slotId: string): Promise<void> {
+        await SlotModel.findByIdAndUpdate(
+            slotId,
+            { 
+                isBooked: false,      
+                isAvailable: false,  
+                bookedBy: null,
             },
             { new: true },
         );
@@ -94,6 +115,7 @@ export class SlotRepository implements ISlotRepository {
                 psychologistId: item.psychologistId.toString(),
                 startDateTime: item.startDateTime,
                 endDateTime: item.endDateTime,
+                isAvailable: item.isAvailable,
                 isBooked: item.isBooked,
                 bookedBy: item.bookedByUser ? item.bookedByUser._id.toString() : null,
             },

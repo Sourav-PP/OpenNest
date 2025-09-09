@@ -4,6 +4,7 @@ import { User } from '@/domain/entities/user';
 import { Consultation } from '@/domain/entities/consultation';
 import { Message } from '@/domain/entities/message';
 import { Slot } from '@/domain/entities/slot';
+import { Payment } from '@/domain/entities/payment';
 
 export function toConsultationDto(
     consultation: Consultation,
@@ -29,6 +30,7 @@ export function toConsultationDto(
 export function toPsychologistConsultationDto(
     consultation: Consultation,
     patient: User,
+    payment?: Payment,
 ): IPsychologistConsultationDto {
     return {
         id: consultation.id,
@@ -43,6 +45,13 @@ export function toPsychologistConsultationDto(
             name: patient.name, 
             profileImage: patient.profileImage,
         },
+        payment: payment ? {
+            amount: payment.amount,
+            currency: payment.currency,
+            paymentMethod: payment.paymentMethod,
+            paymentStatus: payment.paymentStatus,
+            refunded: payment.refunded,
+        } : undefined,
     };
 }
 
@@ -109,6 +118,7 @@ export function toUserConsultationDetail(
     psychologist: Psychologist & User,
     user: User,
     slot: Slot,
+    payment: Payment,
 ): IUserConsultationDetailsDto {
     return {
         id: consultation.id,
@@ -134,6 +144,13 @@ export function toUserConsultationDetail(
             endDateTime: slot.endDateTime,
             isBooked: slot.isBooked,
             bookedBy: slot.bookedBy,
+        },
+        payment: {
+            amount: payment.amount,
+            currency: payment.currency,
+            paymentMethod: payment.paymentMethod,
+            paymentStatus: payment.paymentStatus,
+            refunded: payment.refunded,
         },
     };
 }

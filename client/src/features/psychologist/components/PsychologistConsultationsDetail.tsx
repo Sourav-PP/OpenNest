@@ -6,8 +6,9 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import type { IUserConsultationDetailsResponseData } from '@/types/api/user';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import ConfirmationModal from '@/components/user/ConfirmationModal';
+import { psychologistApi } from '@/services/api/psychologist';
 
-const UserConsultationsDetail = () => {
+const PsychologistConsultationsDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [consultation, setConsultation] = useState<IUserConsultationDetailsResponseData>();
@@ -48,10 +49,14 @@ const UserConsultationsDetail = () => {
 
     try {
       setCancelLoading(true);
-      const res = await userApi.cancelConsultation(id, reason);
+      const res = await psychologistApi.cancelConsultation(id, reason);
+      if (!res.message) {
+        toast.error('Something went wrong');
+        return;
+      }
       toast.success(res.message);
       setShowCancelModal(false);
-      navigate('/user/consultations');
+      navigate('/psychologist/consultations');
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -265,6 +270,7 @@ const UserConsultationsDetail = () => {
       </ConfirmationModal>
     </div>
   );
+
 };
 
-export default UserConsultationsDetail;
+export default PsychologistConsultationsDetail;

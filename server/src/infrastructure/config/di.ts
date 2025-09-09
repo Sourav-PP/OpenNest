@@ -78,6 +78,7 @@ import { GetSlotByPsychologistUseCase } from '../../useCases/implementation/psyc
 import { DeleteSlotUseCase } from '../../useCases/implementation/psychologist/availability/DeleteSlotUseCase';
 import { GetKycDetailsUseCase } from '../../useCases/implementation/psychologist/profile/getKycDetailsUseCase';
 import { GetPsychologistConsultationUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistConsultationsUseCase';
+import { PsychologistCancelConsultationUseCase } from '@/useCases/implementation/psychologist/data/psychologistCancelConsultationUseCase';  
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -137,6 +138,7 @@ import { GetSlotByPsychologistController } from '../../presentation/http/control
 import { DeleteSlotController } from '../../presentation/http/controllers/psychologist/deleteSlotController';
 import { GetKycDetailsController } from '../../presentation/http/controllers/psychologist/getKycDetailsController';
 import { GetPsychologistConsultationsController } from '@/presentation/http/controllers/psychologist/getPsychologistConsultationsController';
+import { PsychologistCancelConsultationController } from '@/presentation/http/controllers/psychologist/psychologistCancelConsultationController';
 
 
 //---------------- admin -------------------
@@ -223,7 +225,7 @@ const getWalletByUserUseCase = new GetWalletByUserUseCase(walletRepository);
 const createWalletTransactionUseCase = new CreateWalletTransactionUseCase(walletRepository);
 const listWalletTransactionsUseCase = new ListWalletTransactionsUseCase(walletRepository);
 const getUserConsultationByIdUseCase = new GetUserConsultationByIdUseCase(consultationRepository);
-const cancelConsultationUseCase = new CancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository);
+const cancelConsultationUseCase = new CancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository, slotRepository);
 
 
 export const authController = new AuthController(
@@ -264,7 +266,7 @@ const getSlotByPsychologistUseCase = new GetSlotByPsychologistUseCase(slotReposi
 const deleteSlotUseCase = new DeleteSlotUseCase(slotRepository, psychologistRepository);
 const getKycDetailsUseCase = new GetKycDetailsUseCase(kycRepository, psychologistRepository);
 const getPsychologistConsultationsUseCase = new GetPsychologistConsultationUseCase(consultationRepository, psychologistRepository);
-
+const psychologistCancelConsultationUseCase = new PsychologistCancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository, slotRepository, psychologistRepository);
 
 export const verifyPsychologistController = new VerifyPsychologistController(verifyPsychologistUseCase);
 export const getProfileController = new GetProfileController(getProfileUseCase);
@@ -274,6 +276,7 @@ export const getSlotByPsychologistController = new GetSlotByPsychologistControll
 export const deleteSlotController = new DeleteSlotController(deleteSlotUseCase);
 export const getKycDetailsController = new GetKycDetailsController(getKycDetailsUseCase);
 export const getPsychologistConsultationsController = new GetPsychologistConsultationsController(getPsychologistConsultationsUseCase);
+export const psychologistCancelConsultationController = new PsychologistCancelConsultationController(psychologistCancelConsultationUseCase);
 
 
 // ---------- ADMIN ----------

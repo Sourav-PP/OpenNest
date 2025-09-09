@@ -80,6 +80,13 @@ export interface IUserConsultationDetailsResponseData {
         isBooked: boolean;
         bookedBy?: string | null;
     },
+    payment: {
+        amount: 60;
+        currency: string;
+        paymentMethod: 'stripe' | 'wallet';
+        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        refunded: boolean
+    }
 }
 
 export interface IGetPsychologistByIdResponseData {

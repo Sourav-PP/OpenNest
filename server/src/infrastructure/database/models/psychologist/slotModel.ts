@@ -5,6 +5,7 @@ export interface ISlotDocument extends Document {
     psychologistId: Types.ObjectId;
     startDateTime: Date;
     endDateTime: Date;
+    isAvailable: boolean;
     isBooked: boolean;
     bookedBy?: Types.ObjectId;
 }
@@ -23,6 +24,10 @@ const slotSchema = new Schema<ISlotDocument>(
         endDateTime: {
             type: Date,
             required: true,
+        },
+        isAvailable: {
+            type: Boolean,
+            default: true,
         },
         isBooked: {
             type: Boolean,

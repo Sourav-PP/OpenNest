@@ -17,6 +17,7 @@ import {
     listWalletTransactionController,
     getUserConsultationDetailController,
     cancelConsultationController,
+    authenticateAll,
 } from '@/infrastructure/config/di';
 
 import { uploadSingle } from '../middlewares/multer';
@@ -33,7 +34,7 @@ router.get('/psychologists/:userId/slots', getSlotsForUserController.handle);
 router.post('/payment/create-checkout-session', authenticateUser, checkBlockedUser, paymentController.createCheckoutSession);
 router.post('/payment/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
 router.get('/consultations', authenticateUser, checkBlockedUser, getUserConsultationsController.handle);
-router.get('/consultation/:id', authenticateUser, checkBlockedUser, getUserConsultationDetailController.handle);
+router.get('/consultation/:id', authenticateAll, checkBlockedUser, getUserConsultationDetailController.handle);
 router.put('/consultation/:id/cancel', authenticateUser, checkBlockedUser, cancelConsultationController.handle);
 
 router.post('/wallet', authenticateUser, checkBlockedUser, createWalletController.handle);

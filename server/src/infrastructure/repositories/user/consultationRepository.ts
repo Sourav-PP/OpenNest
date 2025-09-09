@@ -6,6 +6,7 @@ import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
 import { Message } from '@/domain/entities/message';
 import { Slot } from '@/domain/entities/slot';
+import { Payment } from '@/domain/entities/payment';
 
 export class ConsultationRepository implements IConsultationRepository {
     async createConsultation(
@@ -48,7 +49,7 @@ export class ConsultationRepository implements IConsultationRepository {
                 | 'rescheduled'
                 | 'all';
         },
-    ): Promise<{ consultation: Consultation; patient: User; lastMessage?: Message; lastMessageTime?: Date; unreadCount: number }[]> {
+    ): Promise<{ consultation: Consultation; patient: User; payment?: Payment; lastMessage?: Message; lastMessageTime?: Date; unreadCount: number }[]> {
         const matchStage: Record<string, unknown> = {
             psychologistId: new mongoose.Types.ObjectId(psychologistId),
         };
@@ -71,6 +72,15 @@ export class ConsultationRepository implements IConsultationRepository {
                 },
             },
             { $unwind: '$patient' },
+            {
+                $lookup: {
+                    from: 'payments',
+                    localField: '_id',
+                    foreignField: 'consultationId', 
+                    as: 'payment',
+                },
+            },
+            { $unwind: { path: '$payment', preserveNullAndEmptyArrays: true } },
             {
                 $lookup: {
                     from: 'messages',
@@ -150,6 +160,22 @@ export class ConsultationRepository implements IConsultationRepository {
                 meetingLink: item.meetingLink,
                 psychologistId: item.psychologistId.toString(),
             } as Consultation,
+            payment: item.payment
+                ? {
+                    id: item.payment._id.toString(),
+                    userId: item.payment.userId.toString(),
+                    consultationId: item.payment.consultationId?.toString(),
+                    amount: item.payment.amount,
+                    currency: item.payment.currency,
+                    paymentMethod: item.payment.paymentMethod,
+                    paymentStatus: item.payment.paymentStatus,
+                    refunded: item.payment.refunded,
+                    transactionId: item.payment.transactionId,
+                    stripeSessionId: item.payment.stripeSessionId,
+                    slotId: item.payment.slotId?.toString() ?? null,
+                    purpose: item.payment.purpose,
+                } as Payment
+                : undefined,
             patient: {
                 id: item.patient._id.toString(),
                 name: item.patient.name,
@@ -390,7 +416,7 @@ export class ConsultationRepository implements IConsultationRepository {
         };
     }
 
-    async findByIdWithDetails(id: string): Promise<{ consultation: Consultation; psychologist: Psychologist & User; user: User; slot: Slot; } | null> {
+    async findByIdWithDetails(id: string): Promise<{ consultation: Consultation; psychologist: Psychologist & User; user: User; slot: Slot; payment: Payment } | null> {
         const pipeline: PipelineStage[] = [
             { $match: { _id: new mongoose.Types.ObjectId(id) } },
 
@@ -432,6 +458,15 @@ export class ConsultationRepository implements IConsultationRepository {
                 },
             },
             { $unwind: '$slot' },
+            {
+                $lookup: {
+                    from: 'payments',
+                    localField: '_id',
+                    foreignField: 'consultationId',
+                    as: 'payment',
+                },
+            },
+            { $unwind: '$payment' },
         ];
 
         const result = await ConsultationModel.aggregate(pipeline);
@@ -471,6 +506,20 @@ export class ConsultationRepository implements IConsultationRepository {
                 isBooked: item.slot.isBooked ?? false,
                 bookedBy: item.slot.bookedBy ? item.slot.bookedBy.toString() : null,
             } as Slot,
+            payment: {
+                id: item.payment._id.toString(),
+                userId: item.payment.userId.toString(),
+                consultationId: item.payment.consultationId?.toString(),
+                amount: item.payment.amount,
+                currency: item.payment.currency,
+                paymentMethod: item.payment.paymentMethod,
+                paymentStatus: item.payment.paymentStatus,
+                refunded: item.payment.refunded,
+                transactionId: item.payment.transactionId,
+                stripeSessionId: item.payment.stripeSessionId,
+                slotId: item.payment.slotId?.toString() ?? null,
+                purpose: item.payment.purpose,
+            } as Payment,
         };
 
     }

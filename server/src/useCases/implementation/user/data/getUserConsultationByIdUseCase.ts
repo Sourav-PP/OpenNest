@@ -22,8 +22,7 @@ export class GetUserConsultationByIdUseCase implements IGetUserConsultationByIdU
             );
         }
 
-        const result =
-            await this._consultationRepo.findByIdWithDetails(consultationId);
+        const result = await this._consultationRepo.findByIdWithDetails(consultationId);
         if (!result) {
             throw new AppError(
                 bookingMessages.ERROR.CONSULTATION_NOT_FOUND,
@@ -36,6 +35,7 @@ export class GetUserConsultationByIdUseCase implements IGetUserConsultationByIdU
             result?.psychologist,
             result?.user,
             result?.slot,
+            result?.payment,
         );
 
         return mappedConsultation;
