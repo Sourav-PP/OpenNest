@@ -1,4 +1,11 @@
-import { IConsultationDto, IPsychologistChatConsultationDto, IPsychologistConsultationDto, IUserChatConsultationDto, IUserConsultationDetailsDto } from '../dtos/consultation';
+import {
+    IConsultationDetailsForAdminDto,
+    IConsultationDto,
+    IPsychologistChatConsultationDto,
+    IPsychologistConsultationDto,
+    IUserChatConsultationDto,
+    IUserConsultationDetailsDto,
+} from '../dtos/consultation';
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
 import { Consultation } from '@/domain/entities/consultation';
@@ -21,7 +28,7 @@ export function toConsultationDto(
         meetingLink: consultation.meetingLink,
         psychologist: {
             id: psychologist.id,
-            name: user.name, 
+            name: user.name,
             profileImage: user.profileImage,
         },
     };
@@ -42,19 +49,20 @@ export function toPsychologistConsultationDto(
         meetingLink: consultation.meetingLink,
         patient: {
             id: patient.id,
-            name: patient.name, 
+            name: patient.name,
             profileImage: patient.profileImage,
         },
-        payment: payment ? {
-            amount: payment.amount,
-            currency: payment.currency,
-            paymentMethod: payment.paymentMethod,
-            paymentStatus: payment.paymentStatus,
-            refunded: payment.refunded,
-        } : undefined,
+        payment: payment
+            ? {
+                amount: payment.amount,
+                currency: payment.currency,
+                paymentMethod: payment.paymentMethod,
+                paymentStatus: payment.paymentStatus,
+                refunded: payment.refunded,
+            }
+            : undefined,
     };
 }
-
 
 // chat consultation mappers
 export function toUserChatConsultationDto(
@@ -68,18 +76,20 @@ export function toUserChatConsultationDto(
     return {
         id: consultation.id,
         status: consultation.status,
-        patientId: consultation.patientId,        
+        patientId: consultation.patientId,
         psychologist: {
             id: psychologist.id,
-            name: user.name, 
+            name: user.name,
             profileImage: user.profileImage,
         },
-        lastMessage: lastMessage ? {
-            id: lastMessage.id,
-            content: lastMessage.content,
-            senderId: lastMessage.senderId,
-            receiverId: lastMessage.receiverId,
-        } : undefined,
+        lastMessage: lastMessage
+            ? {
+                id: lastMessage.id,
+                content: lastMessage.content,
+                senderId: lastMessage.senderId,
+                receiverId: lastMessage.receiverId,
+            }
+            : undefined,
         lastMessageTime,
         unreadCount,
     };
@@ -98,20 +108,21 @@ export function toPsychologistChatConsultationDto(
         psychologistId: consultation.psychologistId,
         patient: {
             id: patient.id,
-            name: patient.name, 
+            name: patient.name,
             profileImage: patient.profileImage,
         },
-        lastMessage: lastMessage ? {
-            id: lastMessage.id,
-            content: lastMessage.content,
-            senderId: lastMessage.senderId,
-            receiverId: lastMessage.receiverId,
-        } : undefined,
+        lastMessage: lastMessage
+            ? {
+                id: lastMessage.id,
+                content: lastMessage.content,
+                senderId: lastMessage.senderId,
+                receiverId: lastMessage.receiverId,
+            }
+            : undefined,
         lastMessageTime,
         unreadCount,
     };
 }
-
 
 export function toUserConsultationDetail(
     consultation: Consultation,
@@ -152,5 +163,26 @@ export function toUserConsultationDetail(
             paymentStatus: payment.paymentStatus,
             refunded: payment.refunded,
         },
+    };
+}
+
+export function toConsultationDtoForAdmin(data: {
+    consultation: Consultation;
+    patient: User;
+    psychologist: Psychologist & User;
+    payment?: Payment;
+}): IConsultationDetailsForAdminDto {
+    return {
+        id: data.consultation.id,
+        patientName: data.patient.name,
+        patientProfileImage: data.patient.profileImage,
+        psychologistName: data.psychologist.name,
+        psychologistProfileImage: data.psychologist.profileImage,
+        startDateTime: data.consultation.startDateTime,
+        endDateTime: data.consultation.endDateTime,
+        sessionGoal: data.consultation.sessionGoal,
+        status: data.consultation.status,
+        paymentStatus: data.payment?.paymentStatus,
+        paymentMethod: data.payment?.paymentMethod,
     };
 }

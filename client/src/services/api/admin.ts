@@ -10,10 +10,12 @@ import type {
   IToggleStatusRequest,
   IGetAllKycDetailsRequest,
   IGetAllKycDetailsResponse,
-  IAdminKycDto
+  IAdminKycDto,
+  IGetAllConsultationResponse
 } from '../../types/api/admin';
 
 import { server } from '../server';
+import type { IConsultationDtoForAdmin } from '@/types/dtos/consultation';
 
 export const adminApi = {
   login: async(data: IAdminLoginRequest) => server.post<IAdminLoginResponse, IAdminLoginRequest>('/admin/login', data),
@@ -27,4 +29,11 @@ export const adminApi = {
   getKycDetailsByPsychologistId: async(psychologistId: string) => server.get<IAdminKycDto>(`/admin/kyc/${psychologistId}`),
   approveKyc: async(psychologistId: string) => server.patch<void, undefined>(`/admin/kyc/${psychologistId}/approve`, undefined),
   rejectKyc: async (psychologistId: string, reason: string) => server.patch<void, {reason:string}>(`/admin/kyc/${psychologistId}/reject`, {reason}),
+  getAllConsultations: async(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    sort?: 'asc' | 'desc';
+    status?: 'all' | 'booked' | 'completed' | 'cancelled' | 'rescheduled';
+  }) => server.get<IGetAllConsultationResponse>('/admin/consultations', {params}), 
 };

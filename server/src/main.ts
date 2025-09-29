@@ -4,7 +4,7 @@ import { connectDB } from './infrastructure/database/mongoose';
 import { app } from './presentation/http/server';
 import logger from './utils/logger';
 import { Server } from 'socket.io';
-import { chatSocketHandler, tokenService } from './infrastructure/config/di';
+import { chatSocketHandler, videoCallSocketHandler, tokenService } from './infrastructure/config/di';
 import { configureSocket } from './infrastructure/config/socket';
 
 async function startServer() {
@@ -20,7 +20,7 @@ async function startServer() {
         },
     });
 
-    configureSocket(io, chatSocketHandler, tokenService);
+    configureSocket(io, chatSocketHandler, videoCallSocketHandler, tokenService);
 
     httpServer.listen(appConfig.server.port, () => {
         logger.info(`Server running on port ${appConfig.server.port}`);

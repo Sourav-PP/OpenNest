@@ -9,6 +9,8 @@ import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IWalletRepository } from '@/domain/repositoryInterface/IWalletRepository';
 import { walletMessages } from '@/shared/constants/messages/walletMessages';
+import { IVideoCallService } from '@/domain/serviceInterface/IVideoCallService';
+import { IVideoCallRepository } from '@/domain/repositoryInterface/IVideoCallRepository';
 
 
 
@@ -18,6 +20,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
     private _consultationRepo: IConsultationRepository;
     private _slotRepo: ISlotRepository;
     private _walletRepo: IWalletRepository;
+    private _videoCallService: IVideoCallService;
+    private _videoCallRepo: IVideoCallRepository;
 
     constructor(
         paymentRepo: IPaymentRepository,
@@ -25,12 +29,16 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
         consultationRepo: IConsultationRepository,
         slotRepo: ISlotRepository,
         walletRepo: IWalletRepository,
+        videoCallService: IVideoCallService,
+        videoCallRepo: IVideoCallRepository,
     ) {
         this._paymentRepo = paymentRepo;
         this._paymentService = paymentService;
         this._consultationRepo = consultationRepo;
         this._slotRepo = slotRepo;
         this._walletRepo = walletRepo;
+        this._videoCallService = videoCallService;
+        this._videoCallRepo = videoCallRepo;
     }
 
     async execute(payload: Buffer, signature: string, endpointSecret: string): Promise<void> {
@@ -82,6 +90,19 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                     includedInPayout: false,
                 });
 
+                const meetingLink = await this._videoCallService.generateMeetingLink(consultation.id);
+                consultation.meetingLink = meetingLink;
+                await this._consultationRepo.updateConsultation(consultation.id, { meetingLink });
+
+                await this._videoCallRepo.create({
+                    consultationId: consultation.id,
+                    patientId: consultation.patientId,
+                    psychologistId: consultation.psychologistId,
+                    callUrl: meetingLink,
+                    status: 'scheduled',
+                    startedAt: null,
+                    endedAt: null,
+                });
                 // update the payment status
                 payment.paymentStatus = 'succeeded';
                 payment.transactionId = session.payment_intent as string ?? null;

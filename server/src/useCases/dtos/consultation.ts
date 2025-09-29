@@ -99,3 +99,17 @@ export interface IUserConsultationDetailsDto {
         refunded: boolean;
     };
 }
+
+export interface IConsultationDetailsForAdminDto {
+    id: string;
+    patientName: string;
+    patientProfileImage?: string;
+    psychologistName: string;
+    psychologistProfileImage?: string;
+    startDateTime: Date;
+    endDateTime: Date;
+    sessionGoal: string;
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    paymentStatus?: 'pending' | 'succeeded' | 'failed';
+    paymentMethod?: 'stripe' | 'wallet' | null;
+}

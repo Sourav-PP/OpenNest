@@ -12,6 +12,7 @@ import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { appConfig } from '@/infrastructure/config/config';
 import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
+import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 
 export type IStripeMetaData = {
     patientId: string;
@@ -29,15 +30,18 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
     private _paymentService: IPaymentService;
     private _paymentRepository: IPaymentRepository;
     private _slotRepo: ISlotRepository;
+    private _consultationRepo: IConsultationRepository;
 
     constructor(
         paymentService: IPaymentService,
         paymentRepository: IPaymentRepository,
         slotRepo: ISlotRepository,
+        consultationRepo: IConsultationRepository,
     ) {
         this._paymentService = paymentService;
         this._paymentRepository = paymentRepository;
         this._slotRepo = slotRepo;
+        this._consultationRepo = consultationRepo;
     }
 
     async execute(
@@ -66,6 +70,8 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             purpose: input.purpose,
         };
 
+
+
         if (input.purpose === 'consultation') {
             const slot = await this._slotRepo.findById(input.slotId);
 
@@ -75,6 +81,8 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
                     HttpStatus.NOT_FOUND,
                 );
             }
+
+
 
             if (slot.isBooked) {
                 throw new AppError(

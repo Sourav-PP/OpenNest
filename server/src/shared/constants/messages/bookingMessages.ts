@@ -6,6 +6,7 @@ export const bookingMessages = {
         BOOKING_CONFIRMED: 'Booking confirmed successfully',
     },
     ERROR: {
+        BOOKING_ONLY_AFTER_ONE_MONTH: 'You can only book another session after one month from your last session.',
         MISSING_METADATA: 'Missing required booking metadata',
         PAYMENT_NOT_FOUND: 'Payment not found for the session ID',
         SLOT_NOT_AVAILABLE: 'Selected slot is no longer available',

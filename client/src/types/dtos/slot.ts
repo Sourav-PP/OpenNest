@@ -6,6 +6,8 @@ export interface ISlotDto {
     isBooked: boolean;
     isExpired?: boolean;
     bookedBy?: {
-        name?: string
+        id?: string;
+        name?: string;
+        email?: string;
     }
 }

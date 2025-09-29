@@ -5,6 +5,8 @@ const stripe = new Stripe(appConfig.stripe.secretKey, {
     apiVersion:  '2025-07-30.basil',
 });
 
+const baseUrl = appConfig.server.frontendUrl;
+
 // ====================   REPOSITORIES  ======================
 
 // --------------  user  ----------------
@@ -15,6 +17,7 @@ import { PaymentRepository } from '../repositories/user/paymentRepository';
 import { ConsultationRepository } from '../repositories/user/consultationRepository';
 import { CloudinaryStorage } from '../fileStorage/cloudinaryStorage';
 import { WalletRepository } from '../repositories/user/walletRepository';
+import { VideoCallRepository } from '../repositories/user/videoCallRepository';
 
 // -------------- psychologist ------------------
 import { KycRepository } from '../repositories/psychologist/kycRepository';
@@ -37,6 +40,7 @@ import { BcryptAuthService } from '../services/authService';
 import { JwtTokenService } from '../services/tokenService';
 import { NodemailerOtpService } from '../services/otpService';
 import { PaymentService } from '../services/paymentService';
+import { VideoCallService } from '../services/videoCallService';
 
 
 // ==================== USE CASES =======================
@@ -92,6 +96,7 @@ import { GetAllKycUseCase } from '../../useCases/implementation/admin/management
 import { GetKycForPsychologistUseCase } from '../../useCases/implementation/admin/management/getKycForPsychologistUseCase';
 import { ApproveKycUseCase } from '../../useCases/implementation/admin/management/approveKycUseCase';
 import { RejectKycUseCase } from '../../useCases/implementation/admin/management/rejectKycUseCase';
+import { GetAllConsultationsUseCase } from '@/useCases/implementation/admin/management/getAllConsultationUseCase';
 
 //--------------- chat -------------------
 import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
@@ -103,6 +108,10 @@ import { EnsureMembershipUseCase } from '@/useCases/implementation/chat/ensureMe
 import { GetUnreadCountUseCase } from '@/useCases/implementation/chat/getUnreadCountUseCase';
 import { MarkReadUseCase } from '@/useCases/implementation/chat/markReadUseCase';
 
+//--------------videoCall--------------------
+import { VideoCallSocketHandler } from '@/presentation/socket/videoCallSocketHandler';
+import { StartVideoCallUseCase } from '@/useCases/implementation/videoCall/startVideoCallUseCase';
+import { EndVideoCallUseCase } from '@/useCases/implementation/videoCall/endVideoCallUseCase';
 
 //===================== CONTROLLERS =====================
 
@@ -152,6 +161,7 @@ import { GetAllKycController } from '../../presentation/http/controllers/admin/g
 import { GetKycForPsychologistController } from '../../presentation/http/controllers/admin/getKycForPsychologistController';
 import { ApproveKycController } from '../../presentation/http/controllers/admin/approveKycController';
 import { RejectKycController } from '../../presentation/http/controllers/admin/rejectKycController';
+import { GetAllConsultationsController } from '@/presentation/http/controllers/admin/getAllConsultationsController';
 
 //---------------- chat -----------------------
 import { GetUserChatConsultationsController } from '@/presentation/http/controllers/chat/getUserChatConsultationsController';
@@ -165,6 +175,7 @@ import { MarkAsReadController } from '@/presentation/http/controllers/chat/markA
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
 import { checkBlockedMiddleware } from '../../presentation/http/middlewares/checkBlockedMiddleware';
 import { MessageRepository } from '../repositories/user/messageRepository';
+
 
 
 // ======================= DI IMPLEMENTATION =======================
@@ -191,6 +202,7 @@ const kycRepository = new KycRepository();
 const googleAuthService = new GoogleAuthService();
 const slotRepository = new SlotRepository();
 const paymentService = new PaymentService(stripe);
+const videoCallService = new VideoCallService(baseUrl);
 
 const userAuthRepository = new UserAuthAccountRepository();
 const userServiceRepository = new ServiceRepository();
@@ -198,6 +210,7 @@ const psychologistRepository = new PsychologistRepository();
 const paymentRepository = new PaymentRepository();
 const consultationRepository = new ConsultationRepository();
 const walletRepository = new WalletRepository();
+const videoCallRepository = new VideoCallRepository();
 
 
 const signupUseCase = new SignupUseCase(userRepository, tokenService, fileStorage);
@@ -216,8 +229,8 @@ const getUserProfileUseCase = new GetUserProfileUseCase(userRepository);
 const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository, fileStorage);
 const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(psychologistRepository, kycRepository, userRepository);
 const getSlotsForUserUseCase = new GetSlotForUserUseCase(slotRepository, psychologistRepository);
-const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(paymentService, paymentRepository, slotRepository);
-const handleWebhookUseCase = new HandleWebhookUseCase(paymentRepository, paymentService, consultationRepository, slotRepository, walletRepository);
+const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(paymentService, paymentRepository, slotRepository, consultationRepository);
+const handleWebhookUseCase = new HandleWebhookUseCase(paymentRepository, paymentService, consultationRepository, slotRepository, walletRepository, videoCallService, videoCallRepository);
 const getUserConsultationsUseCase = new GetUserConsultationsUseCase(consultationRepository);
 const createWalletUseCase = new CreateWalletUseCase(walletRepository);
 const getWalletByIdUseCase = new GetWalletByIdUseCase(walletRepository);
@@ -296,6 +309,7 @@ const getAllKycUseCase = new GetAllKycUseCase(kycRepository);
 const getKycForPsychologistUseCase = new GetKycForPsychologistUseCase(kycRepository);
 const approveKycUseCase = new ApproveKycUseCase(kycRepository,psychologistRepository);
 const rejectKycUseCase = new RejectKycUseCase(kycRepository,psychologistRepository);
+const getAllConsultationsUseCase = new GetAllConsultationsUseCase(consultationRepository);
 
 
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase);
@@ -309,6 +323,7 @@ export const getAllKycController = new GetAllKycController(getAllKycUseCase);
 export const getKycForPsychologistController = new GetKycForPsychologistController(getKycForPsychologistUseCase);
 export const approveKycController = new ApproveKycController(approveKycUseCase);
 export const rejectKycController = new RejectKycController(rejectKycUseCase);
+export const getAllConsultationsController = new GetAllConsultationsController(getAllConsultationsUseCase);
 
 //--------------- chat -----------------------
 
@@ -329,5 +344,11 @@ export const getHistoryController = new GetHistoryController(getHistoryUseCase);
 export const getUnreadCountController = new GetUnreadCountController(getUnreadCountUseCase);
 export const markAsReadController = new MarkAsReadController(markReadUseCase);
 
+//----------------video call--------------------
+
+const startVideoCallUseCase = new StartVideoCallUseCase(videoCallRepository);
+const endVideoCallUseCase = new EndVideoCallUseCase(videoCallRepository, consultationRepository);
+
 // socket handler
 export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase);
+export const videoCallSocketHandler = new VideoCallSocketHandler(startVideoCallUseCase, endVideoCallUseCase, consultationRepository, videoCallRepository, psychologistRepository);

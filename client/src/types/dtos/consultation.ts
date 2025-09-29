@@ -16,6 +16,20 @@ export interface IConsultationDto {
   };
 }
 
+export interface IConsultationDtoForAdmin {
+  id: string;
+  patientName: string;
+  patientProfileImage?: string;
+  psychologistName: string;
+  psychologistProfileImage?: string;
+  startDateTime: string;
+  endDateTime: string;
+  sessionGoal: string;
+  status: 'booked' | 'completed' | 'cancelled' | 'rescheduled';
+  paymentStatus: 'pending' | 'succeeded' | 'failed' | null;
+  paymentMethod: 'stripe' | 'wallet' | null;
+}
+
 export interface IPsychologistConsultationDto {
   id: string;
   patientId: string;

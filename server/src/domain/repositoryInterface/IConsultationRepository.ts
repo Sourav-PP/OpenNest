@@ -47,4 +47,20 @@ export interface IConsultationRepository {
     countAllByPatientId(patientId: string): Promise<number>;
     countAllByPsychologistId(psychologistId: string): Promise<number>
     update(consultation: Consultation): Promise<Consultation | null>;
+    updateConsultation(id: string, update: Partial<Consultation>): Promise<Consultation | null>;
+    findAll(params: {
+        search?: string;
+        sort?: 'asc' | 'desc';
+        skip?: number;
+        limit?: number;
+        status?:
+            | 'booked'
+            | 'cancelled'
+            | 'completed'
+            | 'rescheduled'
+            | 'all';
+    }): Promise<{ consultation: Consultation; psychologist: Psychologist & User; patient: User; payment?: Payment;}[]>;
+    countAll(params: { search?: string; status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all' }): Promise<number>;
+    findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]>;
+
 }

@@ -4,6 +4,8 @@ export const generalMessages = {
     },
     ERROR: {
         INVALID_STATUS: 'Invalid status value',
+        INVALID_INPUT: 'Invalid input data',
+        MISSING_PARAMETERS: 'Required parameters are missing',
         INTERNAL_SERVER_ERROR: 'Something went wrong, please try again later',
         BAD_REQUEST: 'Invalid request parameters',
         NOT_FOUND: 'Resource not found',

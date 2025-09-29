@@ -101,6 +101,8 @@ export class WalletRepository implements IWalletRepository {
             status: t.status,
             reference: t.reference,
             metadata: t.metadata,
+            createdAt: t.createdAt,
+            updatedAt: t.updatedAt,
         }));
     }
 
