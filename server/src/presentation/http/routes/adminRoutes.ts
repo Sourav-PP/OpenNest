@@ -8,18 +8,12 @@ import { createServiceValidator, validateCreateService } from '../validators/cre
 //controllers
 import {
     adminAuthController,
-    getAllUserController,
-    createServiceController,
     adminRefreshTokenController,
-    getAllPsychologistController,
-    toggleUserStatusController,
-    getAllKycController,
     authenticateAdmin,
-    getKycForPsychologistController,
-    approveKycController,
-    rejectKycController,
-    deleteServiceController,
-    getAllConsultationsController,
+    adminKycController,
+    adminUserManagementController,
+    adminServiceController,
+    adminConsultationController,
 } from '@/infrastructure/config/di';
 
 
@@ -48,17 +42,17 @@ router.post(
     uploadSingle,
     createServiceValidator,
     validateCreateService,
-    createServiceController.handle,
+    adminServiceController.create,
 );
-router.delete('/services/:id', authenticateAdmin, deleteServiceController.handle);
-router.get('/users', authenticateAdmin,  getAllUserController.handle);
-router.get('/psychologists', authenticateAdmin, getAllPsychologistController.handle);
-router.get('/kyc', authenticateAdmin, getAllKycController.handle);
-router.get('/kyc/:psychologistId', authenticateAdmin, getKycForPsychologistController.handle);
-router.patch('/kyc/:psychologistId/approve', authenticateAdmin, approveKycController.handle);
-router.patch('/kyc/:psychologistId/reject', authenticateAdmin, rejectKycController.handle);
-router.patch('/users/:userId/status', authenticateAdmin, toggleUserStatusController.handle);
-router.get('/consultations', authenticateAdmin, getAllConsultationsController.handle);
+router.delete('/services/:id', authenticateAdmin, adminServiceController.delete);
+router.get('/users', authenticateAdmin, adminUserManagementController.getAllUsers);
+router.get('/psychologists', authenticateAdmin, adminUserManagementController.getAllPsychologists);
+router.get('/kyc', authenticateAdmin, adminKycController.getAllKyc);
+router.get('/kyc/:psychologistId', authenticateAdmin, adminKycController.getKycForPsychologist);
+router.patch('/kyc/:psychologistId/approve', authenticateAdmin, adminKycController.approveKyc);
+router.patch('/kyc/:psychologistId/reject', authenticateAdmin, adminKycController.rejectKyc);
+router.patch('/users/:userId/status', authenticateAdmin, adminUserManagementController.toggleUserStatus);
+router.get('/consultations', authenticateAdmin, adminConsultationController.getAllConsultations);
 
 
 export default router;
