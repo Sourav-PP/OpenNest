@@ -8,7 +8,6 @@ import { connectSocket, disconnectSocket } from './services/api/socket';
 function App() {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   useEffect(() => {
-    console.log('connection useeffect called');
     if(accessToken) {
       connectSocket(accessToken);
     } else {

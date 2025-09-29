@@ -7,6 +7,7 @@ import PsychologistManagement from '@/features/admin/pages/PsychologistManagemen
 import ServicePage from '@/features/admin/pages/ServicePage';
 import KycManagement from '@/features/admin/pages/KycManagement';
 import KycVerificationPage from '@/features/admin/pages/KycVerificationPage';
+import ConsultationManagement from '@/features/admin/pages/ConsultationManagement';
 
 
 
@@ -34,5 +35,9 @@ export const adminRoutes: RouteObject[] = [
   {
     path: '/admin/services',
     element: <PrivateRoute allowedRoles={['admin']}><ServicePage /></PrivateRoute>
-  }
+  },
+  {
+    path: '/admin/sessions',
+    element: <PrivateRoute allowedRoles={['admin']}><ConsultationManagement /></PrivateRoute>
+  },
 ];

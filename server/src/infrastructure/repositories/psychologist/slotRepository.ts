@@ -1,7 +1,7 @@
 import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
 import { Slot } from '@/domain/entities/slot';
 import { SlotModel } from '@/infrastructure/database/models/psychologist/slotModel';
-import { PipelineStage, Types } from 'mongoose';
+import mongoose, { PipelineStage, Types } from 'mongoose';
 import { User } from '@/domain/entities/user';
 
 export class SlotRepository implements ISlotRepository {
@@ -21,15 +21,49 @@ export class SlotRepository implements ISlotRepository {
     }
 
     async getAllSlotsByPsychologistId(psychologistId: string): Promise<Slot[]> {
-        const slots = await SlotModel.find({ psychologistId }).lean();
+        const slots = await SlotModel.aggregate([
+
+            { $match: { psychologistId: new mongoose.Types.ObjectId(psychologistId) } },
+
+            {
+                $lookup: {
+                    from: 'users', // MongoDB collection name for UserModel
+                    localField: 'bookedBy',
+                    foreignField: '_id',
+                    as: 'bookedByUser',
+                },
+            },
+
+            { $unwind: { path: '$bookedByUser', preserveNullAndEmptyArrays: true } },
+
+            {
+                $project: {
+                    _id: 1,
+                    psychologistId: 1,
+                    startDateTime: 1,
+                    endDateTime: 1,
+                    isAvailable: 1,
+                    isBooked: 1,
+                    bookedBy: {
+                        $cond: [
+                            { $ifNull: ['$bookedByUser', false] },
+                            {
+                                id: { $toString: '$bookedByUser._id' },
+                                name: '$bookedByUser.name',
+                                email: '$bookedByUser.email',
+                                phone: '$bookedByUser.phone',
+                            },
+                            null,
+                        ],
+                    },
+                },
+            },
+        ]);
+
         return slots.map((slot) => ({
+            ...slot,
             id: slot._id.toString(),
-            psychologistId: slot.psychologistId.toString(),
-            startDateTime: slot.startDateTime,
-            endDateTime: slot.endDateTime,
-            isAvailable: slot.isAvailable,
-            isBooked: slot.isBooked,
-            bookedBy: slot.bookedBy?.toString() ?? null,
+            _id: undefined,
         }));
     }
 

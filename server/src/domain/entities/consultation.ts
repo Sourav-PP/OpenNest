@@ -7,7 +7,6 @@ export interface Consultation {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    issue?: string[];
     status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
     paymentStatus: 'pending' | 'paid' | 'failed'
     paymentMethod: 'stripe' | 'wallet' | null

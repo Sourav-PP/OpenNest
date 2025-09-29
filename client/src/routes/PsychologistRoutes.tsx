@@ -10,6 +10,7 @@ import ChangePsychologistPasswordPage from '@/features/psychologist/pages/Change
 import PsychologistChatPage from '@/features/chat/pages/PsychologistChatPage';
 import MySessionsPage from '@/features/psychologist/pages/MySessionsPage';
 import ConsultationDetailPage from '@/features/psychologist/pages/ConsultationDetailPage';
+import VideoCallPage from '@/features/videoCall/pages/VideoCallPage';
 
 export const psychologistRoutes: RouteObject[] = [
   {
@@ -51,5 +52,9 @@ export const psychologistRoutes: RouteObject[] = [
   {
     path: '/psychologist/chat/:consultationId',
     element: <PrivateRoute allowedRoles={['psychologist']}><PsychologistChatPage/></PrivateRoute>
-  }
+  },
+  {
+    path: '/psychologist/consultations/:id/video',
+    element: <PrivateRoute allowedRoles={['psychologist']}><VideoCallPage/></PrivateRoute>
+  },
 ];

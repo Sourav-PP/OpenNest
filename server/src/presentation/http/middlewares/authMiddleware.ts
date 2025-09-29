@@ -28,9 +28,6 @@ export const authMiddleware = ( jwtService: ITokenService, allowedRoles: Array<'
 
             const userRole = payload.role as 'user' | 'psychologist' | 'admin';
 
-            console.log('roleeee: ', userRole);
-            console.log('allowedRoles', allowedRoles);
-
             if (!allowedRoles.includes(userRole)) {
                 console.log('is it here?');
                 throw new AppError(authMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);

@@ -24,6 +24,7 @@ export class GetSlotByPsychologistUseCase implements IGetSlotByPsychologistUseCa
 
         const slots = await this._slotRepo.getAllSlotsByPsychologistId(psychologist.id);
 
+        console.log('slots:  ', slots);
         if (!slots || slots.length === 0) {
             throw new AppError(psychologistMessages.ERROR.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND); 
         }

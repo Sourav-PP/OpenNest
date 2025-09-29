@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { userApi } from '@/services/api/user';
 import { handleApiError } from '@/lib/utils/handleApiError';
@@ -16,29 +16,48 @@ const UserConsultationsDetail = () => {
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [reason, setReason] = useState('');
+  const [timeLeft, setTimeLeft] = useState<number>(0);
 
   useEffect(() => {
-    const fetchConsultation = async () => {
-      if (!id) return;
-      try {
-        setLoading(true);
-        const res = await userApi.UserConsultationsDetail(id);
+    if(!consultation?.startDateTime) return;  
 
-        if (!res.data) {
-          toast.error('Something went wrong');
-          return;
-        }
-
-        setConsultation(res.data);
-      } catch (error) {
-        handleApiError(error);
-      } finally {
-        setLoading(false);
-      }
+    const updateTimer = () => {
+      const startTime = new Date(consultation.startDateTime).getTime();
+      const now = new Date().getTime();
+      const diff = Math.max(0, Math.floor((startTime - now) / 1000));
+      setTimeLeft(diff);
     };
 
-    fetchConsultation();
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+
+  }, [consultation?.startDateTime]);
+
+  // Fetch consultation details
+  const fetchConsultation = useCallback(async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      const res = await userApi.UserConsultationsDetail(id);
+
+      if (!res.data) {
+        toast.error('Something went wrong');
+        return;
+      }
+
+      setConsultation(res.data);
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    fetchConsultation();
+  }, [fetchConsultation]);
 
   const handleCancelConsultation = async () => {
     if (!id || !reason.trim()) {
@@ -51,6 +70,8 @@ const UserConsultationsDetail = () => {
       const res = await userApi.cancelConsultation(id, reason);
       toast.success(res.message);
       setShowCancelModal(false);
+      await fetchConsultation();
+
       navigate('/user/consultations');
     } catch (error) {
       handleApiError(error);
@@ -68,9 +89,10 @@ const UserConsultationsDetail = () => {
   };
 
   const getDuration = (start: string | Date, end: string | Date) => {
+    if (!start || !end) return '0h 0m';
     const startTime = new Date(start).getTime();
     const endTime = new Date(end).getTime();
-    const durationInMinutes = Math.round((endTime - startTime) / (1000 * 60));  
+    const durationInMinutes = Math.round((endTime - startTime) / (1000 * 60));
     const hours = Math.floor(durationInMinutes / 60);
     const minutes = durationInMinutes % 60;
     return `${hours}h ${minutes}m`;
@@ -105,7 +127,7 @@ const UserConsultationsDetail = () => {
       <h2 className="text-2xl font-bold mb-6 text-gray-900">Consultation Details</h2>
 
       <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 border border-gray-200 transition-shadow duration-300 space-y-8">
-        {/* Status on top-right */}
+        {/* Status */}
         <div className="flex justify-end">
           <span
             className={`px-3 py-1 rounded-full text-sm font-semibold tracking-tight ${
@@ -126,7 +148,6 @@ const UserConsultationsDetail = () => {
         <div>
           <h4 className="text-md font-semibold text-gray-900 mb-3">Participants</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Psychologist */}
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-4 border border-gray-100">
               <img
                 src={getCloudinaryUrl(consultation.psychologist.profileImage) || undefined}
@@ -139,7 +160,6 @@ const UserConsultationsDetail = () => {
               </div>
             </div>
 
-            {/* Patient */}
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-4 border border-gray-100">
               <img
                 src={getCloudinaryUrl(consultation.patient.profileImage) || undefined}
@@ -147,7 +167,7 @@ const UserConsultationsDetail = () => {
                 className="w-14 h-14 rounded-full border-2 border-gray-200 object-cover"
               />
               <div>
-                <h3 className="text-base font-semibold text-gray-900">{consultation.psychologist.name}</h3>
+                <h3 className="text-base font-semibold text-gray-900">{consultation.patient.name}</h3>
                 <p className="text-sm text-gray-600">Patient</p>
               </div>
             </div>
@@ -215,14 +235,29 @@ const UserConsultationsDetail = () => {
           <h4 className="text-md font-semibold text-gray-900 mb-3">Meeting</h4>
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
             {consultation.meetingLink ? (
-              <a
-                href={consultation.meetingLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 transition-colors duration-200 text-sm font-medium"
+              <Link
+                to={`/user/consultations/${consultation.id}/video`}
+                className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
+                  consultation.status === 'completed'
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : consultation.status === 'cancelled'
+                      ? 'bg-red-400 cursor-not-allowed'
+                      : 'bg-indigo-700 hover:bg-indigo-800'
+                }`}
+                onClick={e => {
+                  if (consultation.status === 'completed' || consultation.status === 'cancelled' || timeLeft > 0) {
+                    e.preventDefault();
+                  }
+                }}
               >
-                Join Meeting
-              </a>
+                {consultation.status === 'completed'
+                  ? 'Call Completed'
+                  : consultation.status === 'cancelled'
+                    ? 'Call Cancelled'
+                    : timeLeft > 0
+                      ? `Starts in ${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
+                      : 'Join Meeting'}
+              </Link>
             ) : (
               <p className="text-gray-500 italic text-sm">Meeting link not available</p>
             )}

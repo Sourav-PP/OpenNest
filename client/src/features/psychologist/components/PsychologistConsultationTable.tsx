@@ -7,7 +7,7 @@ import ConsultationFilters from '@/components/user/ConsultationFilters';
 import ReusableTable from '@/components/user/ReusableTable';
 import CustomPagination from '@/components/user/CustomPagination';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { psychologistApi } from '@/services/api/psychologist';
 
 const PsychologistConsultationsTable = () => {
@@ -110,21 +110,14 @@ const PsychologistConsultationsTable = () => {
       ),
     },
     {
-      header: 'Meeting Link',
+      header: 'View',
       render: (c: IPsychologistConsultationDto) =>
-        c.meetingLink ? (
-          <a
-            href={c.meetingLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            aria-label={`Join meeting for consultation ${c.id}`}
-          >
-            Join
-          </a>
-        ) : (
-          <span className="text-gray-500 dark:text-gray-400">N/A</span>
-        ),
+        <Link
+          to={`/psychologist/consultations/${c.id}`}
+          className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+        >
+          View
+        </Link>
     },
   ];
 

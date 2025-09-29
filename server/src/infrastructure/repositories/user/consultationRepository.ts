@@ -21,7 +21,6 @@ export class ConsultationRepository implements IConsultationRepository {
             psychologistId: consultationObj.psychologistId.toString(),
             subscriptionId: consultationObj.subscriptionId?.toString(),
             slotId: consultationObj.slotId.toString(),
-            issue: consultationObj.issue?.map(i => i.toString()),
             id: consultationObj._id.toString(),
         };
     }
@@ -360,11 +359,22 @@ export class ConsultationRepository implements IConsultationRepository {
             psychologistId: consultationObj.psychologistId.toString(),
             subscriptionId: consultationObj.subscriptionId?.toString(),
             slotId: consultationObj.slotId.toString(),
-            issue: consultationObj.issue?.map(i => i.toString()),
             id: consultationObj._id.toString(),
         };
     }
 
+    async findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]> {
+        const consultations = await ConsultationModel.find({ patientId, psychologistId });
+
+        return consultations.map(consultation => ({
+            ...consultation.toObject(),
+            patientId: consultation.patientId.toString(),
+            psychologistId: consultation.psychologistId.toString(),
+            subscriptionId: consultation.subscriptionId?.toString(),
+            slotId: consultation.slotId.toString(),
+            id: consultation._id.toString(),
+        }));
+    }
     async update(consultation: Consultation): Promise<Consultation | null> {
         const updated = await ConsultationModel.findByIdAndUpdate(
             consultation.id,
@@ -377,7 +387,6 @@ export class ConsultationRepository implements IConsultationRepository {
                     startDateTime: consultation.startDateTime,
                     endDateTime: consultation.endDateTime,
                     sessionGoal: consultation.sessionGoal,
-                    issue: consultation.issue,
                     status: consultation.status,
                     paymentStatus: consultation.paymentStatus,
                     paymentMethod: consultation.paymentMethod,
@@ -404,7 +413,6 @@ export class ConsultationRepository implements IConsultationRepository {
             startDateTime: updated.startDateTime,
             endDateTime: updated.endDateTime,
             sessionGoal: updated.sessionGoal,
-            issue: updated.issue ? updated.issue.map(i => i.toString()) : undefined,
             status: updated.status,
             paymentStatus: updated.paymentStatus,
             paymentMethod: updated.paymentMethod,
@@ -413,6 +421,35 @@ export class ConsultationRepository implements IConsultationRepository {
             cancelledAt: updated.cancelledAt,
             includedInPayout: updated.includedInPayout,
             meetingLink: updated.meetingLink,
+        };
+    }
+    
+    async updateConsultation(id: string, update: Partial<Consultation>): Promise<Consultation | null> {
+        const updated = await ConsultationModel.findByIdAndUpdate(
+            id,
+            { $set: update },
+            { new: true },
+        ).lean();
+
+        if (!updated) return null;
+
+        return {
+            id: updated._id.toString(),
+            patientId: updated.patientId.toString(),
+            psychologistId: updated.psychologistId.toString(),
+            subscriptionId: updated.subscriptionId?.toString(),
+            slotId: updated.slotId.toString(),
+            startDateTime: updated.startDateTime,
+            endDateTime: updated.endDateTime,
+            sessionGoal: updated.sessionGoal,
+            status: updated.status,
+            paymentStatus: updated.paymentStatus,
+            paymentMethod: updated.paymentMethod,
+            paymentIntentId: updated.paymentIntentId,
+            cancellationReason: updated.cancellationReason,
+            cancelledAt: updated.cancelledAt,
+            includedInPayout: updated.includedInPayout,
+            meetingLink: updated.meetingLink, 
         };
     }
 
@@ -485,7 +522,6 @@ export class ConsultationRepository implements IConsultationRepository {
                 meetingLink: item.meetingLink,
                 psychologistId: item.psychologist._id.toString(),
                 slotId: item.slot._id.toString(),
-                issue: item.issue?.map((i: any) => i.toString()),
             } as Consultation,
             psychologist: {
                 id: item.psychologist._id.toString(),
@@ -530,5 +566,185 @@ export class ConsultationRepository implements IConsultationRepository {
 
     async countAllByPsychologistId(psychologistId: string): Promise<number> {
         return await ConsultationModel.countDocuments({ psychologistId });
+    }
+
+    async findAll(params: {
+        search?: string;
+        sort?: 'asc' | 'desc';
+        skip?: number;
+        limit?: number;
+        status?:
+            | 'booked'
+            | 'cancelled'
+            | 'completed'
+            | 'rescheduled'
+            | 'all';
+    }): Promise<{ consultation: Consultation; psychologist: Psychologist & User; patient: User; payment?: Payment;}[]> {
+        const matchStage: Record<string, unknown> = {};
+        if (params.status && params.status !== 'all') {
+            matchStage.status = params.status;
+        }
+
+        const sortOrder = params.sort === 'asc' ? 1 : -1;
+
+        const pipeline: PipelineStage[] = [
+            { $match: matchStage },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'patientId',
+                    foreignField: '_id',
+                    as: 'patient',
+                },
+            },
+            { $unwind: '$patient' },
+
+            {
+                $lookup: {
+                    from: 'psychologists',
+                    localField: 'psychologistId',
+                    foreignField: '_id',
+                    as: 'psychologist',
+                },
+            },
+            { $unwind: '$psychologist' },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'psychologist.userId',
+                    foreignField: '_id',
+                    as: 'psychologist.user',
+                },
+            },
+            { $unwind: '$psychologist.user' },
+
+            {
+                $lookup: {
+                    from: 'payments',
+                    localField: '_id',
+                    foreignField: 'consultationId',
+                    as: 'payment',
+                },
+            },
+            { $unwind: { path: '$payment', preserveNullAndEmptyArrays: true } },
+        ];
+
+        if (params.search) {
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { 'patient.name': { $regex: params.search, $options: 'i' } },
+                        { 'psychologist.user.name': { $regex: params.search, $options: 'i' } },
+                        { sessionGoal: { $regex: params.search, $options: 'i' } },
+                    ],
+                },
+            });
+        }
+
+        pipeline.push({ $sort: { startDateTime: sortOrder } });
+
+        if (typeof params.skip === 'number' && params.skip > 0) {
+            pipeline.push({ $skip: params.skip });
+        }
+
+        if (typeof params.limit === 'number' && params.limit > 0) {
+            pipeline.push({ $limit: params.limit });
+        }
+
+        const results = await ConsultationModel.aggregate(pipeline);
+
+        return results.map(item => ({
+            consultation: {
+                id: item._id.toString(),
+                patientId: item.patientId.toString(),
+                psychologistId: item.psychologistId.toString(),
+                slotId: item.slotId.toString(),
+                subscriptionId: item.subscriptionId?.toString(),
+                startDateTime: item.startDateTime,
+                endDateTime: item.endDateTime,
+                sessionGoal: item.sessionGoal,
+                status: item.status,
+                paymentStatus: item.paymentStatus,
+                paymentMethod: item.paymentMethod,
+                paymentIntentId: item.paymentIntentId,
+                cancellationReason: item.cancellationReason,
+                cancelledAt: item.cancelledAt,
+                includedInPayout: item.includedInPayout,
+                meetingLink: item.meetingLink,
+            } as Consultation,
+            patient: {
+                id: item.patient._id.toString(),
+                name: item.patient.name,
+                profileImage: item.patient.profileImage,
+            } as User,
+            psychologist: {
+                id: item.psychologist._id.toString(),
+                userId: item.psychologist.userId.toString(),
+                name: item.psychologist.user.name,
+                profileImage: item.psychologist.user.profileImage,
+            } as Psychologist & User,
+            payment: item.payment
+                ? {
+                    id: item.payment._id.toString(),
+                    userId: item.payment.userId.toString(),
+                    consultationId: item.payment.consultationId?.toString(),
+                    amount: item.payment.amount,
+                    currency: item.payment.currency,
+                    paymentMethod: item.payment.paymentMethod,
+                    paymentStatus: item.payment.paymentStatus,
+                    refunded: item.payment.refunded,
+                    transactionId: item.payment.transactionId,
+                    stripeSessionId: item.payment.stripeSessionId,
+                    slotId: item.payment.slotId?.toString() ?? null,
+                    purpose: item.payment.purpose,
+                }
+                : undefined,
+        }));
+    }
+
+    async countAll(params: { search?: string; status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all' }): Promise<number> {
+        const matchStage: Record<string, unknown> = {};
+        if (params.status && params.status !== 'all') {
+            matchStage.status = params.status;
+        }
+
+        const pipeline: PipelineStage[] = [{ $match: matchStage }];
+
+        if (params.search) {
+            pipeline.push({
+                $lookup: {
+                    from: 'users',
+                    localField: 'patientId',
+                    foreignField: '_id',
+                    as: 'patient',
+                },
+            });
+            pipeline.push({ $unwind: '$patient' });
+
+            pipeline.push({
+                $lookup: {
+                    from: 'users',
+                    localField: 'psychologistId',
+                    foreignField: '_id',
+                    as: 'psychologistUser',
+                },
+            });
+            pipeline.push({ $unwind: '$psychologistUser' });
+
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { 'patient.name': { $regex: params.search, $options: 'i' } },
+                        { 'psychologistUser.name': { $regex: params.search, $options: 'i' } },
+                    ],
+                },
+            });
+        }
+
+        pipeline.push({ $count: 'total' });
+
+        const result = await ConsultationModel.aggregate<{ total: number }>(pipeline);
+
+        return result.length > 0 ? result[0].total : 0;
     }
 }

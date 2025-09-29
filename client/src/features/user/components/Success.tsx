@@ -14,10 +14,10 @@ export default function Success() {
         Your booking is confirmed! We're thrilled to have you on board. Thank you for choosing our service.
       </p>
       <Link
-        to="/"
+        to="/user/consultations"
         className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 animate-fadeInUp"
       >
-        Go to Dashboard
+        Go to session page
       </Link>
     </div>
   );

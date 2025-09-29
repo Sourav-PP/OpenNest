@@ -1,3 +1,4 @@
+import type { IConsultationDtoForAdmin } from '../dtos/consultation';
 import type { IGetAllPsychologistsDto } from '../dtos/psychologist';
 import type { IUserDto } from '../dtos/user';
 import type { BackendResponse } from './api';
@@ -30,6 +31,11 @@ export interface IGetAllUserRequest {
 
 export interface IGetAllUserResponseData {
     user: IUserDto[],
+    totalCount?: number
+}
+
+export interface IGetAllConsultationsResponseData {
+    consultations: IConsultationDtoForAdmin[],
     totalCount?: number
 }
 
@@ -78,3 +84,4 @@ export interface IGetAllKycDetailsResponse {
 
 export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>
 export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>
+export type IGetAllConsultationResponse = BackendResponse<IGetAllConsultationsResponseData>

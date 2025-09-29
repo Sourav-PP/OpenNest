@@ -19,6 +19,7 @@ import {
     approveKycController,
     rejectKycController,
     deleteServiceController,
+    getAllConsultationsController,
 } from '@/infrastructure/config/di';
 
 
@@ -57,6 +58,7 @@ router.get('/kyc/:psychologistId', authenticateAdmin, getKycForPsychologistContr
 router.patch('/kyc/:psychologistId/approve', authenticateAdmin, approveKycController.handle);
 router.patch('/kyc/:psychologistId/reject', authenticateAdmin, rejectKycController.handle);
 router.patch('/users/:userId/status', authenticateAdmin, toggleUserStatusController.handle);
+router.get('/consultations', authenticateAdmin, getAllConsultationsController.handle);
 
 
 export default router;

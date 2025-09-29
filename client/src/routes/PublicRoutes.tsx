@@ -42,5 +42,5 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/reset-password',
     element: <PublicRoute>< ResetPasswordPage /></PublicRoute>
-  }
+  },
 ];
