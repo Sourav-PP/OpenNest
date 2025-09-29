@@ -116,60 +116,37 @@ import { EndVideoCallUseCase } from '@/useCases/implementation/videoCall/endVide
 //===================== CONTROLLERS =====================
 
 //---------------- user ------------------
+import { UserConsultationController } from '@/presentation/http/controllers/user/UserConsultationController';
+import { UserPsychologistController } from '@/presentation/http/controllers/user/UserPsychologistController';
+import { UserProfileController } from '@/presentation/http/controllers/user/UserProfileController';
+import { UserServiceController } from '@/presentation/http/controllers/user/UserServiceController';
+import { UserSlotController } from '@/presentation/http/controllers/user/UserSlotController';
+import { UserWalletController } from '@/presentation/http/controllers/user/UserWalletController';
+
 import { AuthController } from '../../presentation/http/controllers/auth/AuthController';
 import { RefreshTokenController } from '../../presentation/http/controllers/auth/RefreshTokenController';
 import { ForgotPasswordController } from '@/presentation/http/controllers/auth/forgotPasswordController';
 import { ChangePasswordController } from '@/presentation/http/controllers/auth/ChangePasswordController';
-import { GetAllServicesController } from '../../presentation/http/controllers/user/getAllServicesController';
-import { GetAllPsychologistsForUserController } from '../../presentation/http/controllers/user/getAllPsychologistsForUserController';
-import { GetUserProfileController } from '../../presentation/http/controllers/user/getUserProfileController';
-import { UpdateUserProfileController } from '../../presentation/http/controllers/user/updateUserProfileController';
-import { GetPsychologistDetailsController } from '../../presentation/http/controllers/user/getPsychologistDetailsController';
 import { GoogleLoginController } from '../../presentation/http/controllers/auth/GoogleLoginController';
-import { GetSlotsForUserController } from '../../presentation/http/controllers/user/getSlotForUserController';
 import { PaymentController } from '../../presentation/http/controllers/user/paymentController';
-import { GetUserConsultationsController } from '../../presentation/http/controllers/user/getUserConsultationsController';
-import { CreateWalletController } from '@/presentation/http/controllers/user/wallet/createWalletController';
-import { GetWalletByIdController } from '@/presentation/http/controllers/user/wallet/getWalletByIdController';
-import { GetWalletByUserController } from '@/presentation/http/controllers/user/wallet/getWalletByUserController';
-import { CreateWalletTransactionController } from '@/presentation/http/controllers/user/wallet/createWalletTransactionController';
-import { ListWalletTransactionController } from '@/presentation/http/controllers/user/wallet/listWalletTransactionController';
-import { GetUserConsultationDetailController } from '@/presentation/http/controllers/user/getUserConsultationDetailController';
-import { CancelConsultationController } from '@/presentation/http/controllers/user/cancelConsultationController';
+
 
 
 //---------------- psychologist -----------------
-import { VerifyPsychologistController } from '../../presentation/http/controllers/psychologist/VerifyPsychologistController';
-import { GetProfileController } from '../../presentation/http/controllers/psychologist/getProfileController';
-import { UpdatePsychologistProfileController } from '../../presentation/http/controllers/psychologist/updatePsychologistProfileController';
-import { CreateSlotController } from '../../presentation/http/controllers/psychologist/createSlotController';
-import { GetSlotByPsychologistController } from '../../presentation/http/controllers/psychologist/getSlotByPsychologistController';
-import { DeleteSlotController } from '../../presentation/http/controllers/psychologist/deleteSlotController';
-import { GetKycDetailsController } from '../../presentation/http/controllers/psychologist/getKycDetailsController';
-import { GetPsychologistConsultationsController } from '@/presentation/http/controllers/psychologist/getPsychologistConsultationsController';
-import { PsychologistCancelConsultationController } from '@/presentation/http/controllers/psychologist/psychologistCancelConsultationController';
-
+import { SlotController } from '@/presentation/http/controllers/psychologist/SlotController';
+import { PsychologistConsultationController } from '@/presentation/http/controllers/psychologist/PsychologistConsultationController';
+import { PsychologistProfileController } from '@/presentation/http/controllers/psychologist/PsychologistProfileController';
+import { PsychologistKycController } from '@/presentation/http/controllers/psychologist/PsychologistKycController';
 
 //---------------- admin -------------------
+import { AdminKycController } from '@/presentation/http/controllers/admin/AdminKycController';
+import { AdminUserManagementController } from '@/presentation/http/controllers/admin/AdminUserManagementController';
+import { AdminServiceController } from '@/presentation/http/controllers/admin/AdminServiceController';
+import { AdminConsultationController } from '@/presentation/http/controllers/admin/AdminConsultationController';
 import { AdminAuthController } from '../../presentation/http/controllers/admin/adminAuthController';
-import { CreateServiceController } from '../../presentation/http/controllers/admin/createServiceController';
-import { DeleteServiceController } from '@/presentation/http/controllers/admin/deleteServiceController';
-import { GetAllUserController } from '../../presentation/http/controllers/admin/getAllUserController';
-import { GetAllPsychologistsForAdminController } from '../../presentation/http/controllers/admin/getAllPsychologistsForAdminController';
-import { ToggleUserStatusController } from '../../presentation/http/controllers/admin/toggleUserStatusController';
-import { GetAllKycController } from '../../presentation/http/controllers/admin/getAllKycController';
-import { GetKycForPsychologistController } from '../../presentation/http/controllers/admin/getKycForPsychologistController';
-import { ApproveKycController } from '../../presentation/http/controllers/admin/approveKycController';
-import { RejectKycController } from '../../presentation/http/controllers/admin/rejectKycController';
-import { GetAllConsultationsController } from '@/presentation/http/controllers/admin/getAllConsultationsController';
 
 //---------------- chat -----------------------
-import { GetUserChatConsultationsController } from '@/presentation/http/controllers/chat/getUserChatConsultationsController';
-import { GetPsychologistChatConsultationsController } from '@/presentation/http/controllers/chat/getPsychologistChatConsultationsController';
-import { SendMessageController } from '@/presentation/http/controllers/chat/sendMessageController';
-import { GetHistoryController } from '@/presentation/http/controllers/chat/getHistoryController';
-import { GetUnreadCountController } from '@/presentation/http/controllers/chat/getUnreadCountController';
-import { MarkAsReadController } from '@/presentation/http/controllers/chat/markAsReadController';
+import { ChatMessageController } from '@/presentation/http/controllers/chat/ChatMessageController';
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
@@ -248,25 +225,19 @@ export const authController = new AuthController(
     loginUseCase,
     logoutUseCase,
 );
+
+export const userConsultationController = new UserConsultationController(getUserConsultationsUseCase, getUserConsultationByIdUseCase, cancelConsultationUseCase);
+export const userPsychologistController = new UserPsychologistController(getAllPsychologistUseCase, getPsychologistDetailsUseCase);
+export const userProfileController = new UserProfileController(getUserProfileUseCase, updateUserProfileUseCase);
+export const userServiceController = new UserServiceController(getAllServicesUseCase);
+export const userSlotController = new UserSlotController(getSlotsForUserUseCase);
+export const userWalletController = new UserWalletController(createWalletUseCase, createWalletTransactionUseCase, getWalletByIdUseCase, getWalletByUserUseCase, listWalletTransactionsUseCase);
+
 export const forgotPasswordController = new ForgotPasswordController(verifyForgotPasswordUseCase, resetPasswordUseCase);
 export const googleLoginController = new GoogleLoginController(googleLoginUseCase);
 export const refreshTokenController = new RefreshTokenController(refreshTokenUseCase, 'refreshToken');
 export const changePasswordController = new ChangePasswordController(changePasswordUseCase);
-export const userGetAllServicesController = new GetAllServicesController(getAllServicesUseCase);
-export const getAllPsychologistsController = new GetAllPsychologistsForUserController(getAllPsychologistUseCase);
-export const getUserProfileController = new GetUserProfileController(getUserProfileUseCase);
-export const updateUserProfileController = new UpdateUserProfileController(updateUserProfileUseCase);
-export const getPsychologistDetailsController = new GetPsychologistDetailsController(getPsychologistDetailsUseCase);
-export const getSlotsForUserController = new GetSlotsForUserController(getSlotsForUserUseCase);
 export const paymentController = new PaymentController(createCheckoutSessionUseCase, handleWebhookUseCase);
-export const getUserConsultationsController = new GetUserConsultationsController(getUserConsultationsUseCase);
-export const createWalletController = new CreateWalletController(createWalletUseCase);
-export const getWalletByIdController = new GetWalletByIdController(getWalletByIdUseCase);
-export const getWalletByUserController = new GetWalletByUserController(getWalletByUserUseCase);
-export const createWalletTransactionController = new CreateWalletTransactionController(createWalletTransactionUseCase);
-export const listWalletTransactionController = new ListWalletTransactionController(listWalletTransactionsUseCase);
-export const getUserConsultationDetailController = new GetUserConsultationDetailController(getUserConsultationByIdUseCase);
-export const cancelConsultationController = new CancelConsultationController(cancelConsultationUseCase);
 
 
 // ---------- PSYCHOLOGIST ----------
@@ -281,16 +252,10 @@ const getKycDetailsUseCase = new GetKycDetailsUseCase(kycRepository, psychologis
 const getPsychologistConsultationsUseCase = new GetPsychologistConsultationUseCase(consultationRepository, psychologistRepository);
 const psychologistCancelConsultationUseCase = new PsychologistCancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository, slotRepository, psychologistRepository);
 
-export const verifyPsychologistController = new VerifyPsychologistController(verifyPsychologistUseCase);
-export const getProfileController = new GetProfileController(getProfileUseCase);
-export const updatePsychologistProfileController = new UpdatePsychologistProfileController(updatePsychologistProfileUseCase);
-export const createSlotController = new CreateSlotController(createSlotUseCase);
-export const getSlotByPsychologistController = new GetSlotByPsychologistController(getSlotByPsychologistUseCase);
-export const deleteSlotController = new DeleteSlotController(deleteSlotUseCase);
-export const getKycDetailsController = new GetKycDetailsController(getKycDetailsUseCase);
-export const getPsychologistConsultationsController = new GetPsychologistConsultationsController(getPsychologistConsultationsUseCase);
-export const psychologistCancelConsultationController = new PsychologistCancelConsultationController(psychologistCancelConsultationUseCase);
-
+export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
+export const psychologistConsultationController = new PsychologistConsultationController(getPsychologistConsultationsUseCase, psychologistCancelConsultationUseCase);
+export const psychologistProfileController = new PsychologistProfileController(getProfileUseCase, updatePsychologistProfileUseCase);
+export const psychologistKycController = new PsychologistKycController(getKycDetailsUseCase, verifyPsychologistUseCase);
 
 // ---------- ADMIN ----------
 
@@ -311,19 +276,12 @@ const approveKycUseCase = new ApproveKycUseCase(kycRepository,psychologistReposi
 const rejectKycUseCase = new RejectKycUseCase(kycRepository,psychologistRepository);
 const getAllConsultationsUseCase = new GetAllConsultationsUseCase(consultationRepository);
 
-
+export const adminKycController = new AdminKycController(getAllKycUseCase, getKycForPsychologistUseCase, approveKycUseCase, rejectKycUseCase);
+export const adminUserManagementController = new AdminUserManagementController(getAllUserUseCase, getAllPsychologistsUseCase, toggleUserStatusUseCase);
+export const adminServiceController = new AdminServiceController(createServiceUseCase, deleteServiceUseCase);
+export const adminConsultationController = new AdminConsultationController(getAllConsultationsUseCase);
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase);
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, 'adminRefreshToken');
-export const createServiceController = new CreateServiceController(createServiceUseCase);
-export const deleteServiceController = new DeleteServiceController(deleteServiceUseCase);
-export const getAllUserController = new GetAllUserController(getAllUserUseCase);
-export const getAllPsychologistController = new GetAllPsychologistsForAdminController(getAllPsychologistsUseCase); 
-export const toggleUserStatusController = new ToggleUserStatusController(toggleUserStatusUseCase);
-export const getAllKycController = new GetAllKycController(getAllKycUseCase);
-export const getKycForPsychologistController = new GetKycForPsychologistController(getKycForPsychologistUseCase);
-export const approveKycController = new ApproveKycController(approveKycUseCase);
-export const rejectKycController = new RejectKycController(rejectKycUseCase);
-export const getAllConsultationsController = new GetAllConsultationsController(getAllConsultationsUseCase);
 
 //--------------- chat -----------------------
 
@@ -337,12 +295,7 @@ const getHistoryUseCase = new GetHistoryUseCase(messageRepository);
 const getUnreadCountUseCase = new GetUnreadCountUseCase(messageRepository, userRepository, psychologistRepository);
 const markReadUseCase = new MarkReadUseCase(messageRepository, psychologistRepository, userRepository);
 
-export const getUserChatConsultationsController = new GetUserChatConsultationsController(getUserChatConsultationsUseCase);
-export const getPsychologistChatConsultationsController = new GetPsychologistChatConsultationsController(getPsychologistChatConsultationsUseCase);
-export const sendMessageController = new SendMessageController(sendMessageUseCase);
-export const getHistoryController = new GetHistoryController(getHistoryUseCase);
-export const getUnreadCountController = new GetUnreadCountController(getUnreadCountUseCase);
-export const markAsReadController = new MarkAsReadController(markReadUseCase);
+export const chatMessageController = new ChatMessageController(sendMessageUseCase, getHistoryUseCase, getUnreadCountUseCase, markReadUseCase, getUserChatConsultationsUseCase, getPsychologistChatConsultationsUseCase);
 
 //----------------video call--------------------
 

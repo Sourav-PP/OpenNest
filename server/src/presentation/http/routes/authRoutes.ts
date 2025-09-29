@@ -9,10 +9,10 @@ import {
     authController,
     googleLoginController,
     refreshTokenController,
-    verifyPsychologistController,
     forgotPasswordController,
     authenticateAll,
     changePasswordController,
+    psychologistKycController,
 } from '@/infrastructure/config/di';
 
 import { uploadFields, uploadSingle } from '../middlewares/multer';
@@ -42,7 +42,7 @@ router.post('/psychologist/verify-profile',
     verifyPsychologistValidator,
     validateVerifyPsychologist,
     validateFiles,
-    verifyPsychologistController.handle,
+    psychologistKycController.verifyPsychologist,
 );
 
 export default router;

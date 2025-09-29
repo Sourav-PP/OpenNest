@@ -1,16 +1,20 @@
-import { NextFunction, Request, Response } from 'express';
-import { IGetAllConsultationsUseCase } from '@/useCases/interfaces/admin/management/IGetAllConsultationsUseCase';
-import { HttpStatus } from '@/shared/enums/httpStatus';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IGetAllConsultationsUseCase } from '@/useCases/interfaces/admin/management/IGetAllConsultationsUseCase';
+import { NextFunction, Request, Response } from 'express';
 
-export class GetAllConsultationsController {
+export class AdminConsultationController {
     private _getAllConsultationsUseCase: IGetAllConsultationsUseCase;
 
     constructor(getAllConsultationsUseCase: IGetAllConsultationsUseCase) {
         this._getAllConsultationsUseCase = getAllConsultationsUseCase;
     }
 
-    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => { 
+    getAllConsultations = async(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
@@ -20,7 +24,12 @@ export class GetAllConsultationsController {
                 sort: req.query.sort as 'asc' | 'desc',
                 page,
                 limit,
-                status: req.query.status as 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all',
+                status: req.query.status as
+                    | 'booked'
+                    | 'cancelled'
+                    | 'completed'
+                    | 'rescheduled'
+                    | 'all',
             });
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -29,6 +38,6 @@ export class GetAllConsultationsController {
             });
         } catch (error) {
             next(error);
-        } 
+        }
     };
-};
+}
