@@ -100,6 +100,46 @@ export interface IUserConsultationDetailsDto {
     };
 }
 
+export interface IConsultationHistoryDetailsDto {
+    id: string;
+    sessionGoal: string;
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    meetingLink?: string;
+    startDateTime: Date;
+    endDateTime: Date;
+
+    psychologist: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    };
+    patient: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    };
+    slot: {
+        id: string;
+        startDateTime: Date;
+        endDateTime: Date;
+        isBooked: boolean;
+        bookedBy?: string | null;
+    };
+    payment: {  
+        amount: number;
+        currency: string;
+        paymentMethod: 'stripe' | 'wallet';
+        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        refunded: boolean;
+    };
+    video: {
+        duration?: number;
+        startedAt: Date | null;
+        endedAt: Date | null;
+    }
+}
+
+
 export interface IConsultationDetailsForAdminDto {
     id: string;
     patientName: string;

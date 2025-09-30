@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import type { IPsychologistConsultationDto } from '@/types/dtos/consultation';
-import { userApi } from '@/services/api/user';
 import type { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import ConsultationFilters from '@/components/user/ConsultationFilters';

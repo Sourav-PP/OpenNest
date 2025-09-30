@@ -5,6 +5,8 @@ import { sessionMessages } from '@/shared/constants/messages/sessionMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { ICancelConsultationUseCase } from '@/useCases/interfaces/user/data/ICancelConsultationUseCase';
 import { IGetUserConsultationByIdUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationByIdUseCase';
+import { IGetUserConsultationHistoryDetailsUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationHistoryDetailsUseCase';
+import { IGetUserConsultationHistoryUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationHistoryUseCase';
 import { IGetUserConsultationUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationsUseCase';
 import { NextFunction, Request, Response } from 'express';
 
@@ -12,15 +14,21 @@ export class UserConsultationController {
     private _getUserConsultationsUseCase: IGetUserConsultationUseCase;
     private _getUserConsultationByIdUseCase: IGetUserConsultationByIdUseCase;
     private _cancelConsultationUseCase: ICancelConsultationUseCase;
+    private _getUserConsultationHistoryUseCase: IGetUserConsultationHistoryUseCase;
+    private _getUserConsultationHistoryDetailsUseCase: IGetUserConsultationHistoryDetailsUseCase;
 
     constructor(
         getUserConsultationsUseCase: IGetUserConsultationUseCase,
         getUserConsultationByIdUseCase: IGetUserConsultationByIdUseCase,
         cancelConsultationUseCase: ICancelConsultationUseCase,
+        getUserConsultationHistoryUseCase: IGetUserConsultationHistoryUseCase,
+        getUserConsultationHistoryDetailsUseCase: IGetUserConsultationHistoryDetailsUseCase,
     ) {
         this._getUserConsultationsUseCase = getUserConsultationsUseCase;
         this._getUserConsultationByIdUseCase = getUserConsultationByIdUseCase;
-        this._cancelConsultationUseCase = cancelConsultationUseCase;;
+        this._cancelConsultationUseCase = cancelConsultationUseCase;
+        this._getUserConsultationHistoryUseCase = getUserConsultationHistoryUseCase;
+        this._getUserConsultationHistoryDetailsUseCase = getUserConsultationHistoryDetailsUseCase;
     }
 
     getConsultations = async(
@@ -108,6 +116,53 @@ export class UserConsultationController {
                 success: true,
                 message: sessionMessages.SUCCESS.CANCELLED,
                 data: consultation,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    getHistory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            console.log('jere');
+            const userId = req.user?.userId;
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
+
+            if (!userId) {
+                throw new AppError(
+                    authMessages.ERROR.UNAUTHORIZED,
+                    HttpStatus.UNAUTHORIZED,
+                );
+            }
+
+            const result = await this._getUserConsultationHistoryUseCase.execute({
+                patientId: userId,
+                search: req.query.search as string,
+                sort: req.query.sort as 'asc' | 'desc',
+                page,
+                limit,
+            });
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
+                data: result,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    getHistoryDetails = async(req: Request, res: Response, next: NextFunction): Promise<void> =>{
+        try {
+            const { consultationId } = req.params;
+            const result = await this._getUserConsultationHistoryDetailsUseCase.execute(consultationId);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
+                data: result,
             });
         } catch (error) {
             next(error);

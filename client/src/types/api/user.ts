@@ -50,6 +50,13 @@ export interface IGetUserConsultationsRequest {
     limit?: number;
 }
 
+export interface IGetUserConsultationHistoryRequest {
+    search?: string;
+    sort?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+}
+
 export interface IGetUserConsultationsResponseData {
     consultations: IConsultationDto[],
     totalCount: number
@@ -81,11 +88,50 @@ export interface IUserConsultationDetailsResponseData {
         bookedBy?: string | null;
     },
     payment: {
-        amount: 60;
+        amount: number;
         currency: string;
         paymentMethod: 'stripe' | 'wallet';
         paymentStatus: 'pending' | 'succeeded' | 'failed';
         refunded: boolean
+    }
+}
+
+export interface IUserConsultationHistoryDetailsResponseData {
+    id: string;
+    sessionGoal: string,
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    meetingLink?: string;
+    startDateTime: Date;
+    endDateTime: Date;
+
+    psychologist: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    },
+    patient: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    },
+    slot: {
+        id: string;
+        startDateTime: Date;
+        endDateTime: Date;
+        isBooked: boolean;
+        bookedBy?: string | null;
+    },
+    payment: {
+        amount: number;
+        currency: string;
+        paymentMethod: 'stripe' | 'wallet';
+        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        refunded: boolean
+    },
+    video: {
+        duration?: number;
+        startedAt: Date | null;
+        endedAt: Date | null;
     }
 }
 
@@ -97,6 +143,7 @@ export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistRes
 export type IGetPsychologistByIdResponse = BackendResponse<IGetPsychologistByIdResponseData>
 export type IGetUserConsultationsResponse = BackendResponse<IGetUserConsultationsResponseData>
 export type IUserConsultationDetailsResponse = BackendResponse<IUserConsultationDetailsResponseData>
+export type IUserConsultationHistoryDetailResponse = BackendResponse<IUserConsultationHistoryDetailsResponseData>
 export type IGetUserProfileResponse = BackendResponse<IGetUserProfileResponseData>
 export type ICreateCheckoutSessionResponse = BackendResponse<ICreateCheckoutSessionResponseData>
 export type IGetSlotsByPsychologistResponse = BackendResponse<ISlotDto[]>

@@ -11,6 +11,7 @@ import {
   FileText,
   DollarSign,
   UserCheck,
+  History,
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -46,6 +47,11 @@ const Sidebar = () => {
       name: 'My Consultations',
       path: '/psychologist/consultations',
       icon: <Clock width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
+    },
+    {
+      name: 'Session History',
+      path: '/psychologist/consultation/history',
+      icon: <History width="20" height="20" stroke="#858585" strokeWidth="1.75" />
     },
     {
       name: 'My Chats',

@@ -9,7 +9,9 @@ import type {
   IGetPsychologistByIdResponse,
   IGetUserProfileResponse,
   IGetSlotsByPsychologistResponse,
-  IUserConsultationDetailsResponse
+  IUserConsultationDetailsResponse,
+  IGetUserConsultationHistoryRequest,
+  IUserConsultationHistoryDetailResponse
 } from '../../types/api/user';
 
 import { server } from '../server';
@@ -31,4 +33,6 @@ export const userApi = {
   getUserConsultations: async(params?: IGetUserConsultationsRequest) => server.get<IGetUserConsultationsResponse>('/user/consultations', {params}),
   UserConsultationsDetail: async(id: string) => server.get<IUserConsultationDetailsResponse>(`/user/consultation/${id}`),
   cancelConsultation: async(id: string, reason: string) => server.put<BackendResponse<IConsultationDto>, { reason: string }>(`/user/consultation/${id}/cancel`, { reason }),
+  getUserConsultationHistory: async(params?: IGetUserConsultationHistoryRequest) => server.get<IGetUserConsultationsResponse>('/user/consultation/history', { params }),
+  getUserConsultationHistoryDetail: async(consultationId: string) => server.get<IUserConsultationHistoryDetailResponse>(`/user/consultation/${consultationId}/history`),
 };

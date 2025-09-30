@@ -68,5 +68,18 @@ export interface IGetConsultationsResponse {
   totalCount: number
 }
 
+export interface IGetUserConsultationHistoryRequest {
+  patientId: string
+  search?: string;
+  sort?: 'asc' | 'desc';  
+  page?: number;
+  limit?: number;
+}
+
+export interface IGetUserConsultationHistoryResponse {
+  consultations: IConsultationDto[],
+  totalCount: number
+}
+
 
 

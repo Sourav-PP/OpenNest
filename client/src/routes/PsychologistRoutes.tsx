@@ -11,6 +11,8 @@ import PsychologistChatPage from '@/features/chat/pages/PsychologistChatPage';
 import MySessionsPage from '@/features/psychologist/pages/MySessionsPage';
 import ConsultationDetailPage from '@/features/psychologist/pages/ConsultationDetailPage';
 import VideoCallPage from '@/features/videoCall/pages/VideoCallPage';
+import PsychologistConsultationHistoryPage from '@/features/psychologist/pages/PsychologistConsultationHistoryPage';
+import PsychologistConsultationHistoryDetailPage from '@/features/psychologist/pages/PsychologistConsultationHistoryDetailPage';
 
 export const psychologistRoutes: RouteObject[] = [
   {
@@ -56,5 +58,13 @@ export const psychologistRoutes: RouteObject[] = [
   {
     path: '/psychologist/consultations/:id/video',
     element: <PrivateRoute allowedRoles={['psychologist']}><VideoCallPage/></PrivateRoute>
+  },
+  {
+    path: '/psychologist/consultation/history',
+    element: <PrivateRoute allowedRoles={['psychologist']}><PsychologistConsultationHistoryPage/></PrivateRoute>
+  },
+  {
+    path: '/psychologist/consultation/:consultationId/history',
+    element: <PrivateRoute allowedRoles={['psychologist']}><PsychologistConsultationHistoryDetailPage/></PrivateRoute>
   },
 ];

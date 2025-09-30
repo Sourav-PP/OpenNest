@@ -2,20 +2,19 @@ import { useEffect, useState } from 'react';
 import type { IConsultationDto } from '@/types/dtos/consultation';
 import { userApi } from '@/services/api/user';
 import { toast } from 'react-toastify';
-import ConsultationFilters from '@/components/user/ConsultationFilters';
 import ReusableTable from '@/components/user/ReusableTable';
 import CustomPagination from '@/components/user/CustomPagination';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 
-const UserConsultationsTable = () => {
+const UserConsultationHistoryTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<'asc' | 'desc'>('asc');
-  const [status, setStatus] = useState<'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all'>('all');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [sort, setSort] = useState<'asc' | 'desc'>('desc'); // default: newest first
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -32,21 +31,20 @@ const UserConsultationsTable = () => {
   }, [search]);
 
   useEffect(() => {
-    const fetchConsultations = async () => {
+    const fetchHistory = async () => {
       try {
         setLoading(true);
-        const res = await userApi.getUserConsultations({
+        const res = await userApi.getUserConsultationHistory({
           search: debouncedSearch,
           sort: sort,
-          status: status,
           limit: itemsPerPage,
           page: currentPage,
         });
 
-        if(!res.data) {
+        if (!res.data) {
           toast.error('Something went wrong');
           return;
-        };
+        }
 
         setConsultations(res.data.consultations);
         setTotalCount(res.data.totalCount ?? 0);
@@ -57,63 +55,56 @@ const UserConsultationsTable = () => {
       }
     };
 
-    fetchConsultations();
-  }, [currentPage, debouncedSearch, sort, status]);
-
-  const formatDateTime = (date: string | Date) => {
-    return new Intl.DateTimeFormat('en-IN', {
-      dateStyle: 'medium', // e.g. Sep 8, 2025
-      timeStyle: 'short', // e.g. 2:30 PM
-    }).format(new Date(date));
-  };
+    fetchHistory();
+  }, [debouncedSearch, sort, currentPage]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const columns = [
     {
       header: 'SI',
-      render: (_: IConsultationDto, index: number) => index + 1,
-      className: 'ps-4'
+      render: (_: IConsultationDto, index: number) => index + 1 + (currentPage - 1) * itemsPerPage,
+      className: 'ps-4',
     },
     {
       header: 'Psychologist',
-      render: (c: IConsultationDto) => c.psychologist.name,
-    },
-    {
-      header: 'Start Date & Time',
-      render: (c: IConsultationDto) => formatDateTime(c.startDateTime),
-    },
-    {
-      header: 'End Date & Time',
-      render: (c: IConsultationDto) => formatDateTime(c.endDateTime),
-    },
-    {
-      header: 'Status',
       render: (c: IConsultationDto) => (
-        <span
-          className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${
-            c.status === 'booked'
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-              : c.status === 'cancelled'
-                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                : c.status === 'completed'
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-          }`}
-        >
-          {c.status}
-        </span>
+        <div className="flex items-center gap-2">
+          {c.psychologist.profileImage && (
+            <img
+              src={getCloudinaryUrl(c.psychologist.profileImage) || undefined}
+              alt={c.psychologist.name}
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          )}
+          <span>{c.psychologist.name}</span>
+        </div>
       ),
     },
     {
+      header: 'Session Goal',
+      render: (c: IConsultationDto) => (
+        <span className="line-clamp-1">{c.sessionGoal}</span>
+      ),
+    },
+    {
+      header: 'Start Date & Time',
+      render: (c: IConsultationDto) => new Date(c.startDateTime).toLocaleString(),
+    },
+    {
+      header: 'End Date & Time',
+      render: (c: IConsultationDto) => new Date(c.endDateTime).toLocaleString(),
+    },
+    {
       header: 'View',
-      render: (c: IConsultationDto) =>
+      render: (c: IConsultationDto) => (
         <Link
-          to={`/user/consultations/${c.id}`}
+          to={`/user/consultation/${c.id}/history`}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
           View
         </Link>
+      ),
     },
   ];
 
@@ -137,29 +128,43 @@ const UserConsultationsTable = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-slate-200 to-white min-h-screen">
-      <AnimatedTitle><h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-6 tracking-tight text-start">My Consultations</h2></AnimatedTitle>
+      <AnimatedTitle>
+        <h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-6 tracking-tight text-start">
+          Consultation History
+        </h2>
+      </AnimatedTitle>
+
       <div className="space-y-6 dark:bg-gray-800 rounded-lg">
-        <ConsultationFilters
-          search={search}
-          setSearch={setSearch}
-          sort={sort}
-          setSort={setSort}
-          status={status}
-          setStatus={setStatus}
-          setCurrentPage={setCurrentPage}
-        />
+        {/* Search + Sort */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search by psychologist or goal..."
+            className="px-3 py-2 border rounded-lg w-full sm:w-1/2"
+          />
+          <select
+            value={sort}
+            onChange={e => setSort(e.target.value as 'asc' | 'desc')}
+            className="px-3 py-2 border rounded-lg"
+          >
+            <option value="desc">Newest First</option>
+            <option value="asc">Oldest First</option>
+          </select>
+        </div>
+
         <ReusableTable
           data={consultations}
           columns={columns}
-          onRowClick={(consultation: IConsultationDto) => {
-            navigate(`/user/consultations/${consultation.id}`);
-          }}
-          emptyMessage="No consultations found."
+          onRowClick={(c: IConsultationDto) => navigate(`/user/consultation/${c.id}/history`)}
+          emptyMessage="No consultation history found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />
+
         <CustomPagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -170,4 +175,4 @@ const UserConsultationsTable = () => {
   );
 };
 
-export default UserConsultationsTable;
+export default UserConsultationHistoryTable;

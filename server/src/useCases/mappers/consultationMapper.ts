@@ -1,6 +1,7 @@
 import {
     IConsultationDetailsForAdminDto,
     IConsultationDto,
+    IConsultationHistoryDetailsDto,
     IPsychologistChatConsultationDto,
     IPsychologistConsultationDto,
     IUserChatConsultationDto,
@@ -12,6 +13,7 @@ import { Consultation } from '@/domain/entities/consultation';
 import { Message } from '@/domain/entities/message';
 import { Slot } from '@/domain/entities/slot';
 import { Payment } from '@/domain/entities/payment';
+import { VideoCall } from '@/domain/entities/videoCall';
 
 export function toConsultationDto(
     consultation: Consultation,
@@ -162,6 +164,54 @@ export function toUserConsultationDetail(
             paymentMethod: payment.paymentMethod,
             paymentStatus: payment.paymentStatus,
             refunded: payment.refunded,
+        },
+    };
+}
+
+export function toConsultationHistoryDetails(
+    consultation: Consultation,
+    psychologist: Psychologist & User,
+    user: User,
+    slot: Slot,
+    payment: Payment,
+    video: VideoCall,
+): IConsultationHistoryDetailsDto {
+    return {
+        id: consultation.id,
+        sessionGoal: consultation.sessionGoal,
+        status: consultation.status,
+        meetingLink: consultation.meetingLink,
+        startDateTime: consultation.startDateTime,
+        endDateTime: consultation.endDateTime,
+
+        psychologist: {
+            id: psychologist.id,
+            name: psychologist.name,
+            profileImage: psychologist.profileImage,
+        },
+        patient: {
+            id: user.id,
+            name: user.name,
+            profileImage: user.profileImage,
+        },
+        slot: {
+            id: slot.id,
+            startDateTime: slot.startDateTime,
+            endDateTime: slot.endDateTime,
+            isBooked: slot.isBooked,
+            bookedBy: slot.bookedBy,
+        },
+        payment: {
+            amount: payment.amount,
+            currency: payment.currency,
+            paymentMethod: payment.paymentMethod,
+            paymentStatus: payment.paymentStatus,
+            refunded: payment.refunded,
+        },
+        video: {
+            duration: video.duration,
+            startedAt: video.startedAt,
+            endedAt: video.endedAt,
         },
     };
 }

@@ -13,6 +13,8 @@ import UserChatPage from '@/features/chat/pages/UserChatPage';
 import WalletPage from '@/features/wallet/pages/WalletPage';
 import ConsultationDetailPage from '@/features/user/pages/ConsultationDetailPage';
 import VideoCallPage from '@/features/videoCall/pages/VideoCallPage';
+import UserConsultationHistoryPage from '@/features/user/pages/UserConsultationHistoryPage';
+import UserConsultationHistoryDetailPage from '@/features/user/pages/UserConsultationHistoryDetailPage';
 
 export const userRoutes: RouteObject[] = [
   {
@@ -66,5 +68,13 @@ export const userRoutes: RouteObject[] = [
   {
     path: '/user/consultations/:id/video',
     element: <PrivateRoute allowedRoles={['user']}><VideoCallPage/></PrivateRoute>
+  },
+  {
+    path: '/user/consultation/history',
+    element: <PrivateRoute allowedRoles={['user']}><UserConsultationHistoryPage/></PrivateRoute>
+  },
+  {
+    path: '/user/consultation/:consultationId/history',
+    element: <PrivateRoute allowedRoles={['user']}><UserConsultationHistoryDetailPage/></PrivateRoute>
   },
 ];

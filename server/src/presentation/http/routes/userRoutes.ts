@@ -26,6 +26,8 @@ router.get('/psychologists/:userId/slots', userSlotController.getAllSlots);
 router.post('/payment/create-checkout-session', authenticateUser, checkBlockedUser, paymentController.createCheckoutSession);
 router.post('/payment/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
 router.get('/consultations', authenticateUser, checkBlockedUser, userConsultationController.getConsultations);
+router.get('/consultation/history', authenticateUser, checkBlockedUser, userConsultationController.getHistory);
+router.get('/consultation/:consultationId/history', authenticateAll, checkBlockedUser, userConsultationController.getHistoryDetails);
 router.get('/consultation/:id', authenticateAll, checkBlockedUser, userConsultationController.getConsultationDetail);
 router.put('/consultation/:id/cancel', authenticateUser, checkBlockedUser, userConsultationController.cancelConsultation);
 

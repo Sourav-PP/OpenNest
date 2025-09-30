@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Stethoscope, MessageSquare, Wallet, Lock } from 'lucide-react';
+import { Home, Stethoscope, MessageSquare, Wallet, Lock, History } from 'lucide-react';
 import { assets } from '../../assets/assets';
 
 const Sidebar = () => {
@@ -10,6 +10,7 @@ const Sidebar = () => {
     { name: 'My Profile', path: '/user/profile', icon: <Home className="w-5 h-5" /> },
     { name: 'Change Password', path: '/user/change-password', icon: <Lock className="w-5 h-5" /> },
     { name: 'My Sessions', path: '/user/consultations', icon: <Stethoscope className="w-5 h-5" /> },
+    { name: 'Session History', path: '/user/consultation/history', icon: <History className='w-5 h-5' /> },
     { name: 'My Chats', path: '/user/chat', icon: <MessageSquare className="w-5 h-5" /> },
     { name: 'Wallet', path: '/user/wallet', icon: <Wallet className="w-5 h-5" /> },
   ];

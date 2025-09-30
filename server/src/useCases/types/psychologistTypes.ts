@@ -65,7 +65,20 @@ export interface IGetConsultationsRequest {
   limit?: number; 
 }
 
+export interface IGetConsultationHistoryRequest {
+  psychologistId: string
+  search?: string;
+  sort?: 'asc' | 'desc';
+  page?: number;
+  limit?: number; 
+}
+
 export interface IGetConsultationsResponse {
+  consultations: IPsychologistConsultationDto[],
+  totalCount: number
+}
+
+export interface IGetConsultationHistoryResponse {
   consultations: IPsychologistConsultationDto[],
   totalCount: number
 }
