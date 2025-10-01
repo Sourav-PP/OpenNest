@@ -7,6 +7,7 @@ import type { IUserConsultationDetailsResponseData } from '@/types/api/user';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import ConfirmationModal from '@/components/user/ConfirmationModal';
 import { psychologistApi } from '@/services/api/psychologist';
+import { History } from 'lucide-react';
 
 const PsychologistConsultationsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ const PsychologistConsultationsDetail = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [reason, setReason] = useState('');
   const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [hasHistory, setHasHistory] = useState(false);
 
   useEffect(() => {
     if(!consultation?.startDateTime) return;  
@@ -47,7 +49,25 @@ const PsychologistConsultationsDetail = () => {
         return;
       }
 
+      console.log('res.data: ', res.data);
+
       setConsultation(res.data);
+
+      if(res.data.patient.id) {
+        try {
+          const historyRes = await psychologistApi.getPatientHistory(res.data.patient.id, {
+            page: 1,
+            limit: 1,
+          });
+
+          setHasHistory((historyRes.data?.consultations.length ?? 0) > 0);
+          
+        } catch (error) {
+          handleApiError(error);
+          setHasHistory(false);
+        }
+      }
+
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -128,8 +148,21 @@ const PsychologistConsultationsDetail = () => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-br from-slate-200 to-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900">Consultation Details</h2>
-
+      <h2 className="text-2xl font-bold mb-2 text-gray-900">
+        Consultation Details
+      </h2>
+      {hasHistory && consultation?.patient?.id && (
+        <Link
+          to={`/psychologist/patients/${consultation.patient.id}/history`}
+          state={{ from: 'consultation-detail', patientName: consultation.patient.name }}
+          className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg 
+                    bg-indigo-700 hover:bg-indigo-800 text-white shadow-md transition-colors 
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
+        >
+          <History className="w-4 h-4" />
+          View Patient History
+        </Link>
+      )}
       <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 border border-gray-200 transition-shadow duration-300 space-y-8">
         {/* Status on top-right */}
         <div className="flex justify-end">

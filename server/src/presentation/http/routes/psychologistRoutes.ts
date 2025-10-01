@@ -21,4 +21,6 @@ router.delete('/slot/:slotId', authenticatePsychologist, slotController.deleteSl
 router.get('/consultations', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.getConsultations);
 router.put('/consultation/:id/cancel', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.cancelConsultation);
 router.get('/consultation/history', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.getHistory);
+router.get('/patients/:patientId/history', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.getPatientHistory);
+
 export default router;

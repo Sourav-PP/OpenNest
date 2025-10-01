@@ -2,6 +2,7 @@ import {
     IConsultationDetailsForAdminDto,
     IConsultationDto,
     IConsultationHistoryDetailsDto,
+    IPatientConsultationHistoryDto,
     IPsychologistChatConsultationDto,
     IPsychologistConsultationDto,
     IUserChatConsultationDto,
@@ -63,6 +64,26 @@ export function toPsychologistConsultationDto(
                 refunded: payment.refunded,
             }
             : undefined,
+    };
+}
+
+export function toPatientConsultationHistoryDto(
+    consultation: Consultation,
+    patient: User,
+): IPatientConsultationHistoryDto {
+    return {
+        id: consultation.id,
+        psychologistId: consultation.psychologistId,
+        startDateTime: consultation.startDateTime,
+        endDateTime: consultation.endDateTime,
+        sessionGoal: consultation.sessionGoal,
+        status: consultation.status,
+        meetingLink: consultation.meetingLink,
+        patient: {
+            id: patient.id,
+            name: patient.name,
+            profileImage: patient.profileImage,
+        },
     };
 }
 

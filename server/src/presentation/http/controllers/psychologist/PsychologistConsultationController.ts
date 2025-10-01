@@ -3,6 +3,7 @@ import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { sessionMessages } from '@/shared/constants/messages/sessionMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IGetPatientConsultationHistoryUseCase } from '@/useCases/interfaces/psychologist/data/IGetPatientConsultationHistoryUseCase';
 import { IGetPsychologistConsultationHistoryUseCase } from '@/useCases/interfaces/psychologist/data/IGetPsychologistConsultationHistoryUseCase';
 import { IGetPsychologistConsultationUseCase } from '@/useCases/interfaces/psychologist/data/IGetPsychologistConsultationsUseCase';
 import { IPsychologistCancelConsultationUseCase } from '@/useCases/interfaces/psychologist/data/IPsychologistCancelConsultationUseCase';
@@ -12,15 +13,18 @@ export class PsychologistConsultationController {
     private _getPsychologistConsultationUseCase: IGetPsychologistConsultationUseCase;
     private _psychologistCancelConsultationUseCase: IPsychologistCancelConsultationUseCase;
     private _getPsychologistConsultationHistoryUseCase: IGetPsychologistConsultationHistoryUseCase;
+    private _getPatientConsultationHistoryUseCase: IGetPatientConsultationHistoryUseCase;
 
     constructor(
         getPsychologistConsultationUseCase: IGetPsychologistConsultationUseCase,
         psychologistCancelConsultationUseCase: IPsychologistCancelConsultationUseCase,
         getPsychologistConsultationHistoryUseCase: IGetPsychologistConsultationHistoryUseCase,
+        getPatientConsultationHistoryUseCase: IGetPatientConsultationHistoryUseCase,
     ) {
         this._getPsychologistConsultationUseCase = getPsychologistConsultationUseCase;
         this._psychologistCancelConsultationUseCase =psychologistCancelConsultationUseCase;
         this._getPsychologistConsultationHistoryUseCase = getPsychologistConsultationHistoryUseCase;
+        this._getPatientConsultationHistoryUseCase = getPatientConsultationHistoryUseCase;
     }
 
     getConsultations = async(
@@ -125,6 +129,43 @@ export class PsychologistConsultationController {
                     page,
                     limit,
                 });
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
+                data: result,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    getPatientHistory = async(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
+        try {
+            const userId = req.user?.userId;
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
+            const { patientId } = req.params;
+
+            if (!userId) {
+                throw new AppError(
+                    authMessages.ERROR.UNAUTHORIZED,
+                    HttpStatus.UNAUTHORIZED,
+                );
+            }
+
+            const result = await this._getPatientConsultationHistoryUseCase.execute({
+                patientId,
+                psychologistUserId: userId,
+                search: req.query.search as string,
+                sort: req.query.sort as 'asc' | 'desc',
+                page,
+                limit,
+            });
 
             console.log('consultations: ', result);
 

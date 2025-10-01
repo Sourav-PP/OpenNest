@@ -86,6 +86,7 @@ import { GetKycDetailsUseCase } from '../../useCases/implementation/psychologist
 import { GetPsychologistConsultationUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistConsultationsUseCase';
 import { PsychologistCancelConsultationUseCase } from '@/useCases/implementation/psychologist/data/psychologistCancelConsultationUseCase';  
 import { GetPsychologistConsultationHistoryUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistConsultationHistoryUseCase';
+import { GetPatientConsultationHistoryUseCase } from '@/useCases/implementation/psychologist/data/getPatientConsultationHistoryUseCase';
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -256,9 +257,10 @@ const getKycDetailsUseCase = new GetKycDetailsUseCase(kycRepository, psychologis
 const getPsychologistConsultationsUseCase = new GetPsychologistConsultationUseCase(consultationRepository, psychologistRepository);
 const psychologistCancelConsultationUseCase = new PsychologistCancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository, slotRepository, psychologistRepository);
 const getPsychologistConsultationHistoryUseCase = new GetPsychologistConsultationHistoryUseCase(consultationRepository, psychologistRepository);
+const getPatientConsultationHistoryUseCase = new GetPatientConsultationHistoryUseCase(consultationRepository, psychologistRepository);
 
 export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
-export const psychologistConsultationController = new PsychologistConsultationController(getPsychologistConsultationsUseCase, psychologistCancelConsultationUseCase, getPsychologistConsultationHistoryUseCase);
+export const psychologistConsultationController = new PsychologistConsultationController(getPsychologistConsultationsUseCase, psychologistCancelConsultationUseCase, getPsychologistConsultationHistoryUseCase, getPatientConsultationHistoryUseCase);
 export const psychologistProfileController = new PsychologistProfileController(getProfileUseCase, updatePsychologistProfileUseCase);
 export const psychologistKycController = new PsychologistKycController(getKycDetailsUseCase, verifyPsychologistUseCase);
 

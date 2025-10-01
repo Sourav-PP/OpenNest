@@ -1,4 +1,4 @@
-import type { IPsychologistConsultationDto } from '../dtos/consultation';
+import type { IPatientConsultationHistoryDto, IPsychologistConsultationDto } from '../dtos/consultation';
 import type { BackendResponse } from './api';
 
 export interface IGetUserConsultationsResponse {
@@ -6,4 +6,10 @@ export interface IGetUserConsultationsResponse {
   totalCount: number;
 }
 
+export interface IGetPatientConsultationHistoryResponseData {
+  consultations: IPatientConsultationHistoryDto[];
+  totalCount: number;
+}
+
 export type IGetPsychologistConsultationsResponse = BackendResponse<IGetUserConsultationsResponse>;
+export type IGetPatientConsultationHistoryResponse = BackendResponse<IGetPatientConsultationHistoryResponseData>

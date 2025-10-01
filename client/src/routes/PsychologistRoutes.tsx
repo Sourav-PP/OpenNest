@@ -13,6 +13,7 @@ import ConsultationDetailPage from '@/features/psychologist/pages/ConsultationDe
 import VideoCallPage from '@/features/videoCall/pages/VideoCallPage';
 import PsychologistConsultationHistoryPage from '@/features/psychologist/pages/PsychologistConsultationHistoryPage';
 import PsychologistConsultationHistoryDetailPage from '@/features/psychologist/pages/PsychologistConsultationHistoryDetailPage';
+import PatientHistoryPage from '@/features/psychologist/pages/PatientHistoryPage';
 
 export const psychologistRoutes: RouteObject[] = [
   {
@@ -67,4 +68,9 @@ export const psychologistRoutes: RouteObject[] = [
     path: '/psychologist/consultation/:consultationId/history',
     element: <PrivateRoute allowedRoles={['psychologist']}><PsychologistConsultationHistoryDetailPage/></PrivateRoute>
   },
+  {
+    path: '/psychologist/patients/:patientId/history',
+    element: <PrivateRoute allowedRoles={['psychologist']}><PatientHistoryPage/></PrivateRoute>
+  },
+
 ];

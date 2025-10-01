@@ -17,7 +17,7 @@ const PsychologistConsultationHistoryTable = () => {
   const [sort, setSort] = useState<'asc' | 'desc'>('desc'); // default: newest first
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const itemsPerPage = 10;
 
   // debounce search
@@ -100,6 +100,7 @@ const PsychologistConsultationHistoryTable = () => {
       render: (c: IPsychologistConsultationDto) => (
         <Link
           to={`/psychologist/consultation/${c.id}/history`}
+          state={{ from: 'consultation-history', patientName: c.patient.name }}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
           View
@@ -160,7 +161,6 @@ const PsychologistConsultationHistoryTable = () => {
         <ReusableTable
           data={consultations}
           columns={columns}
-          onRowClick={(c: IPsychologistConsultationDto) => navigate(`/psychologist/consultation/${c.id}/history`)}
           emptyMessage="No consultation history found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />

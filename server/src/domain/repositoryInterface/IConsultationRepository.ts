@@ -8,6 +8,16 @@ import { User } from '../entities/user';
 export interface IConsultationRepository {
     createConsultation(data: Omit<Consultation, 'id'>): Promise<Consultation>;
     isSlotBooked(slotId: string): Promise<boolean>;
+    findPatientHistory(
+        psychologistId: string,
+        patientId: string,
+        params: {
+            search?: string;
+            sort?: 'asc' | 'desc';
+            skip?: number;
+            limit?: number;
+        },
+    ): Promise<{ consultation: Consultation; patient: User }[]>;
     findByPsychologistId(
         psychologistId: string,
         params: {
@@ -46,6 +56,7 @@ export interface IConsultationRepository {
     findByIdWithDetails(id: string): Promise<{ consultation: Consultation, psychologist: Psychologist & User, user: User, slot: Slot, payment: Payment } | null>
     countAllByPatientId(patientId: string): Promise<number>;
     countAllByPsychologistId(psychologistId: string): Promise<number>
+    countPatientHistory(psychologistId: string, patientId: string): Promise<number>;
     update(consultation: Consultation): Promise<Consultation | null>;
     updateConsultation(id: string, update: Partial<Consultation>): Promise<Consultation | null>;
     findAll(params: {

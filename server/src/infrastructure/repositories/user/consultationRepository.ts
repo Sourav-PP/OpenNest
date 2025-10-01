@@ -34,6 +34,59 @@ export class ConsultationRepository implements IConsultationRepository {
         return existing ? true : false;
     }
 
+    async findPatientHistory(psychologistId: string, patientId: string, params: { search?: string; sort?: 'asc' | 'desc'; skip?: number; limit?: number; }): Promise<{ consultation: Consultation; patient: User; }[]> {
+        const matchStage: Record<string, unknown> = {
+            psychologistId: new mongoose.Types.ObjectId(psychologistId),
+            patientId: new mongoose.Types.ObjectId(patientId),
+            status: 'completed',
+        };
+
+        const sortOrder = params.sort === 'asc' ? 1 : -1;
+
+        const pipeline: PipelineStage[] = [
+            { $match: matchStage },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'patientId',
+                    foreignField: '_id',
+                    as: 'patient',
+                },
+            },
+            { $unwind: '$patient' },
+        ];
+
+        pipeline.push({ $sort: { startDateTime: sortOrder } });
+
+        if (typeof params.skip === 'number' && params.skip > 0) {
+            pipeline.push({ $skip: params.skip });
+        }
+
+        if (typeof params.limit === 'number' && params.limit > 0) {
+            pipeline.push({ $limit: params.limit });
+        }
+
+        const results = await ConsultationModel.aggregate(pipeline);
+
+        return results.map(item => ({
+            consultation: {
+                id: item._id.toString(),
+                patientId: item.patient._id.toString(),
+                psychologistId: item.psychologistId.toString(),
+                startDateTime: item.startDateTime,
+                endDateTime: item.endDateTime,
+                sessionGoal: item.sessionGoal,
+                status: item.status,
+                meetingLink: item.meetingLink,
+            } as Consultation,
+            patient: {
+                id: item.patient._id.toString(),
+                name: item.patient.name,
+                profileImage: item.patient.profileImage,
+            } as User,
+        }));
+    }
+
     async findByPsychologistId(
         psychologistId: string,
         params: {
@@ -566,6 +619,14 @@ export class ConsultationRepository implements IConsultationRepository {
 
     async countAllByPsychologistId(psychologistId: string): Promise<number> {
         return await ConsultationModel.countDocuments({ psychologistId });
+    }
+
+    async countPatientHistory(psychologistId: string, patientId: string): Promise<number> {
+        return await ConsultationModel.countDocuments({
+            psychologistId,
+            patientId,
+            status: 'completed',
+        });
     }
 
     async findAll(params: {

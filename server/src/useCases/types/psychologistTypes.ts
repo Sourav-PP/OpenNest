@@ -1,7 +1,7 @@
 // Input and Output types for Profile Use Cases
 import { Kyc } from '../../domain/entities/kyc';
 import { Psychologist } from '../../domain/entities/psychologist';
-import { IPsychologistConsultationDto } from '../dtos/consultation';
+import { IPatientConsultationHistoryDto, IPsychologistConsultationDto } from '../dtos/consultation';
 
 export interface IVerifyProfileInput {
     userId: string;
@@ -73,12 +73,27 @@ export interface IGetConsultationHistoryRequest {
   limit?: number; 
 }
 
+export interface IGetPatientConsultationHistoryRequest {
+  patientId: string
+  psychologistUserId: string
+  search?: string;
+  sort?: 'asc' | 'desc';
+  page?: number;
+  limit?: number; 
+}
+
 export interface IGetConsultationsResponse {
   consultations: IPsychologistConsultationDto[],
   totalCount: number
 }
 
+
 export interface IGetConsultationHistoryResponse {
   consultations: IPsychologistConsultationDto[],
+  totalCount: number
+}
+
+export interface IGetPatientConsultationHistoryResponse {
+  consultations: IPatientConsultationHistoryDto[],
   totalCount: number
 }
