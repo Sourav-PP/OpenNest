@@ -1,29 +1,33 @@
 import mongoose, { PipelineStage } from 'mongoose';
 import { Kyc } from '../../../domain/entities/kyc';
 import { IKycRepository } from '../../../domain/repositoryInterface/IKycRepository';
-import { KycModel } from '../../database/models/psychologist/kycModel';
+import { KycModel, IKycDocument } from '../../database/models/psychologist/kycModel';
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
+import { GenericRepository } from '../GenericRepository';
 
 
-export class KycRepository implements IKycRepository {
-    async create(data: Omit<Kyc, 'id'>): Promise<Kyc> {
-        const createdKyc = await KycModel.create(data);
-        const obj = createdKyc.toObject();
+export class KycRepository extends GenericRepository<Kyc, IKycDocument> implements IKycRepository {
+    constructor() {
+        super(KycModel);
+    }
 
+    protected map(doc: IKycDocument): Kyc {
+        const mapped = super.map(doc);
+        
         return {
-            id: obj._id.toString(),
-            psychologistId: obj.psychologistId.toString(),
-            identificationDoc: obj.identificationDoc,
-            educationalCertification: obj.educationalCertification,
-            experienceCertificate: obj.experienceCertificate,
-            kycStatus: obj.kycStatus as 'pending' | 'approved' | 'rejected',
-            rejectionReason: obj.rejectionReason,
-            verifiedAt: obj.verifiedAt,
+            id: mapped.id,
+            psychologistId: mapped.psychologistId as string,
+            identificationDoc: mapped.identificationDoc,
+            educationalCertification: mapped.educationalCertification,
+            experienceCertificate: mapped.experienceCertificate,
+            kycStatus: mapped.kycStatus as 'pending' | 'approved' | 'rejected',
+            rejectionReason: mapped.rejectionReason,
+            verifiedAt: mapped.verifiedAt,
         };
     }
 
-    async findAll(params: {
+    async findAllWithDetails(params: {
         search?: string,
         sort?:'asc' | 'desc',
         skip?: number,
@@ -179,26 +183,17 @@ export class KycRepository implements IKycRepository {
         const kycDoc = await KycModel.findOne({ psychologistId });
         if (!kycDoc) return null;
 
-        const obj = kycDoc.toObject();
-
-        return {
-            id: obj._id.toString(),
-            psychologistId: obj.psychologistId.toString(),
-            identificationDoc: obj.identificationDoc,
-            educationalCertification: obj.educationalCertification,
-            experienceCertificate: obj.experienceCertificate,
-            kycStatus: obj.kycStatus as 'pending' | 'approved' | 'rejected',
-            rejectionReason: obj.rejectionReason,
-            verifiedAt: obj.verifiedAt,
-        };
+        return this.map(kycDoc);
     }
 
     async updateByPsychologistId(psychologistId: string | undefined, updateData: Partial<Kyc>): Promise<Kyc | null> {
-        return KycModel.findByIdAndUpdate(
+        const doc = await KycModel.findByIdAndUpdate(
             { psychologistId },
             { $set: updateData },
             { new: true },
         );
+        if (!doc) return null;
+        return this.map(doc);
     }
 
     async approveKyc(psychologistId: string): Promise<void> {

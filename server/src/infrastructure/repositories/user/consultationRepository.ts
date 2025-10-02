@@ -1,27 +1,39 @@
 import mongoose, { PipelineStage } from 'mongoose';
 import { Consultation } from '@/domain/entities/consultation';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
-import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
+import { ConsultationModel, IConsultationDocument } from '@/infrastructure/database/models/user/Consultation';
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
 import { Message } from '@/domain/entities/message';
 import { Slot } from '@/domain/entities/slot';
 import { Payment } from '@/domain/entities/payment';
+import { GenericRepository } from '../GenericRepository';
 
-export class ConsultationRepository implements IConsultationRepository {
-    async createConsultation(
-        data: Omit<Consultation, 'id'>,
-    ): Promise<Consultation> {
-        const createdConsultation = await ConsultationModel.create(data);
-        const consultationObj = createdConsultation.toObject();
+export class ConsultationRepository extends GenericRepository<Consultation, IConsultationDocument> implements IConsultationRepository {
+    constructor() {
+        super(ConsultationModel);
+    }
 
+    protected map(doc: IConsultationDocument): Consultation {
+        const mapped = super.map(doc);
+        
         return {
-            ...consultationObj,
-            patientId: consultationObj.patientId.toString(),
-            psychologistId: consultationObj.psychologistId.toString(),
-            subscriptionId: consultationObj.subscriptionId?.toString(),
-            slotId: consultationObj.slotId.toString(),
-            id: consultationObj._id.toString(),
+            id: mapped.id,
+            patientId: mapped.patientId as string,
+            psychologistId: mapped.psychologistId as string,
+            subscriptionId: mapped.subscriptionId as string | undefined,
+            slotId: mapped.slotId as string,
+            startDateTime: mapped.startDateTime,
+            endDateTime: mapped.endDateTime,
+            sessionGoal: mapped.sessionGoal,
+            status: mapped.status as 'booked' | 'cancelled' | 'completed' | 'rescheduled',
+            paymentStatus: mapped.paymentStatus,
+            paymentMethod: mapped.paymentMethod,
+            paymentIntentId: mapped.paymentIntentId,
+            cancellationReason: mapped.cancellationReason,
+            cancelledAt: mapped.cancelledAt,
+            includedInPayout: mapped.includedInPayout,
+            meetingLink: mapped.meetingLink,
         };
     }
 
@@ -401,21 +413,6 @@ export class ConsultationRepository implements IConsultationRepository {
         }));
     }
 
-    async findById(id: string): Promise<Consultation | null> {
-        const consultation = await ConsultationModel.findById(id);
-        if (!consultation) return null;
-
-        const consultationObj = consultation.toObject();
-        return {
-            ...consultationObj,
-            patientId: consultationObj.patientId.toString(),
-            psychologistId: consultationObj.psychologistId.toString(),
-            subscriptionId: consultationObj.subscriptionId?.toString(),
-            slotId: consultationObj.slotId.toString(),
-            id: consultationObj._id.toString(),
-        };
-    }
-
     async findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]> {
         const consultations = await ConsultationModel.find({ patientId, psychologistId });
 
@@ -629,7 +626,7 @@ export class ConsultationRepository implements IConsultationRepository {
         });
     }
 
-    async findAll(params: {
+    async findAllWithDetails(params: {
         search?: string;
         sort?: 'asc' | 'desc';
         skip?: number;

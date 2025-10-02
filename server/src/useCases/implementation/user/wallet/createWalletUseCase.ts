@@ -13,6 +13,6 @@ export class CreateWalletUseCase implements ICreateWalletUseCase {
         const existing = await this._walletRepo.findByUserId(userId);
         if (existing) return existing;
 
-        return this._walletRepo.create(userId, currency);
+        return this._walletRepo.createForUser(userId, currency);
     }
 }

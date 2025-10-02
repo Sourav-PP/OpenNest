@@ -75,7 +75,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 }
 
                 // create consultation
-                const consultation = await this._consultationRepo.createConsultation({
+                const consultation = await this._consultationRepo.create({
                     patientId: payment.userId,
                     psychologistId: meta.psychologistId,
                     subscriptionId: meta.subscriptionId,

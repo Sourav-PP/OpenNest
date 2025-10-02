@@ -22,7 +22,7 @@ export class GetAllConsultationsUseCase implements IGetAllConsultationsUseCase {
         const finalSort = sort === 'asc' || sort === 'desc' ? sort : 'desc';
         const skip = (page - 1) * limit;  
 
-        const consultations = await this._consultationRepository.findAll({
+        const consultations = await this._consultationRepository.findAllWithDetails({
             search,
             sort: finalSort,  
             limit,

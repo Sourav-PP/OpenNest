@@ -2,7 +2,7 @@ import { Wallet } from '../entities/wallet';
 import { WalletTransaction } from '../entities/walletTransaction';
 
 export interface IWalletRepository {
-  create(userId: string, currency?: string): Promise<Wallet>
+  createForUser(userId: string, currency?: string): Promise<Wallet>
   findByUserId(userId: string): Promise<Wallet | null>
   findById(id: string): Promise<Wallet | null>
   createTransaction(

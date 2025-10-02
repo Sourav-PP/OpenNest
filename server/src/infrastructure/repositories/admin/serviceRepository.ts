@@ -1,14 +1,21 @@
 import { Service } from '@/domain/entities/service';
 import { IServiceRepository } from '@/domain/repositoryInterface/IServiceRepository';
-import { ServiceModel } from '@/infrastructure/database/models/admin/serviceModel';
+import { IServiceDocument, ServiceModel } from '@/infrastructure/database/models/admin/serviceModel';
+import { GenericRepository } from '../GenericRepository';
 
-export class ServiceRepository implements IServiceRepository {
-    async create(service: Service): Promise<Service> {
-        const newService = new ServiceModel(service);
-        await newService.save();
+export class ServiceRepository extends GenericRepository<Service, IServiceDocument> implements IServiceRepository {
+    constructor() {
+        super(ServiceModel);
+    }
+
+    protected map(doc: IServiceDocument): Service {
+        const mapped = super.map(doc);
+        
         return {
-            ...newService.toObject(),
-            id: newService._id.toString(),
+            id: mapped.id,
+            name: mapped.name,
+            description: mapped.description,
+            bannerImage: mapped.bannerImage,
         };
     }
 
@@ -17,27 +24,7 @@ export class ServiceRepository implements IServiceRepository {
             name: { $regex: `^${name}`, $options: 'i' },
         });
         if (!result) return null;
-        const obj = result.toObject();
-
-        return {
-            id: obj._id.toString(),
-            name: obj.name,
-            description: obj.description,
-            bannerImage: obj.bannerImage,
-        };
-    }
-
-    async findById(id: string): Promise<Service | null> {
-        const result = await ServiceModel.findById(id);
-        if (!result) return null;
-        const obj = result.toObject();
-
-        return {
-            id: obj._id.toString(),
-            name: obj.name,
-            description: obj.description,
-            bannerImage: obj.bannerImage,
-        };
+        return this.map(result);
     }
 
     async getAllServices(
@@ -55,16 +42,8 @@ export class ServiceRepository implements IServiceRepository {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .lean()
             .exec();
-        const mappedServices: Service[] = services.map(s => {
-            return {
-                id: s._id.toString(),
-                name: s.name,
-                bannerImage: s.bannerImage,
-                description: s.description,
-            };
-        });
+        const mappedServices: Service[] = services.map(s => this.map(s));
         return {
             services: mappedServices,
             totalCount,
@@ -72,6 +51,6 @@ export class ServiceRepository implements IServiceRepository {
     }
 
     async delete(id: string): Promise<void> {
-        await ServiceModel.findByIdAndDelete(id);
+        await super.deleteById(id);
     }
 }

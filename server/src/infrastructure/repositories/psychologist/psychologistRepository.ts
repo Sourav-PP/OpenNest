@@ -1,22 +1,34 @@
 import { Psychologist } from '@/domain/entities/psychologist';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
 import { ServiceModel } from '@/infrastructure/database/models/admin/serviceModel';
-import { PsychologistModel } from '@/infrastructure/database/models/psychologist/PsychologistModel';
+import { PsychologistModel, IPsychologistDocument } from '@/infrastructure/database/models/psychologist/PsychologistModel';
 import { User } from '@/domain/entities/user';
 import { PipelineStage } from 'mongoose';
+import { GenericRepository } from '../GenericRepository';
 
-export class PsychologistRepository implements IPsychologistRepository {
-    async create(
-        psychologist: Omit<Psychologist, 'id'>,
-    ): Promise<Psychologist> {
-        const createdPsychologist =
-            await PsychologistModel.create(psychologist);
-        const obj = createdPsychologist.toObject();
+export class PsychologistRepository extends GenericRepository<Psychologist, IPsychologistDocument> implements IPsychologistRepository {
 
+    constructor() {
+        super(PsychologistModel);
+    }
+
+    protected map(doc: IPsychologistDocument): Psychologist {
+        const mapped = super.map(doc);
+        
         return {
-            id: obj._id.toString(),
-            isVerified: obj.isVerified,
-        } as Psychologist;
+            id: mapped.id,
+            userId: mapped.userId as string,
+            aboutMe: mapped.aboutMe,
+            qualification: mapped.qualification,
+            specializations: (mapped.specializations as any[]).map(id => id.toString()),
+            defaultFee: mapped.defaultFee,
+            isVerified: mapped.isVerified,
+            specializationFees: mapped.specializationFees.map(fee => ({
+                specializationId: fee.specializationId.toString(),
+                specializationName: fee.specializationName,
+                fee: fee.fee,
+            })),
+        };
     }
 
     async findAllPsychologists(params: {
@@ -143,69 +155,24 @@ export class PsychologistRepository implements IPsychologistRepository {
         return await PsychologistModel.countDocuments({ isVerified: true });
     }
 
-    async findById(psychologistId: string): Promise<Psychologist | null> {
-        const psychologistDoc =
-            await PsychologistModel.findById(psychologistId);
-        if (!psychologistDoc) return null;
-
-        const obj = psychologistDoc.toObject();
-        return {
-            id: obj._id.toString(),
-            userId: obj.userId.toString(),
-            aboutMe: obj.aboutMe,
-            qualification: obj.qualification,
-            specializations: obj.specializations.map(id => id.toString()),
-            defaultFee: obj.defaultFee,
-            isVerified: obj.isVerified,
-            specializationFees: obj.specializationFees.map(fee => ({
-                specializationId: fee.specializationId.toString(),
-                specializationName: fee.specializationName,
-                fee: fee.fee,
-            })),
-        };
-    }
-
     async updateByUserId(
         userId: string,
         updateData: Partial<Psychologist>,
     ): Promise<Psychologist | null> {
-        return PsychologistModel.findOneAndUpdate(
+        const doc = await PsychologistModel.findOneAndUpdate(
             { userId },
             { $set: updateData },
             { new: true },
         );
-    }
-
-    async updateById(
-        id: string,
-        updateData: Partial<Psychologist>,
-    ): Promise<Psychologist | null> {
-        return PsychologistModel.findByIdAndUpdate(
-            id,
-            { $set: updateData },
-            { new: true },
-        );
+        if (!doc) return null;
+        return this.map(doc);
     }
 
     async findByUserId(userId: string): Promise<Psychologist | null> {
         const doc = await PsychologistModel.findOne({ userId });
         if (!doc) return null;
 
-        const obj = doc.toObject();
-        return {
-            id: obj._id.toString(),
-            userId: obj.userId.toString(),
-            aboutMe: obj.aboutMe,
-            qualification: obj.qualification,
-            specializations: obj.specializations.map(id => id.toString()),
-            defaultFee: obj.defaultFee,
-            isVerified: obj.isVerified,
-            specializationFees: obj.specializationFees.map(fee => ({
-                specializationId: fee.specializationId.toString(),
-                specializationName: fee.specializationName,
-                fee: fee.fee,
-            })),
-        };
+        return this.map(doc);
     }
 
     async getSpecializationNamesByIds(ids: string[]): Promise<string[]> {

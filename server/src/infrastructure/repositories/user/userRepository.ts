@@ -1,12 +1,26 @@
 import { User } from '../../../domain/entities/user';
 import { IUserRepository } from '../../../domain/repositoryInterface/IUserRepository';
-import { userModel } from '../../database/models/user/UserModel';
+import { userModel, IUserDocument } from '../../database/models/user/UserModel';
 import { FilterQuery } from 'mongoose';
 import { PendingSignupModel } from '../../database/models/user/PendinSignupModel';
 import { PendingUser } from '@/domain/entities/pendingUser';
+import { GenericRepository } from '../GenericRepository';
 
-export class UserRepository implements IUserRepository   {
-    async findAll(params: { search?: string; sort?: 'asc' | 'desc'; gender?: 'Male' | 'Female' | 'all'; skip: number; limit: number; }): Promise<User[]> {
+export class UserRepository
+    extends GenericRepository<User, IUserDocument>
+    implements IUserRepository
+{
+    constructor() {
+        super(userModel);
+    }
+
+    async findAll(params: {
+        search?: string;
+        sort?: 'asc' | 'desc';
+        gender?: 'Male' | 'Female' | 'all';
+        skip: number;
+        limit: number;
+    }): Promise<User[]> {
         const filter: FilterQuery<User> = { role: 'user' };
 
         if (params.search) {
@@ -19,15 +33,15 @@ export class UserRepository implements IUserRepository   {
 
         const sortOrder = params.sort === 'asc' ? 1 : -1;
 
-        const users = await userModel.find(filter)
+        const users = await userModel
+            .find(filter)
             .sort({ createdAt: sortOrder })
             .skip(params.skip)
             .limit(params.limit);
 
         console.log('all users: ', users);
 
-        
-        return users.map( user => ({
+        return users.map(user => ({
             id: user._id.toString(),
             name: user.name,
             email: user.email,
@@ -40,7 +54,10 @@ export class UserRepository implements IUserRepository   {
         }));
     }
 
-    async countAll(params: { search?: string; gender?: 'Male' | 'Female' | 'all'; }): Promise<number> {
+    async countAll(params: {
+        search?: string;
+        gender?: 'Male' | 'Female' | 'all';
+    }): Promise<number> {
         const filter: FilterQuery<User> = { role: 'user' };
 
         if (params.search) {
@@ -54,29 +71,15 @@ export class UserRepository implements IUserRepository   {
         return userModel.countDocuments(filter);
     }
 
-
     async findByEmail(email: string): Promise<User | null> {
-        const userDoc = await userModel.findOne({ email }).select('+password');
-        if (!userDoc) return null;
-
-        const userObj = userDoc.toObject();
-
-        return {
-            ...userObj,
-            id: userObj._id.toString(),
-        } as User;
+        return this.findOne({ email }, '+password');
     }
 
     async findById(userId: string): Promise<User | null> {
-        const userDoc = await userModel.findById(userId).select('+password');;
+        const userDoc = await userModel.findById(userId).select('+password');
         if (!userDoc) return null;
 
-        const userObj = userDoc.toObject();
-
-        return {
-            ...userObj,
-            id: userObj._id.toString(),
-        } as User;
+        return this.map(userDoc);
     }
 
     async createPendingSignup(user: PendingUser): Promise<void> {
@@ -96,8 +99,12 @@ export class UserRepository implements IUserRepository   {
         );
     }
 
-    async findPendingSignup(email: string): Promise<Omit<User, 'isActive'> | null> {
-        const userDoc = await PendingSignupModel.findOne({ email }).select('+password');
+    async findPendingSignup(
+        email: string,
+    ): Promise<Omit<User, 'isActive'> | null> {
+        const userDoc = await PendingSignupModel.findOne({ email }).select(
+            '+password',
+        );
         if (!userDoc) return null;
 
         const userObj = userDoc.toObject();
@@ -112,16 +119,6 @@ export class UserRepository implements IUserRepository   {
         await PendingSignupModel.deleteOne({ email });
     }
 
-    async create(user: Omit<User ,'id'>): Promise<User> {
-        const createdUser = await userModel.create(user);
-        const userObj = createdUser.toObject();
-
-        return {
-            ...userObj,
-            id: userObj._id.toString(),
-        } as User;
-    }
-
     async isUserBlocked(userId: string): Promise<boolean> {
         const user = await userModel.findById(userId);
 
@@ -131,9 +128,14 @@ export class UserRepository implements IUserRepository   {
         return false;
     }
 
-    async updateProfile(id: string, updates: Partial<User>): Promise<User | null> {
+    async updateProfile(
+        id: string,
+        updates: Partial<User>,
+    ): Promise<User | null> {
         console.log('user id in user: ', id);
-        const updated = await userModel.findByIdAndUpdate(id, updates, { new: true });
+        const updated = await userModel.findByIdAndUpdate(id, updates, {
+            new: true,
+        });
         if (!updated) return null;
 
         const obj = updated.toObject();

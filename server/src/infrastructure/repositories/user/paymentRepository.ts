@@ -1,17 +1,29 @@
 import { Payment } from '@/domain/entities/payment';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
-import { PaymentModel } from '@/infrastructure/database/models/user/Payment';
+import { IPaymentDocument, PaymentModel } from '@/infrastructure/database/models/user/Payment';
+import { GenericRepository } from '../GenericRepository';
 
-export class PaymentRepository implements IPaymentRepository {
-    async create(paymentData: Omit<Payment, 'id'>): Promise<Payment> {
-        const doc = await PaymentModel.create(paymentData);
-        const obj = doc.toObject();
+export class PaymentRepository extends GenericRepository<Payment, IPaymentDocument> implements IPaymentRepository {
+    constructor() {
+        super(PaymentModel);
+    }
+
+    protected map(doc: IPaymentDocument): Payment {
+        const mapped = super.map(doc);
+        
         return {
-            ...obj,
-            slotId: doc.slotId ? doc.slotId.toString() : null,
-            userId: doc.userId.toString(),
-            id: obj._id.toString(),
-            consultationId: obj.consultationId ? obj.consultationId.toString() : undefined,
+            id: mapped.id,
+            userId: mapped.userId as string,
+            consultationId: mapped.consultationId as string | undefined,
+            amount: mapped.amount,
+            currency: mapped.currency,
+            paymentMethod: mapped.paymentMethod,
+            paymentStatus: mapped.paymentStatus,
+            refunded: mapped.refunded,
+            transactionId: mapped.transactionId,
+            stripeSessionId: mapped.stripeSessionId,
+            slotId: mapped.slotId as string | null,
+            purpose: mapped.purpose,
         };
     }
 
@@ -24,49 +36,14 @@ export class PaymentRepository implements IPaymentRepository {
 
         if (!doc) return null;
 
-        const obj = doc.toObject();
-
-        return {
-            ...obj,
-            slotId: doc.slotId.toString(),
-            userId: doc.userId.toString(),
-            id: obj._id.toString(),
-            consultationId: obj.consultationId.toString(),
-        };
+        return this.map(doc);
     }
 
     async findBySessionId(sessionId: string): Promise<Payment | null> {
         const doc = await PaymentModel.findOne({ stripeSessionId: sessionId }).lean();
 
         if (!doc) return null;
-        return {
-            ...doc,
-            slotId: doc.slotId ? doc.slotId.toString() : null, 
-            userId: doc.userId.toString(),
-            id: doc._id.toString(),
-            consultationId: doc.consultationId ? doc.consultationId.toString() : undefined,
-        };
-    }
-
-    async findById(id: string): Promise<Payment | null> {
-        const payment = await PaymentModel.findById(id);
-
-        if (!payment) return null;
-
-        return {
-            id: payment._id.toString(),
-            userId: payment.userId.toString(),
-            consultationId: payment.consultationId ? payment.consultationId.toString() : undefined,
-            amount: payment.amount,
-            currency: payment.currency,
-            paymentMethod: payment.paymentMethod,
-            paymentStatus: payment.paymentStatus,
-            refunded: payment.refunded,
-            transactionId: payment.transactionId,
-            stripeSessionId: payment.stripeSessionId,
-            slotId: payment.slotId ? payment.slotId.toString() : null,
-            purpose: payment.purpose,
-        };
+        return this.map(doc);
     }
 
     async findByConsultationId(id: string): Promise<Payment | null> {
@@ -74,19 +51,6 @@ export class PaymentRepository implements IPaymentRepository {
 
         if (!payment) return null;
 
-        return {
-            id: payment._id.toString(),
-            userId: payment.userId.toString(),
-            consultationId: payment.consultationId ? payment.consultationId.toString() : undefined,
-            amount: payment.amount,
-            currency: payment.currency,
-            paymentMethod: payment.paymentMethod,
-            paymentStatus: payment.paymentStatus,
-            refunded: payment.refunded,
-            transactionId: payment.transactionId,
-            stripeSessionId: payment.stripeSessionId,
-            slotId: payment.slotId ? payment.slotId.toString() : null,
-            purpose: payment.purpose,
-        };
+        return this.map(payment);
     }
 }

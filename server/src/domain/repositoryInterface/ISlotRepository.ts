@@ -7,7 +7,7 @@ export interface ISlotRepository {
     getAllSlotsByPsychologistId(psychologistId: string): Promise<Slot[]>
     getSlotByPsychologist(psychologistId: string, date: Date): Promise<{slot: Slot, user: User | null}[]>
     findById(id: string): Promise<Slot | null>
-    deleteById(id: string): Promise<void>
+    deleteById(id: string): Promise<boolean>
     markSlotAsBooked(slotId:string, patientId: string): Promise<void>
     markSlotAsAvailable(slotId: string): Promise<void>
     markSlotAsNotAvailable(slotId: string): Promise<void>

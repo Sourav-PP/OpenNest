@@ -19,7 +19,7 @@ export class GetAllKycUseCase implements IGetAllKycUseCase {
         const finalSort = sort === 'asc' || sort === 'desc' ? sort : 'desc';
         const skip = (page - 1) * limit;
 
-        const entities = await this._kycRepo.findAll({
+        const entities = await this._kycRepo.findAllWithDetails({
             search,
             sort: finalSort,
             limit,

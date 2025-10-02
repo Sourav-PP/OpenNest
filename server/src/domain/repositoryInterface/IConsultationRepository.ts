@@ -6,7 +6,7 @@ import { Slot } from '../entities/slot';
 import { User } from '../entities/user';
 
 export interface IConsultationRepository {
-    createConsultation(data: Omit<Consultation, 'id'>): Promise<Consultation>;
+    create(data: Omit<Consultation, 'id'>): Promise<Consultation>;
     isSlotBooked(slotId: string): Promise<boolean>;
     findPatientHistory(
         psychologistId: string,
@@ -59,7 +59,7 @@ export interface IConsultationRepository {
     countPatientHistory(psychologistId: string, patientId: string): Promise<number>;
     update(consultation: Consultation): Promise<Consultation | null>;
     updateConsultation(id: string, update: Partial<Consultation>): Promise<Consultation | null>;
-    findAll(params: {
+    findAllWithDetails(params: {
         search?: string;
         sort?: 'asc' | 'desc';
         skip?: number;

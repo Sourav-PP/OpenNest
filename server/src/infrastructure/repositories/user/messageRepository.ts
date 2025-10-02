@@ -5,61 +5,45 @@ import {
     MessageModel,
 } from '@/infrastructure/database/models/user/Message';
 import { FilterQuery, Types } from 'mongoose';
+import { GenericRepository } from '../GenericRepository';
 
-export class MessageRepository implements IMessageRepository {
-    async create(message: Partial<Message>): Promise<Message> {
-        const doc = await MessageModel.create(message);
+export class MessageRepository extends GenericRepository<Message, IMessageDocument> implements IMessageRepository {
+    constructor() {
+        super(MessageModel);
+    }
+
+    protected map(doc: IMessageDocument): Message {
+        const mapped = super.map(doc);
+        
         return {
-            id: doc._id.toString(),
-            consultationId: doc.consultationId.toString(),
-            clientId: doc.clientId,
-            senderId: doc.senderId.toString(),
-            receiverId: doc.receiverId.toString(),
-            content: doc.content,
-            status: doc.status,
-            deliveredTo: doc.deliveredTo?.map(id => id.toString()) ?? [],
-            readAt: doc.readAt ?? undefined,
-            mediaUrl: doc.mediaUrl ?? undefined,
-            mediaType: doc.mediaType ?? null,
-            deleted: doc.deleted,
-            replyToId: doc.replyToId?.toString(),
-            reaction:
-                doc.reaction?.map(r => ({
-                    userId: r.userId.toString(),
-                    emoji: r.emoji,
-                })) ?? [],
-            createdAt: doc.createdAt, 
-            updatedAt: doc.updatedAt,
+            id: mapped.id,
+            consultationId: mapped.consultationId as string,
+            clientId: mapped.clientId,
+            senderId: mapped.senderId as string,
+            receiverId: mapped.receiverId as string,
+            content: mapped.content,
+            status: mapped.status,
+            deliveredTo: (mapped.deliveredTo as any[])?.map(id => id.toString()) ?? [],
+            readAt: mapped.readAt ?? undefined,
+            mediaUrl: mapped.mediaUrl ?? undefined,
+            mediaType: mapped.mediaType ?? null,
+            deleted: mapped.deleted,
+            replyToId: mapped.replyToId as string | undefined,
+            reaction: (mapped.reaction as any[])?.map(r => ({
+                userId: r.userId.toString(),
+                emoji: r.emoji,
+            })) ?? [],
+            createdAt: mapped.createdAt, 
+            updatedAt: mapped.updatedAt,
         };
     }
 
     async findByConsultationId(consultationId: string): Promise<Message[]> {
         const docs = await MessageModel.find({ consultationId })
             .sort({ createdAt: 1 })
-            .lean();
+            .exec();
 
-        return docs.map(doc => ({
-            id: doc._id.toString(),
-            consultationId: doc.consultationId.toString(),
-            clientId: doc.clientId,
-            senderId: doc.senderId.toString(),
-            receiverId: doc.receiverId.toString(),
-            content: doc.content,
-            status: doc.status,
-            deliveredTo: doc.deliveredTo?.map(id => id.toString()) ?? [],
-            readAt: doc.readAt ?? undefined,
-            mediaUrl: doc.mediaUrl ?? undefined,
-            mediaType: doc.mediaType ?? null,
-            deleted: doc.deleted,
-            replyToId: doc.replyToId?.toString(),
-            reaction:
-                doc.reaction?.map(r => ({
-                    userId: r.userId.toString(),
-                    emoji: r.emoji,
-                })) ?? [],
-            createdAt: doc.createdAt, 
-            updatedAt: doc.updatedAt,
-        }));
+        return docs.map(doc => this.map(doc));
     }
 
     async findByClientId(
@@ -69,31 +53,10 @@ export class MessageRepository implements IMessageRepository {
         const message = await MessageModel.findOne({
             consultationId,
             clientId,
-        }).lean();
+        }).exec();
         if (!message) return null;
 
-        return {
-            id: message._id.toString(),
-            consultationId: message.consultationId.toString(),
-            clientId: message.clientId,
-            senderId: message.senderId.toString(),
-            receiverId: message.receiverId.toString(),
-            content: message.content,
-            status: message.status,
-            deliveredTo: message.deliveredTo?.map(id => id.toString()) ?? [],
-            readAt: message.readAt ?? undefined,
-            mediaUrl: message.mediaUrl ?? undefined,
-            mediaType: message.mediaType ?? null,
-            deleted: message.deleted,
-            replyToId: message.replyToId?.toString(),
-            reaction:
-                message.reaction?.map(r => ({
-                    userId: r.userId.toString(),
-                    emoji: r.emoji,
-                })) ?? [],
-            createdAt: message.createdAt, 
-            updatedAt: message.updatedAt,
-        };
+        return this.map(message);
     }
 
     async findHistory(
@@ -110,29 +73,8 @@ export class MessageRepository implements IMessageRepository {
         const rows = await MessageModel.find(query)
             .sort({ createdAt: -1 })
             .limit(limit)
-            .lean();
-        return rows.reverse().map(message => ({
-            id: message._id.toString(),
-            consultationId: message.consultationId.toString(),
-            clientId: message.clientId,
-            senderId: message.senderId.toString(),
-            receiverId: message.receiverId.toString(),
-            content: message.content,
-            status: message.status,
-            deliveredTo: message.deliveredTo?.map(id => id.toString()) ?? [],
-            readAt: message.readAt ?? undefined,
-            mediaUrl: message.mediaUrl ?? undefined,
-            mediaType: message.mediaType ?? null,
-            deleted: message.deleted,
-            replyToId: message.replyToId?.toString(),
-            reaction:
-                message.reaction?.map(r => ({
-                    userId: r.userId.toString(),
-                    emoji: r.emoji,
-                })) ?? [],
-            createdAt: message.createdAt, 
-            updatedAt: message.updatedAt,
-        }));
+            .exec();
+        return rows.reverse().map(message => this.map(message));
     }
 
     async markRead(

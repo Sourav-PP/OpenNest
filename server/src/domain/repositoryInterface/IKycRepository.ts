@@ -5,7 +5,7 @@ import { Psychologist } from '../entities/psychologist';
 export interface IKycRepository {
     create(data: Omit<Kyc, 'id'>): Promise<Kyc>;
 
-    findAll(params: {
+    findAllWithDetails(params: {
         search?: string;
         sort?: 'asc' | 'desc';
         skip?: number;

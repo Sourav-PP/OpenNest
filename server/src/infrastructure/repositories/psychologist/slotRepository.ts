@@ -1,12 +1,30 @@
 import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
 import { Slot } from '@/domain/entities/slot';
-import { SlotModel } from '@/infrastructure/database/models/psychologist/slotModel';
+import { SlotModel, ISlotDocument } from '@/infrastructure/database/models/psychologist/slotModel';
 import mongoose, { PipelineStage, Types } from 'mongoose';
 import { User } from '@/domain/entities/user';
+import { GenericRepository } from '../GenericRepository';
 
-export class SlotRepository implements ISlotRepository {
+export class SlotRepository extends GenericRepository<Slot, ISlotDocument> implements ISlotRepository {
+    constructor() {
+        super(SlotModel);
+    }
     async createSlot(slots: Omit<Slot, 'id' | 'isBooked'>[]): Promise<void> {
         await SlotModel.insertMany(slots);
+    }
+
+    protected map(doc: ISlotDocument): Slot {
+        const mapped = super.map(doc); // Use parent mapping first
+        
+        return {
+            id: mapped.id,
+            psychologistId: mapped.psychologistId as string,
+            startDateTime: mapped.startDateTime,
+            endDateTime: mapped.endDateTime,
+            isAvailable: mapped.isAvailable,
+            isBooked: mapped.isBooked,
+            bookedBy: mapped.bookedBy as string | null, 
+        };
     }
 
     async checkConflict(psychologistId: string, start: Date, end: Date): Promise<boolean> {
@@ -65,22 +83,6 @@ export class SlotRepository implements ISlotRepository {
             id: slot._id.toString(),
             _id: undefined,
         }));
-    }
-
-    async findById(id: string): Promise<Slot | null> {
-        const slot = await SlotModel.findById(id).lean();
-        if (!slot) return null;
-
-        return {
-            ...slot,
-            id: slot?._id.toString(),
-            psychologistId: slot.psychologistId.toString(),
-            bookedBy: slot.bookedBy?.toString() ?? null,
-        };
-    }
-
-    async deleteById(id: string): Promise<void> {
-        await SlotModel.findByIdAndDelete(id);
     }
 
     async markSlotAsBooked(slotId: string, patientId: string): Promise<void> {

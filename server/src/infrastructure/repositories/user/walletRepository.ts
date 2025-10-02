@@ -1,52 +1,40 @@
 import { Wallet } from '@/domain/entities/wallet';
 import { WalletTransaction } from '@/domain/entities/walletTransaction';
 import { IWalletRepository } from '@/domain/repositoryInterface/IWalletRepository';
-import { WalletModel } from '@/infrastructure/database/models/user/WalletModel';
+import { IWalletDocument, WalletModel } from '@/infrastructure/database/models/user/WalletModel';
 import { WalletTransactionModel } from '@/infrastructure/database/models/user/WalletTransactionModel';
+import { GenericRepository } from '../GenericRepository';
 
-export class WalletRepository implements IWalletRepository {
-    async create(userId: string, currency = 'USD'): Promise<Wallet> {
+export class WalletRepository extends GenericRepository<Wallet, IWalletDocument> implements IWalletRepository {
+    constructor() {
+        super(WalletModel);
+    }
+
+    protected map(doc: IWalletDocument): Wallet {
+        const mapped = super.map(doc);
+        
+        return {
+            id: mapped.id,
+            userId: mapped.userId as string,
+            balance: mapped.balance,
+            currency: mapped.currency,
+        };
+    }
+
+    async createForUser(userId: string, currency = 'USD'): Promise<Wallet> {
         const wallet = await WalletModel.create({
             userId,
             currency,
             balance: 0,
         });
 
-        const walletObj = wallet.toObject();
-
-        return {
-            id: walletObj._id.toString(),
-            userId: walletObj.userId.toString(),
-            balance: walletObj.balance,
-            currency: walletObj.currency,
-        };
-    }
-
-    async findById(id: string): Promise<Wallet | null> {
-        const wallet = await WalletModel.findById(id);
-
-        if (!wallet) return null;
-        const walletObj = wallet.toObject();
-
-        return {
-            id: walletObj._id.toString(),
-            userId: walletObj.userId.toString(),
-            balance: walletObj.balance,
-            currency: walletObj.currency,
-        };
+        return this.map(wallet);
     }
 
     async findByUserId(userId: string): Promise<Wallet | null> {
         const wallet = await WalletModel.findOne({ userId });
         if (!wallet) return null;
-        const walletObj = wallet.toObject();
-
-        return {
-            id: walletObj._id.toString(),
-            userId: walletObj.userId.toString(),
-            balance: walletObj.balance,
-            currency: walletObj.currency,
-        };
+        return this.map(wallet);
     }
 
     async createTransaction(
