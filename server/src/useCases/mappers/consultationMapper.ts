@@ -102,6 +102,7 @@ export function toUserChatConsultationDto(
         patientId: consultation.patientId,
         psychologist: {
             id: psychologist.id,
+            userId: user.id,
             name: user.name,
             profileImage: user.profileImage,
         },

@@ -16,6 +16,11 @@ export interface IGetChatHistoryResponseData {
   messages: IMessageDto[];
 }
 
+export interface IUploadMediaResponseData {
+  mediaUrl: string, 
+  mediaType: string,
+}
+
 export interface IChatError {
   status: number;
   message: string;
@@ -28,3 +33,4 @@ export interface IChatError {
 export type IGetChatByPsychologistResponse = BackendResponse<IGetChatByPsychologistResponseData>;
 export type IGetChatByPatientResponse = BackendResponse<IGetChatByPatientResponseData>;
 export type IGetChatHistoryResponse = BackendResponse<IGetChatHistoryResponseData>;
+export type IUploadMediaResponse = BackendResponse<IUploadMediaResponseData>

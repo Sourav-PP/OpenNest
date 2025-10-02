@@ -16,6 +16,7 @@ import { OtpRepository } from '../repositories/user/otpRepository';
 import { PaymentRepository } from '../repositories/user/paymentRepository';
 import { ConsultationRepository } from '../repositories/user/consultationRepository';
 import { CloudinaryStorage } from '../fileStorage/cloudinaryStorage';
+import { ChatCloudinaryStorage } from '../fileStorage/chatCloudinaryStorage';
 import { WalletRepository } from '../repositories/user/walletRepository';
 import { VideoCallRepository } from '../repositories/user/videoCallRepository';
 
@@ -111,6 +112,7 @@ import { ChatSocketHandler } from '@/presentation/socket/chatSocketHandler';
 import { EnsureMembershipUseCase } from '@/useCases/implementation/chat/ensureMembershipUseCase';
 import { GetUnreadCountUseCase } from '@/useCases/implementation/chat/getUnreadCountUseCase';
 import { MarkReadUseCase } from '@/useCases/implementation/chat/markReadUseCase';
+import { UploadChatMediaUseCase } from '@/useCases/implementation/chat/uploadChatMediaUseCase';
 
 //--------------videoCall--------------------
 import { VideoCallSocketHandler } from '@/presentation/socket/videoCallSocketHandler';
@@ -151,6 +153,7 @@ import { AdminAuthController } from '../../presentation/http/controllers/admin/a
 
 //---------------- chat -----------------------
 import { ChatMessageController } from '@/presentation/http/controllers/chat/ChatMessageController';
+import { ChatFileController } from '@/presentation/http/controllers/chat/ChatFileController';
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
@@ -179,6 +182,7 @@ export const checkBlockedUser = checkBlockedMiddleware(userRepository);
 // ---------- user ------------
 
 const fileStorage = new CloudinaryStorage();
+const chatFileStorage = new ChatCloudinaryStorage();
 const kycRepository = new KycRepository();
 const googleAuthService = new GoogleAuthService();
 const slotRepository = new SlotRepository();
@@ -301,9 +305,10 @@ const sendMessageUseCase = new SendMessageUseCase(messageRepository, ensureMembe
 const getHistoryUseCase = new GetHistoryUseCase(messageRepository);
 const getUnreadCountUseCase = new GetUnreadCountUseCase(messageRepository, userRepository, psychologistRepository);
 const markReadUseCase = new MarkReadUseCase(messageRepository, psychologistRepository, userRepository);
+const uploadChatMediaUseCase = new UploadChatMediaUseCase(chatFileStorage);
 
 export const chatMessageController = new ChatMessageController(sendMessageUseCase, getHistoryUseCase, getUnreadCountUseCase, markReadUseCase, getUserChatConsultationsUseCase, getPsychologistChatConsultationsUseCase);
-
+export const chatFileController = new ChatFileController(uploadChatMediaUseCase);
 //----------------video call--------------------
 
 const startVideoCallUseCase = new StartVideoCallUseCase(videoCallRepository);

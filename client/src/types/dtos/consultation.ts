@@ -68,6 +68,7 @@ export interface IUserChatConsultationDto {
   patientId: string;
   psychologist: {
     id: string;
+    userId: string;
     name: string;
     profileImage?: string;
   };

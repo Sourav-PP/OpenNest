@@ -3,9 +3,12 @@ import { useChat } from '@/hooks/useChat';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
+import { FileIcon, Link, Send, X } from 'lucide-react';
 import type { IMessageDto } from '@/types/dtos/message';
-
+import { chatApi } from '@/services/api/chat';
+import { toast } from 'react-toastify';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { onOnlineUsers } from '@/services/api/socket';
 
 export default function ChatWindow({
   consultationId,
@@ -18,19 +21,60 @@ export default function ChatWindow({
 }) {
   const { messages, sendMessage, isReady } = useChat(consultationId);
   const [text, setText] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
-  const handleSend = () => {
-    if (!text.trim()) return;
+  useEffect(() => {
+    return onOnlineUsers(setOnlineUsers);
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  console.log('isReady:', isReady, 'messages:', messages);
+
+  const handleSend = async () => {
+    if (!text.trim() && !file) return;
     console.log('text: ', text);
+
+    let mediaUrl, mediaType;
+
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await chatApi.uploadMedia(formData);
+
+        console.log('res:::::', res);
+        if (!res.data) {
+          toast.error('something went wrong');
+          return;
+        }
+
+        mediaUrl = res.data.mediaUrl;
+        mediaType = res.data.mediaType;
+      } catch (error) {
+        handleApiError(error);
+        return;
+      }
+    }
+
     sendMessage({
       consultationId,
       senderId: userId,
       receiverId: peerId,
-      content: text,
+      content: text || '',
+      mediaUrl,
+      mediaType,
     });
     console.log('send message', sendMessage);
     setText('');
+    setFile(null);
   };
 
   const formatTime = (iso: string) => {
@@ -57,7 +101,7 @@ export default function ChatWindow({
   const messagesByDate: Record<string, IMessageDto[]> = messages.reduce(
     (acc, msg) => {
       const label = formatDateLabel(msg.createdAt);
-      if(!acc[label]) acc[label] = [];
+      if (!acc[label]) acc[label] = [];
       acc[label].push(msg);
       return acc;
     },
@@ -74,6 +118,34 @@ export default function ChatWindow({
       }
     }
   }, [messages]);
+
+  const isPeerOnline = onlineUsers.has(peerId);
+
+  const renderFilePreview = (file: File) => {
+    return (
+      <div className="relative flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm border border-gray-200">
+        {file.type.startsWith('image/') ? (
+          <img
+            src={URL.createObjectURL(file)}
+            className="h-16 w-16 object-cover rounded-md"
+            alt={file.name}
+          />
+        ) : (
+          <div className="flex items-center gap-2">
+            <FileIcon className="h-8 w-8 text-gray-500" />
+            <span className="text-sm text-gray-700 truncate max-w-[150px]">{file.name}</span>
+          </div>
+        )}
+        <button
+          onClick={() => setFile(null)}
+          className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200"
+          aria-label="Remove file"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col h-full w-full bg-[#ECF1F3] relative">
@@ -94,14 +166,12 @@ export default function ChatWindow({
           ) : (
             Object.entries(messagesByDate).map(([dateLabel, msgs]) => (
               <div key={dateLabel} className="space-y-4">
-                {/* Date Divider */}
                 <div className="flex justify-center">
                   <div className="bg-slate-50 shadow-lg text-gray-800 text-sm font-medium px-3 py-1 rounded-md">
                     {dateLabel}
                   </div>
                 </div>
 
-                {/* Messages */}
                 {msgs.map(m => (
                   <div
                     key={m.id}
@@ -109,10 +179,43 @@ export default function ChatWindow({
                   >
                     <div
                       className={`max-w-[75%] p-3 rounded-2xl shadow-md transition-all duration-200 ${
-                        m.senderId === userId ? 'bg-[#D9FDD3] text-gray-900' : 'bg-white text-gray-900'
+                        m.senderId === userId
+                          ? 'bg-[#D9FDD3] text-gray-900'
+                          : 'bg-white text-gray-900'
                       }`}
                     >
-                      <p className="text-sm leading-relaxed">{m.content}</p>
+                      {/* Text */}
+                      {m.content && <p className="text-sm leading-relaxed">{m.content}</p>}
+
+                      {m.mediaUrl && m.mediaType === 'image' && (
+                        <img
+                          src={m.mediaUrl}
+                          alt="media"
+                          className="mt-1 max-w-full max-h-60 rounded-md object-contain"
+                        />
+                      )}
+
+                      {m.mediaUrl && m.mediaType === 'video' && (
+                        <video
+                          src={m.mediaUrl}
+                          controls
+                          className="mt-1 max-w-full max-h-60 rounded-md"
+                        />
+                      )}
+
+                      {m.mediaUrl && m.mediaType === 'audio' && (
+                        <audio src={m.mediaUrl} controls className="mt-1 block max-w-full" />
+                      )}
+
+                      {m.mediaUrl &&
+                        m.mediaType &&
+                        !['image', 'video', 'audio'].includes(m.mediaType) && (
+                        <div className="mt-1 p-2 bg-gray-100 rounded-md text-sm text-gray-700 truncate">
+                          {m.mediaUrl.split('/').pop()}
+                        </div>
+                      )}
+
+                      {/* Timestamp */}
                       {m.createdAt && (
                         <p className="text-xs text-gray-500 mt-1 text-right">
                           {formatTime(m.createdAt)}
@@ -130,13 +233,25 @@ export default function ChatWindow({
       {/* Message Input Area */}
       <div className="p-3 bg-transparent border-t border-gray-200 shadow-sm absolute bottom-0 left-0 w-full">
         <div className="flex items-center gap-3 max-w-full">
+          {/* File input */}
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              className="hidden"
+              accept="image/*,video/*,audio/*"
+              onChange={handleFileChange}
+            />
+            <Link className="h-6 w-6 text-gray-600 hover:text-gray-800" />
+          </label>
+
+          {/* Text input */}
           <Input
             className="flex-1 rounded-full border-gray-300 bg-gray-100 py-2 px-4 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
             value={text}
             onChange={e => setText(e.target.value)}
             placeholder="Type a message..."
             onKeyDown={e => {
-              if (e.key === 'Enter' && isReady && text.trim()) handleSend();
+              if (e.key === 'Enter' && isReady && (text.trim() || file)) handleSend();
             }}
             disabled={!isReady}
           />
@@ -144,11 +259,14 @@ export default function ChatWindow({
             className="rounded-full bg-green-600 hover:bg-green-700 p-2.5 transition-colors duration-200"
             size="icon"
             onClick={handleSend}
-            disabled={!isReady || !text.trim()}
+            disabled={!isReady || (!text.trim() && !file)}
           >
             <Send className="h-5 w-5 text-white" />
           </Button>
         </div>
+
+        {/* Preview selected file */}
+        {file && <div className="mt-3">{renderFilePreview(file)}</div>}
       </div>
     </div>
   );

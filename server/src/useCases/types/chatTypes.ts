@@ -7,7 +7,7 @@ export interface ISendMessageInput {
     receiverId: string;
     content: string;
     mediaUrl?: string;
-    mediaTypes?: string;
+    mediaType?: string;
 }
 
 export interface IGetUserChatConsultationsResponse {
