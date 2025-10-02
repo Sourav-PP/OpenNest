@@ -5,8 +5,10 @@ export const chatMessages = {
         UNREAD_COUNT_FETCHED: 'Unread message count fetched successfully',
         MARKED_AS_READ: 'Message successfully marked as read',
         FETCHED_CONSULTATIONS: 'Consultations fetched successfully',
+        FILE_UPLOADED: 'File uploaded successfully',
     },
     ERROR: {
+        NO_FILE_PROVIDED: 'No file provided',
         NOT_PAID: 'Chat not available until payment is completed',
         EMPTY_MESSAGE: 'Message must contain text or media',
         MESSAGE_FAILED: 'Message failed',

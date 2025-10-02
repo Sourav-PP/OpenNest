@@ -17,9 +17,17 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     }
 
     async execute(data: ISendMessageInput): Promise<Message> {
+        console.log('data is: ', data);
         console.log('data in sendUseCase: ', data);
         if (!data.content && !data.mediaUrl) {
             throw new AppError(chatMessages.ERROR.EMPTY_MESSAGE, HttpStatus.BAD_REQUEST);
+        }
+
+        if (data.mediaUrl && !data.mediaType) {
+            throw new AppError(
+                chatMessages.ERROR.EMPTY_MESSAGE,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         // Ensuring weather sender is part of the consultation or not

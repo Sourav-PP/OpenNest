@@ -6,6 +6,9 @@ let socket: Socket | null = null;
 const messageHandlers: ((msg: IMessageDto) => void)[] = [];
 const errorListeners: ((err: IChatError) => void)[] = [];
 
+const onlineListeners: ((users: Set<string>) => void)[] = [];
+const onlineUsers: Set<string> = new Set();
+
 
 // Connect to the socket server
 export function connectSocket(token: string) {
@@ -30,6 +33,12 @@ export function connectSocket(token: string) {
 
   socket.on('connect', () => {
     console.log('Connected to socket server:', socket!.id);
+
+    // Fetch initial online users
+    socket!.emit('get_online_users', (users: string[]) => {
+      users.forEach(u => onlineUsers.add(u));
+      onlineListeners.forEach(cb => cb(new Set(onlineUsers)));
+    });
   });
 
   socket.on('disconnect', reason => {
@@ -46,6 +55,16 @@ export function connectSocket(token: string) {
 
   socket.on('chat_error', err => {
     errorListeners.slice().forEach(cb => cb(err));
+  });
+
+  // Online/offline events
+  socket.on('user_online', ({ userId }: { userId: string }) => {
+    onlineUsers.add(userId);
+    onlineListeners.slice().forEach(cb => cb(new Set(onlineUsers)));
+  });
+  socket.on('user_offline', ({ userId }: { userId: string }) => {
+    onlineUsers.delete(userId);
+    onlineListeners.slice().forEach(cb => cb(new Set(onlineUsers)));
   });
 
   return socket;
@@ -87,6 +106,17 @@ export function onError(cb: (err: IChatError) => void) {
   return () => {
     const index = errorListeners.indexOf(cb);
     if (index !== -1) errorListeners.splice(index, 1);
+  };
+}
+
+// Online users
+export function onOnlineUsers(cb: (users: Set<string>) => void) {
+  if (!onlineListeners.includes(cb)) onlineListeners.push(cb);
+  // immediately call back with current online users
+  cb(new Set(onlineUsers));
+  return () => {
+    const index = onlineListeners.indexOf(cb);
+    if (index !== -1) onlineListeners.splice(index, 1);
   };
 }
 

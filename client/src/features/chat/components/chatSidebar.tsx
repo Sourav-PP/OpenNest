@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
-import { getSocket, onMessage, joinConsultation } from '@/services/api/socket';
+import { getSocket, onMessage, joinConsultation, onOnlineUsers } from '@/services/api/socket';
 import type { IMessageDto } from '@/types/dtos/message';
 import { uniqBy } from 'lodash';
 
@@ -21,6 +21,11 @@ export default function ChatSidebar({
 }) {
   const [consultations, setConsultations] = useState<(IUserChatConsultationDto | IPsychologistChatConsultationDto)[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    return onOnlineUsers(setOnlineUsers);
+  }, []);
 
   // fetch consultations
   useEffect(() => {
@@ -156,20 +161,32 @@ export default function ChatSidebar({
                     : 'hover:bg-gray-100 text-gray-900'
                 }`}
               >
-                <Avatar className="h-10 w-10">
-                  <AvatarImage
-                    src={
-                      role === 'user'
-                        ? getCloudinaryUrl((c as IUserChatConsultationDto).psychologist.profileImage) ?? undefined
-                        : getCloudinaryUrl((c as IPsychologistChatConsultationDto).patient.profileImage) ?? undefined
-                    }
-                  />
-                  <AvatarFallback>
-                    {role === 'user'
-                      ? (c as IUserChatConsultationDto).psychologist.name[0]
-                      : (c as IPsychologistChatConsultationDto).patient.name[0]}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src={
+                        role === 'user'
+                          ? getCloudinaryUrl((c as IUserChatConsultationDto).psychologist.profileImage) ?? undefined
+                          : getCloudinaryUrl((c as IPsychologistChatConsultationDto).patient.profileImage) ?? undefined
+                      }
+                      className="rounded-full"
+                    />
+                    <AvatarFallback>
+                      {role === 'user'
+                        ? (c as IUserChatConsultationDto).psychologist.name[0]
+                        : (c as IPsychologistChatConsultationDto).patient.name[0]}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  {/* ONLINE INDICATOR */}
+                  {onlineUsers.has(
+                    role === 'user'
+                      ? (c as IUserChatConsultationDto).psychologist.userId
+                      : (c as IPsychologistChatConsultationDto).patient.id
+                  ) && (
+                    <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                  )}
+                </div>
 
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">

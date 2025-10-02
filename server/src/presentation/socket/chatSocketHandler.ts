@@ -117,12 +117,6 @@ export class ChatSocketHandler implements IChatSocketHandler {
                 .emit('stop_typing', { userId: socket.data.userId });
         });
 
-        // connection
-        socket.on('disconnect', () => {
-            io.emit('user_offline', { userId: socket.data.userId });
-        });
-        socket.on('connect', () => {
-            io.emit('user_online', { userId: socket.data.userId });
-        });
+        
     }
 }
