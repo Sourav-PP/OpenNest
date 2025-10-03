@@ -35,6 +35,19 @@ const UserConsultationsDetail = () => {
 
   }, [consultation?.startDateTime]);
 
+  const formatTimeLeft = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    let text = '';
+    if (hrs > 0) text += `${hrs}h `;
+    if (mins > 0 || hrs > 0) text += `${mins}m `;
+    text += `${secs}s`;
+
+    return text;
+  };
+
   // Fetch consultation details
   const fetchConsultation = useCallback(async () => {
     if (!id) return;
@@ -245,7 +258,7 @@ const UserConsultationsDetail = () => {
                       : 'bg-indigo-700 hover:bg-indigo-800'
                 }`}
                 onClick={e => {
-                  if (consultation.status === 'completed' || consultation.status === 'cancelled' || timeLeft > 0) {
+                  if (consultation.status === 'completed' || consultation.status === 'cancelled') {
                     e.preventDefault();
                   }
                 }}
@@ -255,7 +268,7 @@ const UserConsultationsDetail = () => {
                   : consultation.status === 'cancelled'
                     ? 'Call Cancelled'
                     : timeLeft > 0
-                      ? `Starts in ${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
+                      ? `Starts in ${formatTimeLeft(timeLeft)}`
                       : 'Join Meeting'}
               </Link>
             ) : (

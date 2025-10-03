@@ -14,11 +14,11 @@ export default function VideoCall({
 }) {
   const { localVideoRef, remoteStreams, joined, join, leave, toggleCamera, toggleMute, localStreamRef } = useVideoCall(token, consultationId);
   const [hasJoinedOnce, setHasJoinedOnce] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  // const [isFullScreen, setIsFullScreen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const navigate = useNavigate();
-
+  console.log('remoteStrem: ', remoteStreams);
   console.log('localVideoRef: ', localVideoRef);
 
   useEffect(() => {
@@ -47,16 +47,6 @@ export default function VideoCall({
       toast.error('error leaving call');
     } finally {
       navigate(`/${role}/consultations/${consultationId}`);
-    }
-  };
-
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => console.error('Fullscreen error:', err));
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
     }
   };
 
@@ -103,13 +93,6 @@ export default function VideoCall({
               {isCameraOn ? 'Turn Off Camera' : 'Turn On Camera'}
             </button>
           )}
-
-          <button
-            onClick={toggleFullScreen}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-medium transition-colors duration-200"
-          >
-            {isFullScreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-          </button>
         </div>
       </div>
 
@@ -144,7 +127,9 @@ export default function VideoCall({
                   <p className="text-gray-400 text-lg">Waiting for participant...</p>
                 </div>
               ) : (
-                <RemoteVideo stream={remoteStreams[0].stream} />
+                remoteStreams.map((remote) => (
+                  <RemoteVideo key={remote.id} stream={remote.stream} name={remote.name} />
+                ))
               )}
             </div>
           </div>
@@ -185,14 +170,14 @@ export default function VideoCall({
       {joined && (
         <div className="bg-gray-800 p-3 text-sm flex justify-between items-center">
           <span>Participants: {remoteStreams.length + 1}</span>
-          <span>Consultation ID: {consultationId}</span>
+          {/* <span>Consultation ID: {consultationId}</span> */}
         </div>
       )}
     </div>
   );
 }
 
-function RemoteVideo({ stream }: { stream: MediaStream }) {
+function RemoteVideo({ stream, name }: { stream: MediaStream, name: string }) {
   const ref = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -210,7 +195,7 @@ function RemoteVideo({ stream }: { stream: MediaStream }) {
   return (
     <div className="relative">
       <div className="absolute top-0 left-0 bg-black bg-opacity-60 text-white text-sm px-2 py-1 rounded-tl-md">
-        Participant
+        {name}
       </div>
       <video
         ref={ref}

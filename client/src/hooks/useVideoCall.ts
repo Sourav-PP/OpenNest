@@ -20,18 +20,19 @@ const ICE_SERVERS: RTCConfiguration = { iceServers: [{ urls: 'stun:stun.l.google
 
 export function useVideoCall(token: string, consultationId: string) {
   const [joined, setJoined] = useState(false);
-  const [remoteStreams, setRemoteStreams] = useState<{ id: string; stream: MediaStream }[]>([]);
+  const [remoteStreams, setRemoteStreams] = useState<{ id: string; stream: MediaStream, name: string }[]>([]);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const peersRef = useRef<Record<string, RTCPeerConnection>>({});
+  const peersNameRef = useRef<Record<string, string>>({});
   const pendingTargetsRef = useRef<Set<string>>(new Set()); // targets we must create offers to after we have local stream
   const socketRef = useRef<any>(null);
 
   // helper to attach remote stream
-  const addOrReplaceRemoteStream = (socketId: string, stream: MediaStream) => {
+  const addOrReplaceRemoteStream = (socketId: string, stream: MediaStream, name: string) => {
     setRemoteStreams(prev => {
       const filtered = prev.filter(r => r.id !== socketId);
-      return [...filtered, { id: socketId, stream }];
+      return [...filtered, { id: socketId, stream, name }];
     });
   };
 
@@ -48,7 +49,10 @@ export function useVideoCall(token: string, consultationId: string) {
 
     pc.ontrack = event => {
       console.log('[pc.ontrack] remote stream from', socketId, event.streams);
-      if (event.streams && event.streams[0]) addOrReplaceRemoteStream(socketId, event.streams[0]);
+      if (event.streams && event.streams[0]) {
+        const name = peersNameRef.current[socketId] || 'participant';
+        addOrReplaceRemoteStream(socketId, event.streams[0], name);
+      }
     };
 
     pc.onicecandidate = event => {
@@ -95,16 +99,19 @@ export function useVideoCall(token: string, consultationId: string) {
     socketRef.current = connectVideoSocket(token);
 
     // When we receive a list of existing participants (this event is emitted to the new joiner)
-    const handleCurrentParticipants = (participants: string[]) => {
+    const handleCurrentParticipants = (participants: { socketId: string; name: string }[]) => {
       console.log('[onCurrentParticipants] got:', participants);
       // clear any previous pending set: we will try creating offers now or queue if local stream not ready
-      participants.forEach(targetId => {
-        createOfferPeer(targetId);
+      participants.forEach(p => {
+        peersNameRef.current[p.socketId] = p.name;
+        createOfferPeer(p.socketId);
       });
     };
 
-    const handleUserJoined = (data: { socketId: string }) => {
+    const handleUserJoined = (data: { socketId: string, name: string }) => {
       console.log('[onUserJoined] user joined:', data.socketId);
+      peersNameRef.current[data.socketId] = data.name;
+      createOfferPeer(data.socketId);
     };
 
     const handleUserLeft = (data: { socketId: string }) => {
@@ -115,6 +122,7 @@ export function useVideoCall(token: string, consultationId: string) {
       }
       setRemoteStreams(prev => prev.filter(r => r.id !== data.socketId));
       toast.info('Participant has left the call');
+      delete peersNameRef.current[data.socketId];
     };
 
     const handleOffer = async ({ offer, from }: { offer: RTCSessionDescriptionInit; from: string }) => {

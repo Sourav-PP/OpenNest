@@ -49,7 +49,7 @@ export function sendIceCandidate(to: string, candidate: RTCIceCandidate) {
   socket?.emit('ice_candidate', { to, candidate });
 }
 
-export function onUserJoined(cb: (data: { socketId: string }) => void) {
+export function onUserJoined(cb: (data: { socketId: string, name: string }) => void) {
   socket?.on('user_joined', cb);
 }
 
@@ -69,6 +69,6 @@ export function onIceCandidate(cb: (data: { candidate: RTCIceCandidate; from: st
   socket?.on('ice_candidate', cb);
 }
 
-export function onCurrentParticipants(cb: (participants: string[]) => void) {
+export function onCurrentParticipants(cb: (participants: { socketId: string; name: string; }[]) => void) {
   socket?.on('current_participants', cb);
 }

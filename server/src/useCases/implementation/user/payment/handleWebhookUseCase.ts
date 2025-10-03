@@ -53,7 +53,10 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
             const sessionId = session.id;
             const meta = session.metadata || {};
 
+            console.log('meta in webhook: ', meta);
+
             const payment = await this._paymentRepo.findBySessionId(sessionId);
+            console.log('payment: ', payment);
 
             if (!payment) {
                 throw new AppError(bookingMessages.ERROR.PAYMENT_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -66,6 +69,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 }
 
                 const slot = await this._slotRepo.findById(meta.slotId);
+                console.log('slot in webhook: ', slot);
                 if (!slot || slot.isBooked) {
                     throw new AppError(bookingMessages.ERROR.SLOT_NOT_AVAILABLE, HttpStatus.CONFLICT);
                 }

@@ -38,6 +38,19 @@ const PsychologistConsultationsDetail = () => {
 
   }, [consultation?.startDateTime]);
 
+  const formatTimeLeft = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    let text = '';
+    if (hrs > 0) text += `${hrs}h `;
+    if (mins > 0 || hrs > 0) text += `${mins}m `;
+    text += `${secs}s`;
+
+    return text;
+  };
+
   const fetchConsultation = useCallback(async () => {
     if (!id) return;
     try {
@@ -275,7 +288,7 @@ const PsychologistConsultationsDetail = () => {
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
             {consultation.meetingLink ? (
               <Link
-                to={`/user/consultations/${consultation.id}/video`}
+                to={`/psychologist/consultations/${consultation.id}/video`}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
                   consultation.status === 'completed'
                     ? 'bg-gray-400 cursor-not-allowed'
@@ -284,7 +297,7 @@ const PsychologistConsultationsDetail = () => {
                       : 'bg-indigo-700 hover:bg-indigo-800'
                 }`}
                 onClick={e => {
-                  if (consultation.status === 'completed' || consultation.status === 'cancelled' || timeLeft > 0) {
+                  if (consultation.status === 'completed' || consultation.status === 'cancelled') {
                     e.preventDefault();
                   }
                 }}
@@ -294,7 +307,7 @@ const PsychologistConsultationsDetail = () => {
                   : consultation.status === 'cancelled'
                     ? 'Call Cancelled'
                     : timeLeft > 0
-                      ? `Starts in ${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
+                      ? `Starts in ${formatTimeLeft(timeLeft)}`
                       : 'Join Meeting'}
               </Link>
             ) : (

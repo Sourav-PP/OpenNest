@@ -8,17 +8,26 @@ export class GenericRepository<T extends { id?: string }, D extends Document & {
     }
 
     protected map(doc: D): T {
-        const obj: any = doc.toObject();
+        const obj: any = doc.toObject({ flattenMaps: true });
 
-        // Convert all ObjectId fields to string automatically
-        for (const key in obj) {
-            if (obj[key]?._bsontype === 'ObjectID') {
-                obj[key] = obj[key].toString();
+        const convertObjectIdToString = (value: any): any => {
+            if (value instanceof Types.ObjectId) {
+                return value.toString();
             }
-        }
+            if (Array.isArray(value)) {
+                return value.map(convertObjectIdToString);
+            }
+            if (value && typeof value === 'object') {
+                for (const k in value) {
+                    value[k] = convertObjectIdToString(value[k]);
+                }
+            }
+            return value;
+        };
 
-        obj.id = doc._id.toString();
-        return obj as T;
+        const mappedObj = convertObjectIdToString(obj);
+        mappedObj.id = doc._id.toString();
+        return mappedObj as T;
     }
 
     async findById(id: string): Promise<T | null> {
@@ -42,6 +51,7 @@ export class GenericRepository<T extends { id?: string }, D extends Document & {
     }
 
     async create(data: Omit<T, 'id'>): Promise<T> {
+        console.log('create: ', data);
         const doc = await this._model.create(data);
         return this.map(doc);
     }

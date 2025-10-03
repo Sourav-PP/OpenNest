@@ -40,14 +40,14 @@ export class PaymentRepository extends GenericRepository<Payment, IPaymentDocume
     }
 
     async findBySessionId(sessionId: string): Promise<Payment | null> {
-        const doc = await PaymentModel.findOne({ stripeSessionId: sessionId }).lean();
+        const doc = await PaymentModel.findOne({ stripeSessionId: sessionId }).exec();
 
         if (!doc) return null;
         return this.map(doc);
     }
 
     async findByConsultationId(id: string): Promise<Payment | null> {
-        const payment = await PaymentModel.findOne({ consultationId: id }).lean();
+        const payment = await PaymentModel.findOne({ consultationId: id }).exec();
 
         if (!payment) return null;
 

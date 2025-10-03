@@ -56,6 +56,7 @@ const BookingSession = () => {
       const dateISO = getLocalMidnight(selectedDate).toISOString();
       const res = await userApi.getSlotsByPsychologist(id, dateISO);
 
+      console.log('slots: ',res);
       if(!res.data) {
         toast.error('Something went wrong');
         return;

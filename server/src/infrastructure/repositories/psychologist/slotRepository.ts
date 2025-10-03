@@ -14,7 +14,7 @@ export class SlotRepository extends GenericRepository<Slot, ISlotDocument> imple
     }
 
     protected map(doc: ISlotDocument): Slot {
-        const mapped = super.map(doc); // Use parent mapping first
+        const mapped = super.map(doc); 
         
         return {
             id: mapped.id,

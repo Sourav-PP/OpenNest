@@ -53,6 +53,7 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
                 HttpStatus.BAD_REQUEST,
             );
         }
+        console.log('input: ', input);
 
         const currency = appConfig.stripe.currency || 'usd';
         const cancelUrl = appConfig.stripe.frontendCancelUrl;
@@ -93,8 +94,8 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
 
             metadata = {
                 ...metadata,
-                psychologistId: slot.psychologistId,
-                slotId: input.slotId,
+                psychologistId: slot.psychologistId.toString(),
+                slotId: input.slotId.toString(),
                 startDateTime: slot.startDateTime.toISOString(),
                 endDateTime: slot.endDateTime.toISOString(),
                 sessionGoal: input.sessionGoal,

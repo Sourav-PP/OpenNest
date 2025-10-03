@@ -316,4 +316,4 @@ const endVideoCallUseCase = new EndVideoCallUseCase(videoCallRepository, consult
 
 // socket handler
 export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase);
-export const videoCallSocketHandler = new VideoCallSocketHandler(startVideoCallUseCase, endVideoCallUseCase, consultationRepository, videoCallRepository, psychologistRepository);
+export const videoCallSocketHandler = new VideoCallSocketHandler(startVideoCallUseCase, endVideoCallUseCase, consultationRepository, videoCallRepository, psychologistRepository, userRepository);

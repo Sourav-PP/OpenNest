@@ -1,5 +1,6 @@
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
 import { IVideoCallRepository } from '@/domain/repositoryInterface/IVideoCallRepository';
 import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 import { videoCallMessages } from '@/shared/constants/messages/videoCallMessages';
@@ -15,6 +16,7 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
     private _consultationRepo: IConsultationRepository;
     private _videoCallRepo: IVideoCallRepository;
     private _psychologistRepo: IPsychologistRepository;
+    private _userRepo: IUserRepository;
 
     constructor(
         startVideoCallUseCase: IStartVideoCallUseCase,
@@ -22,12 +24,14 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
         consultationRepo: IConsultationRepository,
         videoCallRepo: IVideoCallRepository,
         psychologistRepo: IPsychologistRepository,
+        userRepo: IUserRepository,
     ) {
         this._startVideoCallUseCase = startVideoCallUseCase;
         this._endVideoCallUseCase = endVideCallUseCase;
         this._consultationRepo = consultationRepo;
         this._videoCallRepo = videoCallRepo;
         this._psychologistRepo = psychologistRepo;
+        this._userRepo = userRepo;
     }
 
     register(io: Server, socket: Socket) {
@@ -40,29 +44,36 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
                 socket.emit('error', { message: bookingMessages.ERROR.CONSULTATION_NOT_FOUND });
                 return;
             }
+
+            console.log('consultations in v: ', consultation);
             
             const now = new Date(consultation.startDateTime);
             const start = new Date(consultation.endDateTime);
             const end = new Date(consultation.endDateTime);
 
-            if (now.getTime() < start.getTime() - 5 * 60 * 1000) {
-                socket.emit('error', { message: videoCallMessages.ERROR.SESSION_NOT_STARTED });
-                return;
-            }
+            // if (now.getTime() < start.getTime() - 5 * 60 * 1000) {
+            //     socket.emit('error', { message: videoCallMessages.ERROR.SESSION_NOT_STARTED });
+            //     return;
+            // }
 
-            if (now.getTime() > end.getTime() + 10 * 60 * 1000) {
-                socket.emit('error', { message: videoCallMessages.ERROR.SESSION_ENDED });
-                return;
-            }
+            // if (now.getTime() > end.getTime() + 10 * 60 * 1000) {
+            //     socket.emit('error', { message: videoCallMessages.ERROR.SESSION_ENDED });
+            //     return;
+            // }
 
             let isAuthorized = consultation.patientId === userId;
+            console.log('userId: ', userId);
+            console.log('is  user authorized: ', isAuthorized);
             
             if (!isAuthorized) {
                 const psychologist = await this._psychologistRepo.findByUserId(userId);
+                console.log('psychologistId: ', psychologist?.id);
                 if (psychologist && consultation.psychologistId === psychologist.id) {
                     isAuthorized = true;
                 } 
             }
+
+            console.log('is psychologist authorized: ', isAuthorized);
             
             if (!isAuthorized) {
                 socket.emit('error', { message: videoCallMessages.ERROR.UNAUTHORIZED });
@@ -70,6 +81,8 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
             }
             
             const room = `video_${consultationId}`;
+
+            const user = await this._userRepo.findById(userId);
             
             console.log('join_call received', consultationId, 'user:', socket.data.userId);
             console.log('Current room sockets:', await io.in(room).allSockets());
@@ -80,7 +93,7 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
             console.log('otherSockets: ', otherSockets);
             socket.emit('current_participants', otherSockets);
 
-            socket.to(room).emit('user_joined', { userId, socketId: socket.id });
+            socket.to(room).emit('user_joined', { userId, socketId: socket.id, name: user?.name });
             
             const call = await this._videoCallRepo.findByConsultationId(consultationId);
             
