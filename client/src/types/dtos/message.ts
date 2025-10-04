@@ -11,6 +11,7 @@ export interface IMessageDto {
   mediaUrl?: string;
   mediaType?: string | null;
   deleted: boolean;
+  deletedBy?: string; 
   replyToId?: string;
   reaction?: Array<{userId: string; emoji: string}>;
   createdAt: string;

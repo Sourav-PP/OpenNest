@@ -113,6 +113,7 @@ import { EnsureMembershipUseCase } from '@/useCases/implementation/chat/ensureMe
 import { GetUnreadCountUseCase } from '@/useCases/implementation/chat/getUnreadCountUseCase';
 import { MarkReadUseCase } from '@/useCases/implementation/chat/markReadUseCase';
 import { UploadChatMediaUseCase } from '@/useCases/implementation/chat/uploadChatMediaUseCase';
+import { DeleteMessageUseCase } from '@/useCases/implementation/chat/deleteMessageUseCase';
 
 //--------------videoCall--------------------
 import { VideoCallSocketHandler } from '@/presentation/socket/videoCallSocketHandler';
@@ -306,6 +307,7 @@ const getHistoryUseCase = new GetHistoryUseCase(messageRepository);
 const getUnreadCountUseCase = new GetUnreadCountUseCase(messageRepository, userRepository, psychologistRepository);
 const markReadUseCase = new MarkReadUseCase(messageRepository, psychologistRepository, userRepository);
 const uploadChatMediaUseCase = new UploadChatMediaUseCase(chatFileStorage);
+const deleteMessageUseCase = new DeleteMessageUseCase(messageRepository);
 
 export const chatMessageController = new ChatMessageController(sendMessageUseCase, getHistoryUseCase, getUnreadCountUseCase, markReadUseCase, getUserChatConsultationsUseCase, getPsychologistChatConsultationsUseCase);
 export const chatFileController = new ChatFileController(uploadChatMediaUseCase);
@@ -315,5 +317,5 @@ const startVideoCallUseCase = new StartVideoCallUseCase(videoCallRepository);
 const endVideoCallUseCase = new EndVideoCallUseCase(videoCallRepository, consultationRepository);
 
 // socket handler
-export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase);
+export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase, deleteMessageUseCase);
 export const videoCallSocketHandler = new VideoCallSocketHandler(startVideoCallUseCase, endVideoCallUseCase, consultationRepository, videoCallRepository, psychologistRepository, userRepository);

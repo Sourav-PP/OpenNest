@@ -8,6 +8,10 @@ export const chatMessages = {
         FILE_UPLOADED: 'File uploaded successfully',
     },
     ERROR: {
+        NOT_FOUND: 'Message not found',
+        ALREADY_DELETED: 'Message is already deleted',
+        INVALID_CONSULTATION_ID: 'Invalid consultation Id',
+        INVALID_MESSAGEID_OR_CONSULTATION_ID: 'Invalid message id or consultation id',
         NO_FILE_PROVIDED: 'No file provided',
         NOT_PAID: 'Chat not available until payment is completed',
         EMPTY_MESSAGE: 'Message must contain text or media',

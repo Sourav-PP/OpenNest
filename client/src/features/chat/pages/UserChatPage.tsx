@@ -66,7 +66,7 @@ export default function PsychologistChatPage() {
                 userId={userId!}
                 peerId={
                   role === 'user'
-                    ? (selectedConsultation as IUserChatConsultationDto).psychologist.id
+                    ? (selectedConsultation as IUserChatConsultationDto).psychologist.userId
                     : (selectedConsultation as IPsychologistChatConsultationDto).patient.id
                 }
               />

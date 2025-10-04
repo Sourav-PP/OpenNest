@@ -4,11 +4,11 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 const messageHandlers: ((msg: IMessageDto) => void)[] = [];
+const deleteHandler: ((data: { messageId: string; consultationId: string, deletedBy: string, isDeleted: boolean }) => void)[] = [];
 const errorListeners: ((err: IChatError) => void)[] = [];
 
 const onlineListeners: ((users: Set<string>) => void)[] = [];
 const onlineUsers: Set<string> = new Set();
-
 
 // Connect to the socket server
 export function connectSocket(token: string) {
@@ -53,6 +53,19 @@ export function connectSocket(token: string) {
     messageHandlers.slice().forEach(cb => cb(msg));
   });
 
+  socket.on(
+    'message_deleted',
+    (data: {
+      messageId: string;
+      consultationId: string;
+      deletedBy: string;
+      isDeleted: boolean; 
+    }) => {
+      console.log('message deleted event received: ', data);
+      deleteHandler.slice().forEach(cb => cb(data));
+    }
+  );
+
   socket.on('chat_error', err => {
     errorListeners.slice().forEach(cb => cb(err));
   });
@@ -82,12 +95,12 @@ export function disconnectSocket() {
   }
 }
 
-// Get current socket instance 
+// Get current socket instance
 export function getSocket() {
   return socket;
 }
 
-// Register a message listener 
+// Register a message listener
 export function onMessage(cb: (msg: IMessageDto) => void) {
   if (!messageHandlers.includes(cb)) {
     messageHandlers.push(cb);
@@ -98,7 +111,17 @@ export function onMessage(cb: (msg: IMessageDto) => void) {
   };
 }
 
-// Registering the error listener 
+export function onMessageDelete(cb: (data: { messageId: string; consultationId: string, deletedBy: string, isDeleted: boolean }) => void) {
+  if (!deleteHandler.includes(cb)) {
+    deleteHandler.push(cb);
+  }
+  return () => {
+    const index = deleteHandler.indexOf(cb);
+    if (index !== -1) deleteHandler.splice(index, 1);
+  };
+}
+
+// Registering the error listener
 export function onError(cb: (err: IChatError) => void) {
   if (!errorListeners.includes(cb)) {
     errorListeners.push(cb);
@@ -120,7 +143,6 @@ export function onOnlineUsers(cb: (users: Set<string>) => void) {
   };
 }
 
-
 export const joinConsultation = (consultationId: string) => {
   const socket = getSocket();
   if (!socket) throw new Error('Socket not connected');
@@ -136,12 +158,21 @@ export const joinConsultation = (consultationId: string) => {
         }
       );
 
-    if(socket.connected) {
+    if (socket.connected) {
       join();
-    }else{
+    } else {
       socket.once('connect', join);
     }
   });
+};
+
+export const deleteMessage = (data: { messageId: string; consultationId: string }) => {
+  const socket = getSocket();
+  if (!socket || !socket.connected) {
+    console.warn('Socket not connected yet, cannot send message');
+    return;
+  }
+  socket.emit('delete', data);
 };
 
 //sending message

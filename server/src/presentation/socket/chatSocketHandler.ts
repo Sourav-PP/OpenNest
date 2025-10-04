@@ -5,17 +5,22 @@ import { AppError } from '@/domain/errors/AppError';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { chatMessages } from '@/shared/constants/messages/chatMessages';
 import { IMarkReadUseCase } from '@/useCases/interfaces/chat/IMarkReadUseCase';
+import { IDeleteMessageUseCase } from '@/useCases/interfaces/chat/IDeleteMessageUseCase';
+import { generalMessages } from '@/shared/constants/messages/generalMessages';
 
 export class ChatSocketHandler implements IChatSocketHandler {
     private _sendMessageUseCase: ISendMessageUseCase;
     private _markAsReadUseCase: IMarkReadUseCase;
+    private _deleteMessageUseCase: IDeleteMessageUseCase;
 
     constructor(
         sendMessageUseCase: ISendMessageUseCase,
         markAsReadUseCase: IMarkReadUseCase,
+        deleteMessageUseCase: IDeleteMessageUseCase,
     ) {
         this._sendMessageUseCase = sendMessageUseCase;
         this._markAsReadUseCase = markAsReadUseCase;
+        this._deleteMessageUseCase = deleteMessageUseCase;
     }
 
     register(io: Server, socket: Socket): void {
@@ -26,7 +31,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
                     if (!consultationId) {
                         return ack?.({
                             success: false,
-                            error: 'Invalid consultationId',
+                            error: chatMessages.ERROR.INVALID_CONSULTATION_ID,
                         });
                     }
 
@@ -51,13 +56,46 @@ export class ChatSocketHandler implements IChatSocketHandler {
             try {
                 console.log('its coming here in send....', socket.data);
                 const message = await this._sendMessageUseCase.execute(data);
-                console.log('message in backend: ', message);
-                console.log('Emitting to room:', data.consultationId);
-                console.log('Sockets in room:', [
-                    ...(io.sockets.adapter.rooms.get(data.consultationId) ||
-                        []),
-                ]);
                 io.to(data.consultationId).emit('new_message', message);
+            } catch (err) {
+                if (err instanceof AppError) {
+                    socket.emit('chat_error', {
+                        status: err.statusCode,
+                        message: err.message,
+                    });
+                } else {
+                    socket.emit('chat_error', {
+                        status: HttpStatus.INTERNAL_SERVER_ERROR,
+                        message: chatMessages.ERROR.MESSAGE_FAILED,
+                    });
+                }
+            }
+        });
+
+        socket.on('delete', async(data: { messageId: string, consultationId: string }) => {
+            try {
+                if (!data?.messageId || !data?.consultationId) {
+                    return socket.emit('chat_error', {
+                        status: HttpStatus.BAD_REQUEST,
+                        message: chatMessages.ERROR.INVALID_MESSAGEID_OR_CONSULTATION_ID,
+                    });
+                }
+
+                const deletedMessage = await this._deleteMessageUseCase.execute(data.messageId, socket.data.userId);
+
+                if (!deletedMessage) {
+                    return socket.emit('chat_error', {
+                        status: HttpStatus.NOT_FOUND,
+                        message: generalMessages.ERROR.INTERNAL_SERVER_ERROR,
+                    });
+                }
+                
+                io.to(data.consultationId).emit('message_deleted', {
+                    messageId: deletedMessage.id,
+                    consultationId: data.consultationId,
+                    deletedBy: socket.data.userId,
+                    isDeleted: true,
+                });
             } catch (err) {
                 if (err instanceof AppError) {
                     socket.emit('chat_error', {

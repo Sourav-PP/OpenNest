@@ -28,8 +28,8 @@ router.post('/payment/webhook', express.raw({ type: 'application/json' }), payme
 router.get('/consultations', authenticateUser, checkBlockedUser, userConsultationController.getConsultations);
 router.get('/consultation/history', authenticateUser, checkBlockedUser, userConsultationController.getHistory);
 router.get('/consultation/:consultationId/history', authenticateAll, checkBlockedUser, userConsultationController.getHistoryDetails);
-router.get('/consultation/:id', authenticateAll, checkBlockedUser, userConsultationController.getConsultationDetail);
-router.put('/consultation/:id/cancel', authenticateUser, checkBlockedUser, userConsultationController.cancelConsultation);
+router.get('/consultation/:consultationId', authenticateAll, checkBlockedUser, userConsultationController.getConsultationDetail);
+router.put('/consultation/:consultationId/cancel', authenticateUser, checkBlockedUser, userConsultationController.cancelConsultation);
 
 router.post('/wallet', authenticateUser, checkBlockedUser, userWalletController.create);
 router.get('/wallet', authenticateUser, checkBlockedUser, userWalletController.getByUser);

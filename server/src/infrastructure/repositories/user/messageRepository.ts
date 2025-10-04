@@ -28,6 +28,7 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
             mediaUrl: mapped.mediaUrl ?? undefined,
             mediaType: mapped.mediaType ?? null,
             deleted: mapped.deleted,
+            deletedBy: mapped.deletedBy ?? undefined,
             replyToId: mapped.replyToId as string | undefined,
             reaction: (mapped.reaction as any[])?.map(r => ({
                 userId: r.userId.toString(),

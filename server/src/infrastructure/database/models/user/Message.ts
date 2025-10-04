@@ -13,6 +13,7 @@ export interface IMessageDocument extends Document {
     mediaUrl?: string | null;
     mediaType?: string | null;
     deleted: boolean;
+    deletedBy: Types.ObjectId;
     replyToId?: Types.ObjectId;
     reaction?: Array<{ userId: string; emoji: string }>;
     createdAt: Date;
@@ -71,6 +72,11 @@ const messageSchema = new Schema<IMessageDocument>(
         deleted: {
             type: Boolean,
             default: false,
+        },
+        deletedBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            require: false,
         },
         replyToId: {
             type: Schema.Types.ObjectId,

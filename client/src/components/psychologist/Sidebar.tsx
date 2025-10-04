@@ -6,7 +6,7 @@ import {
   User,
   Key,
   Calendar,
-  CreditCard,
+  // CreditCard,
   Clock,
   FileText,
   DollarSign,
@@ -38,11 +38,11 @@ const Sidebar = () => {
       path: '/psychologist/slot',
       icon: <Calendar width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
-    {
-      name: 'Subscriptions',
-      path: '/psychologist/subscriptions',
-      icon: <CreditCard width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
-    },
+    // {
+    //   name: 'Subscriptions',
+    //   path: '/psychologist/subscriptions',
+    //   icon: <CreditCard width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
+    // },
     {
       name: 'My Consultations',
       path: '/psychologist/consultations',

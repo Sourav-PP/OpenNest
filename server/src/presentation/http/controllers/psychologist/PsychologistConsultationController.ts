@@ -84,13 +84,13 @@ export class PsychologistConsultationController {
                 );
             }
 
-            const { id } = req.params;
+            const { consultationId } = req.params;
             const { reason } = req.body;
 
             const consultation =
                 await this._psychologistCancelConsultationUseCase.execute(
                     userId,
-                    id,
+                    consultationId,
                     reason,
                 );
 

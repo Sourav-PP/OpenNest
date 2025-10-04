@@ -73,8 +73,8 @@ export class UserConsultationController {
 
     getConsultationDetail = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { id } = req.params;
-            const result = await this._getUserConsultationByIdUseCase.execute(id);
+            const { consultationId } = req.params;
+            const result = await this._getUserConsultationByIdUseCase.execute(consultationId);
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -100,15 +100,15 @@ export class UserConsultationController {
                 );
             }
 
-            const { id } = req.params;
+            const { consultationId } = req.params;
             const { reason } = req.body;
 
-            console.log('id: ', id);
+            console.log('id: ', consultationId);
             console.log('reason: ', reason);
 
             const consultation = await this._cancelConsultationUseCase.execute(
                 userId,
-                id,
+                consultationId,
                 reason,
             );
 

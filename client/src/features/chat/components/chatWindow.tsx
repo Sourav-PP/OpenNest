@@ -3,12 +3,13 @@ import { useChat } from '@/hooks/useChat';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { FileIcon, Link, Send, X } from 'lucide-react';
+import { DeleteIcon, FileIcon, Link, Send, X } from 'lucide-react';
 import type { IMessageDto } from '@/types/dtos/message';
 import { chatApi } from '@/services/api/chat';
 import { toast } from 'react-toastify';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { onOnlineUsers } from '@/services/api/socket';
+import ConfirmationModal from '@/components/user/ConfirmationModal';
 
 export default function ChatWindow({
   consultationId,
@@ -19,11 +20,14 @@ export default function ChatWindow({
   userId: string;
   peerId: string;
 }) {
-  const { messages, sendMessage, isReady } = useChat(consultationId);
+  const { messages, sendMessage, isReady, handleDelete } = useChat(consultationId);
   const [text, setText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<{ messageId: string; consultationId: string } | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => {
     return onOnlineUsers(setOnlineUsers);
@@ -36,6 +40,28 @@ export default function ChatWindow({
   };
 
   console.log('isReady:', isReady, 'messages:', messages);
+
+  const confirmDeleteMessage = (id: string, consultationId: string) => {
+    setMessageToDelete({ messageId: id, consultationId });
+    setDeleteModalOpen(true);
+  };
+
+  
+  const handleConfirmDelete = async () => {
+    if(!messageToDelete) return;
+
+    setConfirmLoading(true);
+    try {
+      await handleDelete(messageToDelete);
+      setDeleteModalOpen(false);
+      setMessageToDelete(null);
+    } catch (error) {
+      toast.error('Failed to delete message');
+      console.log('delete message error: ',error);
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
 
   const handleSend = async () => {
     if (!text.trim() && !file) return;
@@ -178,16 +204,24 @@ export default function ChatWindow({
                     className={`flex ${m.senderId === userId ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[75%] p-3 rounded-2xl shadow-md transition-all duration-200 ${
-                        m.senderId === userId
-                          ? 'bg-[#D9FDD3] text-gray-900'
-                          : 'bg-white text-gray-900'
+                      className={`relative max-w-[75%] p-3 rounded-2xl shadow-md transition-all duration-200 ${
+                        m.deleted
+                          ? 'bg-gray-100 text-gray-500 italic border border-gray-300'
+                          : m.senderId === userId
+                            ? 'bg-[#D9FDD3] text-gray-900'
+                            : 'bg-white text-gray-900'
                       }`}
                     >
+                      {!m.deleted && m.senderId === userId && (
+                        <DeleteIcon 
+                          onClick={() => confirmDeleteMessage(m.id, m.consultationId)} 
+                          className="w-4 h-4 absolute top-1 right-1 text-red-400 hover:text-red-600 cursor-pointer"
+                        />
+                      )}
                       {/* Text */}
                       {m.content && <p className="text-sm leading-relaxed">{m.content}</p>}
 
-                      {m.mediaUrl && m.mediaType === 'image' && (
+                      {!m.deleted && m.mediaUrl && m.mediaType === 'image' && (
                         <img
                           src={m.mediaUrl}
                           alt="media"
@@ -195,7 +229,7 @@ export default function ChatWindow({
                         />
                       )}
 
-                      {m.mediaUrl && m.mediaType === 'video' && (
+                      {!m.deleted && m.mediaUrl && m.mediaType === 'video' && (
                         <video
                           src={m.mediaUrl}
                           controls
@@ -203,11 +237,11 @@ export default function ChatWindow({
                         />
                       )}
 
-                      {m.mediaUrl && m.mediaType === 'audio' && (
+                      {!m.deleted && m.mediaUrl && m.mediaType === 'audio' && (
                         <audio src={m.mediaUrl} controls className="mt-1 block max-w-full" />
                       )}
 
-                      {m.mediaUrl &&
+                      {!m.deleted && m.mediaUrl &&
                         m.mediaType &&
                         !['image', 'video', 'audio'].includes(m.mediaType) && (
                         <div className="mt-1 p-2 bg-gray-100 rounded-md text-sm text-gray-700 truncate">
@@ -216,7 +250,7 @@ export default function ChatWindow({
                       )}
 
                       {/* Timestamp */}
-                      {m.createdAt && (
+                      {m.createdAt && !m.deleted && (
                         <p className="text-xs text-gray-500 mt-1 text-right">
                           {formatTime(m.createdAt)}
                         </p>
@@ -268,6 +302,16 @@ export default function ChatWindow({
         {/* Preview selected file */}
         {file && <div className="mt-3">{renderFilePreview(file)}</div>}
       </div>
+      <ConfirmationModal
+        title="Delete Message"
+        description="Are you sure you want to delete this message?"
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        confirmLoading={confirmLoading}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }
