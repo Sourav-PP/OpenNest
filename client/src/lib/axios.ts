@@ -4,6 +4,7 @@ import { loginSuccess, logout } from '../redux/slices/authSlice';
 import { toast } from 'react-toastify';
 import { navigateTo } from './utils/navigation';
 import { HttpStatus } from './constants/httpStatus';
+import { jwtDecode } from 'jwt-decode';
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
@@ -77,12 +78,14 @@ instance.interceptors.response.use(
         const { data } = await instance.post(refreshEndpoint);
         const accessToken = data.accessToken.accessToken;
 
+        const decoded: { email: string; userId: string; role: 'user' | 'psychologist' | 'admin' } = jwtDecode(accessToken);
+
         store.dispatch(
           loginSuccess({
             accessToken,
-            email: email ?? '',
-            userId: userId ?? '',
-            role: role ?? 'user',
+            email: decoded.email,
+            userId: decoded.userId,
+            role: decoded.role,
           })
         );
 
@@ -95,11 +98,7 @@ instance.interceptors.response.use(
         store.dispatch(logout());
 
         const loginRedirect =
-          role === 'admin'
-            ? '/admin/login'
-            : role === 'psychologist'
-              ? '/login'
-              : '/login';
+          role === 'admin' ? '/admin/login' : role === 'psychologist' ? '/login' : '/login';
 
         navigateTo(loginRedirect, { role });
         return Promise.reject(err);
