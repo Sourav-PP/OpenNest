@@ -101,11 +101,13 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
             user.id,
             user.role,
             user.email,
+            user.isActive,
         );
         const refreshToken = this._tokenService.generateRefreshToken(
             user.id,
             user.role,
             user.email,
+            user.isActive,
         );
 
         let hasSubmittedVerificationForm = false;

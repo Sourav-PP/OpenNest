@@ -71,8 +71,8 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
         await this._userRepo.deletePendingSignup(email);
 
-        const accessToken = this._tokenService.generateAccessToken(savedUser.id,savedUser.role, savedUser.email);
-        const refreshToken = this._tokenService.generateRefreshToken(savedUser.id,savedUser.role, savedUser.email);
+        const accessToken = this._tokenService.generateAccessToken(savedUser.id,savedUser.role, savedUser.email, savedUser.isActive);
+        const refreshToken = this._tokenService.generateRefreshToken(savedUser.id,savedUser.role, savedUser.email, savedUser.isActive);
 
         const hasSubmittedVerificationForm = false;
 

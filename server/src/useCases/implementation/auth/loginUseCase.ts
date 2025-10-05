@@ -44,8 +44,8 @@ export class LoginUseCase implements ILoginUseCase {
             throw new AppError(authMessages.ERROR.BLOCKED_USER, HttpStatus.FORBIDDEN);
         }
 
-        const accessToken = this._tokenService.generateAccessToken(user.id, user.role, user.email);
-        const refreshToken = this._tokenService.generateRefreshToken(user.id, user.role, user.email);
+        const accessToken = this._tokenService.generateAccessToken(user.id, user.role, user.email, user.isActive);
+        const refreshToken = this._tokenService.generateRefreshToken(user.id, user.role, user.email, user.isActive);
 
         let hasSubmittedVerificationForm = false;
 

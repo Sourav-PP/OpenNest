@@ -4,17 +4,22 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { AppError } from '@/domain/errors/AppError';
 
-export const authMiddleware = ( jwtService: ITokenService, allowedRoles: Array<'user' | 'psychologist' | 'admin'> ): RequestHandler =>
+export const authMiddleware = (
+    jwtService: ITokenService,
+    allowedRoles: Array<'user' | 'psychologist' | 'admin'>,
+): RequestHandler =>
     (req: Request, res: Response, next: NextFunction) => {
         try {
             const authHeader = req.headers.authorization;
 
             if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                throw new AppError(authMessages.ERROR.NO_TOKEN_PROVIDED, HttpStatus.UNAUTHORIZED);
+                throw new AppError(
+                    authMessages.ERROR.NO_TOKEN_PROVIDED,
+                    HttpStatus.UNAUTHORIZED,
+                );
             }
 
             const token = authHeader.split(' ')[1];
-
             const payload = jwtService.verifyAccessToken(token);
 
             if (
@@ -23,27 +28,44 @@ export const authMiddleware = ( jwtService: ITokenService, allowedRoles: Array<'
                 !payload.email ||
                 !payload.role
             ) {
-                throw new AppError(authMessages.ERROR.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
+                throw new AppError(
+                    authMessages.ERROR.INVALID_TOKEN,
+                    HttpStatus.UNAUTHORIZED,
+                );
             }
 
             const userRole = payload.role as 'user' | 'psychologist' | 'admin';
 
             if (!allowedRoles.includes(userRole)) {
                 console.log('is it here?');
-                throw new AppError(authMessages.ERROR.FORBIDDEN, HttpStatus.FORBIDDEN);
+                throw new AppError(
+                    authMessages.ERROR.FORBIDDEN,
+                    HttpStatus.FORBIDDEN,
+                );
+            }
+
+            // check if user is blocked
+            if (payload.isActive === false) {
+                throw new AppError(authMessages.ERROR.BLOCKED_USER, HttpStatus.FORBIDDEN);
             }
 
             req.user = {
                 userId: payload.userId,
                 email: payload.email,
                 role: userRole,
+                isActive: payload.isActive,
             };
 
             next();
         } catch (err) {
             const error = err as any;
             if (error.name === 'TokenExpiredError') {
-                return next(new AppError(authMessages.ERROR.TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED));
+                return next(
+                    new AppError(
+                        authMessages.ERROR.TOKEN_EXPIRED,
+                        HttpStatus.UNAUTHORIZED,
+                    ),
+                );
             }
             next(err);
         }

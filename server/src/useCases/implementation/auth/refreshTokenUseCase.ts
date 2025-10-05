@@ -28,11 +28,12 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         if (!user) {
             throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-
+        const isActive = user.role === 'user' ? user.isActive ?? true : true;
         const newAccessToken = this._tokenService.generateAccessToken(
             payload.userId,
             user.role,
             user.email,
+            isActive,
         );
 
         return {

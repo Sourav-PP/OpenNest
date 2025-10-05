@@ -158,7 +158,6 @@ import { ChatFileController } from '@/presentation/http/controllers/chat/ChatFil
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
-import { checkBlockedMiddleware } from '../../presentation/http/middlewares/checkBlockedMiddleware';
 import { MessageRepository } from '../repositories/user/messageRepository';
 
 
@@ -176,8 +175,6 @@ export const authenticateUser = authMiddleware(tokenService, ['user']);
 export const authenticatePsychologist = authMiddleware(tokenService, ['psychologist']);
 export const authenticateAdmin = authMiddleware(tokenService, ['admin']);
 export const authenticateAll = authMiddleware(tokenService, ['user', 'psychologist']);
-
-export const checkBlockedUser = checkBlockedMiddleware(userRepository);
 
 
 // ---------- user ------------

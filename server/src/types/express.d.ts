@@ -6,6 +6,7 @@ declare module 'express' {
       userId: string;
       email: string;
       role: 'user' | 'psychologist' | 'admin';
+      isActive: boolean;
     };
   }
 }

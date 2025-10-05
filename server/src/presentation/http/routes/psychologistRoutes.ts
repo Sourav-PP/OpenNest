@@ -1,7 +1,6 @@
 import express from 'express';
 import {
     authenticatePsychologist,
-    checkBlockedUser,
     slotController,
     psychologistConsultationController,
     psychologistProfileController,
@@ -18,9 +17,9 @@ router.get('/kyc', authenticatePsychologist, psychologistKycController.getKycDet
 router.post('/slot', authenticatePsychologist, slotController.createSlot);
 router.get('/slot', authenticatePsychologist, slotController.getSlotByPsychologist);
 router.delete('/slot/:slotId', authenticatePsychologist, slotController.deleteSlot);
-router.get('/consultations', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.getConsultations);
-router.put('/consultation/:consultationId/cancel', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.cancelConsultation);
-router.get('/consultation/history', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.getHistory);
-router.get('/patients/:patientId/history', authenticatePsychologist, checkBlockedUser, psychologistConsultationController.getPatientHistory);
+router.get('/consultations', authenticatePsychologist, psychologistConsultationController.getConsultations);
+router.put('/consultation/:consultationId/cancel', authenticatePsychologist, psychologistConsultationController.cancelConsultation);
+router.get('/consultation/history', authenticatePsychologist, psychologistConsultationController.getHistory);
+router.get('/patients/:patientId/history', authenticatePsychologist, psychologistConsultationController.getPatientHistory);
 
 export default router;

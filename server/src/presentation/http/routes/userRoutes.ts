@@ -1,7 +1,6 @@
 import express from 'express';
 import {
     authenticateUser,
-    checkBlockedUser,
     paymentController,
     authenticateAll,
     userConsultationController,
@@ -20,21 +19,21 @@ const router = express.Router();
 router.get('/services', userServiceController.getAllService);
 router.get('/psychologists', userPsychologistController.getAllPsychologists);
 router.get('/psychologists/:id', userPsychologistController.getPsychologistDetails);
-router.get('/profile', authenticateUser, checkBlockedUser, userProfileController.getProfile);
-router.put('/profile', authenticateUser, checkBlockedUser, uploadSingle, userProfileController.updateProfile);
+router.get('/profile', authenticateUser, userProfileController.getProfile);
+router.put('/profile', authenticateUser, uploadSingle, userProfileController.updateProfile);
 router.get('/psychologists/:userId/slots', userSlotController.getAllSlots);
-router.post('/payment/create-checkout-session', authenticateUser, checkBlockedUser, paymentController.createCheckoutSession);
+router.post('/payment/create-checkout-session', authenticateUser, paymentController.createCheckoutSession);
 router.post('/payment/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
-router.get('/consultations', authenticateUser, checkBlockedUser, userConsultationController.getConsultations);
-router.get('/consultation/history', authenticateUser, checkBlockedUser, userConsultationController.getHistory);
-router.get('/consultation/:consultationId/history', authenticateAll, checkBlockedUser, userConsultationController.getHistoryDetails);
-router.get('/consultation/:consultationId', authenticateAll, checkBlockedUser, userConsultationController.getConsultationDetail);
-router.put('/consultation/:consultationId/cancel', authenticateUser, checkBlockedUser, userConsultationController.cancelConsultation);
+router.get('/consultations', authenticateUser, userConsultationController.getConsultations);
+router.get('/consultation/history', authenticateUser, userConsultationController.getHistory);
+router.get('/consultation/:consultationId/history', authenticateAll, userConsultationController.getHistoryDetails);
+router.get('/consultation/:consultationId', authenticateAll, userConsultationController.getConsultationDetail);
+router.put('/consultation/:consultationId/cancel', authenticateUser, userConsultationController.cancelConsultation);
 
-router.post('/wallet', authenticateUser, checkBlockedUser, userWalletController.create);
-router.get('/wallet', authenticateUser, checkBlockedUser, userWalletController.getByUser);
-router.get('/wallet/:walletId', authenticateUser, checkBlockedUser, userWalletController.getById);
-router.post('/wallet/:walletId/transactions', authenticateUser, checkBlockedUser, userWalletController.createTransaction);
-router.get('/wallet/:walletId/transactions', authenticateUser, checkBlockedUser, userWalletController.listTransactions);
+router.post('/wallet', authenticateUser, userWalletController.create);
+router.get('/wallet', authenticateUser, userWalletController.getByUser);
+router.get('/wallet/:walletId', authenticateUser, userWalletController.getById);
+router.post('/wallet/:walletId/transactions', authenticateUser, userWalletController.createTransaction);
+router.get('/wallet/:walletId/transactions', authenticateUser, userWalletController.listTransactions);
 
 export default router;

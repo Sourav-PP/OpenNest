@@ -12,20 +12,20 @@ export class JwtTokenService implements ITokenService {
         this._generateSignupTokenSecret = process.env.SIGNUP_TOKEN_SECRET || '';
     }
 
-    generateAccessToken(userId: string, role: string, email: string): string {
-        return jwt.sign({ userId, role, email }, this._accessTokenSecret, { expiresIn: '15m' });
+    generateAccessToken(userId: string, role: string, email: string, isActive: boolean): string {
+        return jwt.sign({ userId, role, email, isActive }, this._accessTokenSecret, { expiresIn: '5m' });
     }
 
-    generateRefreshToken(userId: string, role: string, email: string): string {
-        return jwt.sign({ userId, role, email }, this._refreshTokenSecret, { expiresIn: '7d' });
+    generateRefreshToken(userId: string, role: string, email: string, isActive: boolean): string {
+        return jwt.sign({ userId, role, email, isActive }, this._refreshTokenSecret, { expiresIn: '7d' });
     }
 
-    verifyRefreshToken(token: string): { userId: string; role: string; email: string } | null {
-        return jwt.verify(token, this._refreshTokenSecret) as { userId: string, role: string, email: string};
+    verifyRefreshToken(token: string): { userId: string; role: string; email: string; isActive: boolean } | null {
+        return jwt.verify(token, this._refreshTokenSecret) as { userId: string, role: string, email: string, isActive: boolean};
     }
 
-    verifyAccessToken(token: string): { userId: string; email: string; role: string; } | null {
-        return jwt.verify(token, this._accessTokenSecret) as { userId: string, role: string, email: string};
+    verifyAccessToken(token: string): { userId: string; email: string; role: string; isActive: boolean } | null {
+        return jwt.verify(token, this._accessTokenSecret) as { userId: string, role: string, email: string, isActive: boolean};
     }
 
     generateSignupToken(email: string): string {
