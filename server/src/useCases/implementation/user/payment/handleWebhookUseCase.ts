@@ -11,6 +11,10 @@ import { IWalletRepository } from '@/domain/repositoryInterface/IWalletRepositor
 import { walletMessages } from '@/shared/constants/messages/walletMessages';
 import { IVideoCallService } from '@/domain/serviceInterface/IVideoCallService';
 import { IVideoCallRepository } from '@/domain/repositoryInterface/IVideoCallRepository';
+import { ICreateNotificationUseCase } from '@/useCases/interfaces/notification/ICreateNotificationUseCase';
+import { notificationMessages } from '@/shared/constants/messages/notificationsMessages';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 
 
 
@@ -22,6 +26,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
     private _walletRepo: IWalletRepository;
     private _videoCallService: IVideoCallService;
     private _videoCallRepo: IVideoCallRepository;
+    private _psychologistRepo: IPsychologistRepository;
+    private _createNotificationUseCase: ICreateNotificationUseCase;
 
     constructor(
         paymentRepo: IPaymentRepository,
@@ -31,6 +37,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
         walletRepo: IWalletRepository,
         videoCallService: IVideoCallService,
         videoCallRepo: IVideoCallRepository,
+        psychologistRepo: IPsychologistRepository,
+        createNotificationUseCase: ICreateNotificationUseCase,
     ) {
         this._paymentRepo = paymentRepo;
         this._paymentService = paymentService;
@@ -39,6 +47,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
         this._walletRepo = walletRepo;
         this._videoCallService = videoCallService;
         this._videoCallRepo = videoCallRepo;
+        this._psychologistRepo = psychologistRepo;
+        this._createNotificationUseCase = createNotificationUseCase;
     }
 
     async execute(payload: Buffer, signature: string, endpointSecret: string): Promise<void> {
@@ -115,6 +125,37 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 await this._paymentRepo.updateBySessionId(sessionId, payment);
 
                 await this._slotRepo.markSlotAsBooked(meta.slotId, payment.userId);
+
+                const psychologist = await this._psychologistRepo.findById(consultation.psychologistId);
+
+                if (!psychologist) {
+                    throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+                }
+
+                const oneHourBefore = new Date(consultation.startDateTime.getTime() - 60 * 60 * 1000);
+
+                // reminder notification for the patient
+                await this._createNotificationUseCase.execute({
+                    recipientId: consultation.patientId,
+                    consultationId: consultation.id,
+                    type: 'CONSULTATION_REMINDER',
+                    message: notificationMessages.CONSULTATION.PATIENT_CONSULTATION_REMINDER,
+                    read: false,
+                    notifyAt: oneHourBefore,
+                    sent: false,
+                });
+
+                // reminder notification for the psychologist
+                await this._createNotificationUseCase.execute({
+                    recipientId: psychologist.userId,
+                    consultationId: consultation.id,
+                    type: 'CONSULTATION_REMINDER',
+                    message: notificationMessages.CONSULTATION.PSYCHOLOGIST_CONSULTATION_REMINDER,
+                    read: false,
+                    notifyAt: oneHourBefore,
+                    sent: false,
+                });
+                
                 console.log(`Consultation ${consultation.id} created for session ${sessionId}`);
             }
 

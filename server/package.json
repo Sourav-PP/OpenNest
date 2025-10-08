@@ -29,6 +29,7 @@
     "luxon": "^3.7.1",
     "mongoose": "^8.16.0",
     "multer": "^2.0.1",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.4",
     "rrule": "^2.8.1",
     "socket.io": "^4.8.1",

@@ -9,6 +9,7 @@ import {
     userServiceController,
     userSlotController,
     userWalletController,
+    notificationController,
 } from '@/infrastructure/config/di';
 
 import { uploadSingle } from '../middlewares/multer';
@@ -29,6 +30,9 @@ router.get('/consultation/history', authenticateUser, userConsultationController
 router.get('/consultation/:consultationId/history', authenticateAll, userConsultationController.getHistoryDetails);
 router.get('/consultation/:consultationId', authenticateAll, userConsultationController.getConsultationDetail);
 router.put('/consultation/:consultationId/cancel', authenticateUser, userConsultationController.cancelConsultation);
+
+router.get('/notification', authenticateAll, notificationController.getNotifications);
+router.patch('/notification/mark-all-read', authenticateAll, notificationController.markAsRead);
 
 router.post('/wallet', authenticateUser, userWalletController.create);
 router.get('/wallet', authenticateUser, userWalletController.getByUser);
