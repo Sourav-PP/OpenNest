@@ -3,6 +3,7 @@ import { NotificationModal } from './NotificationModal';
 
 const BellButton = () => {
   const { unreadCount, isModalOpen, toggleModal, notifications } = useNotification();
+  console.log('notifications: ', notifications);
 
   return (
     <div className="relative">

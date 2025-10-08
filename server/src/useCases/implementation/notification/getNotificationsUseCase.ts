@@ -14,6 +14,7 @@ export class GetNotificationUseCase implements IGetNotificationsUseCase {
     }
 
     async execute(recipientId: string): Promise<INotificationDto[]> {
+        console.log('recipeientId: ', recipientId);
         if (!recipientId) {
             throw new AppError(
                 authMessages.ERROR.UNAUTHORIZED,

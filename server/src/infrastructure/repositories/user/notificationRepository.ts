@@ -36,9 +36,9 @@ export class NotificationRepository
         });
     }
 
-    async markAsRead(): Promise<void> {
+    async markAsRead(recipientId: string): Promise<void> {
         await NotificationModel.updateMany(
-            { read: false },
+            { recipientId, read: false },
             { $set: { read: true } },
         );
     }

@@ -4,6 +4,6 @@ export interface INotificationRepository {
     create(notification: Omit<Notification, 'id'>): Promise<Notification>;
     findPendingNotifications(now: Date): Promise<Notification[]>;
     markAsSent(notificationId: string): Promise<void>;
-    markAsRead(): Promise<void>;
+    markAsRead(recipientId: string): Promise<void>;
     findByRecipient(recipientId: string): Promise<Notification[]>;
 }

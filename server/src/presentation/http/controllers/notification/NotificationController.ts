@@ -54,7 +54,7 @@ export class NotificationController {
                 throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            await this._markNotificationAsReadUseCase.execute();
+            await this._markNotificationAsReadUseCase.execute(userId);
 
             res.status(HttpStatus.OK).json({
                 success: true,

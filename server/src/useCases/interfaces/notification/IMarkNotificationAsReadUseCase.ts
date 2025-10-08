@@ -1,3 +1,3 @@
 export interface IMarkNotificationAsReadUseCase {
-    execute(): Promise<void>;
+    execute(recipientId: string): Promise<void>;
 }
