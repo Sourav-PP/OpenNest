@@ -1,5 +1,7 @@
 import { User } from '@/domain/entities/user';
 import { ILoginOutputDto, IUserDto, IUserUpdatedDto } from '../dtos/user';
+import { Notification } from '@/domain/entities/notification';
+import { INotificationDto } from '../dtos/notification';
 
 export function toUserDetailDto(user: IUserDto): IUserDto {
     return {
@@ -38,5 +40,15 @@ export function toLoginOutputDto(user: User, accessToken: string, refreshToken: 
         accessToken,
         refreshToken,
         hasSubmittedVerificationForm,
+    };
+}
+
+export function toNotificationDto(notification: Notification): INotificationDto {
+    return {
+        id: notification.id,
+        message: notification.message,
+        type: notification.type,
+        consultationId: notification.consultationId,
+        read: notification.read,
     };
 }

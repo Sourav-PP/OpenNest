@@ -22,7 +22,7 @@ export function connectSocket(token: string) {
   }
 
   console.log('Creating new socket instance with token:', token);
-  socket = io('http://localhost:5006', {
+  socket = io(import.meta.env.VITE_BACKEND_URL, {
     transports: ['websocket'],
     withCredentials: true,
     auth: { token },

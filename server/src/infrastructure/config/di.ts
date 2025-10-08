@@ -19,6 +19,7 @@ import { CloudinaryStorage } from '../fileStorage/cloudinaryStorage';
 import { ChatCloudinaryStorage } from '../fileStorage/chatCloudinaryStorage';
 import { WalletRepository } from '../repositories/user/walletRepository';
 import { VideoCallRepository } from '../repositories/user/videoCallRepository';
+import { NotificationRepository } from '../repositories/user/notificationRepository';
 
 // -------------- psychologist ------------------
 import { KycRepository } from '../repositories/psychologist/kycRepository';
@@ -42,7 +43,6 @@ import { JwtTokenService } from '../services/tokenService';
 import { NodemailerOtpService } from '../services/otpService';
 import { PaymentService } from '../services/paymentService';
 import { VideoCallService } from '../services/videoCallService';
-
 
 // ==================== USE CASES =======================
 
@@ -75,6 +75,7 @@ import { GetUserConsultationByIdUseCase } from '@/useCases/implementation/user/d
 import { CancelConsultationUseCase } from '@/useCases/implementation/user/data/cancelConsultationUseCase';
 import { GetUserConsultationHistoryUseCase } from '@/useCases/implementation/user/data/getUserConsultationHistoryUseCase';
 import { GetUserConsultationHistoryDetailsUseCase } from '@/useCases/implementation/user/data/getUserConsultationHistoryDetailsUseCase';
+import { CreateNotificationUseCase } from '@/useCases/implementation/notification/createNotificationUseCase';
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from '../../useCases/implementation/psychologist/profile/verifyUseCase';
@@ -120,6 +121,10 @@ import { VideoCallSocketHandler } from '@/presentation/socket/videoCallSocketHan
 import { StartVideoCallUseCase } from '@/useCases/implementation/videoCall/startVideoCallUseCase';
 import { EndVideoCallUseCase } from '@/useCases/implementation/videoCall/endVideoCallUseCase';
 
+//-------------notifications------------------
+import { GetNotificationUseCase } from '@/useCases/implementation/notification/getNotificationsUseCase';
+import { MarkNotificationAsReadUseCase } from '@/useCases/implementation/notification/markNotificationAsReadUseCase';
+
 //===================== CONTROLLERS =====================
 
 //---------------- user ------------------
@@ -155,6 +160,9 @@ import { AdminAuthController } from '../../presentation/http/controllers/admin/a
 //---------------- chat -----------------------
 import { ChatMessageController } from '@/presentation/http/controllers/chat/ChatMessageController';
 import { ChatFileController } from '@/presentation/http/controllers/chat/ChatFileController';
+
+//---------------- notification ------------------
+import { NotificationController } from '@/presentation/http/controllers/notification/NotificationController';
 
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
@@ -194,6 +202,7 @@ const paymentRepository = new PaymentRepository();
 const consultationRepository = new ConsultationRepository();
 const walletRepository = new WalletRepository();
 const videoCallRepository = new VideoCallRepository();
+export const notificationRepository = new NotificationRepository();
 
 
 const signupUseCase = new SignupUseCase(userRepository, tokenService, fileStorage);
@@ -213,7 +222,8 @@ const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository, fi
 const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(psychologistRepository, kycRepository, userRepository);
 const getSlotsForUserUseCase = new GetSlotForUserUseCase(slotRepository, psychologistRepository);
 const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(paymentService, paymentRepository, slotRepository, consultationRepository);
-const handleWebhookUseCase = new HandleWebhookUseCase(paymentRepository, paymentService, consultationRepository, slotRepository, walletRepository, videoCallService, videoCallRepository);
+const createNotificationUseCase = new CreateNotificationUseCase(notificationRepository);
+const handleWebhookUseCase = new HandleWebhookUseCase(paymentRepository, paymentService, consultationRepository, slotRepository, walletRepository, videoCallService, videoCallRepository, psychologistRepository, createNotificationUseCase);
 const getUserConsultationsUseCase = new GetUserConsultationsUseCase(consultationRepository);
 const createWalletUseCase = new CreateWalletUseCase(walletRepository);
 const getWalletByIdUseCase = new GetWalletByIdUseCase(walletRepository);
@@ -312,6 +322,13 @@ export const chatFileController = new ChatFileController(uploadChatMediaUseCase)
 
 const startVideoCallUseCase = new StartVideoCallUseCase(videoCallRepository);
 const endVideoCallUseCase = new EndVideoCallUseCase(videoCallRepository, consultationRepository);
+
+//---------------- notification -----------------
+
+const getNotificationsUseCase = new GetNotificationUseCase(notificationRepository);
+const markNotificationAsReadUseCase = new MarkNotificationAsReadUseCase(notificationRepository);
+
+export const notificationController = new NotificationController(getNotificationsUseCase, markNotificationAsReadUseCase);
 
 // socket handler
 export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase, deleteMessageUseCase);

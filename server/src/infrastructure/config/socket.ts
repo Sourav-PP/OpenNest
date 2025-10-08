@@ -4,6 +4,7 @@ import { socketAuthMiddleware } from '@/presentation/http/middlewares/socketAuth
 import logger from '@/utils/logger';
 import { IChatSocketHandler } from '@/useCases/interfaces/chat/IChatSocketHandler';
 import { IVideoCallSocketHandler } from '@/useCases/interfaces/videoCall/IVideoCallSocketHandler';
+import { INotificationSocketHandler } from '@/useCases/interfaces/notification/INotificationSocketHandler';
 
 const onlineUsers: Map<string, Set<string>> = new Map();
 
@@ -11,6 +12,7 @@ export function configureSocket(
     io: Server,
     chatSocketHandler: IChatSocketHandler,
     videoCallSocketHandler: IVideoCallSocketHandler,
+    notificationSocketHandler: INotificationSocketHandler,
     tokenService: ITokenService,
 ) {
     // apply the middleware
@@ -37,6 +39,7 @@ export function configureSocket(
     // Attach other handlers
     chatSocketHandler.register(io, socket);
     videoCallSocketHandler.register(io, socket);
+    notificationSocketHandler.register(socket);
 
     // === Handle disconnect ===
     socket.on('disconnect', () => {

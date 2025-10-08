@@ -4,8 +4,10 @@ import { connectDB } from './infrastructure/database/mongoose';
 import { app } from './presentation/http/server';
 import logger from './utils/logger';
 import { Server } from 'socket.io';
-import { chatSocketHandler, videoCallSocketHandler, tokenService } from './infrastructure/config/di';
+import { chatSocketHandler, videoCallSocketHandler, tokenService, notificationRepository } from './infrastructure/config/di';
 import { configureSocket } from './infrastructure/config/socket';
+import { NotificationSocketHandler } from './presentation/socket/notificationSocketHandler';
+import { NotificationJob } from './infrastructure/cron/notificationJob';
 
 async function startServer() {
     await connectDB();
@@ -20,7 +22,10 @@ async function startServer() {
         },
     });
 
-    configureSocket(io, chatSocketHandler, videoCallSocketHandler, tokenService);
+    const notificationSocketHandler = new NotificationSocketHandler(io);
+    configureSocket(io, chatSocketHandler, videoCallSocketHandler, notificationSocketHandler, tokenService);
+    const notificationJob = new NotificationJob(notificationRepository, notificationSocketHandler);
+    notificationJob.start();
 
     httpServer.listen(appConfig.server.port, () => {
         logger.info(`Server running on port ${appConfig.server.port}`);

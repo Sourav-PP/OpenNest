@@ -11,7 +11,8 @@ import type {
   IGetSlotsByPsychologistResponse,
   IUserConsultationDetailsResponse,
   IGetUserConsultationHistoryRequest,
-  IUserConsultationHistoryDetailResponse
+  IUserConsultationHistoryDetailResponse,
+  IGetNotificationsResponse
 } from '../../types/api/user';
 
 import { server } from '../server';
@@ -35,4 +36,6 @@ export const userApi = {
   cancelConsultation: async(id: string, reason: string) => server.put<BackendResponse<IConsultationDto>, { reason: string }>(`/user/consultation/${id}/cancel`, { reason }),
   getUserConsultationHistory: async(params?: IGetUserConsultationHistoryRequest) => server.get<IGetUserConsultationsResponse>('/user/consultation/history', { params }),
   getUserConsultationHistoryDetail: async(consultationId: string) => server.get<IUserConsultationHistoryDetailResponse>(`/user/consultation/${consultationId}/history`),
+  getNotifications: async(): Promise<IGetNotificationsResponse> => server.get('/user/notification'),
+  markAllNotificationAsRead: async (): Promise<void> => server.patch<void, Record<string, string>>('/user/notification/mark-all-read', {}),
 };

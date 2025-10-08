@@ -6,7 +6,7 @@ let socket: Socket | null = null;
 export function connectVideoSocket(token: string) {
   if( socket && socket.connected ) return socket;
 
-  socket = io('http://localhost:5006', {
+  socket = io(import.meta.env.VITE_BACKEND_URL, {
     transports: [ 'websocket' ],
     auth: { token },
   });
