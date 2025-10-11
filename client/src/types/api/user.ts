@@ -1,7 +1,9 @@
 import type { IConsultationDto } from '../dtos/consultation';
 import type { INotificationDto } from '../dtos/notification';
+import type { IPlanDto } from '../dtos/plan';
 import type { IPsychologistDto, IPsychologistProfileDto } from '../dtos/psychologist';
 import type { ISlotDto } from '../dtos/slot';
+import type { ISubscriptionDto } from '../dtos/subscription';
 import type { BackendResponse } from './api';
 
 export interface IGetAllPsychologistResponseData {
@@ -149,5 +151,7 @@ export type IUserConsultationHistoryDetailResponse =
   BackendResponse<IUserConsultationHistoryDetailsResponseData>;
 export type IGetUserProfileResponse = BackendResponse<IGetUserProfileResponseData>;
 export type IGetNotificationsResponse = BackendResponse<INotificationDto[]>;
+export type IGetActiveSubscriptionResponse = BackendResponse<ISubscriptionDto>;
+export type IGetAllPlansResponse = BackendResponse<IPlanDto[]>;
 export type ICreateCheckoutSessionResponse = BackendResponse<ICreateCheckoutSessionResponseData>;
 export type IGetSlotsByPsychologistResponse = BackendResponse<ISlotDto[]>;

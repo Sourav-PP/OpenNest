@@ -11,7 +11,11 @@ import type {
   IGetAllKycDetailsRequest,
   IGetAllKycDetailsResponse,
   IAdminKycDto,
-  IGetAllConsultationResponse
+  IGetAllConsultationResponse,
+  IAddPlanResponse,
+  IAddPlanResponseData,
+  IGetAllPlanResponse,
+  IAddPlanRequestData
 } from '../../types/api/admin';
 
 import { server } from '../server';
@@ -36,4 +40,6 @@ export const adminApi = {
     sort?: 'asc' | 'desc';
     status?: 'all' | 'booked' | 'completed' | 'cancelled' | 'rescheduled';
   }) => server.get<IGetAllConsultationResponse>('/admin/consultations', {params}), 
+  addPlan: async(data: IAddPlanRequestData) => server.post<IAddPlanResponse, IAddPlanRequestData>('/admin/plans', data),
+  getAllPlans: async() => server.get<IGetAllPlanResponse>('/admin/plans'),
 };

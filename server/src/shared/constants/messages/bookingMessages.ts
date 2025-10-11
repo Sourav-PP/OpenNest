@@ -18,6 +18,7 @@ export const bookingMessages = {
         PAYMENT_FAILED: 'Payment failed, please try again',
         SLOT_ALREADY_BOOKED: 'Selected slot is already booked',
         MISSING_SIGNATURE: 'Stripe signature header is missing',
+        SLOT_ID_REQUIRED: 'Slot ID is required',
         BOOKING_NOT_FOUND: 'Booking not found',
         ONLY_BOOKED_CANCEL: 'Only booked consultation can be canceled',
     },

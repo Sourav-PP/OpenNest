@@ -1,0 +1,25 @@
+export const SubscriptionMessages = {
+    SUCCESS: {
+        SUBSCRIPTION_CREATED: 'Subscription created successfully',
+        SUBSCRIPTION_CANCELLED: 'Subscription cancelled successfully',
+        PLAN_CREATED: 'Plan created successfully',
+        PLANS_FETCHED: 'Plans fetched successfully',
+        SUBSCRIPTION_RENEWED: 'Subscription renewed successfully',
+        ACTIVE_SUBSCRIPTION_RETRIEVED: 'Active subscription retrieved successfully',
+        SUBSCRIPTION_UPDATED: 'Subscription updated successfully',
+        CREDITS_DECREMENTED: 'Subscription credits decremented successfully',
+        SUBSCRIPTION_FOUND: 'Subscription found successfully',
+        SUBSCRIPTIONS_FOUND: 'Subscriptions found successfully',
+    },
+    ERROR: {
+        PLAN_ID_REQUIRED: 'Plan ID is required',
+        SUBSCRIPTION_CREATION_FAILED: 'Failed to create subscription',
+        SUBSCRIPTION_ID_REQUIRED: 'Subscription ID is required',
+        PLAN_NOT_FOUND: 'Plan not found',
+        SUBSCRIPTION_NOT_FOUND: 'Subscription not found',
+        INSUFFICIENT_CREDITS: 'Insufficient credits in subscription',
+        NO_ACTIVE_SUBSCRIPTION: 'No active subscription found',
+        CREDITS_EXHAUSTED: 'Your subscription credits are exhausted. Please renew your subscription to book more sessions.',
+        USER_ID_REQUIRED: 'User ID is required',
+    },
+} as const;

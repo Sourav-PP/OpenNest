@@ -14,6 +14,7 @@ import {
     adminUserManagementController,
     adminServiceController,
     adminConsultationController,
+    planController,
 } from '@/infrastructure/config/di';
 
 
@@ -53,6 +54,8 @@ router.patch('/kyc/:psychologistId/approve', authenticateAdmin, adminKycControll
 router.patch('/kyc/:psychologistId/reject', authenticateAdmin, adminKycController.rejectKyc);
 router.patch('/users/:userId/status', authenticateAdmin, adminUserManagementController.toggleUserStatus);
 router.get('/consultations', authenticateAdmin, adminConsultationController.getAllConsultations);
+router.post('/plans', authenticateAdmin, planController.createPlan);
+router.get('/plans', authenticateAdmin, planController.getAllPlans);
 
 
 export default router;

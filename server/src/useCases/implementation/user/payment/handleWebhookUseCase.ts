@@ -15,6 +15,8 @@ import { ICreateNotificationUseCase } from '@/useCases/interfaces/notification/I
 import { notificationMessages } from '@/shared/constants/messages/notificationsMessages';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
 import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { ISubscriptionRepository } from '@/domain/repositoryInterface/ISubscriptionRepository';
+import { IPlanRepository } from '@/domain/repositoryInterface/IPlanRepository';
 
 
 
@@ -28,6 +30,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
     private _videoCallRepo: IVideoCallRepository;
     private _psychologistRepo: IPsychologistRepository;
     private _createNotificationUseCase: ICreateNotificationUseCase;
+    private _subscriptionRepo: ISubscriptionRepository;
+    private _planRepo: IPlanRepository;
 
     constructor(
         paymentRepo: IPaymentRepository,
@@ -39,6 +43,9 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
         videoCallRepo: IVideoCallRepository,
         psychologistRepo: IPsychologistRepository,
         createNotificationUseCase: ICreateNotificationUseCase,
+        subscriptionRepo: ISubscriptionRepository,
+        planRepo: IPlanRepository,
+
     ) {
         this._paymentRepo = paymentRepo;
         this._paymentService = paymentService;
@@ -49,6 +56,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
         this._videoCallRepo = videoCallRepo;
         this._psychologistRepo = psychologistRepo;
         this._createNotificationUseCase = createNotificationUseCase;
+        this._subscriptionRepo = subscriptionRepo;
+        this._planRepo = planRepo;
     }
 
     async execute(payload: Buffer, signature: string, endpointSecret: string): Promise<void> {
@@ -66,12 +75,11 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
             console.log('meta in webhook: ', meta);
 
             const payment = await this._paymentRepo.findBySessionId(sessionId);
-            console.log('payment: ', payment);
-
             if (!payment) {
                 throw new AppError(bookingMessages.ERROR.PAYMENT_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
+            // handle consultation booking
             if (meta.purpose === 'consultation') {
 
                 if (!meta.psychologistId || !meta.slotId || !meta.startDateTime || !meta.endDateTime) {
@@ -121,13 +129,11 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 payment.paymentStatus = 'succeeded';
                 payment.transactionId = session.payment_intent as string ?? null;
                 payment.consultationId = consultation.id;
-
                 await this._paymentRepo.updateBySessionId(sessionId, payment);
 
                 await this._slotRepo.markSlotAsBooked(meta.slotId, payment.userId);
 
                 const psychologist = await this._psychologistRepo.findById(consultation.psychologistId);
-
                 if (!psychologist) {
                     throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
                 }
@@ -159,11 +165,9 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 console.log(`Consultation ${consultation.id} created for session ${sessionId}`);
             }
 
+            // handle wallet top-up
             if (meta.purpose === 'wallet') {
-                console.log('its in wallet handler');
-                console.log('payment in wallet handle block', payment);
                 const wallet = await this._walletRepo.findByUserId(payment.userId);
-
                 if (!wallet) {
                     throw new AppError(walletMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
                 }
@@ -183,6 +187,127 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 payment.transactionId = session.payment_intent as string ?? null;
                 await this._paymentRepo.updateBySessionId(sessionId, payment);
                 console.log(`Wallet credited for user ${payment.userId} for session ${sessionId}`);
+            }
+
+            // handle subscription purchase
+            if (meta.purpose === 'subscription') {
+                console.log('handling subscription purchase in webhook');
+                // For future subscription handling if needed
+                const stripeSubscriptionId = session.subscription as string;
+                console.log('stripeSubscriptionId: ', stripeSubscriptionId);
+
+                if (!stripeSubscriptionId) {
+                    throw new AppError(bookingMessages.ERROR.MISSING_METADATA, HttpStatus.BAD_REQUEST);
+                }
+                const stripeCustomerId = session.customer as string;
+                console.log('stripeCustomerId: ', stripeCustomerId);
+
+                if (!stripeCustomerId) {
+                    throw new AppError(bookingMessages.ERROR.MISSING_METADATA, HttpStatus.BAD_REQUEST);
+                }
+                const planId = meta.planId;
+                console.log('planId in webhook: ', planId);
+                if (!planId) {
+                    throw new AppError(bookingMessages.ERROR.MISSING_METADATA, HttpStatus.BAD_REQUEST);
+                }
+
+                const plan = await this._planRepo.findById(planId);
+                console.log('plan in webhook subscription: ', plan);
+                if (!plan) {
+                    throw new AppError(bookingMessages.ERROR.MISSING_METADATA, HttpStatus.BAD_REQUEST);
+                }
+
+                const existingSubscription = await this._subscriptionRepo.findActiveByUserId(payment.userId);
+                
+                const currentPeriodStart = new Date();
+                const currentPeriodEnd = new Date();
+                
+                if (plan.billingPeriod === 'month') {
+                    currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
+                } else if (plan.billingPeriod === 'year') {
+                    currentPeriodEnd.setFullYear(currentPeriodEnd.getFullYear() + 1);
+                } else if (plan.billingPeriod === 'week') {
+                    currentPeriodEnd.setDate(currentPeriodEnd.getDate() + 7);
+                }
+                
+                if (existingSubscription) {
+                    await this._subscriptionRepo.updateById(existingSubscription.subscription.id, {
+                        planId: plan.id,
+                        stripeSubscriptionId,
+                        stripeCustomerId,
+                        amount: plan.price,
+                        currency: plan.currency,
+                        creditRemaining: plan.creditsPerPeriod,
+                        creditsPerPeriod: plan.creditsPerPeriod,
+                        status: 'active',
+                        currentPeriodStart,
+                        currentPeriodEnd,
+                    });
+                        
+                } else {
+                    await this._subscriptionRepo.create({
+                        userId: payment.userId,
+                        planId: plan.id,
+                        stripeSubscriptionId,
+                        stripeCustomerId,
+                        amount: plan.price,
+                        currency: plan.currency,
+                        creditRemaining: plan.creditsPerPeriod,
+                        creditsPerPeriod: plan.creditsPerPeriod,
+                        status: 'active',
+                        currentPeriodStart,
+                        currentPeriodEnd,
+                    });
+                }
+
+                payment.paymentStatus = 'succeeded';
+                payment.transactionId = session.payment_intent as string ?? null;
+                await this._paymentRepo.updateBySessionId(sessionId, payment);
+                console.log(`Subscription created/updated for user ${payment.userId} for session ${sessionId}`);
+            }
+            break;
+        }
+
+        // subscription renewal successful
+        case 'invoice.payment_succeeded': {
+            const invoice = event.data.object as Stripe.Invoice & { subscription?: string };
+            if (typeof invoice.subscription === 'string') {
+                const stripeSubscriptionId = invoice.subscription;
+                
+                const sub = await this._subscriptionRepo.findByStripeSubscriptionId(stripeSubscriptionId);
+                if (sub) {
+                    // reset credits on renewal
+                    sub.creditRemaining = sub.creditsPerPeriod;
+                    sub.currentPeriodStart = new Date(invoice.period_start * 1000);
+                    sub.currentPeriodEnd = new Date(invoice.period_end * 1000);
+                    sub.status = 'active';
+                    await this._subscriptionRepo.updateById(sub.id, sub);
+                    console.log(`Subscription renewed and credits reset for user ${sub.userId}`);
+                }
+
+            }
+
+            break;
+        }
+
+        case 'invoice.payment_failed': {
+            const invoice = event.data.object as Stripe.Invoice & { subscription?: string };
+            const stripeSubscriptionId = invoice.subscription as string;
+            const sub = await this._subscriptionRepo.findByStripeSubscriptionId(stripeSubscriptionId);
+            if (!sub) break;
+            await this._subscriptionRepo.updateById(sub.id, { status: 'past_due', updatedAt: new Date() });
+            break;
+        }
+
+        // Handle subscription cancellation
+        case 'customer.subscription.deleted': {
+            const subscription = event.data.object as Stripe.Subscription;
+            const sub = await this._subscriptionRepo.findByStripeSubscriptionId(subscription.id);
+            if (sub) {
+                sub.status = 'canceled';
+                sub.canceledAt = new Date();
+                await this._subscriptionRepo.updateById(sub.id, sub);
+                console.log(`Subscription canceled for user ${sub.userId}`);
             }
             break;
         }

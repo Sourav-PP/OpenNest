@@ -33,7 +33,7 @@
     "nodemailer": "^7.0.4",
     "rrule": "^2.8.1",
     "socket.io": "^4.8.1",
-    "stripe": "^18.4.0",
+    "stripe": "^19.1.0",
     "winston": "^3.17.0",
     "winston-mongodb": "^7.0.1"
   },

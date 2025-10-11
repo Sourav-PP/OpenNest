@@ -10,5 +10,5 @@ export interface Payment {
     transactionId?: string;
     stripeSessionId?: string;
     slotId: string | null;
-    purpose: 'consultation' | 'wallet';
+    purpose: 'consultation' | 'wallet' | 'subscription';
 }

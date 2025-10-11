@@ -9,7 +9,7 @@ export interface Consultation {
     sessionGoal: string;
     status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
     paymentStatus: 'pending' | 'paid' | 'failed'
-    paymentMethod: 'stripe' | 'wallet' | null
+    paymentMethod: 'stripe' | 'wallet' | 'subscription' | null
     paymentIntentId: string | null
     cancellationReason?: string;
     cancelledAt?: Date;
