@@ -8,6 +8,7 @@ import ServicePage from '@/features/admin/pages/ServicePage';
 import KycManagement from '@/features/admin/pages/KycManagement';
 import KycVerificationPage from '@/features/admin/pages/KycVerificationPage';
 import ConsultationManagement from '@/features/admin/pages/ConsultationManagement';
+import PlanPage from '@/features/admin/pages/PlanPage';
 
 
 
@@ -39,5 +40,9 @@ export const adminRoutes: RouteObject[] = [
   {
     path: '/admin/sessions',
     element: <PrivateRoute allowedRoles={['admin']}><ConsultationManagement /></PrivateRoute>
+  },
+  {
+    path: '/admin/plans',
+    element: <PrivateRoute allowedRoles={['admin']}><PlanPage /></PrivateRoute>
   },
 ];

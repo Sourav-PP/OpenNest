@@ -21,6 +21,28 @@ export interface IAddServiceResponse {
     }
 }
 
+export interface IAddPlanRequestData {
+    name: string;
+    description?: string;
+    price: number;
+    currency: string;
+    creditsPerPeriod: number;
+    billingPeriod: 'month' | 'year' | 'week';
+}
+
+export interface IAddPlanResponseData {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    currency: string;
+    creditsPerPeriod: number;
+    billingPeriod: 'month' | 'year' | 'week';
+    stripePriceId: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface IGetAllUserRequest {
     search?: string;
     sort?: 'asc' | 'desc';
@@ -85,3 +107,5 @@ export interface IGetAllKycDetailsResponse {
 export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>
 export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>
 export type IGetAllConsultationResponse = BackendResponse<IGetAllConsultationsResponseData>
+export type IAddPlanResponse = BackendResponse<IAddPlanResponseData>
+export type IGetAllPlanResponse = BackendResponse<IAddPlanResponseData[]>

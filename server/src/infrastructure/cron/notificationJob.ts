@@ -17,7 +17,6 @@ export class NotificationJob {
     start(): void {
         cron.schedule('* * * * *', async() => {
             const now = new Date();
-            console.log('its working corn');
 
             const pendingNotifications =
                 await this._notificationRepo.findPendingNotifications(now);

@@ -12,7 +12,7 @@ export interface IPaymentDocument extends Document {
     transactionId?: string;
     stripeSessionId?: string;
     slotId: Types.ObjectId;
-    purpose: 'consultation' | 'wallet'
+    purpose: 'consultation' | 'wallet' | 'subscription';
 }
 
 const PaymentSchema = new Schema<IPaymentDocument>(
@@ -63,7 +63,7 @@ const PaymentSchema = new Schema<IPaymentDocument>(
         },
         purpose: {
             type: String,
-            enum: ['consultation', 'wallet'],
+            enum: ['consultation', 'wallet', 'subscription'],
             required: true,
         },
     },

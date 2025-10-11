@@ -14,4 +14,14 @@ export interface IPaymentService {
     signature: string,
     endpointSecret: string,
   ): Promise<Stripe.Event>;
+
+  createStripeProductAndPrice(
+    name: string,
+    description: string,
+    amount: number,
+    currency: string,
+    billingPeriod: 'month' | 'year' | 'week',
+  ): Promise<{ productId: string; priceId: string }>;
+
+  cancelSubscription(stripeSubscriptionId: string): Promise<Stripe.Subscription>;
 }

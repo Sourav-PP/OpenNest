@@ -11,7 +11,7 @@ export interface IConsultationDocument extends Document {
     sessionGoal: string;
     status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
     paymentStatus: 'pending' | 'paid' | 'failed'
-    paymentMethod: 'stripe' | 'wallet' | null
+    paymentMethod: 'stripe' | 'wallet' | 'subscription' | null
     paymentIntentId: string | null
     cancellationReason?: string;
     cancelledAt?: Date;
@@ -65,7 +65,7 @@ const ConsultationSchema = new Schema<IConsultationDocument>(
         },
         paymentMethod: {
             type: String,
-            enum: ['stripe', 'wallet'],
+            enum: ['stripe', 'wallet', 'subscription'],
         },
         cancellationReason: { 
             type: String,

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { userApi } from '@/services/api/user';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { useEffect, useState } from 'react';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -14,12 +15,14 @@ interface BookingModalProps {
 
 interface FormData {
   sessionGoal: string;
-  paymentMethod: 'stripe' | 'wallet';
+  paymentMethod: 'stripe' | 'wallet' | 'subscription';
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId, amount, onSuccess}) => {
 
   // const [loading, setLoading] = useState(false)
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);  
+  const [loadingSub, setLoadingSub] = useState(false);
 
   const {
     register,
@@ -33,101 +36,178 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
     }
   });
 
+  useEffect(() => {
+    const fetchActiveSubscription = async() => {
+      try { 
+        setLoadingSub(true);
+        const res = await userApi.getActiveSubscription();
+        if(res.data) {
+          setSubscriptionId(res.data.id);
+        } else {
+          setSubscriptionId(null);
+        }
+      } catch (error) {
+        handleApiError(error);
+        setSubscriptionId(null);
+      } finally {
+        setLoadingSub(false);
+      }
+    };
+    if(isOpen) {
+      fetchActiveSubscription();
+    }
+  }, [isOpen]);
+
+
   const onSubmit = async(data: FormData) => {
     if(!slotId) return;
 
     try {
-      const res = await userApi.createCheckoutSession({
-        slotId,
-        amount,
-        sessionGoal: data.sessionGoal,
-        purpose: 'consultation'
-      });
+      if(data.paymentMethod === 'subscription') {
+        if(!subscriptionId) {
+          toast.error('No active subscription found. Please select another payment method.');
+          return;
+        }
 
-      if(!res.data) {
-        toast.error('Something went wrong');
+        const res = await userApi.bookConsultationWithSubscription({
+          subscriptionId,
+          slotId,        
+          sessionGoal: data.sessionGoal,
+        });
+
+        if(!res.data) {
+          toast.error('Something went wrong');
+          return;
+        }
+
+        if(res.success) {
+          toast.success('Booking confirmed using subscription!');
+          reset();
+          onOpenChange(false);
+          onSuccess();
+        } else {
+          toast.error(res.message || 'Something went wrong');
+        }
         return;
+      } 
+
+      if(data.paymentMethod === 'stripe') {
+        const res = await userApi.createCheckoutSession({
+          slotId,
+          amount,
+          sessionGoal: data.sessionGoal,
+          purpose: 'consultation'
+        });
+
+        if(!res.data) {
+          toast.error('Something went wrong');
+          return;
+        }
+  
+        window.location.href = res.data.url;
+  
+        reset();
+        onOpenChange(false);
+        onSuccess();
       }
 
-      window.location.href = res.data.url;
-
-      reset();
-      onOpenChange(false);
-      onSuccess();
     } catch (error) {
       handleApiError(error);
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-lg bg-white p-6 shadow-lg">
+      <DialogContent className="max-w-md rounded-xl bg-white p-8 shadow-xl border border-gray-100">
         <DialogHeader>
-          <DialogTitle>Book Session</DialogTitle>
-          <DialogDescription>
-            Fill the details and select a payment method to book this slot.
+          <DialogTitle className="text-2xl font-bold text-gray-900">Book Your Session</DialogTitle>
+          <DialogDescription className="text-gray-600 text-sm mt-2">
+            Please provide the session details and choose a payment method to confirm your booking.
           </DialogDescription>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-          <div>
-            <label htmlFor="sessionGoal" className="block font-medium text-gray-700">
-              Session Goal
-            </label>
-            <textarea
-              id="sessionGoal"
-              {...register('sessionGoal', { required: 'Session goal is required' })}
-              rows={3}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-            {errors.sessionGoal && (
-              <p className="mt-1 text-sm text-red-600">{errors.sessionGoal.message}</p>
-            )}
+        {loadingSub ? (
+          <div className="py-12 text-center text-gray-500 animate-pulse">
+            Loading subscription information...
           </div>
-
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">Payment Method</label>
-            <div className="flex gap-4">
-              <label className="inline-flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="radio"
-                  value="stripe"
-                  {...register('paymentMethod', { required: true })}
-                  defaultChecked
-                  className="form-radio text-blue-600"
-                />
-                <span>Credit Card (Stripe)</span>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
+            <div>
+              <label htmlFor="sessionGoal" className="block text-sm font-semibold text-gray-800">
+                Session Goal
               </label>
-
-              <label className="inline-flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="radio"
-                  value="wallet"
-                  {...register('paymentMethod', { required: true })}
-                  className="form-radio text-blue-600"
-                />
-                <span>Wallet</span>
-              </label>
+              <textarea
+                id="sessionGoal"
+                {...register('sessionGoal', { required: 'Session goal is required' })}
+                rows={4}
+                className="mt-2 block w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                placeholder="What would you like to achieve in this session?"
+              />
+              {errors.sessionGoal && (
+                <p className="mt-1 text-xs text-red-500">{errors.sessionGoal.message}</p>
+              )}
             </div>
-          </div>
 
-          <DialogFooter className="flex justify-end space-x-2">
-            <button
-              type="button"
-              className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
-              onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-            >
-              {isSubmitting ? 'Booking...' : `Pay ₹${amount}`}
-            </button>
-          </DialogFooter>
-        </form>
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Payment Method</label>
+              <div className="grid grid-cols-1 gap-3">
+                <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200">
+                  <input
+                    type="radio"
+                    value="stripe"
+                    {...register('paymentMethod', { required: true })}
+                    defaultChecked
+                    className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
+                  />
+                  <span className="text-gray-700 font-medium">Credit Card (Stripe)</span>
+                </label>
+
+                <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200">
+                  <input
+                    type="radio"
+                    value="wallet"
+                    {...register('paymentMethod', { required: true })}
+                    className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
+                  />
+                  <span className="text-gray-700 font-medium">Wallet</span>
+                </label>
+
+                {subscriptionId && (
+                  <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200">
+                    <input
+                      type="radio"
+                      value="subscription"
+                      {...register('paymentMethod', { required: true })}
+                      className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
+                    />
+                    <span className="text-gray-700 font-medium">Use Subscription Credit</span>
+                  </label>
+                )}
+              </div>
+            </div>
+
+            <DialogFooter className="flex justify-end space-x-3 mt-8">
+              <button
+                type="button"
+                className="rounded-lg bg-gray-100 px-5 py-2.5 text-gray-700 font-medium hover:bg-gray-200 transition duration-200"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="rounded-lg bg-blue-600 px-5 py-2.5 text-white font-medium hover:bg-blue-700 transition duration-200 disabled:bg-blue-400"
+              >
+                {isSubmitting
+                  ? 'Processing...'
+                  : subscriptionId
+                    ? 'Confirm Booking'
+                    : `Pay ₹${amount}`}
+              </button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );
