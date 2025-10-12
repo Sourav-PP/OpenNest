@@ -67,15 +67,12 @@ const LoginForm = () => {
         })
       );
 
-      if(role === 'user') {
-        try {
-          await walletApi.create();
-        } catch (error) {
-          console.log('error: ', error);
-          console.log('sdfoisdfo jjj');
-          handleApiError(error);
-        }
+      try {
+        await walletApi.create();
+      } catch (error) {
+        handleApiError(error);
       }
+  
 
       toast.success(res.message);
       navigateAfterLogin(res.data.user.role, res.data.hasSubmittedVerificationForm);

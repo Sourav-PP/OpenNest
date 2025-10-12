@@ -27,6 +27,7 @@ import { PlanRepository } from '../repositories/user/planRepository';
 import { KycRepository } from '../repositories/psychologist/kycRepository';
 import { PsychologistRepository } from '../repositories/psychologist/psychologistRepository';
 import { SlotRepository } from '../repositories/psychologist/slotRepository';
+import { PayoutRequestRepository } from '../repositories/admin/payoutRequestRepository';
 
 // -------------- admin ----------------
 import { AdminRepository } from '../repositories/admin/adminRepository';
@@ -34,6 +35,7 @@ import { AdminAuthAccountRepository } from '../repositories/admin/adminAuthAccou
 
 // -------------- shared ---------------
 import { ServiceRepository } from '../repositories/admin/serviceRepository';
+import { TransactionManager } from '../repositories/transactionManager';
 
 
 //===================== SERVICES ======================
@@ -97,6 +99,9 @@ import { GetPsychologistConsultationUseCase } from '@/useCases/implementation/ps
 import { PsychologistCancelConsultationUseCase } from '@/useCases/implementation/psychologist/data/psychologistCancelConsultationUseCase';  
 import { GetPsychologistConsultationHistoryUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistConsultationHistoryUseCase';
 import { GetPatientConsultationHistoryUseCase } from '@/useCases/implementation/psychologist/data/getPatientConsultationHistoryUseCase';
+import { RequestPayoutUseCase } from '@/useCases/implementation/payout/requestPayoutUseCase';
+import { ListPayoutRequestsByPsychologistUseCase } from '@/useCases/implementation/payout/listPayoutRequestsByPsychologistUseCase';
+import { GetPendingAmountUseCase } from '@/useCases/implementation/payout/getPendingAmountUseCase';
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -113,6 +118,9 @@ import { RejectKycUseCase } from '../../useCases/implementation/admin/management
 import { GetAllConsultationsUseCase } from '@/useCases/implementation/admin/management/getAllConsultationUseCase';
 import { CreatePlanUseCase } from '@/useCases/implementation/admin/plan/createPlanUseCase';
 import { GetAllPlansUseCase } from '@/useCases/implementation/admin/plan/getAllPlansUseCase';
+import { ApprovePayoutRequestUseCase } from '@/useCases/implementation/payout/approvePayoutRequestUseCase';
+import { RejectPayoutRequestUseCase } from '@/useCases/implementation/payout/rejectPayoutRequestUseCase';
+import { ListAllPayoutRequestsUseCase } from '@/useCases/implementation/payout/listAllPayoutRequestsUseCase';
 
 //--------------- chat -------------------
 import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
@@ -160,6 +168,7 @@ import { SlotController } from '@/presentation/http/controllers/psychologist/Slo
 import { PsychologistConsultationController } from '@/presentation/http/controllers/psychologist/PsychologistConsultationController';
 import { PsychologistProfileController } from '@/presentation/http/controllers/psychologist/PsychologistProfileController';
 import { PsychologistKycController } from '@/presentation/http/controllers/psychologist/PsychologistKycController';
+import { PsychologistPayoutController } from '@/presentation/http/controllers/psychologist/PsychologistPayoutController';
 
 //---------------- admin -------------------
 import { AdminKycController } from '@/presentation/http/controllers/admin/AdminKycController';
@@ -168,6 +177,7 @@ import { AdminServiceController } from '@/presentation/http/controllers/admin/Ad
 import { AdminConsultationController } from '@/presentation/http/controllers/admin/AdminConsultationController';
 import { AdminAuthController } from '../../presentation/http/controllers/admin/adminAuthController';
 import { PlanController } from '@/presentation/http/controllers/admin/PlanController';
+import { AdminPayoutController } from '@/presentation/http/controllers/admin/AdminPayoutController';
 
 //---------------- chat -----------------------
 import { ChatMessageController } from '@/presentation/http/controllers/chat/ChatMessageController';
@@ -190,6 +200,7 @@ export const tokenService = new JwtTokenService();
 const otpRepository = new OtpRepository();
 const otpService = new NodemailerOtpService(otpRepository);
 const userRepository = new UserRepository();
+const transactionManager = new TransactionManager();
 
 export const authenticateUser = authMiddleware(tokenService, ['user']);
 export const authenticatePsychologist = authMiddleware(tokenService, ['psychologist']);
@@ -278,6 +289,8 @@ export const subscriptionController = new SubscriptionController(getUserActiveSu
 
 // ---------- PSYCHOLOGIST ----------
 
+const payoutRequestRepository = new PayoutRequestRepository();
+
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository, fileStorage);
 const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository);
 const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(psychologistRepository, userRepository, fileStorage);
@@ -289,11 +302,15 @@ const getPsychologistConsultationsUseCase = new GetPsychologistConsultationUseCa
 const psychologistCancelConsultationUseCase = new PsychologistCancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository, slotRepository, psychologistRepository);
 const getPsychologistConsultationHistoryUseCase = new GetPsychologistConsultationHistoryUseCase(consultationRepository, psychologistRepository);
 const getPatientConsultationHistoryUseCase = new GetPatientConsultationHistoryUseCase(consultationRepository, psychologistRepository);
+const requestPayoutUseCase = new RequestPayoutUseCase(consultationRepository, payoutRequestRepository, paymentRepository, psychologistRepository);
+const listPayoutRequestsByPsychologistUseCase = new ListPayoutRequestsByPsychologistUseCase(payoutRequestRepository);
+const getPendingAmountUseCase = new GetPendingAmountUseCase(consultationRepository, paymentRepository, psychologistRepository, payoutRequestRepository);
 
 export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
 export const psychologistConsultationController = new PsychologistConsultationController(getPsychologistConsultationsUseCase, psychologistCancelConsultationUseCase, getPsychologistConsultationHistoryUseCase, getPatientConsultationHistoryUseCase);
 export const psychologistProfileController = new PsychologistProfileController(getProfileUseCase, updatePsychologistProfileUseCase);
 export const psychologistKycController = new PsychologistKycController(getKycDetailsUseCase, verifyPsychologistUseCase);
+export const psychologistPayoutController = new PsychologistPayoutController(requestPayoutUseCase, listPayoutRequestsByPsychologistUseCase, getPendingAmountUseCase);
 
 // ---------- ADMIN ----------
 
@@ -315,6 +332,9 @@ const rejectKycUseCase = new RejectKycUseCase(kycRepository,psychologistReposito
 const getAllConsultationsUseCase = new GetAllConsultationsUseCase(consultationRepository);
 const createPlanUseCase = new CreatePlanUseCase(planRepository, paymentService);
 const getAllPlansUseCase = new GetAllPlansUseCase(planRepository);
+const listAllPayoutRequestsUseCase = new ListAllPayoutRequestsUseCase(payoutRequestRepository);
+const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(payoutRequestRepository, walletRepository, transactionManager, consultationRepository);
+const rejectPayoutRequestUseCase = new RejectPayoutRequestUseCase(payoutRequestRepository);
 
 export const adminKycController = new AdminKycController(getAllKycUseCase, getKycForPsychologistUseCase, approveKycUseCase, rejectKycUseCase);
 export const adminUserManagementController = new AdminUserManagementController(getAllUserUseCase, getAllPsychologistsUseCase, toggleUserStatusUseCase);
@@ -323,6 +343,7 @@ export const adminConsultationController = new AdminConsultationController(getAl
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase);
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, 'adminRefreshToken');
 export const planController = new PlanController(getAllPlansUseCase, createPlanUseCase);
+export const adminPayoutController = new AdminPayoutController(listAllPayoutRequestsUseCase, approvePayoutRequestUseCase, rejectPayoutRequestUseCase);
 
 //--------------- chat -----------------------
 

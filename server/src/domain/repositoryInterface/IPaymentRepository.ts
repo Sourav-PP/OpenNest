@@ -6,4 +6,5 @@ export interface IPaymentRepository {
     findBySessionId(sessionId: string): Promise<Payment | null>
     findById(id: string): Promise<Payment | null>;
     findByConsultationId(id: string):  Promise<Payment | null>;
+    findByConsultationIds(ids: string[]): Promise<Payment[]>;
 }

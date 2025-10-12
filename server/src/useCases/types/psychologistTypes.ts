@@ -1,4 +1,5 @@
 // Input and Output types for Profile Use Cases
+import { PayoutRequest } from '@/domain/entities/payoutRequest';
 import { Kyc } from '../../domain/entities/kyc';
 import { Psychologist } from '../../domain/entities/psychologist';
 import { IPatientConsultationHistoryDto, IPsychologistConsultationDto } from '../dtos/consultation';
@@ -96,4 +97,9 @@ export interface IGetConsultationHistoryResponse {
 export interface IGetPatientConsultationHistoryResponse {
   consultations: IPatientConsultationHistoryDto[],
   totalCount: number
+}
+
+export interface IListPayoutRequestResponse {
+    requests: PayoutRequest[],
+    totalCount: number;
 }

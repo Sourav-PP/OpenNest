@@ -53,4 +53,9 @@ export class PaymentRepository extends GenericRepository<Payment, IPaymentDocume
 
         return this.map(payment);
     }
+
+    async findByConsultationIds(ids: string[]): Promise<Payment[]> {
+        const payments = await PaymentModel.find({ consultationId: { $in: ids } }).exec();
+        return payments.map(payment => this.map(payment));
+    }
 }

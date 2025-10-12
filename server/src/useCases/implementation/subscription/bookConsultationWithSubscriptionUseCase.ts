@@ -109,6 +109,13 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
             );
         }
 
+        if (subscription.creditRemaining <= 0) {
+            throw new AppError(
+                SubscriptionMessages.ERROR.INSUFFICIENT_CREDITS,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
         const consultation = await this._consultationRepository.create({
             patientId: userId,
             psychologistId: slot.psychologistId,

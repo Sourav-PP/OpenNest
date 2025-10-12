@@ -1,4 +1,4 @@
-import mongoose, { PipelineStage } from 'mongoose';
+import mongoose, { ClientSession, PipelineStage } from 'mongoose';
 import { Consultation } from '@/domain/entities/consultation';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { ConsultationModel, IConsultationDocument } from '@/infrastructure/database/models/user/Consultation';
@@ -805,4 +805,33 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
 
         return result.length > 0 ? result[0].total : 0;
     }
+
+    async findUnpaidCompletedConsultationsByPsychologistId(psychologistId: string): Promise<Consultation[]> {
+        const consultations = await ConsultationModel.find({
+            psychologistId,
+            status: 'completed',
+            paymentStatus: 'paid',
+            includedInPayout: false,
+        });
+
+        return consultations.map(consultation => this.map(consultation));
+    }
+
+    async markIncludedInPayout(consultationIds: string[], session?: ClientSession): Promise<void> {
+        await ConsultationModel.updateMany(
+            { _id: { $in: consultationIds } },
+            { $set: { includedInPayout: true } },
+            { session },
+        );
+    }
+
+    async findByIds(ids: string[]): Promise<Consultation[]> {
+        if (!ids || ids.length === 0) return [];
+
+        const objectIds = ids.map(id => new mongoose.Types.ObjectId(id));
+        const consultations = await ConsultationModel.find({ _id: { $in: objectIds } }).exec();
+
+        return consultations.map(c => this.map(c));
+    }
 }
+    

@@ -14,6 +14,7 @@ import VideoCallPage from '@/features/videoCall/pages/VideoCallPage';
 import PsychologistConsultationHistoryPage from '@/features/psychologist/pages/PsychologistConsultationHistoryPage';
 import PsychologistConsultationHistoryDetailPage from '@/features/psychologist/pages/PsychologistConsultationHistoryDetailPage';
 import PatientHistoryPage from '@/features/psychologist/pages/PatientHistoryPage';
+import PsychologistDashboard from '@/features/psychologist/pages/PsychologistDashboard';
 
 export const psychologistRoutes: RouteObject[] = [
   {
@@ -71,6 +72,10 @@ export const psychologistRoutes: RouteObject[] = [
   {
     path: '/psychologist/patients/:patientId/history',
     element: <PrivateRoute allowedRoles={['psychologist']}><PatientHistoryPage/></PrivateRoute>
+  },
+  {
+    path: '/psychologist/dashboard',
+    element: <PrivateRoute allowedRoles={['psychologist']}><PsychologistDashboard/></PrivateRoute>
   },
 
 ];

@@ -9,5 +9,6 @@ export const walletMessages = {
         WALLET_ID_REQUIRED: 'Wallet id is required',
         INSUFFICIENT_FUNDS: 'Insufficient funds', 
         NOT_FOUND: 'Wallet not found',
+        PSYCHOLOGIST_WALLET_NOT_FOUND: 'Psychologist wallet not found',
     },
 } as const;

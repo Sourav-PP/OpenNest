@@ -85,7 +85,7 @@ const Navbar = () => {
         {/* Right Section (Bell + Login/Dropdown + Menu) */}
         <div className="flex items-center gap-3">
           {/* Bell always visible */}
-          <BellButton />
+          {accessToken && <BellButton />}
 
           {/* Login or User Dropdown for md+ */}
           {accessToken ? (

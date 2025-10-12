@@ -4,6 +4,7 @@ import { IWalletRepository } from '@/domain/repositoryInterface/IWalletRepositor
 import { IWalletDocument, WalletModel } from '@/infrastructure/database/models/user/WalletModel';
 import { WalletTransactionModel } from '@/infrastructure/database/models/user/WalletTransactionModel';
 import { GenericRepository } from '../GenericRepository';
+import { ClientSession } from 'mongoose';
 
 export class WalletRepository extends GenericRepository<Wallet, IWalletDocument> implements IWalletRepository {
     constructor() {
@@ -38,18 +39,18 @@ export class WalletRepository extends GenericRepository<Wallet, IWalletDocument>
     }
 
     async createTransaction(
-        data: Omit<WalletTransaction, 'id' | 'status'>,
+        data: Omit<WalletTransaction, 'id' | 'status'>, session?: ClientSession,
     ): Promise<WalletTransaction> {
-        const transaction = await WalletTransactionModel.create(data);
-        const transactionObj = transaction.toObject();
+        const transaction = await WalletTransactionModel.create([data], { session });
+        const transactionObj = transaction[0].toObject();
         return {
             id: transactionObj._id.toString(),
             walletId: transactionObj.walletId.toString(),
             amount: transactionObj.amount,
-            type: transaction.type,
-            status: transaction.status,
-            reference: transaction.reference,
-            metadata: transaction.metadata,
+            type: transactionObj.type,
+            status: transactionObj.status,
+            reference: transactionObj.reference,
+            metadata: transactionObj.metadata,
         };
     }
 
@@ -118,11 +119,12 @@ export class WalletRepository extends GenericRepository<Wallet, IWalletDocument>
     async updateBalance(
         walletId: string,
         amount: number,
+        session?: ClientSession,
     ): Promise<Wallet | null> {
         const wallet = await WalletModel.findByIdAndUpdate(
             walletId,
             { $inc: { balance: amount } },
-            { new: true },
+            { new: true, session },
         );
 
         if (!wallet) return null;

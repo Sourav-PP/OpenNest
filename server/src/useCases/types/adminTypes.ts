@@ -1,6 +1,7 @@
 import { IUserDto } from '../dtos/user';
 import { IKycDto } from '../dtos/kyc';
 import { IPsychologistListDto } from '../dtos/psychologist';
+import { PayoutRequestListItemDto } from '../dtos/payoutRequest';
 
 export interface IAdminLoginRequest {
     email: string,
@@ -23,6 +24,18 @@ export interface IGetAllUserRequest {
 export interface IGetAllUserResponse {
     user: IUserDto[];
     totalCount?: number
+}
+
+export interface IGetAllPendingPayoutRequest {
+    search?: string;
+    sort?: 'asc' | 'desc';
+    page?: number;
+    limit?: number
+}
+
+export interface IGetAllPendingPayoutResponse {
+    requests: PayoutRequestListItemDto[],
+    totalCount: number;
 }
 
 export interface IGetAllPsychologistRequest {
