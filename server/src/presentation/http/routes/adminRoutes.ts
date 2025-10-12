@@ -15,6 +15,7 @@ import {
     adminServiceController,
     adminConsultationController,
     planController,
+    adminPayoutController,
 } from '@/infrastructure/config/di';
 
 
@@ -56,6 +57,8 @@ router.patch('/users/:userId/status', authenticateAdmin, adminUserManagementCont
 router.get('/consultations', authenticateAdmin, adminConsultationController.getAllConsultations);
 router.post('/plans', authenticateAdmin, planController.createPlan);
 router.get('/plans', authenticateAdmin, planController.getAllPlans);
-
+router.get('/payout-requests', authenticateAdmin, adminPayoutController.listPayoutRequests);
+router.patch('/payout-requests/:payoutRequestId/approve', authenticateAdmin, adminPayoutController.approvePayout);
+router.patch('/payout-requests/:payoutRequestId/reject', authenticateAdmin, adminPayoutController.rejectPayout);
 
 export default router;

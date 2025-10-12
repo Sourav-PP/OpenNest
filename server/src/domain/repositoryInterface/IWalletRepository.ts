@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongoose';
 import { Wallet } from '../entities/wallet';
 import { WalletTransaction } from '../entities/walletTransaction';
 
@@ -6,10 +7,10 @@ export interface IWalletRepository {
   findByUserId(userId: string): Promise<Wallet | null>
   findById(id: string): Promise<Wallet | null>
   createTransaction(
-    data: Omit<WalletTransaction, 'id'>
+    data: Omit<WalletTransaction, 'id'>, session?: ClientSession,
   ): Promise<WalletTransaction>
   findTransactionByReference(reference: string): Promise<WalletTransaction | null>;
-  updateBalance(walletId: string, amount: number): Promise<Wallet | null>;
+  updateBalance(walletId: string, amount: number, session?: ClientSession,): Promise<Wallet | null>;
   safeDebit(walletId: string, amount: number): Promise<Wallet | null>;
   listTransaction(
     walletId: string,

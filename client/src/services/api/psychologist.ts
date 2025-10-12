@@ -5,7 +5,7 @@ import type { ISlotDto } from '@/types/dtos/slot';
 import type { IKycDto } from '@/types/dtos/kyc';
 import type { BackendResponse } from '@/types/api/api';
 import type { IGetUserConsultationHistoryRequest, IGetUserConsultationsRequest } from '@/types/api/user';
-import type { IGetPatientConsultationHistoryResponse, IGetPsychologistConsultationsResponse } from '@/types/api/psychologist';
+import type { IGetPatientConsultationHistoryResponse, IGetPayoutHistoryResponse, IGetPendingPayoutResponse, IGetPsychologistConsultationsResponse, IRequestPayoutResponse } from '@/types/api/psychologist';
 import type { IConsultationDto } from '@/types/dtos/consultation';
 
 export const psychologistApi = {
@@ -22,5 +22,8 @@ export const psychologistApi = {
   getPsychologistConsultations: async(params?: IGetUserConsultationsRequest) => server.get<IGetPsychologistConsultationsResponse>('/psychologist/consultations', {params}),
   cancelConsultation: async(id: string, reason: string) => server.put<BackendResponse<IConsultationDto>, { reason: string }>(`/psychologist/consultation/${id}/cancel`, { reason }),
   getPsychologistConsultationHistory: async(params?: IGetUserConsultationHistoryRequest) => server.get<IGetPsychologistConsultationsResponse>('/psychologist/consultation/history', { params }),
-  getPatientHistory: async(patientId: string, params?: IGetUserConsultationHistoryRequest) => server.get<IGetPatientConsultationHistoryResponse>(`/psychologist/patients/${patientId}/history`, { params })
+  getPatientHistory: async(patientId: string, params?: IGetUserConsultationHistoryRequest) => server.get<IGetPatientConsultationHistoryResponse>(`/psychologist/patients/${patientId}/history`, { params }),
+  getPendingPayout: async() => server.get<IGetPendingPayoutResponse>('/psychologist/payout/pending'),
+  requestPayout: async() => server.post<IRequestPayoutResponse, void>('/psychologist/payout-requests'),
+  getPayoutHistory: async (params?: { page?: number; limit?: number; sort?: 'asc' | 'desc' }) =>server.get<IGetPayoutHistoryResponse>('/psychologist/payout-requests', { params }),
 };

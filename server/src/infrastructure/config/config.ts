@@ -76,5 +76,6 @@ export const appConfig = {
             'FRONTEND_CANCEL_URL',
             process.env.FRONTEND_CANCEL_URL,
         ),
+        commissionPercentage: Number(process.env.COMMISSION_PERCENTAGE) || 20,
     },
 };

@@ -65,7 +65,7 @@ const Sidebar = () => {
     },
     {
       name: 'My Earnings',
-      path: '/psychologist/earnings',
+      path: '/psychologist/dashboard',
       icon: <DollarSign width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
   ];

@@ -1,4 +1,5 @@
 import type { IConsultationDtoForAdmin } from '../dtos/consultation';
+import type { IPayoutRequestDto, PayoutRequestListItemDto } from '../dtos/payoutRequest';
 import type { IGetAllPsychologistsDto } from '../dtos/psychologist';
 import type { IUserDto } from '../dtos/user';
 import type { BackendResponse } from './api';
@@ -56,6 +57,18 @@ export interface IGetAllUserResponseData {
     totalCount?: number
 }
 
+export interface IGetAllPendingPayoutRequest {
+    search?: string;
+    sort?: 'asc' | 'desc';
+    page?: number;
+    limit?: number
+}
+
+export interface IGetAllPendingPayoutResponseData {
+    requests: PayoutRequestListItemDto[],
+    totalCount: number
+}
+
 export interface IGetAllConsultationsResponseData {
     consultations: IConsultationDtoForAdmin[],
     totalCount?: number
@@ -71,7 +84,7 @@ export interface IGetAllPsychologistsRequest {
 
 export interface IGetAllPsychologistResponseData {
     psychologists: IGetAllPsychologistsDto[],
-    totalCount?: number
+    totalCount: number
 }
 
 export interface IToggleStatusRequest {
@@ -109,3 +122,6 @@ export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistRes
 export type IGetAllConsultationResponse = BackendResponse<IGetAllConsultationsResponseData>
 export type IAddPlanResponse = BackendResponse<IAddPlanResponseData>
 export type IGetAllPlanResponse = BackendResponse<IAddPlanResponseData[]>
+export type IGetPendingPayoutResponse = BackendResponse<IGetAllPendingPayoutResponseData>
+export type IApprovePayoutResponse = BackendResponse<IPayoutRequestDto>
+export type IRejectPayoutResponse = BackendResponse<IPayoutRequestDto>

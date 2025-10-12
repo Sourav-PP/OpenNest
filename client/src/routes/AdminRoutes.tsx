@@ -9,6 +9,8 @@ import KycManagement from '@/features/admin/pages/KycManagement';
 import KycVerificationPage from '@/features/admin/pages/KycVerificationPage';
 import ConsultationManagement from '@/features/admin/pages/ConsultationManagement';
 import PlanPage from '@/features/admin/pages/PlanPage';
+import PendingPayoutPage from '@/features/admin/pages/PendingPayoutPage';
+import PayoutHistoryPage from '@/features/admin/pages/PayoutHistoryPage';
 
 
 
@@ -44,5 +46,13 @@ export const adminRoutes: RouteObject[] = [
   {
     path: '/admin/plans',
     element: <PrivateRoute allowedRoles={['admin']}><PlanPage /></PrivateRoute>
+  },
+  {
+    path: '/admin/payouts/pending',
+    element: <PrivateRoute allowedRoles={['admin']}><PendingPayoutPage /></PrivateRoute>
+  },
+  {
+    path: '/admin/payouts/history',
+    element: <PrivateRoute allowedRoles={['admin']}><PayoutHistoryPage /></PrivateRoute>
   },
 ];

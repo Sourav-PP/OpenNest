@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { psychologistApi } from '@/services/api/psychologist';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
@@ -14,12 +14,11 @@ const PatientHistoryTable = () => {
   const [consultations, setConsultations] = useState<IPatientConsultationHistoryDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [sort, setSort] = useState<'asc' | 'desc'>('desc');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const { from, patientName } = location.state;
-  const navigate = useNavigate();
+  const { patientName } = location.state;
   const itemsPerPage = 10;
 
   useEffect(() => {

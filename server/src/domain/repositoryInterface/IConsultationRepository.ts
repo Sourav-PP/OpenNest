@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongoose';
 import { Consultation } from '../entities/consultation';
 import { Message } from '../entities/message';
 import { Payment } from '../entities/payment';
@@ -53,6 +54,7 @@ export interface IConsultationRepository {
                 unreadCount: number; }[]
     >;
     findById(id: string): Promise<Consultation | null>;
+    findByIds(ids: string[]): Promise<Consultation[]>;
     findByIdWithDetails(id: string): Promise<{ consultation: Consultation, psychologist: Psychologist & User, user: User, slot: Slot, payment: Payment } | null>
     countAllByPatientId(patientId: string): Promise<number>;
     countAllByPsychologistId(psychologistId: string): Promise<number>
@@ -73,5 +75,6 @@ export interface IConsultationRepository {
     }): Promise<{ consultation: Consultation; psychologist: Psychologist & User; patient: User; payment?: Payment;}[]>;
     countAll(params: { search?: string; status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all' }): Promise<number>;
     findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]>;
-
+    findUnpaidCompletedConsultationsByPsychologistId(psychologistId: string): Promise<Consultation[]>;
+    markIncludedInPayout(consultationIds: string[], session?: ClientSession): Promise<void>;
 }

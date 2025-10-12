@@ -40,8 +40,8 @@ router.get('/plans', subscriptionController.listPlans);
 router.get('/notification', authenticateAll, notificationController.getNotifications);
 router.patch('/notification/mark-all-read', authenticateAll, notificationController.markAsRead);
 
-router.post('/wallet', authenticateUser, userWalletController.create);
-router.get('/wallet', authenticateUser, userWalletController.getByUser);
+router.post('/wallet', authenticateAll, userWalletController.create);
+router.get('/wallet', authenticateAll, userWalletController.getByUser);
 router.get('/wallet/:walletId', authenticateUser, userWalletController.getById);
 router.post('/wallet/:walletId/transactions', authenticateUser, userWalletController.createTransaction);
 router.get('/wallet/:walletId/transactions', authenticateUser, userWalletController.listTransactions);

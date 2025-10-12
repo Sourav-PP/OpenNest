@@ -13,13 +13,15 @@ import type {
   IAdminKycDto,
   IGetAllConsultationResponse,
   IAddPlanResponse,
-  IAddPlanResponseData,
   IGetAllPlanResponse,
-  IAddPlanRequestData
+  IAddPlanRequestData,
+  IGetAllPendingPayoutRequest,
+  IGetPendingPayoutResponse,
+  IRejectPayoutResponse,
+  IApprovePayoutResponse
 } from '../../types/api/admin';
 
 import { server } from '../server';
-import type { IConsultationDtoForAdmin } from '@/types/dtos/consultation';
 
 export const adminApi = {
   login: async(data: IAdminLoginRequest) => server.post<IAdminLoginResponse, IAdminLoginRequest>('/admin/login', data),
@@ -42,4 +44,9 @@ export const adminApi = {
   }) => server.get<IGetAllConsultationResponse>('/admin/consultations', {params}), 
   addPlan: async(data: IAddPlanRequestData) => server.post<IAddPlanResponse, IAddPlanRequestData>('/admin/plans', data),
   getAllPlans: async() => server.get<IGetAllPlanResponse>('/admin/plans'),
+  getPendingPayouts: async(params?: IGetAllPendingPayoutRequest) => server.get<IGetPendingPayoutResponse>('/admin/payout-requests', { params }),
+  approvePayout: async(payoutRequestId: string) =>
+    server.patch<IApprovePayoutResponse, void>(`/admin/payout-requests/${payoutRequestId}/approve`, undefined),
+  rejectPayout: async(payoutRequestId: string) =>
+    server.patch<IRejectPayoutResponse, void>(`/admin/payout-requests/${payoutRequestId}/reject`, undefined),
 };
