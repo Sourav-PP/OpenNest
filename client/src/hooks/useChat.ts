@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { joinConsultation, onError, onMessage, onMessageDelete, sendMessage, deleteMessage } from '@/services/api/socket';
+import { useEffect, useRef, useState } from 'react';
+import { joinConsultation, onError, onMessage, onMessageDelete, sendMessage, deleteMessage, emitTyping, emitStopTyping, onTyping } from '@/services/api/socket';
 import { toast } from 'react-toastify';
 import type { IMessageDto } from '@/types/dtos/message';
 import { chatApi } from '@/services/api/chat';
@@ -12,6 +12,9 @@ export function useChat(consultationId: string) {
   const [messages, setMessages] = useState<IMessageDto[]>([]);
   const [isReady, setIsReady] = useState(false);
   const { userId } = useSelector((state: RootState) => state.auth);
+  const [peerTyping, setPeerTyping] = useState(false);
+
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // fetching the chat history
   useEffect(() => {
@@ -86,6 +89,14 @@ export function useChat(consultationId: string) {
       toast.error(err.message || 'Something went wrong');
     };
 
+    const cleanupTyping = onTyping(({ consultationId: cId, senderId }) => {
+      if (cId === consultationId && senderId !== userId) {
+        setPeerTyping(true);
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setPeerTyping(false), 2000);
+      }
+    });
+
     const cleanupMessage = onMessage(handleMessage);
     const cleanupDelete = onMessageDelete(handleMessageDeleted);
     const cleanupError = onError(handleError);
@@ -95,6 +106,8 @@ export function useChat(consultationId: string) {
       cleanupMessage();
       cleanupDelete();
       cleanupError();
+      cleanupTyping();
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       console.log('Cleaning up useChat listeners');
     };
   }, [consultationId, userId]);
@@ -118,5 +131,8 @@ export function useChat(consultationId: string) {
     sendMessage(data);
   };
 
-  return { messages, sendMessage: handleSend, isReady, handleDelete };
+  const handleTyping = () => emitTyping(consultationId);
+  const handleStopTyping = () => emitStopTyping(consultationId);
+
+  return { messages, sendMessage: handleSend, isReady, handleDelete, peerTyping, handleTyping, handleStopTyping };
 }

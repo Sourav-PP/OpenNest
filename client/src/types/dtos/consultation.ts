@@ -6,7 +6,7 @@ export interface IConsultationDto {
   startDateTime: string;
   endDateTime: string;
   sessionGoal: string;
-  status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+  status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
   meetingLink?: string;
   unreadCount: number;
   psychologist: {

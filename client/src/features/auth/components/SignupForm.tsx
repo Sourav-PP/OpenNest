@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Lock, Mail, Phone, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { walletApi } from '@/services/api/wallet';
 
 interface TokenPayload {
   userId: string;
@@ -56,6 +57,12 @@ const SignupForm = () => {
         isSubmittedVerification: false,
       })
     );
+
+    try {
+      await walletApi.create();
+    } catch (error) {
+      handleApiError(error);
+    }
 
     navigate(decoded.role === 'psychologist' ? '/psychologist/verification' : '/');
   };

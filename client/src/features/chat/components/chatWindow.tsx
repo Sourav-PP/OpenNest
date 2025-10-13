@@ -8,8 +8,9 @@ import type { IMessageDto } from '@/types/dtos/message';
 import { chatApi } from '@/services/api/chat';
 import { toast } from 'react-toastify';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { onOnlineUsers } from '@/services/api/socket';
+import { getSocket, onOnlineUsers } from '@/services/api/socket';
 import ConfirmationModal from '@/components/user/ConfirmationModal';
+import type { Socket } from 'socket.io-client';
 
 export default function ChatWindow({
   consultationId,
@@ -20,7 +21,7 @@ export default function ChatWindow({
   userId: string;
   peerId: string;
 }) {
-  const { messages, sendMessage, isReady, handleDelete } = useChat(consultationId);
+  const { messages, sendMessage, isReady, handleDelete, peerTyping, handleTyping, handleStopTyping } = useChat(consultationId);
   const [text, setText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -28,6 +29,7 @@ export default function ChatWindow({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<{ messageId: string; consultationId: string } | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
+
 
   useEffect(() => {
     return onOnlineUsers(setOnlineUsers);
@@ -101,6 +103,7 @@ export default function ChatWindow({
     console.log('send message', sendMessage);
     setText('');
     setFile(null);
+    handleStopTyping();
   };
 
   const formatTime = (iso: string) => {
@@ -262,6 +265,12 @@ export default function ChatWindow({
             ))
           )}
         </div>
+        {peerTyping && (
+          <div className="px-4 py-1 text-sm text-gray-600 italic">
+            typing...
+          </div>
+        )}
+
       </ScrollArea>
 
       {/* Message Input Area */}
@@ -282,7 +291,10 @@ export default function ChatWindow({
           <Input
             className="flex-1 rounded-full border-gray-300 bg-gray-100 py-2 px-4 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
             value={text}
-            onChange={e => setText(e.target.value)}
+            onChange={e => {
+              setText(e.target.value);
+              handleTyping();
+            }}
             placeholder="Type a message..."
             onKeyDown={e => {
               if (e.key === 'Enter' && isReady && (text.trim() || file)) handleSend();

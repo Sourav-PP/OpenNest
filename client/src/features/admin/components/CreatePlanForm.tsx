@@ -64,7 +64,7 @@ const CreatePlanForm = () => {
             <input
               type="number"
               step="0.01"
-              {...register('price')}
+              {...register('price', { valueAsNumber: true })}
               className="w-full p-3 rounded-lg bg-admin-extra-light text-white outline-none"
             />
             {errors.price && <p className="text-red-400 text-sm mt-1">{errors.price.message}</p>}
@@ -75,7 +75,7 @@ const CreatePlanForm = () => {
             <label className="block text-white text-sm mb-1">Credits per Period</label>
             <input
               type="number"
-              {...register('creditsPerPeriod')}
+              {...register('creditsPerPeriod', { valueAsNumber: true })}
               className="w-full p-3 rounded-lg bg-admin-extra-light text-white outline-none"
             />
             {errors.creditsPerPeriod && (

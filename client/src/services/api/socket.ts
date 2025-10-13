@@ -6,6 +6,7 @@ let socket: Socket | null = null;
 const messageHandlers: ((msg: IMessageDto) => void)[] = [];
 const deleteHandler: ((data: { messageId: string; consultationId: string, deletedBy: string, isDeleted: boolean }) => void)[] = [];
 const errorListeners: ((err: IChatError) => void)[] = [];
+const typingHandlers: ((data: { consultationId: string; senderId: string }) => void)[] = [];
 
 const onlineListeners: ((users: Set<string>) => void)[] = [];
 const onlineUsers: Set<string> = new Set();
@@ -70,6 +71,9 @@ export function connectSocket(token: string) {
     errorListeners.slice().forEach(cb => cb(err));
   });
 
+  socket.on('typing', data => typingHandlers.slice().forEach(cb => cb(data)));
+  socket.on('stop_typing', data => typingHandlers.slice().forEach(cb => cb(data)));
+
   // Online/offline events
   socket.on('user_online', ({ userId }: { userId: string }) => {
     onlineUsers.add(userId);
@@ -108,6 +112,14 @@ export function onMessage(cb: (msg: IMessageDto) => void) {
   return () => {
     const index = messageHandlers.indexOf(cb);
     if (index !== -1) messageHandlers.splice(index, 1);
+  };
+}
+
+export function onTyping(cb: (data: { consultationId: string; senderId: string }) => void) {
+  if (!typingHandlers.includes(cb)) typingHandlers.push(cb);
+  return () => {
+    const index = typingHandlers.indexOf(cb);
+    if (index !== -1) typingHandlers.splice(index, 1);
   };
 }
 
@@ -173,6 +185,19 @@ export const deleteMessage = (data: { messageId: string; consultationId: string 
     return;
   }
   socket.emit('delete', data);
+};
+
+// Typing events
+export const emitTyping = (consultationId: string) => {
+  const socket = getSocket();
+  if (!socket || !socket.connected) return;
+  socket.emit('typing', { consultationId });
+};
+
+export const emitStopTyping = (consultationId: string) => {
+  const socket = getSocket();
+  if (!socket || !socket.connected) return;
+  socket.emit('stop_typing', { consultationId });
 };
 
 //sending message

@@ -144,17 +144,16 @@ export class ChatSocketHandler implements IChatSocketHandler {
         );
 
         // typing indicator
-        socket.on('typing', (consultationId: string) => {
-            socket
-                .to(consultationId)
-                .emit('typing', { userId: socket.data.userId });
-        });
-        socket.on('stop_typing', (consultationId: string) => {
-            socket
-                .to(consultationId)
-                .emit('stop_typing', { userId: socket.data.userId });
+        socket.on('typing', ({ consultationId, senderId }: { consultationId: string; senderId: string }) => {
+            console.log('typing event received from:', senderId);
+            // emit to everyone in the room except the sender
+            socket.to(consultationId).emit('typing', { consultationId, senderId });
         });
 
+        socket.on('stop_typing', ({ consultationId, senderId }: { consultationId: string; senderId: string }) => {
+            console.log('stop_typing event received from:', senderId);
+            socket.to(consultationId).emit('stop_typing', { consultationId, senderId });
+        });
         
     }
 }

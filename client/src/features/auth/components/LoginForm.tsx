@@ -12,8 +12,9 @@ import { loginSuccess } from '@/redux/slices/authSlice';
 import { authApi } from '@/services/api/auth';
 import GoogleLoginButton from './GoogleLoginButton';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { Lock, Mail } from 'lucide-react';
+import { Eye, EyeClosed, Lock, Mail } from 'lucide-react';
 import { walletApi } from '@/services/api/wallet';
+import { useState } from 'react';
 
 
 
@@ -30,6 +31,7 @@ const LoginForm = () => {
   const { role } = location.state || {};
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showPass, setShowPass] = useState(false);
 
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -107,7 +109,18 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input leftIcon={Lock} type="password" placeholder="Enter your password" {...field} />
+                <Input leftIcon={Lock}
+                  rightIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowPass(prev => !prev)}
+                      className="p-1"
+                    >
+                      {showPass ? <Eye className='text-slate-400 w-5 h-5' /> : <EyeClosed className='text-slate-400 w-5 h-5' />}
+                    </button>
+                  }
+                  type={showPass ? 'type' : 'password'}
+                  placeholder="Enter your password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

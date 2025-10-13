@@ -48,7 +48,7 @@ export interface IGetUserProfileResponseData {
 export interface IGetUserConsultationsRequest {
   search?: string;
   sort?: 'asc' | 'desc';
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';
+  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed' | 'all';
   page?: number;
   limit?: number;
 }
@@ -68,7 +68,7 @@ export interface IGetUserConsultationsResponseData {
 export interface IUserConsultationDetailsResponseData {
   id: string;
   sessionGoal: string;
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
   meetingLink?: string;
   startDateTime: Date;
   endDateTime: Date;

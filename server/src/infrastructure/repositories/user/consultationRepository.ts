@@ -833,5 +833,18 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
 
         return consultations.map(c => this.map(c));
     }
+
+    async findMissedConsultation(currentDate: Date): Promise<Consultation[]> {
+        const consultations = await ConsultationModel.find({
+            status: 'booked',
+            endDateTime: { $lt: currentDate },
+        }).exec();
+
+        return consultations.map(c => this.map(c));
+    }
+
+    async markAsMissed(consultationId: string, update: { status: string; includedInPayout: boolean; cancelledAt: Date; cancellationReason: string; }): Promise<void> {
+        await ConsultationModel.findByIdAndUpdate(consultationId, update);
+    }
 }
     

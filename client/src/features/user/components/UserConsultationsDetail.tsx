@@ -251,14 +251,12 @@ const UserConsultationsDetail = () => {
               <Link
                 to={`/user/consultations/${consultation.id}/video`}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
-                  consultation.status === 'completed'
+                  consultation.status === 'completed' || consultation.status === 'cancelled' || consultation.status === 'missed'
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : consultation.status === 'cancelled'
-                      ? 'bg-red-400 cursor-not-allowed'
-                      : 'bg-indigo-700 hover:bg-indigo-800'
+                    : 'bg-indigo-700 hover:bg-indigo-800'
                 }`}
                 onClick={e => {
-                  if (consultation.status === 'completed' || consultation.status === 'cancelled') {
+                  if (consultation.status === 'completed' || consultation.status === 'cancelled' || consultation.status === 'missed') {
                     e.preventDefault();
                   }
                 }}
@@ -267,9 +265,11 @@ const UserConsultationsDetail = () => {
                   ? 'Call Completed'
                   : consultation.status === 'cancelled'
                     ? 'Call Cancelled'
-                    : timeLeft > 0
-                      ? `Starts in ${formatTimeLeft(timeLeft)}`
-                      : 'Join Meeting'}
+                    : consultation.status === 'missed'
+                      ? 'Call Missed'
+                      : timeLeft > 0
+                        ? `Starts in ${formatTimeLeft(timeLeft)}`
+                        : 'Join Meeting'}
               </Link>
             ) : (
               <p className="text-gray-500 italic text-sm">Meeting link not available</p>

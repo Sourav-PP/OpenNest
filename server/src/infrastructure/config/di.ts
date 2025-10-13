@@ -121,6 +121,7 @@ import { GetAllPlansUseCase } from '@/useCases/implementation/admin/plan/getAllP
 import { ApprovePayoutRequestUseCase } from '@/useCases/implementation/payout/approvePayoutRequestUseCase';
 import { RejectPayoutRequestUseCase } from '@/useCases/implementation/payout/rejectPayoutRequestUseCase';
 import { ListAllPayoutRequestsUseCase } from '@/useCases/implementation/payout/listAllPayoutRequestsUseCase';
+import { UpdateMissedConsultationUseCase } from '@/useCases/implementation/admin/management/updateMissedConsultationsUseCase';
 
 //--------------- chat -------------------
 import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
@@ -335,6 +336,7 @@ const getAllPlansUseCase = new GetAllPlansUseCase(planRepository);
 const listAllPayoutRequestsUseCase = new ListAllPayoutRequestsUseCase(payoutRequestRepository);
 const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(payoutRequestRepository, walletRepository, transactionManager, consultationRepository);
 const rejectPayoutRequestUseCase = new RejectPayoutRequestUseCase(payoutRequestRepository);
+export const updateMissedConsultationsUseCase = new UpdateMissedConsultationUseCase(consultationRepository);
 
 export const adminKycController = new AdminKycController(getAllKycUseCase, getKycForPsychologistUseCase, approveKycUseCase, rejectKycUseCase);
 export const adminUserManagementController = new AdminUserManagementController(getAllUserUseCase, getAllPsychologistsUseCase, toggleUserStatusUseCase);

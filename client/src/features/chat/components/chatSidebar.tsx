@@ -54,7 +54,13 @@ export default function ChatSidebar({
           );
         }
 
-        setConsultations(chats);
+        setConsultations(chats
+          .filter(c => c.status !== 'cancelled')
+          .sort((a, b) => {
+            const aTime = a.lastMessage?.createdAt ?? 0;
+            const bTime = b.lastMessage?.createdAt ?? 0;
+            return new Date(bTime).getTime() - new Date(aTime).getTime();
+          }));
 
         // join all rooms immediately for real-time updates
         const socket = getSocket();
@@ -84,8 +90,8 @@ export default function ChatSidebar({
     if (!socket) return;
 
     const handleMessage = (message: IMessageDto) => {
-      setConsultations(prev =>
-        prev.map(c =>
+      setConsultations(prev => {
+        const updated = prev.map(c =>
           c.id === message.consultationId
             ? {
               ...c,
@@ -94,15 +100,22 @@ export default function ChatSidebar({
                 content: message.content,
                 createdAt: message.createdAt,
               },
-              unreadCount: c.id === selectedChatId
-                ? 0
-                : message.senderId === userId
-                  ? c.unreadCount || 0
-                  : (c.unreadCount || 0) + 1,
+              unreadCount:
+                c.id === selectedChatId
+                  ? 0
+                  : message.senderId === userId
+                    ? c.unreadCount || 0
+                    : (c.unreadCount || 0) + 1,
             }
             : c
-        )
-      );
+        );
+
+        return [...updated].sort((a, b) => {
+          const aTime = a.lastMessage?.createdAt ?? 0;
+          const bTime = b.lastMessage?.createdAt ?? 0;
+          return new Date(bTime).getTime() - new Date(aTime).getTime();
+        });
+      });
     };
 
     socket.on('message_read', ({ consultationId, userId }: { consultationId: string; userId: string }) => {

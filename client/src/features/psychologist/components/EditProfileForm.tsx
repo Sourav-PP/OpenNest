@@ -32,7 +32,7 @@ const EditProfileForm = () => {
         setValue('name', profileRes.name);
         setValue('email', profileRes.email);
         setValue('phone', profileRes.phone!);
-        setValue('dateOfBirth', profileRes.dateOfBirth);
+        setValue('dateOfBirth', profileRes.dateOfBirth ? profileRes.dateOfBirth.split('T')[0] : '');
         setValue('gender', profileRes.gender);
         setValue('defaultFee', profileRes.defaultFee);
         setValue('aboutMe', profileRes.aboutMe);
@@ -258,7 +258,7 @@ const EditProfileForm = () => {
                   </label>
                   <input
                     type="number"
-                    {...register('defaultFee')}
+                    {...register('defaultFee', { valueAsNumber: true })}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="e.g. 500"
                   />

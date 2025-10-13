@@ -9,7 +9,7 @@ export interface IConsultationDocument extends Document {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     paymentStatus: 'pending' | 'paid' | 'failed'
     paymentMethod: 'stripe' | 'wallet' | 'subscription' | null
     paymentIntentId: string | null
@@ -55,7 +55,7 @@ const ConsultationSchema = new Schema<IConsultationDocument>(
         },
         status: {
             type: String,
-            enum: ['booked', 'cancelled', 'completed', 'rescheduled'],
+            enum: ['booked', 'cancelled', 'completed', 'rescheduled', 'missed'],
             default: 'booked',
         },
         paymentStatus: {

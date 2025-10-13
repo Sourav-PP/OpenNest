@@ -77,4 +77,14 @@ export interface IConsultationRepository {
     findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]>;
     findUnpaidCompletedConsultationsByPsychologistId(psychologistId: string): Promise<Consultation[]>;
     markIncludedInPayout(consultationIds: string[], session?: ClientSession): Promise<void>;
+    findMissedConsultation(currentDate: Date): Promise<Consultation[]>;
+    markAsMissed(
+        consultationId: string,
+        update: {
+            status: string;
+            includedInPayout: boolean;
+            cancelledAt: Date;
+            cancellationReason: string;
+        },
+    ): Promise<void>; 
 }
