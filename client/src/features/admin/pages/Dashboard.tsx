@@ -1,6 +1,6 @@
 import Sidebar from '@/components/admin/Sidebar';
 import Header from '@/components/admin/Header';
-// import TopPsychologistTable from '../../components/admin/TopPsychologistTable';
+import TopPsychologistTable from '../components/TopPsychologistTable';
 
 const AdminDashboard = () => {
   return (
@@ -8,7 +8,7 @@ const AdminDashboard = () => {
       <Sidebar />
       <div className="flex-1 overflow-auto">
         <Header/>
-        {/* <TopPsychologistTable/> */}
+        <TopPsychologistTable/>
       </div>
     </div>
   );

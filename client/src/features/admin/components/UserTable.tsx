@@ -109,11 +109,6 @@ const UserTable = () => {
       className: 'px-6 py-4',
     },
     {
-      header: 'ID',
-      render: (u: IUserDto) => u.id,
-      className: 'px-6 py-4',
-    },
-    {
       header: 'Name',
       render: (u: IUserDto) => u.name,
       className: 'px-6 py-4',

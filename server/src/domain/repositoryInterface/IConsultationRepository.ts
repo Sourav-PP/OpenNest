@@ -21,7 +21,7 @@ export interface IConsultationRepository {
     ): Promise<{ consultation: Consultation; patient: User }[]>;
     findByPsychologistId(
         psychologistId: string,
-        params: {
+        params?: {
             search?: string;
             sort?: 'asc' | 'desc';
             skip?: number;

@@ -15,4 +15,5 @@ export interface Consultation {
     cancelledAt?: Date;
     includedInPayout: boolean;
     meetingLink?: string;
+    createdAt?: Date;
 }

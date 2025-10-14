@@ -1,6 +1,6 @@
 import type { IConsultationDtoForAdmin } from '../dtos/consultation';
 import type { IPayoutRequestDto, PayoutRequestListItemDto } from '../dtos/payoutRequest';
-import type { IGetAllPsychologistsDto } from '../dtos/psychologist';
+import type { IGetAllPsychologistsDto, ITopPsychologistDto } from '../dtos/psychologist';
 import type { IUserDto } from '../dtos/user';
 import type { BackendResponse } from './api';
 
@@ -125,3 +125,4 @@ export type IGetAllPlanResponse = BackendResponse<IAddPlanResponseData[]>
 export type IGetPendingPayoutResponse = BackendResponse<IGetAllPendingPayoutResponseData>
 export type IApprovePayoutResponse = BackendResponse<IPayoutRequestDto>
 export type IRejectPayoutResponse = BackendResponse<IPayoutRequestDto>
+export type ITopPsychologistResponse = BackendResponse<ITopPsychologistDto[]>

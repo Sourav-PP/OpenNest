@@ -11,7 +11,7 @@ export class ConsultationMissedJob {
     }
 
     start(): void {
-        cron.schedule('*/5 * * * *', async() => {
+        cron.schedule('0 0 * * * *', async() => {
             try {
                 await this._updateMissedConsultationsUseCase.execute();
                 console.log('ConsultationMissedJob Checked and updated missed consultations');

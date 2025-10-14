@@ -13,6 +13,7 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { appConfig } from '@/infrastructure/config/config';
 import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
+import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
 
 export type IStripeMetaData = {
     patientId: string;
@@ -31,17 +32,21 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
     private _paymentRepository: IPaymentRepository;
     private _slotRepo: ISlotRepository;
     private _consultationRepo: IConsultationRepository;
+    private _psychologistRepository: IPsychologistRepository;
 
     constructor(
         paymentService: IPaymentService,
         paymentRepository: IPaymentRepository,
         slotRepo: ISlotRepository,
         consultationRepo: IConsultationRepository,
+        psychologistRepository: IPsychologistRepository,
+
     ) {
         this._paymentService = paymentService;
         this._paymentRepository = paymentRepository;
         this._slotRepo = slotRepo;
         this._consultationRepo = consultationRepo;
+        this._psychologistRepository = psychologistRepository;
     }
 
     async execute(
@@ -83,14 +88,13 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
                 );
             }
 
-
-
             if (slot.isBooked) {
                 throw new AppError(
                     bookingMessages.ERROR.SLOT_ALREADY_BOOKED,
                     HttpStatus.CONFLICT,
                 );
             }
+
 
             metadata = {
                 ...metadata,

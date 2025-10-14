@@ -1,24 +1,25 @@
 import type { BackendResponse } from '@/types/api/api';
-import type {
-  IAdminLoginRequest,
-  IAdminLoginResponse,
-  IAddServiceResponse,
-  IGetAllUserRequest,
-  IGetAllUserResponse,
-  IGetAllPsychologistResponse,
-  IGetAllPsychologistsRequest,
-  IToggleStatusRequest,
-  IGetAllKycDetailsRequest,
-  IGetAllKycDetailsResponse,
-  IAdminKycDto,
-  IGetAllConsultationResponse,
-  IAddPlanResponse,
-  IGetAllPlanResponse,
-  IAddPlanRequestData,
-  IGetAllPendingPayoutRequest,
-  IGetPendingPayoutResponse,
-  IRejectPayoutResponse,
-  IApprovePayoutResponse
+import {
+  type IAdminLoginRequest,
+  type IAdminLoginResponse,
+  type IAddServiceResponse,
+  type IGetAllUserRequest,
+  type IGetAllUserResponse,
+  type IGetAllPsychologistResponse,
+  type IGetAllPsychologistsRequest,
+  type IToggleStatusRequest,
+  type IGetAllKycDetailsRequest,
+  type IGetAllKycDetailsResponse,
+  type IAdminKycDto,
+  type IGetAllConsultationResponse,
+  type IAddPlanResponse,
+  type IGetAllPlanResponse,
+  type IAddPlanRequestData,
+  type IGetAllPendingPayoutRequest,
+  type IGetPendingPayoutResponse,
+  type IRejectPayoutResponse,
+  type IApprovePayoutResponse,
+  type ITopPsychologistResponse
 } from '../../types/api/admin';
 
 import { server } from '../server';
@@ -49,4 +50,5 @@ export const adminApi = {
     server.patch<IApprovePayoutResponse, void>(`/admin/payout-requests/${payoutRequestId}/approve`, undefined),
   rejectPayout: async(payoutRequestId: string) =>
     server.patch<IRejectPayoutResponse, void>(`/admin/payout-requests/${payoutRequestId}/reject`, undefined),
+  getTopPsychologists: async(limit: number) => server.get<ITopPsychologistResponse>('/admin/top-psychologists', { params: { limit } })
 };

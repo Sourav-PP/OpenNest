@@ -109,11 +109,6 @@ const PsychologistTable = () => {
       className: 'px-6 py-4',
     },
     {
-      header: 'ID',
-      render: (p: IGetAllPsychologistsDto) => p.id,
-      className: 'px-6 py-4',
-    },
-    {
       header: 'Name',
       render: (p: IGetAllPsychologistsDto) => p.user.name,
       className: 'px-6 py-4',

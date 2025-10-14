@@ -85,7 +85,6 @@ const PendingPayoutTable = () => {
   };
 
   const columns = [
-    { header: 'ID', render: (p: PayoutRequestListItemDto) => p.id, className: 'px-6 py-4' },
     { header: 'Psychologist', render: (p: PayoutRequestListItemDto) => p.psychologist.name, className: 'px-6 py-4' },
     { header: 'Total Amount', render: (p: PayoutRequestListItemDto) => `₹${p.requestedAmount}`, className: 'px-6 py-4' },
     { header: 'Commission', render: (p: PayoutRequestListItemDto) => `₹${p.commissionAmount}`, className: 'px-6 py-4' },

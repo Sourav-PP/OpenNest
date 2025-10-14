@@ -122,6 +122,7 @@ import { ApprovePayoutRequestUseCase } from '@/useCases/implementation/payout/ap
 import { RejectPayoutRequestUseCase } from '@/useCases/implementation/payout/rejectPayoutRequestUseCase';
 import { ListAllPayoutRequestsUseCase } from '@/useCases/implementation/payout/listAllPayoutRequestsUseCase';
 import { UpdateMissedConsultationUseCase } from '@/useCases/implementation/admin/management/updateMissedConsultationsUseCase';
+import { GetTopPsychologistUseCase } from '@/useCases/implementation/admin/management/getTopPsychologistUseCase';
 
 //--------------- chat -------------------
 import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
@@ -337,11 +338,12 @@ const listAllPayoutRequestsUseCase = new ListAllPayoutRequestsUseCase(payoutRequ
 const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(payoutRequestRepository, walletRepository, transactionManager, consultationRepository);
 const rejectPayoutRequestUseCase = new RejectPayoutRequestUseCase(payoutRequestRepository);
 export const updateMissedConsultationsUseCase = new UpdateMissedConsultationUseCase(consultationRepository);
+const getTopPsychologistsUseCase = new GetTopPsychologistUseCase(psychologistRepository);
 
 export const adminKycController = new AdminKycController(getAllKycUseCase, getKycForPsychologistUseCase, approveKycUseCase, rejectKycUseCase);
 export const adminUserManagementController = new AdminUserManagementController(getAllUserUseCase, getAllPsychologistsUseCase, toggleUserStatusUseCase);
 export const adminServiceController = new AdminServiceController(createServiceUseCase, deleteServiceUseCase);
-export const adminConsultationController = new AdminConsultationController(getAllConsultationsUseCase);
+export const adminConsultationController = new AdminConsultationController(getAllConsultationsUseCase, getTopPsychologistsUseCase);
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase);
 export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, 'adminRefreshToken');
 export const planController = new PlanController(getAllPlansUseCase, createPlanUseCase);

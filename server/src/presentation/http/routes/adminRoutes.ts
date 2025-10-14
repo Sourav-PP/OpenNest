@@ -60,5 +60,6 @@ router.get('/plans', authenticateAdmin, planController.getAllPlans);
 router.get('/payout-requests', authenticateAdmin, adminPayoutController.listPayoutRequests);
 router.patch('/payout-requests/:payoutRequestId/approve', authenticateAdmin, adminPayoutController.approvePayout);
 router.patch('/payout-requests/:payoutRequestId/reject', authenticateAdmin, adminPayoutController.rejectPayout);
+router.get('/top-psychologists', adminConsultationController.getTopPsychologists);
 
 export default router;

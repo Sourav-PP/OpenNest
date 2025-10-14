@@ -6,7 +6,7 @@ export interface IConsultationDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     meetingLink?: string;
     psychologist: {
         id: string;
@@ -20,7 +20,7 @@ export interface IPsychologistConsultationDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     meetingLink?: string;
     psychologistId: string;
     patient: {
@@ -42,7 +42,7 @@ export interface IPatientConsultationHistoryDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     meetingLink?: string;
     psychologistId: string;
     patient: {
@@ -55,7 +55,7 @@ export interface IPatientConsultationHistoryDto {
 // chat consultations
 export interface IUserChatConsultationDto {
     id?: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     patientId: string;
     psychologist: {
         id: string;
@@ -70,7 +70,7 @@ export interface IUserChatConsultationDto {
 
 export interface IPsychologistChatConsultationDto {
     id?: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     psychologistId: string;
     patient: {
         id: string;
@@ -85,7 +85,7 @@ export interface IPsychologistChatConsultationDto {
 export interface IUserConsultationDetailsDto {
     id: string;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     meetingLink?: string;
     startDateTime: Date;
     endDateTime: Date;
@@ -119,7 +119,7 @@ export interface IUserConsultationDetailsDto {
 export interface IConsultationHistoryDetailsDto {
     id: string;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     meetingLink?: string;
     startDateTime: Date;
     endDateTime: Date;
@@ -165,7 +165,7 @@ export interface IConsultationDetailsForAdminDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
     paymentStatus?: 'pending' | 'succeeded' | 'failed';
     paymentMethod?: 'stripe' | 'wallet' | null;
 }

@@ -46,3 +46,18 @@ export interface IPsychologistListUserDto {
     specializations: string[];
     specializationFees: SpecializationFee[];
 }
+
+export interface TopPsychologistDTO {
+    id: string;
+    userId: string;
+    name: string;
+    email: string;
+    phone?: string;
+    profileImage?: string;
+    aboutMe: string;
+    qualification: string;
+    isVerified: boolean;
+    defaultFee: number;
+    specializations: string[]
+    totalConsultations: number;
+}

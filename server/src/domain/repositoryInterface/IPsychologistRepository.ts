@@ -21,4 +21,9 @@ export interface IPsychologistRepository {
         gender?: 'Male' | 'Female';
     }): Promise<number>
     countAllVerified():Promise<number>
+    findTopPsychologists(limit: number): Promise<{
+        psychologist: Psychologist;
+        user: User;
+        totalConsultations: number;
+    }[]>;
 }

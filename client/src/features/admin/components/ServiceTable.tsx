@@ -70,11 +70,6 @@ const ServiceTable = () => {
       className: 'px-6 py-4',
     },
     {
-      header: 'ID',
-      render: (s: Service) => s.id,
-      className: 'px-6 py-4',
-    },
-    {
       header: 'Name',
       render: (s: Service) => s.name,
       className: 'px-6 py-4',

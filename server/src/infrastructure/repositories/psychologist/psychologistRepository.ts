@@ -1,26 +1,34 @@
 import { Psychologist } from '@/domain/entities/psychologist';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
-import { ServiceModel } from '@/infrastructure/database/models/admin/serviceModel';
-import { PsychologistModel, IPsychologistDocument } from '@/infrastructure/database/models/psychologist/PsychologistModel';
+import { IServiceDocument, ServiceModel } from '@/infrastructure/database/models/admin/serviceModel';
+import {
+    PsychologistModel,
+    IPsychologistDocument,
+} from '@/infrastructure/database/models/psychologist/PsychologistModel';
 import { User } from '@/domain/entities/user';
 import { PipelineStage } from 'mongoose';
 import { GenericRepository } from '../GenericRepository';
+import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
 
-export class PsychologistRepository extends GenericRepository<Psychologist, IPsychologistDocument> implements IPsychologistRepository {
-
+export class PsychologistRepository
+    extends GenericRepository<Psychologist, IPsychologistDocument>
+    implements IPsychologistRepository
+{
     constructor() {
         super(PsychologistModel);
     }
 
     protected map(doc: IPsychologistDocument): Psychologist {
         const mapped = super.map(doc);
-        
+
         return {
             id: mapped.id,
             userId: mapped.userId as string,
             aboutMe: mapped.aboutMe,
             qualification: mapped.qualification,
-            specializations: (mapped.specializations as any[]).map(id => id.toString()),
+            specializations: (mapped.specializations as any[]).map(id =>
+                id.toString(),
+            ),
             defaultFee: mapped.defaultFee,
             isVerified: mapped.isVerified,
             specializationFees: mapped.specializationFees.map(fee => ({
@@ -93,7 +101,6 @@ export class PsychologistRepository extends GenericRepository<Psychologist, IPsy
 
         const results = await PsychologistModel.aggregate(pipeline);
 
-        console.log('results::: ', results);
         return results.map(item => ({
             psychologist: {
                 id: item._id.toString(),
@@ -102,8 +109,8 @@ export class PsychologistRepository extends GenericRepository<Psychologist, IPsy
                 qualification: item.qualification,
                 defaultFee: item.defaultFee,
                 isVerified: item.isVerified,
-                specializations: item.specializationData.map((s: any) =>
-                    s.name,
+                specializations: item.specializationData.map(
+                    (s: any) => s.name,
                 ),
                 specializationFees: item.specializationFees || [],
             } as Psychologist,
@@ -180,5 +187,91 @@ export class PsychologistRepository extends GenericRepository<Psychologist, IPsy
             _id: { $in: ids },
         }).select('name');
         return specializations.map(s => s.name);
+    }
+
+    async findTopPsychologists(limit: number): Promise<{
+        psychologist: Psychologist;
+        user: User;
+        totalConsultations: number;
+    }[]> {
+        const topPsychologists = await ConsultationModel.aggregate([
+            { $match: { paymentStatus: 'paid', status: 'completed' } },
+
+            {
+                $group: {
+                    _id: '$psychologistId',
+                    totalConsultations: { $sum: 1 },
+                },
+            },
+
+            { $sort: { totalConsultations: -1 } },
+
+            { $limit: limit },
+
+            {
+                $lookup: {
+                    from: 'psychologists',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'psychologist',
+                },
+            },
+            { $unwind: '$psychologist' },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'psychologist.userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+
+            {
+                $lookup: {
+                    from: 'services',
+                    localField: 'psychologist.specializations',
+                    foreignField: '_id',
+                    as: 'specializationData',
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    totalConsultations: 1,
+                    'psychologist.userId': 1,
+                    'psychologist.aboutMe': 1,
+                    'psychologist.qualification': 1,
+                    'psychologist.defaultFee': 1,
+                    'psychologist.isVerified': 1,
+                    'psychologist.specializationFees': 1,
+                    specializationData: 1,
+                    user: 1,
+                },
+            },
+        ]);
+
+        return topPsychologists.map(item => ({
+            psychologist: {
+                id: item._id.toString(),
+                userId: item.psychologist.userId.toString(),
+                aboutMe: item.psychologist.aboutMe,
+                qualification: item.psychologist.qualification,
+                defaultFee: item.psychologist.defaultFee,
+                isVerified: item.psychologist.isVerified,
+                specializations: item.specializationData.map(
+                    (s: IServiceDocument) => s.name,
+                ),    
+            } as Psychologist,
+            user: {
+                name: item.user.name,
+                email: item.user.email,
+                phone: item.user.phone,
+                isActive: item.user.isActive,
+                profileImage: item.user.profileImage,
+            } as User,
+            totalConsultations: item.totalConsultations,
+        }));
     }
 }

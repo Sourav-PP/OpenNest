@@ -101,7 +101,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
 
     async findByPsychologistId(
         psychologistId: string,
-        params: {
+        params?: {
             search?: string;
             sort?: 'asc' | 'desc';
             skip?: number;
@@ -118,11 +118,11 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             psychologistId: new mongoose.Types.ObjectId(psychologistId),
         };
 
-        if (params.status && params.status !== 'all') {
+        if (params && params.status && params.status !== 'all') {
             matchStage.status = params.status;
         }
 
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params && params.sort === 'asc' ? 1 : -1;
 
         const pipeline: PipelineStage[] = [
             { $match: matchStage },
@@ -193,7 +193,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             },
         ];
 
-        if (params.search) {
+        if (params && params.search) {
             pipeline.push({
                 $match: {
                     'patient.name': { $regex: params.search, $options: 'i' },
@@ -203,11 +203,11 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
 
         pipeline.push({ $sort: { startDateTime: sortOrder } });
 
-        if (typeof params.skip === 'number' && params.skip > 0) {
+        if (params && typeof params.skip === 'number' && params.skip > 0) {
             pipeline.push({ $skip: params.skip });
         }
 
-        if (typeof params.limit === 'number' && params.limit > 0) {
+        if (params && typeof params.limit === 'number' && params.limit > 0) {
             pipeline.push({ $limit: params.limit });
         }
 
@@ -223,6 +223,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                 status: item.status,
                 meetingLink: item.meetingLink,
                 psychologistId: item.psychologistId.toString(),
+                createdAt: item.createdAt,
             } as Consultation,
             payment: item.payment
                 ? {

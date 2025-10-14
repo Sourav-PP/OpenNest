@@ -7,6 +7,7 @@ import CustomPagination from '@/components/admin/CustomPagination';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import Filters from '@/components/admin/Filters';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 
 const KycTable = () => {
   const [kyc, setKyc] = useState<IAdminKycDto[]>([]);
@@ -71,8 +72,21 @@ const KycTable = () => {
 
   const columns = [
     {
-      header: 'ID',
-      render: (item: IAdminKycDto) => item.id,
+      header: 'Image',
+      render: (item: IAdminKycDto) => (
+        <div>
+          {item.profileImage ? (
+            <img
+              src={getCloudinaryUrl(item.profileImage) || undefined}
+              alt={`${item.psychologistName}'s profile`}
+              loading="lazy"
+              className="w-8 h-8 rounded-full object-cover border border-gray-600"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gray-800" />
+          )}
+        </div>
+      ),
       className: 'px-6 py-4',
     },
     {
@@ -83,6 +97,11 @@ const KycTable = () => {
     {
       header: 'Email',
       render: (item: IAdminKycDto) => item.psychologistEmail,
+      className: 'px-6 py-4',
+    },
+    {
+      header: 'Qualification',
+      render: (item: IAdminKycDto) => item.qualification,
       className: 'px-6 py-4',
     },
     {
