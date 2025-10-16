@@ -23,58 +23,98 @@ export const userRoutes: RouteObject[] = [
   },
   {
     path: '/user/psychologists/:id',
-    element: <PsychologistDetailPage />
+    element: <PsychologistDetailPage />,
   },
   {
     path: '/user/services',
-    element: <UserServicePage />   
+    element: <UserServicePage />,
   },
   {
     path: '/user/success',
-    element: <Success />
+    element: <Success />,
   },
   {
-    path:'/user/cancel',
-    element: <Cancel />
+    path: '/user/cancel',
+    element: <Cancel />,
   },
   {
     path: '/user/profile',
-    element: <PrivateRoute allowedRoles={['user']}><UserProfilePage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <UserProfilePage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/change-password',
-    element: <PrivateRoute allowedRoles={['user']}><ChangePasswordPage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <ChangePasswordPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/consultations',
-    element: <PrivateRoute allowedRoles={['user']}><MySessionsPage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <MySessionsPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/consultations/:id',
-    element: <PrivateRoute allowedRoles={['user']}><ConsultationDetailPage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <ConsultationDetailPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/chat',
-    element: <PrivateRoute allowedRoles={['user']}><UserChatPage/></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <UserChatPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/chat/:consultationId',
-    element: <PrivateRoute allowedRoles={['user']}><UserChatPage/></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <UserChatPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/wallet',
-    element: <PrivateRoute allowedRoles={['user']}><WalletPage/></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <WalletPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/consultations/:id/video',
-    element: <PrivateRoute allowedRoles={['user']}><VideoCallPage/></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <VideoCallPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/consultation/history',
-    element: <PrivateRoute allowedRoles={['user']}><UserConsultationHistoryPage/></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <UserConsultationHistoryPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/user/consultation/:consultationId/history',
-    element: <PrivateRoute allowedRoles={['user']}><UserConsultationHistoryDetailPage/></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['user']}>
+        <UserConsultationHistoryDetailPage />
+      </PrivateRoute>
+    ),
   },
 ];

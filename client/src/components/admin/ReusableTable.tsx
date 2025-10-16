@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Column<T> {
   header: string;
@@ -27,11 +20,8 @@ const ReusableTable = <T,>({ data, columns, emptyMessage, className }: ReusableT
       <Table>
         <TableHeader>
           <TableRow className="bg-admin-bg-primary text-gray-300">
-            {columns.map((col) => (
-              <TableHead
-                key={col.header}
-                className={`px-6 py-4 text-left font-bold ${col.className || ''}`}
-              >
+            {columns.map(col => (
+              <TableHead key={col.header} className={`px-6 py-4 text-left font-bold ${col.className || ''}`}>
                 {col.header}
               </TableHead>
             ))}
@@ -46,15 +36,9 @@ const ReusableTable = <T,>({ data, columns, emptyMessage, className }: ReusableT
             </TableRow>
           ) : (
             data.map((item, index) => (
-              <TableRow
-                key={index}
-                className={index % 2 === 0 ? 'bg-admin-bg-secondary' : 'bg-admin-bg-box'}
-              >
-                {columns.map((col) => (
-                  <TableCell
-                    key={col.header}
-                    className={`px-6 py-4 text-white ${col.className || ''}`}
-                  >
+              <TableRow key={index} className={index % 2 === 0 ? 'bg-admin-bg-secondary' : 'bg-admin-bg-box'}>
+                {columns.map(col => (
+                  <TableCell key={col.header} className={`px-6 py-4 text-white ${col.className || ''}`}>
                     {col.render(item, index)}
                   </TableCell>
                 ))}

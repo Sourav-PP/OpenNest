@@ -1,11 +1,4 @@
-import { 
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -14,10 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format, parseISO } from 'date-fns';
 import CustomTimePicker from '@/components/psychologist/CustomTimePicker';
 import { useForm } from 'react-hook-form';
-import {
-  slotSchema,
-  type slotData,
-} from '@/lib/validations/psychologist/slotValidation';
+import { slotSchema, type slotData } from '@/lib/validations/psychologist/slotValidation';
 import { toast } from 'react-toastify';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { psychologistApi } from '@/services/api/psychologist';
@@ -38,7 +28,7 @@ interface CreateSlotFormProps {
   onSlotCreated?: () => void; // optional callback
 }
 
-const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
+const CreateSlotForm: React.FC<CreateSlotFormProps> = ({ onSlotCreated }) => {
   const form = useForm<slotData>({
     defaultValues: {
       isRecurring: false,
@@ -114,9 +104,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                       className="h-5 w-5 border-2 border-gray-300 rounded-md text-blue-600 focus:ring-blue-500 transition-colors duration-200"
                     />
                   </FormControl>
-                  <FormLabel className="text-base font-semibold text-gray-700 !mt-0">
-                    Recurring Slot
-                  </FormLabel>
+                  <FormLabel className="text-base font-semibold text-gray-700 !mt-0">Recurring Slot</FormLabel>
                 </FormItem>
               )}
             />
@@ -137,7 +125,9 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                               variant="outline"
                               className="w-full justify-between text-left font-normal bg-white border-gray-200 hover:bg-gray-50 transition-all duration-300 rounded-lg text-gray-700"
                             >
-                              {field.value ? format(parseISO(field.value), 'PPP') : (
+                              {field.value ? (
+                                format(parseISO(field.value), 'PPP')
+                              ) : (
                                 <span className="text-gray-400">Pick a date</span>
                               )}
                               <CalendarIcon className="ml-2 h-5 w-5 text-gray-500" />
@@ -148,7 +138,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                           <Calendar
                             mode="single"
                             selected={field.value ? parseISO(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            onSelect={date => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
                             autoFocus
                             className="rounded-xl"
                           />
@@ -173,7 +163,9 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                               variant="outline"
                               className="w-full justify-between text-left font-normal bg-white border-gray-200 hover:bg-gray-50 transition-all duration-300 rounded-lg text-gray-700"
                             >
-                              {field.value ? format(parseISO(field.value), 'PPP') : (
+                              {field.value ? (
+                                format(parseISO(field.value), 'PPP')
+                              ) : (
                                 <span className="text-gray-400">Pick a date</span>
                               )}
                               <CalendarIcon className="ml-2 h-5 w-5 text-gray-500" />
@@ -184,7 +176,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                           <Calendar
                             mode="single"
                             selected={field.value ? parseISO(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            onSelect={date => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
                             autoFocus
                             className="rounded-xl"
                           />
@@ -199,7 +191,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                 <FormItem>
                   <FormLabel className="text-sm font-semibold text-gray-700">Select Weekdays</FormLabel>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-3">
-                    {weekDays.map((day) => (
+                    {weekDays.map(day => (
                       <FormField
                         key={day.value}
                         control={control}
@@ -209,13 +201,9 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                             <FormControl>
                               <Checkbox
                                 checked={field.value?.includes(day.value)}
-                                onCheckedChange={(checked) => {
+                                onCheckedChange={checked => {
                                   const prev = field.value || [];
-                                  field.onChange(
-                                    checked
-                                      ? [...prev, day.value]
-                                      : prev.filter((v) => v !== day.value)
-                                  );
+                                  field.onChange(checked ? [...prev, day.value] : prev.filter(v => v !== day.value));
                                 }}
                                 className="h-5 w-5 border-2 border-gray-300 rounded-md text-blue-600 focus:ring-blue-500 transition-colors duration-200"
                               />
@@ -237,7 +225,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-semibold text-gray-700">Start Time</FormLabel>
-                        <FormControl className='border-gray-200'>
+                        <FormControl className="border-gray-200">
                           <CustomTimePicker
                             value={field.value}
                             onChange={field.onChange}
@@ -255,7 +243,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-semibold text-gray-700">End Time</FormLabel>
-                        <FormControl className='border-gray-200'>
+                        <FormControl className="border-gray-200">
                           <CustomTimePicker
                             value={field.value}
                             onChange={field.onChange}
@@ -280,7 +268,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({onSlotCreated}) => {
                           type="number"
                           {...field}
                           value={field.value ?? ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                          onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
                           className="w-full border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-lg transition-all duration-300"
                           placeholder="e.g., 60"
                         />

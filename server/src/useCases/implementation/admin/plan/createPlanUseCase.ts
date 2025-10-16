@@ -1,4 +1,5 @@
 import { Plan } from '@/domain/entities/plan';
+import { PlanBillingPeriod } from '@/domain/enums/PlanEnums';
 import { IPlanRepository } from '@/domain/repositoryInterface/IPlanRepository';
 import { IPaymentService } from '@/domain/serviceInterface/IPaymentService';
 import { ICreatePlanUseCase } from '@/useCases/interfaces/admin/plan/ICreatePlanUseCase';
@@ -21,9 +22,8 @@ export class CreatePlanUseCase implements ICreatePlanUseCase {
         price: number;
         currency: string;
         creditsPerPeriod: number;
-        billingPeriod: 'month' | 'year' | 'week';
+        billingPeriod: PlanBillingPeriod;
     }): Promise<Plan> {
-        console.log('Creating plan with data:', data);
         const stripePrice =
             await this._paymentService.createStripeProductAndPrice(
                 data.name,

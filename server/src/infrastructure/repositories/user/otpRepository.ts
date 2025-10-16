@@ -15,7 +15,6 @@ export class OtpRepository implements IOtpRepository {
         const isValid = record?.otp === otp;
         
         if (isValid) {
-            console.log('ist valid otp');
             await OtpModel.updateOne({ email }, { verified: true });
         }
         return isValid;

@@ -20,7 +20,6 @@ export const handleApiError = <T extends FieldValues>(err: unknown, setError?: U
 
   // Show general error toast
   const message =
-    error.response?.data?.message ||
-    (error.response ? `HTTP ${error.response.status} Error` : 'Network error');
+    error.response?.data?.message || (error.response ? `HTTP ${error.response.status} Error` : 'Network error');
   toast.error(message);
 };

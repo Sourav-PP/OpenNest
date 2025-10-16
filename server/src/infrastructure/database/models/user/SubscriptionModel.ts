@@ -1,3 +1,4 @@
+import { SubscriptionStatus } from '@/domain/enums/PlanEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface ISubscriptionDocument extends Document {
@@ -10,13 +11,7 @@ export interface ISubscriptionDocument extends Document {
     currency: string;
     creditRemaining: number;
     creditsPerPeriod: number;
-    status:
-        | 'active'
-        | 'past_due'
-        | 'canceled'
-        | 'trialing'
-        | 'unpaid'
-        | 'inactive';
+    status: SubscriptionStatus;
     currentPeriodStart?: Date;
     currentPeriodEnd?: Date;
     canceledAt?: Date;
@@ -63,14 +58,7 @@ const subscriptionSchema = new Schema<ISubscriptionDocument>(
         },
         status: {
             type: String,
-            enum: [
-                'active',
-                'past_due',
-                'canceled',
-                'trialing',
-                'unpaid',
-                'inactive',
-            ],
+            enum: Object.values(SubscriptionStatus),
             required: true,
         },
         currentPeriodStart: {

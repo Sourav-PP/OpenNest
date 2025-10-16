@@ -9,7 +9,7 @@ import { connectNotificationSocket, disconnectNotificationSocket } from './servi
 function App() {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   useEffect(() => {
-    if(accessToken) {
+    if (accessToken) {
       // chat socket
       connectSocket(accessToken);
 
@@ -20,7 +20,7 @@ function App() {
       disconnectNotificationSocket();
     }
   }, [accessToken]);
-  return <AppRoutes/>;
+  return <AppRoutes />;
 }
 
 export default App;

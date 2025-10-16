@@ -1,11 +1,13 @@
+import type { UserGenderType, UserRoleType } from '@/constants/User';
+
 export interface IUserDto {
   id: string;
   name: string;
   email: string;
   phone: string;
-  role: 'user' | 'psychologist';
+  role: UserRoleType;
   profileImage?: string;
   dateOfBirth?: string;
-  gender?: 'male' | 'female' | 'other'
+  gender?: UserGenderType;
   isActive?: boolean;
 }

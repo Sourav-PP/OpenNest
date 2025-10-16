@@ -10,26 +10,16 @@ export class PsychologistKycController {
     private _getKycDetailsUseCase: IGetKycDetailsUseCase;
     private _verifyPsychologistUseCase: IVerifyPsychologistUseCase;
 
-    constructor(
-        getKycDetailsUseCase: IGetKycDetailsUseCase,
-        verifyPsychologistUseCase: IVerifyPsychologistUseCase,
-    ) {
+    constructor(getKycDetailsUseCase: IGetKycDetailsUseCase, verifyPsychologistUseCase: IVerifyPsychologistUseCase) {
         this._getKycDetailsUseCase = getKycDetailsUseCase;
         this._verifyPsychologistUseCase = verifyPsychologistUseCase;
     }
 
-    getKycDetails = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getKycDetails = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const kyc = await this._getKycDetailsUseCase.execute(userId);
@@ -43,7 +33,7 @@ export class PsychologistKycController {
     verifyPsychologist = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
-            
+
             if (!userId) {
                 throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
@@ -54,7 +44,7 @@ export class PsychologistKycController {
                 files: req.files as Record<string, Express.Multer.File[]>,
             };
 
-            const { psychologist, kyc } =  await this._verifyPsychologistUseCase.execute(data);
+            const { psychologist, kyc } = await this._verifyPsychologistUseCase.execute(data);
 
             res.status(HttpStatus.CREATED).json({
                 success: true,

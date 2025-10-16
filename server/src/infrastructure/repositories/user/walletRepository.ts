@@ -5,6 +5,7 @@ import { IWalletDocument, WalletModel } from '@/infrastructure/database/models/u
 import { WalletTransactionModel } from '@/infrastructure/database/models/user/WalletTransactionModel';
 import { GenericRepository } from '../GenericRepository';
 import { ClientSession } from 'mongoose';
+import { WalletTransactionStatus } from '@/domain/enums/WalletEnums';
 
 export class WalletRepository extends GenericRepository<Wallet, IWalletDocument> implements IWalletRepository {
     constructor() {
@@ -39,7 +40,7 @@ export class WalletRepository extends GenericRepository<Wallet, IWalletDocument>
     }
 
     async createTransaction(
-        data: Omit<WalletTransaction, 'id' | 'status'>, session?: ClientSession,
+        data: Omit<WalletTransaction, 'id'>, session?: ClientSession,
     ): Promise<WalletTransaction> {
         const transaction = await WalletTransactionModel.create([data], { session });
         const transactionObj = transaction[0].toObject();
@@ -152,7 +153,7 @@ export class WalletRepository extends GenericRepository<Wallet, IWalletDocument>
             walletId,
             amount,
             type: 'credit',
-            status: 'completed',
+            status: WalletTransactionStatus.COMPLETED,
             reference,
             metadata: { reason: 'Consultation cancellation refund' },
         });

@@ -8,7 +8,7 @@ interface Props {
   onAddFunds: () => void;
 }
 
-const WalletBalance: React.FC<Props> = ({balance, currency, onAddFunds}) => {
+const WalletBalance: React.FC<Props> = ({ balance, currency, onAddFunds }) => {
   return (
     <Card className="shadow-lg rounded-2xl p-4 flex justify-between items-center">
       <CardContent className="flex flex-col gap-2">

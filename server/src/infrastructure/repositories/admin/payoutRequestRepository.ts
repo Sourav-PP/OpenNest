@@ -7,6 +7,8 @@ import {
 import { IPayoutRequestRepository } from '@/domain/repositoryInterface/IPayoutRequestRepository';
 import { ClientSession } from 'mongoose';
 import { User } from '@/domain/entities/user';
+import { PayoutRequestStatus } from '@/domain/enums/PayoutRequestEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
 export class PayoutRequestRepository
     extends GenericRepository<PayoutRequest, IPayoutRequestDocument>
@@ -36,11 +38,11 @@ export class PayoutRequestRepository
 
     async findAllWithPsychologist(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
+        sort?: SortFilter;
         skip: number;
         limit: number;
     }): Promise<{ payoutRequest: PayoutRequest; psychologist: User }[]> {
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
         const pipeline: any[] = [
             {
@@ -138,7 +140,7 @@ export class PayoutRequestRepository
     async findByPsychologistId(
         psychologistId: string,
         params?: {
-            sort?: 'asc' | 'desc';
+            sort?: SortFilter;
             skip?: number;
             limit?: number;
         },
@@ -147,7 +149,7 @@ export class PayoutRequestRepository
         let query = PayoutRequestModel.find(filter);
 
         if (params?.sort) {
-            query = query.sort({ createdAt: params.sort === 'asc' ? 1 : -1 });
+            query = query.sort({ createdAt: params.sort === SortFilter.ASC ? 1 : -1 });
         }
         if (params?.skip !== undefined) query = query.skip(params.skip);
         if (params?.limit !== undefined) query = query.limit(params.limit);
@@ -158,7 +160,7 @@ export class PayoutRequestRepository
 
     async updateStatus(
         id: string,
-        status: 'approved' | 'rejected',
+        status: PayoutRequestStatus,
         date: Date,
         session?: ClientSession,
     ): Promise<PayoutRequest | null> {
@@ -167,7 +169,7 @@ export class PayoutRequestRepository
             {
                 status,
                 updatedAt: date,
-                ...(status === 'approved'
+                ...(status === PayoutRequestStatus.APPROVED
                     ? { approvedAt: date }
                     : { rejectedAt: date }),
             },

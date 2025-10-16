@@ -1,17 +1,19 @@
 import { PendingUser } from '../entities/pendingUser';
 import { User } from '../entities/user';
+import { SortFilter } from '../enums/SortFilterEnum';
+import { UserGenderFilter } from '../enums/UserEnums';
 
 export interface IUserRepository {
     findAll(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
-        gender?: 'Male' | 'Female' | 'all';
+        sort?: SortFilter;
+        gender?: UserGenderFilter;
         skip: number;
         limit: number
     }): Promise<User[]>
     countAll(params: {
         search?: string;
-        gender?: 'Male' | 'Female' | 'all';
+        gender?: UserGenderFilter;
     }): Promise<number>
     isUserBlocked(userId: string): Promise<boolean>
     findByEmail(email: string): Promise<User | null>

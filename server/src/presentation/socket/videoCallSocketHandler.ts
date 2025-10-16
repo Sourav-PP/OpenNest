@@ -36,17 +36,16 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
 
     register(io: Server, socket: Socket) {
         socket.on('join_call', async({ consultationId }) => {
-            
             const userId = socket.data.userId;
             const consultation = await this._consultationRepo.findById(consultationId);
-            
+
             if (!consultation) {
                 socket.emit('error', { message: bookingMessages.ERROR.CONSULTATION_NOT_FOUND });
                 return;
             }
 
             console.log('consultations in v: ', consultation);
-            
+
             const now = new Date(consultation.startDateTime);
             const start = new Date(consultation.endDateTime);
             const end = new Date(consultation.endDateTime);
@@ -62,41 +61,34 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
             // }
 
             let isAuthorized = consultation.patientId === userId;
-            console.log('userId: ', userId);
-            console.log('is  user authorized: ', isAuthorized);
-            
+
             if (!isAuthorized) {
                 const psychologist = await this._psychologistRepo.findByUserId(userId);
                 console.log('psychologistId: ', psychologist?.id);
                 if (psychologist && consultation.psychologistId === psychologist.id) {
                     isAuthorized = true;
-                } 
+                }
             }
 
-            console.log('is psychologist authorized: ', isAuthorized);
-            
             if (!isAuthorized) {
                 socket.emit('error', { message: videoCallMessages.ERROR.UNAUTHORIZED });
                 return;
             }
-            
+
             const room = `video_${consultationId}`;
 
             const user = await this._userRepo.findById(userId);
-            
-            console.log('join_call received', consultationId, 'user:', socket.data.userId);
-            console.log('Current room sockets:', await io.in(room).allSockets());
 
             socket.join(room);
 
             const otherSockets = Array.from(await io.in(room).allSockets()).filter(id => id !== socket.id);
-            console.log('otherSockets: ', otherSockets);
+
             socket.emit('current_participants', otherSockets);
 
             socket.to(room).emit('user_joined', { userId, socketId: socket.id, name: user?.name });
-            
+
             const call = await this._videoCallRepo.findByConsultationId(consultationId);
-            
+
             console.log('the call is: ', call);
             if (call?.status === 'scheduled') {
                 await this._startVideoCallUseCase.execute(consultationId);
@@ -107,7 +99,9 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
 
         socket.on('offer', ({ to, offer }) => io.to(to).emit('offer', { offer, from: socket.id }));
         socket.on('answer', ({ to, answer }) => io.to(to).emit('answer', { answer, from: socket.id }));
-        socket.on('ice_candidate', ({ to, candidate }) => io.to(to).emit('ice_candidate', { candidate, from: socket.id }));
+        socket.on('ice_candidate', ({ to, candidate }) =>
+            io.to(to).emit('ice_candidate', { candidate, from: socket.id }),
+        );
 
         socket.on('leave_call', async({ consultationId }) => {
             const room = `video_${consultationId}`;

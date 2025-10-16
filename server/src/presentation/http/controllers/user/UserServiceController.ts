@@ -11,19 +11,11 @@ export class UserServiceController {
         this._getAllServicesUseCase = getAllServicesUseCase;
     }
 
-    getAllService = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getAllService = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const input: IGetAllServiceInput = {
-                limit: req.query.limit
-                    ? parseInt(req.query.limit as string)
-                    : undefined,
-                page: req.query.page
-                    ? parseInt(req.query.page as string)
-                    : undefined,
+                limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+                page: req.query.page ? parseInt(req.query.page as string) : undefined,
                 search: req.query.search as string,
             };
 

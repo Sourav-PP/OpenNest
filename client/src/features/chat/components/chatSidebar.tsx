@@ -9,6 +9,9 @@ import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { getSocket, onMessage, joinConsultation, onOnlineUsers } from '@/services/api/socket';
 import type { IMessageDto } from '@/types/dtos/message';
 import { uniqBy } from 'lodash';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { UserRole, type UserRoleType } from '@/constants/User';
+import { ConsultationStatus } from '@/constants/Consultation';
 
 export default function ChatSidebar({
   userId,
@@ -16,10 +19,12 @@ export default function ChatSidebar({
   onSelect,
 }: {
   userId: string;
-  role: 'user' | 'psychologist';
+  role: UserRoleType;
   onSelect: (c: IUserChatConsultationDto | IPsychologistChatConsultationDto) => void;
 }) {
-  const [consultations, setConsultations] = useState<(IUserChatConsultationDto | IPsychologistChatConsultationDto)[]>([]);
+  const [consultations, setConsultations] = useState<(IUserChatConsultationDto | IPsychologistChatConsultationDto)[]>(
+    []
+  );
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
@@ -31,36 +36,29 @@ export default function ChatSidebar({
   useEffect(() => {
     const fetchConsultations = async () => {
       try {
-        const res =
-          role === 'user'
-            ? await chatApi.getChatByPatient()
-            : await chatApi.getChatByPsychologist();
+        const res = role === UserRole.USER ? await chatApi.getChatByPatient() : await chatApi.getChatByPsychologist();
 
         if (!res.data) {
-          toast.error('Something went wrong');
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
 
         let chats;
-        if (role === 'psychologist') {
-          chats = uniqBy(
-            res.data.consultations as IPsychologistChatConsultationDto[],
-            c => c.patient.id
-          );
+        if (role === UserRole.PSYCHOLOGIST) {
+          chats = uniqBy(res.data.consultations as IPsychologistChatConsultationDto[], c => c.patient.id);
         } else {
-          chats = uniqBy(
-            res.data.consultations as IUserChatConsultationDto[],
-            c => c.psychologist.id
-          );
+          chats = uniqBy(res.data.consultations as IUserChatConsultationDto[], c => c.psychologist.id);
         }
 
-        setConsultations(chats
-          .filter(c => c.status !== 'cancelled')
-          .sort((a, b) => {
-            const aTime = a.lastMessage?.createdAt ?? 0;
-            const bTime = b.lastMessage?.createdAt ?? 0;
-            return new Date(bTime).getTime() - new Date(aTime).getTime();
-          }));
+        setConsultations(
+          chats
+            .filter(c => c.status !== ConsultationStatus.Cancelled)
+            .sort((a, b) => {
+              const aTime = a.lastMessage?.createdAt ?? 0;
+              const bTime = b.lastMessage?.createdAt ?? 0;
+              return new Date(bTime).getTime() - new Date(aTime).getTime();
+            })
+        );
 
         // join all rooms immediately for real-time updates
         const socket = getSocket();
@@ -74,8 +72,6 @@ export default function ChatSidebar({
             console.error(`Failed to join room ${c.id}:`, err);
           }
         });
-
-        console.log('res: ', res);
 
       } catch (error) {
         handleApiError(error);
@@ -119,11 +115,7 @@ export default function ChatSidebar({
     };
 
     socket.on('message_read', ({ consultationId, userId }: { consultationId: string; userId: string }) => {
-      setConsultations(prev =>
-        prev.map(c =>
-          c.id === consultationId ? { ...c, unreadCount: 0 } : c
-        )
-      );
+      setConsultations(prev => prev.map(c => (c.id === consultationId ? { ...c, unreadCount: 0 } : c)));
     });
 
     const cleanupMessage = onMessage(handleMessage);
@@ -144,9 +136,7 @@ export default function ChatSidebar({
     // mark messages as read
     socket.emit('mark_as_read', consultation.id, userId);
 
-    setConsultations(prev =>
-      prev.map(c => (c.id === consultation.id ? { ...c, unreadCount: 0 } : c))
-    );
+    setConsultations(prev => prev.map(c => (c.id === consultation.id ? { ...c, unreadCount: 0 } : c)));
   };
 
   return (
@@ -160,77 +150,74 @@ export default function ChatSidebar({
       <ScrollArea className="flex-1">
         <div className="space-y-1 p-2">
           {consultations.length === 0 ? (
-            <div className="text-center text-gray-500 mt-4">
-              No consultations booked yet!
-            </div>
+            <div className="text-center text-gray-500 mt-4">No consultations booked yet!</div>
           ) : (
-            consultations.filter(c => c.status !== 'cancelled').map(c => (
-              <div
-                key={c.id}
-                onClick={() => handleSelect(c)}
-                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
-                  selectedChatId === c.id
-                    ? 'bg-green-100 text-green-900'
-                    : 'hover:bg-gray-100 text-gray-900'
-                }`}
-              >
-                <div className="relative">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
-                      src={
-                        role === 'user'
-                          ? getCloudinaryUrl((c as IUserChatConsultationDto).psychologist.profileImage) ?? undefined
-                          : getCloudinaryUrl((c as IPsychologistChatConsultationDto).patient.profileImage) ?? undefined
-                      }
-                      className="rounded-full"
-                    />
-                    <AvatarFallback>
+            consultations
+              .filter(c => c.status !== 'cancelled')
+              .map(c => (
+                <div
+                  key={c.id}
+                  onClick={() => handleSelect(c)}
+                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
+                    selectedChatId === c.id ? 'bg-green-100 text-green-900' : 'hover:bg-gray-100 text-gray-900'
+                  }`}
+                >
+                  <div className="relative">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={
+                          role === 'user'
+                            ? (getCloudinaryUrl((c as IUserChatConsultationDto).psychologist.profileImage) ?? undefined)
+                            : (getCloudinaryUrl((c as IPsychologistChatConsultationDto).patient.profileImage) ??
+                              undefined)
+                        }
+                        className="rounded-full"
+                      />
+                      <AvatarFallback>
+                        {role === 'user'
+                          ? (c as IUserChatConsultationDto).psychologist.name[0]
+                          : (c as IPsychologistChatConsultationDto).patient.name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    {/* ONLINE INDICATOR */}
+                    {onlineUsers.has(
+                      role === 'user'
+                        ? (c as IUserChatConsultationDto).psychologist.userId
+                        : (c as IPsychologistChatConsultationDto).patient.id
+                    ) && (
+                      <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
                       {role === 'user'
-                        ? (c as IUserChatConsultationDto).psychologist.name[0]
-                        : (c as IPsychologistChatConsultationDto).patient.name[0]}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  {/* ONLINE INDICATOR */}
-                  {onlineUsers.has(
-                    role === 'user'
-                      ? (c as IUserChatConsultationDto).psychologist.userId
-                      : (c as IPsychologistChatConsultationDto).patient.id
-                  ) && (
-                    <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white" />
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">
-                    {role === 'user'
-                      ? (c as IUserChatConsultationDto).psychologist.name
-                      : (c as IPsychologistChatConsultationDto).patient.name}
-                  </p>
-                  {c.lastMessage?.content && (
-                    <p className="text-xs text-gray-500 truncate max-w-[180px]">
-                      {c.lastMessage.content}
+                        ? (c as IUserChatConsultationDto).psychologist.name
+                        : (c as IPsychologistChatConsultationDto).patient.name}
                     </p>
-                  )}
-                </div>
+                    {c.lastMessage?.content && (
+                      <p className="text-xs text-gray-500 truncate max-w-[180px]">{c.lastMessage.content}</p>
+                    )}
+                  </div>
 
-                <div className="flex flex-col items-end space-y-1">
-                  {c.lastMessageTime && (
-                    <span className="text-xs text-gray-400 whitespace-nowrap">
-                      {new Date(c.lastMessageTime).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  )}
-                  {c.unreadCount > 0 && (
-                    <span className="bg-green-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
-                      {c.unreadCount}
-                    </span>
-                  )}
+                  <div className="flex flex-col items-end space-y-1">
+                    {c.lastMessageTime && (
+                      <span className="text-xs text-gray-400 whitespace-nowrap">
+                        {new Date(c.lastMessageTime).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    )}
+                    {c.unreadCount > 0 && (
+                      <span className="bg-green-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
+                        {c.unreadCount}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              ))
           )}
         </div>
       </ScrollArea>

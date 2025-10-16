@@ -1,47 +1,56 @@
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { userApi } from '@/services/api/user';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { useEffect, useState } from 'react';
+import { ConsultationPaymentMethod, type ConsultationPaymentMethodType } from '@/constants/Consultation';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { PaymentPurpose } from '@/constants/Payment';
 
 interface BookingModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   slotId: string | null;
-  amount: number
-  onSuccess: () => void; 
+  amount: number;
+  onSuccess: () => void;
 }
 
 interface FormData {
   sessionGoal: string;
-  paymentMethod: 'stripe' | 'wallet' | 'subscription';
+  paymentMethod: ConsultationPaymentMethodType;
 }
 
-const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId, amount, onSuccess}) => {
-
+const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onOpenChange, slotId, amount, onSuccess }) => {
   // const [loading, setLoading] = useState(false)
-  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);  
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
   const [loadingSub, setLoadingSub] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: {errors, isSubmitting}
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues: {
-      paymentMethod: 'stripe',
-      sessionGoal: ''
-    }
+      paymentMethod: ConsultationPaymentMethod.STRIPE,
+      sessionGoal: '',
+    },
   });
 
   useEffect(() => {
-    const fetchActiveSubscription = async() => {
-      try { 
+    const fetchActiveSubscription = async () => {
+      try {
         setLoadingSub(true);
         const res = await userApi.getActiveSubscription();
-        if(res.data) {
+        if (res.data) {
           setSubscriptionId(res.data.id);
         } else {
           setSubscriptionId(null);
@@ -53,34 +62,33 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
         setLoadingSub(false);
       }
     };
-    if(isOpen) {
+    if (isOpen) {
       fetchActiveSubscription();
     }
   }, [isOpen]);
 
-
-  const onSubmit = async(data: FormData) => {
-    if(!slotId) return;
+  const onSubmit = async (data: FormData) => {
+    if (!slotId) return;
 
     try {
-      if(data.paymentMethod === 'subscription') {
-        if(!subscriptionId) {
+      if (data.paymentMethod === ConsultationPaymentMethod.SUBSCRIPTION) {
+        if (!subscriptionId) {
           toast.error('No active subscription found. Please select another payment method.');
           return;
         }
 
         const res = await userApi.bookConsultationWithSubscription({
           subscriptionId,
-          slotId,        
+          slotId,
           sessionGoal: data.sessionGoal,
         });
 
-        if(!res.data) {
-          toast.error('Something went wrong');
+        if (!res.data) {
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
 
-        if(res.success) {
+        if (res.success) {
           toast.success('Booking confirmed using subscription!');
           reset();
           onOpenChange(false);
@@ -89,28 +97,27 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
           toast.error(res.message || 'Something went wrong');
         }
         return;
-      } 
+      }
 
-      if(data.paymentMethod === 'stripe') {
+      if (data.paymentMethod === ConsultationPaymentMethod.STRIPE) {
         const res = await userApi.createCheckoutSession({
           slotId,
           amount,
           sessionGoal: data.sessionGoal,
-          purpose: 'consultation'
+          purpose: PaymentPurpose.CONSULTATION,
         });
 
-        if(!res.data) {
-          toast.error('Something went wrong');
+        if (!res.data) {
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
-  
+
         window.location.href = res.data.url;
-  
+
         reset();
         onOpenChange(false);
         onSuccess();
       }
-
     } catch (error) {
       handleApiError(error);
     }
@@ -126,9 +133,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
           </DialogDescription>
         </DialogHeader>
         {loadingSub ? (
-          <div className="py-12 text-center text-gray-500 animate-pulse">
-            Loading subscription information...
-          </div>
+          <div className="py-12 text-center text-gray-500 animate-pulse">Loading subscription information...</div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
             <div>
@@ -142,9 +147,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
                 className="mt-2 block w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 placeholder="What would you like to achieve in this session?"
               />
-              {errors.sessionGoal && (
-                <p className="mt-1 text-xs text-red-500">{errors.sessionGoal.message}</p>
-              )}
+              {errors.sessionGoal && <p className="mt-1 text-xs text-red-500">{errors.sessionGoal.message}</p>}
             </div>
 
             <div>
@@ -153,7 +156,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
                 <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200">
                   <input
                     type="radio"
-                    value="stripe"
+                    value={ConsultationPaymentMethod.STRIPE}
                     {...register('paymentMethod', { required: true })}
                     defaultChecked
                     className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
@@ -164,7 +167,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
                 <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200">
                   <input
                     type="radio"
-                    value="wallet"
+                    value={ConsultationPaymentMethod.WALLET}
                     {...register('paymentMethod', { required: true })}
                     className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
                   />
@@ -175,7 +178,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
                   <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200">
                     <input
                       type="radio"
-                      value="subscription"
+                      value={ConsultationPaymentMethod.SUBSCRIPTION}
                       {...register('paymentMethod', { required: true })}
                       className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
                     />
@@ -199,11 +202,7 @@ const BookingModal: React.FC<BookingModalProps> = ({isOpen, onOpenChange, slotId
                 disabled={isSubmitting}
                 className="rounded-lg bg-blue-600 px-5 py-2.5 text-white font-medium hover:bg-blue-700 transition duration-200 disabled:bg-blue-400"
               >
-                {isSubmitting
-                  ? 'Processing...'
-                  : subscriptionId
-                    ? 'Confirm Booking'
-                    : `Pay ₹${amount}`}
+                {isSubmitting ? 'Processing...' : subscriptionId ? 'Confirm Booking' : `Pay ₹${amount}`}
               </button>
             </DialogFooter>
           </form>

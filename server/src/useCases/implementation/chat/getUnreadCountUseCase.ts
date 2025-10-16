@@ -1,3 +1,4 @@
+import { UserRole } from '@/domain/enums/UserEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IMessageRepository } from '@/domain/repositoryInterface/IMessageRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
@@ -34,9 +35,9 @@ export class GetUnreadCountUseCase implements IGetUnreadCountUseCase {
 
         let receiverId: string;
 
-        if (user.role === 'user') {
+        if (user.role === UserRole.USER) {
             receiverId = userId;
-        } else if (user.role === 'psychologist') {
+        } else if (user.role === UserRole.PSYCHOLOGIST) {
             const psychologist =
                 await this._psychologistRepo.findByUserId(userId);
 

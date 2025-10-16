@@ -1,5 +1,13 @@
 import { Consultation } from '@/domain/entities/consultation';
 import { Subscription } from '@/domain/entities/subscription';
+import {
+    ConsultationPaymentMethod,
+    ConsultationPaymentStatus,
+    ConsultationStatus,
+} from '@/domain/enums/ConsultationEnums';
+import { NotificationType } from '@/domain/enums/NotificationEnums';
+import { SubscriptionStatus } from '@/domain/enums/PlanEnums';
+import { VideoCallStatus } from '@/domain/enums/VideoCallEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
@@ -18,8 +26,7 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { ICreateNotificationUseCase } from '@/useCases/interfaces/notification/ICreateNotificationUseCase';
 import { IBookConsultationWithSubscriptionUseCase } from '@/useCases/interfaces/subscription/IBookConsultationWithSubscriptionUseCase';
 
-export class BookConsultationWithSubscriptionUseCase  implements IBookConsultationWithSubscriptionUseCase
-{
+export class BookConsultationWithSubscriptionUseCase implements IBookConsultationWithSubscriptionUseCase {
     private _subscriptionRepository: ISubscriptionRepository;
     private _slotRepository: ISlotRepository;
     private _consultationRepository: IConsultationRepository;
@@ -54,7 +61,7 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
         subscriptionId: string,
         slotId: string,
         sessionGoal: string,
-    ): Promise<{ consultation: Consultation, subscription: Subscription }> {
+    ): Promise<{ consultation: Consultation; subscription: Subscription }> {
         if (!userId) {
             throw new AppError(
                 adminMessages.ERROR.USER_ID_REQUIRED,
@@ -67,16 +74,15 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
                 SubscriptionMessages.ERROR.SUBSCRIPTION_ID_REQUIRED,
                 HttpStatus.BAD_REQUEST,
             );
-        } 
+        }
         if (!slotId) {
             throw new AppError(
                 bookingMessages.ERROR.SLOT_ID_REQUIRED,
                 HttpStatus.BAD_REQUEST,
             );
         }
-        const subscription = await this._subscriptionRepository.findById(
-            subscriptionId,
-        );
+        const subscription =
+            await this._subscriptionRepository.findById(subscriptionId);
         if (!subscription) {
             throw new AppError(
                 SubscriptionMessages.ERROR.SUBSCRIPTION_NOT_FOUND,
@@ -89,7 +95,7 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
                 HttpStatus.UNAUTHORIZED,
             );
         }
-        if (subscription.status !== 'active') {
+        if (subscription.status !== SubscriptionStatus.ACTIVE) {
             throw new AppError(
                 SubscriptionMessages.ERROR.SUBSCRIPTION_NOT_FOUND,
                 HttpStatus.NOT_FOUND,
@@ -124,20 +130,31 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
             startDateTime: slot.startDateTime,
             endDateTime: slot.endDateTime,
             sessionGoal,
-            status: 'booked',
-            paymentStatus: 'paid',
-            paymentMethod: 'subscription',
+            status: ConsultationStatus.BOOKED,
+            paymentStatus: ConsultationPaymentStatus.PAID,
+            paymentMethod: ConsultationPaymentMethod.SUBSCRIPTION,
             paymentIntentId: null,
             includedInPayout: false,
         });
 
-        const meetingLink = await this._videoCallService.generateMeetingLink(consultation.id);
-        await this._consultationRepository.updateConsultation(consultation.id, { meetingLink });
+        const meetingLink = await this._videoCallService.generateMeetingLink(
+            consultation.id,
+        );
+        await this._consultationRepository.updateConsultation(consultation.id, {
+            meetingLink,
+        });
 
         // Atomically decrement 1 credit and get updated subscription
-        const updated = await this._subscriptionRepository.decrementCreditsAtomically(subscription.id, 1);
+        const updated =
+            await this._subscriptionRepository.decrementCreditsAtomically(
+                subscription.id,
+                1,
+            );
         if (!updated) {
-            throw new AppError(SubscriptionMessages.ERROR.INSUFFICIENT_CREDITS, HttpStatus.BAD_REQUEST);
+            throw new AppError(
+                SubscriptionMessages.ERROR.INSUFFICIENT_CREDITS,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         await this._videoCallRepo.create({
@@ -145,7 +162,7 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
             patientId: consultation.patientId,
             psychologistId: consultation.psychologistId,
             callUrl: meetingLink,
-            status: 'scheduled',
+            status: VideoCallStatus.SCHEDULED,
             startedAt: null,
             endedAt: null,
         });
@@ -153,20 +170,28 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
         // mark the slot as booked
         await this._slotRepository.markSlotAsBooked(slot.id, userId);
 
-        const psychologist = await this._psychologistRepo.findById(consultation.psychologistId);
-        
+        const psychologist = await this._psychologistRepo.findById(
+            consultation.psychologistId,
+        );
+
         if (!psychologist) {
-            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new AppError(
+                psychologistMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
         }
 
-        const oneHourBefore = new Date(consultation.startDateTime.getTime() - 60 * 60 * 1000);
+        const oneHourBefore = new Date(
+            consultation.startDateTime.getTime() - 60 * 60 * 1000,
+        );
 
         // reminder notification for the patient
         await this._createNotificationUseCase.execute({
             recipientId: consultation.patientId,
             consultationId: consultation.id,
-            type: 'CONSULTATION_REMINDER',
-            message: notificationMessages.CONSULTATION.PATIENT_CONSULTATION_REMINDER,
+            type: NotificationType.CONSULTATION_REMINDER,
+            message:
+                notificationMessages.CONSULTATION.PATIENT_CONSULTATION_REMINDER,
             read: false,
             notifyAt: oneHourBefore,
             sent: false,
@@ -176,8 +201,10 @@ export class BookConsultationWithSubscriptionUseCase  implements IBookConsultati
         await this._createNotificationUseCase.execute({
             recipientId: psychologist.userId,
             consultationId: consultation.id,
-            type: 'CONSULTATION_REMINDER',
-            message: notificationMessages.CONSULTATION.PSYCHOLOGIST_CONSULTATION_REMINDER,
+            type: NotificationType.CONSULTATION_REMINDER,
+            message:
+                notificationMessages.CONSULTATION
+                    .PSYCHOLOGIST_CONSULTATION_REMINDER,
             read: false,
             notifyAt: oneHourBefore,
             sent: false,

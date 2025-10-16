@@ -45,8 +45,7 @@ instance.interceptors.response.use(
       const role = store.getState().auth.role;
       store.dispatch(logout());
 
-      const loginRedirect =
-        role === 'psychologist' ? '/login' : role === 'admin' ? '/admin/login' : '/login';
+      const loginRedirect = role === 'psychologist' ? '/login' : role === 'admin' ? '/admin/login' : '/login';
 
       setTimeout(() => {
         navigateTo(loginRedirect, { role });
@@ -78,7 +77,8 @@ instance.interceptors.response.use(
         const { data } = await instance.post(refreshEndpoint);
         const accessToken = data.accessToken.accessToken;
 
-        const decoded: { email: string; userId: string; role: 'user' | 'psychologist' | 'admin' } = jwtDecode(accessToken);
+        const decoded: { email: string; userId: string; role: 'user' | 'psychologist' | 'admin' } =
+          jwtDecode(accessToken);
 
         store.dispatch(
           loginSuccess({
@@ -97,8 +97,7 @@ instance.interceptors.response.use(
       } catch (err) {
         store.dispatch(logout());
 
-        const loginRedirect =
-          role === 'admin' ? '/admin/login' : role === 'psychologist' ? '/login' : '/login';
+        const loginRedirect = role === 'admin' ? '/admin/login' : role === 'psychologist' ? '/login' : '/login';
 
         navigateTo(loginRedirect, { role });
         return Promise.reject(err);

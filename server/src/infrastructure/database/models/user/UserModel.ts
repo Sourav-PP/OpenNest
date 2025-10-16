@@ -1,3 +1,4 @@
+import { UserGender, UserRole } from '@/domain/enums/UserEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IUserDocument extends Document {
@@ -6,10 +7,10 @@ export interface IUserDocument extends Document {
   email: string;
   password?: string;
   phone?: string;
-  role: 'user' | 'psychologist';
+  role: UserRole;
   profileImage?: string,
   dateOfBirth?: Date,
-  gender?: string,
+  gender?: UserGender,
   isActive: boolean,
   googleId?: string
 }
@@ -33,7 +34,7 @@ const userSchema = new Schema<IUserDocument>(
         },
         role: {
             type: String,
-            enum: ['user', 'psychologist'],
+            enum: Object.values(UserRole),
             required: true,
         },
         profileImage: {
@@ -44,6 +45,7 @@ const userSchema = new Schema<IUserDocument>(
         },
         gender: {
             type: String,
+            enum: Object.values(UserGender),
         },
         isActive: {
             type: Boolean,

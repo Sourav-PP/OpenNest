@@ -4,18 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { userApi } from '@/services/api/user';
-import {
-  changePasswordSchema,
-  type changePasswordData,
-} from '@/lib/validations/user/changePassword';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
+import { changePasswordSchema, type changePasswordData } from '@/lib/validations/user/changePassword';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { handleApiError } from '@/lib/utils/handleApiError';
@@ -41,10 +31,10 @@ const ChangePassword = () => {
   const onSubmit = async (data: changePasswordData) => {
     try {
       setLoading(true);
-      
+
       const res = await userApi.changePassword({
         currentPassword: data.currentPassword,
-        newPassword: data.newPassword
+        newPassword: data.newPassword,
       });
       toast.success(res.message);
       form.reset();
@@ -106,12 +96,12 @@ const ChangePassword = () => {
                         <Input
                           leftIcon={Lock}
                           rightIcon={
-                            <button
-                              type="button"
-                              onClick={() => setCurrentShowPass(prev => !prev)}
-                              className="p-1"
-                            >
-                              {showCurrentPass ? <Eye className='text-slate-400' /> : <EyeClosed className='text-slate-400' />}
+                            <button type="button" onClick={() => setCurrentShowPass(prev => !prev)} className="p-1">
+                              {showCurrentPass ? (
+                                <Eye className="text-slate-400" />
+                              ) : (
+                                <EyeClosed className="text-slate-400" />
+                              )}
                             </button>
                           }
                           type={showCurrentPass ? 'type' : 'password'}
@@ -129,19 +119,17 @@ const ChangePassword = () => {
                   name="newPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">
-                        New Password
-                      </FormLabel>
+                      <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">New Password</FormLabel>
                       <FormControl>
                         <Input
                           leftIcon={Lock}
                           rightIcon={
-                            <button
-                              type="button"
-                              onClick={() => setShowNewPass(prev => !prev)}
-                              className="p-1"
-                            >
-                              {showNewPass ? <Eye className='text-slate-400' /> : <EyeClosed className='text-slate-400' />}
+                            <button type="button" onClick={() => setShowNewPass(prev => !prev)} className="p-1">
+                              {showNewPass ? (
+                                <Eye className="text-slate-400" />
+                              ) : (
+                                <EyeClosed className="text-slate-400" />
+                              )}
                             </button>
                           }
                           type={showNewPass ? 'type' : 'password'}
@@ -166,12 +154,12 @@ const ChangePassword = () => {
                         <Input
                           leftIcon={Lock}
                           rightIcon={
-                            <button
-                              type="button"
-                              onClick={() => setShowConfirmPass(prev => !prev)}
-                              className="p-1"
-                            >
-                              {showConfirmPass ? <Eye className='text-slate-400' /> : <EyeClosed className='text-slate-400' />}
+                            <button type="button" onClick={() => setShowConfirmPass(prev => !prev)} className="p-1">
+                              {showConfirmPass ? (
+                                <Eye className="text-slate-400" />
+                              ) : (
+                                <EyeClosed className="text-slate-400" />
+                              )}
                             </button>
                           }
                           type={showConfirmPass ? 'type' : 'password'}

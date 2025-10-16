@@ -7,11 +7,13 @@ import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { formatDateOnly } from '@/lib/utils/dateTimeFormatter';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import type { IPayoutRequestDto } from '@/types/dtos/payoutRequest';
+import { PayoutRequestStatus } from '@/constants/PayoutRequest';
+import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
 
 const PayoutHistoryTable = () => {
   const [payouts, setPayouts] = useState<IPayoutRequestDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [sort, setSort] = useState<'asc' | 'desc'>('desc');
+  const [sort, setSort] = useState<SortFilterType>(SortFilter.Desc);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -57,9 +59,9 @@ const PayoutHistoryTable = () => {
       render: (p: IPayoutRequestDto) => (
         <span
           className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${
-            p.status === 'approved'
+            p.status === PayoutRequestStatus.APPROVED
               ? 'bg-green-100 text-green-800'
-              : p.status === 'pending'
+              : p.status === PayoutRequestStatus.PENDING
                 ? 'bg-yellow-100 text-yellow-800'
                 : 'bg-red-100 text-red-800'
           }`}
@@ -82,23 +84,15 @@ const PayoutHistoryTable = () => {
       <div className="flex justify-end mb-4">
         <select
           value={sort}
-          onChange={e => setSort(e.target.value as 'asc' | 'desc')}
+          onChange={e => setSort(e.target.value as SortFilterType)}
           className="px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
         >
-          <option value="desc">Newest First</option>
-          <option value="asc">Oldest First</option>
+          <option value={SortFilter.Desc}>Newest First</option>
+          <option value={SortFilter.Asc}>Oldest First</option>
         </select>
       </div>
-      <ReusableTable
-        data={payouts}
-        columns={columns}
-        emptyMessage="No payout history found."
-      />
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      <ReusableTable data={payouts} columns={columns} emptyMessage="No payout history found." />
+      <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );
 };

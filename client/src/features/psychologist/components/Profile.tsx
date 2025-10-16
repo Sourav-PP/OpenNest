@@ -5,6 +5,7 @@ import type { IPsychologistProfileDto } from '@/types/dtos/psychologist';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { KycStatus } from '@/constants/Kyc';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -26,24 +27,25 @@ const Profile = () => {
     fetchProfileData();
   }, []);
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
-        {[...Array(8)].map((_, index) => (
-          <div
-            key={index}
-            className="absolute h-2 w-2 bg-gray-300 rounded-full"
-            style={{
-              top: '50%',
-              left: '50%',
-              transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
-            }}
-          ></div>
-        ))}
-        <span className="sr-only">Loading...</span>
+  if (loading)
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
+          {[...Array(8)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute h-2 w-2 bg-gray-300 rounded-full"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+              }}
+            ></div>
+          ))}
+          <span className="sr-only">Loading...</span>
+        </div>
       </div>
-    </div>
-  );
+    );
   if (!profile) return null;
 
   const {
@@ -61,26 +63,32 @@ const Profile = () => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-indigo-50 to-white min-h-screen">
-      <AnimatedTitle><h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">My Profile</h2></AnimatedTitle>
+      <AnimatedTitle>
+        <h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">My Profile</h2>
+      </AnimatedTitle>
       <p className="mb-6 text-gray-500">Hi, {name}, Welcome back!</p>
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-6 border border-gray-100">
         <div className="flex justify-end mb-4 sm:mb-0">
           <p
             className={`text-sm font-medium px-3 py-1 rounded-full ${
-              kycStatus === 'approved'
+              kycStatus === KycStatus.APPROVED
                 ? 'bg-green-100 text-green-700'
-                : kycStatus === 'rejected'
+                : kycStatus === KycStatus.REJECTED
                   ? 'bg-red-100 text-red-700'
                   : 'bg-yellow-100 text-yellow-700'
             } hidden sm:block`}
           >
             KYC Status: <span className="capitalize">{kycStatus}</span>
-            {kycStatus === 'approved' && ' ✓'}
+            {kycStatus === KycStatus.APPROVED && ' ✓'}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
           <div className="w-32 h-32 bg-gray-200 rounded-xl overflow-hidden ring-2 ring-blue-200">
-            <img src={getCloudinaryUrl(profileImage) || undefined} alt="profile_image" className="w-full h-full object-cover object-center"/>
+            <img
+              src={getCloudinaryUrl(profileImage) || undefined}
+              alt="profile_image"
+              className="w-full h-full object-cover object-center"
+            />
           </div>
           <div className="text-center sm:text-left">
             <h3 className="text-2xl font-semibold text-gray-900">{name}</h3>
@@ -90,15 +98,15 @@ const Profile = () => {
             <p className="text-sm text-gray-600">Fees: ${defaultFee}</p>
             <p
               className={`text-sm font-medium mt-1 sm:hidden ${
-                kycStatus === 'approved'
+                kycStatus === KycStatus.APPROVED
                   ? 'text-green-600'
-                  : kycStatus === 'rejected'
+                  : kycStatus === KycStatus.REJECTED
                     ? 'text-red-500'
                     : 'text-yellow-500'
               }`}
             >
               KYC Status: <span className="capitalize">{kycStatus}</span>
-              {kycStatus === 'approved' && ' ✓'}
+              {kycStatus === KycStatus.APPROVED && ' ✓'}
             </p>
           </div>
         </div>
@@ -110,7 +118,9 @@ const Profile = () => {
           <h4 className="text-lg font-medium text-gray-800 mb-2 border-b border-gray-200 pb-1">Specialization</h4>
           <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
             {specializations?.map((spec: string) => (
-              <li key={spec} className="ml-2">{spec}</li>
+              <li key={spec} className="ml-2">
+                {spec}
+              </li>
             ))}
           </ul>
         </div>

@@ -3,7 +3,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middlewares/errorHandler';
 import { appConfig } from '@/infrastructure/config/config';
-
 //routes
 import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
@@ -13,10 +12,12 @@ import chatRoutes from './routes/chatRoutes';
 
 const app = express();
 
-app.use(cors({
-    origin: appConfig.cors.origin,
-    credentials: true,
-}));
+app.use(
+    cors({
+        origin: appConfig.cors.origin,
+        credentials: true,
+    }),
+);
 
 app.use((req, res, next) => {
     if (req.originalUrl === '/api/user/payment/webhook') {
@@ -30,7 +31,7 @@ app.use(cookieParser());
 
 //routes
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes );
+app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/psychologist', psychologistRoutes);
 app.use('/api/chat', chatRoutes);

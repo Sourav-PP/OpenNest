@@ -7,7 +7,7 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export class RejectKycUseCase implements IRejectKycUseCase {
     private _kycRepo: IKycRepository;
-    private _psychologistRepo: IPsychologistRepository; 
+    private _psychologistRepo: IPsychologistRepository;
 
     constructor(
         kycRepo: IKycRepository,
@@ -19,7 +19,10 @@ export class RejectKycUseCase implements IRejectKycUseCase {
 
     async execute(psychologistId: string, reason: string): Promise<void> {
         if (!psychologistId) {
-            throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
+            throw new AppError(
+                adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         await this._kycRepo.rejectKyc(psychologistId, reason);

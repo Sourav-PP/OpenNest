@@ -23,8 +23,9 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
     async execute(email: string, password: string): Promise<void> {
         const isVerified = await this._otpRepository.isVerified(email);
 
-        if (!isVerified) throw new AppError(authMessages.ERROR.EMAIL_NOT_VERIFIED);
-        
+        if (!isVerified)
+            throw new AppError(authMessages.ERROR.EMAIL_NOT_VERIFIED);
+
         const hashed = await this._authService.hashPassword(password);
         await this._userRepository.updatePassword(email, hashed);
 

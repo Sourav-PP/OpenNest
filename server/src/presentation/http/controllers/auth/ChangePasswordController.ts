@@ -11,27 +11,16 @@ export class ChangePasswordController {
         this._changePasswordUseCase = changePasswordUseCase;
     }
 
-    handle = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { currentPassword, newPassword } = req.body;
             const userId = req.user?.userId;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            await this._changePasswordUseCase.execute(
-                userId,
-                currentPassword,
-                newPassword,
-            );
+            await this._changePasswordUseCase.execute(userId, currentPassword, newPassword);
 
             res.status(HttpStatus.OK).json({
                 success: true,

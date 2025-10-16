@@ -34,8 +34,8 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
             throw new AppError(authMessages.ERROR.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
         }
 
-        const accessToken = this._tokenService.generateAccessToken(admin.id, 'admin', admin.email);
-        const refreshToken = this._tokenService.generateRefreshToken(admin.id, 'admin', admin.email);
+        const accessToken = this._tokenService.generateAccessToken(admin.id, 'admin', admin.email, true);
+        const refreshToken = this._tokenService.generateRefreshToken(admin.id, 'admin', admin.email, true);
 
         return {
             accessToken,

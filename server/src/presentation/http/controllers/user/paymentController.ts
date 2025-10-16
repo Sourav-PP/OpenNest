@@ -8,6 +8,7 @@ import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 import { appConfig } from '@/infrastructure/config/config';
 import { ICreateSubscriptionCheckoutSessionUseCase } from '@/useCases/interfaces/subscription/ICreateSubscriptionCheckoutSessionUseCase';
 import { IBookConsultationWithSubscriptionUseCase } from '@/useCases/interfaces/subscription/IBookConsultationWithSubscriptionUseCase';
+import { PaymentPurpose } from '@/domain/enums/PaymentEnums';
 
 export class PaymentController {
     private _createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase;
@@ -28,37 +29,21 @@ export class PaymentController {
     }
 
     // normal consultation payment session
-    createCheckoutSession = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    createCheckoutSession = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { slotId, sessionGoal, amount, purpose } = req.body;
             const userId = req.user?.userId;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             if (!purpose || !amount) {
-                console.log('problem is here..');
-
-                throw new AppError(
-                    bookingMessages.ERROR.MISSING_FIELDS,
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new AppError(bookingMessages.ERROR.MISSING_FIELDS, HttpStatus.BAD_REQUEST);
             }
 
-            if (purpose === 'consultation' && (!slotId || !sessionGoal)) {
-                console.log('problem is here');
-                throw new AppError(
-                    bookingMessages.ERROR.MISSING_FIELDS,
-                    HttpStatus.BAD_REQUEST,
-                );
+            if (purpose === PaymentPurpose.CONSULTATION && (!slotId || !sessionGoal)) {
+                throw new AppError(bookingMessages.ERROR.MISSING_FIELDS, HttpStatus.BAD_REQUEST);
             }
 
             const result = await this._createCheckoutSessionUseCase.execute({
@@ -81,41 +66,24 @@ export class PaymentController {
         }
     };
 
-    createSubscriptionCheckoutSession = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    createSubscriptionCheckoutSession = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('create subscription checkout session controller triggered');
             const { planId, psychologistId } = req.body;
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
-            
+
             if (!planId) {
-                throw new AppError(
-                    bookingMessages.ERROR.MISSING_FIELDS,
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new AppError(bookingMessages.ERROR.MISSING_FIELDS, HttpStatus.BAD_REQUEST);
             }
 
             if (!psychologistId) {
-                throw new AppError(
-                    bookingMessages.ERROR.MISSING_FIELDS,
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new AppError(bookingMessages.ERROR.MISSING_FIELDS, HttpStatus.BAD_REQUEST);
             }
 
-            const url = await this._createSubscriptionCheckoutSessionUseCase.execute(
-                userId,
-                planId,
-                psychologistId,
-            );
+            const url = await this._createSubscriptionCheckoutSessionUseCase.execute(userId, planId, psychologistId);
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: bookingMessages.SUCCESS.CHECKOUT_SESSION_CREATED,
@@ -128,26 +96,16 @@ export class PaymentController {
         }
     };
 
-    bookConsultationWithSubscription = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
-        try {   
+    bookConsultationWithSubscription = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
             const { subscriptionId, slotId, sessionGoal } = req.body;
-            console.log('book consultation with subscription controller triggered');
+
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
             if (!subscriptionId || !slotId || !sessionGoal) {
-                throw new AppError(
-                    bookingMessages.ERROR.MISSING_FIELDS,
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new AppError(bookingMessages.ERROR.MISSING_FIELDS, HttpStatus.BAD_REQUEST);
             }
             const { consultation, subscription } = await this._bookConsultationWithSubscriptionUseCase.execute(
                 userId,
@@ -155,7 +113,7 @@ export class PaymentController {
                 slotId,
                 sessionGoal,
             );
-            
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: bookingMessages.SUCCESS.BOOKING_CONFIRMED,
@@ -168,12 +126,8 @@ export class PaymentController {
             next(error);
         }
     };
-        
-    handleWebhook = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+
+    handleWebhook = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             console.log('webhook controller triggered');
             const payload = req.body;
@@ -181,19 +135,12 @@ export class PaymentController {
             const endpointSecret = appConfig.stripe.webhookSecret;
 
             if (!signature) {
-                throw new AppError(
-                    bookingMessages.ERROR.MISSING_SIGNATURE,
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new AppError(bookingMessages.ERROR.MISSING_SIGNATURE, HttpStatus.BAD_REQUEST);
             }
 
-            await this._handleWebhookUseCase.execute(
-                Buffer.from(payload),
-                signature,
-                endpointSecret,
-            );
+            await this._handleWebhookUseCase.execute(Buffer.from(payload), signature, endpointSecret);
 
-            res.status(200).json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 message: bookingMessages.SUCCESS.WEBHOOK_PROCESSED,
             });

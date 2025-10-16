@@ -8,13 +8,20 @@ import CustomPagination from '@/components/user/CustomPagination';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import {
+  ConsultationStatus,
+  ConsultationStatusFilter,
+  type ConsultationStatusFilterType,
+} from '@/constants/Consultation';
+import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 const UserConsultationsTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<'asc' | 'desc'>('asc');
-  const [status, setStatus] = useState<'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all'>('all');
+  const [sort, setSort] = useState<SortFilterType>(SortFilter.Asc);
+  const [status, setStatus] = useState<ConsultationStatusFilterType>(ConsultationStatusFilter.All);
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -43,10 +50,10 @@ const UserConsultationsTable = () => {
           page: currentPage,
         });
 
-        if(!res.data) {
-          toast.error('Something went wrong');
+        if (!res.data) {
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
-        };
+        }
 
         setConsultations(res.data.consultations);
         setTotalCount(res.data.totalCount ?? 0);
@@ -73,7 +80,7 @@ const UserConsultationsTable = () => {
     {
       header: 'SI',
       render: (_: IConsultationDto, index: number) => index + 1,
-      className: 'ps-4'
+      className: 'ps-4',
     },
     {
       header: 'Psychologist',
@@ -92,11 +99,11 @@ const UserConsultationsTable = () => {
       render: (c: IConsultationDto) => (
         <span
           className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${
-            c.status === 'booked'
+            c.status === ConsultationStatus.Booked
               ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-              : c.status === 'cancelled'
+              : c.status === ConsultationStatus.Cancelled
                 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                : c.status === 'completed'
+                : c.status === ConsultationStatus.Completed
                   ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                   : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
           }`}
@@ -107,13 +114,14 @@ const UserConsultationsTable = () => {
     },
     {
       header: 'View',
-      render: (c: IConsultationDto) =>
+      render: (c: IConsultationDto) => (
         <Link
           to={`/user/consultations/${c.id}`}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
           View
         </Link>
+      ),
     },
   ];
 
@@ -137,10 +145,14 @@ const UserConsultationsTable = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-slate-200 to-white min-h-screen">
-      <AnimatedTitle><h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-6 tracking-tight text-start">My Consultations</h2></AnimatedTitle>
+      <AnimatedTitle>
+        <h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-6 tracking-tight text-start">
+          My Consultations
+        </h2>
+      </AnimatedTitle>
       <div className="space-y-6 dark:bg-gray-800 rounded-lg">
         <ConsultationFilters
           search={search}
@@ -160,11 +172,7 @@ const UserConsultationsTable = () => {
           emptyMessage="No consultations found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />
-        <CustomPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </div>
     </div>
   );

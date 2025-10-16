@@ -1,10 +1,8 @@
 import express from 'express';
 import { uploadSingle } from '../middlewares/multer';
-
 //validators
 import { loginValidate, loginValidator } from '../validators/loginValidator';
 import { createServiceValidator, validateCreateService } from '../validators/createServiceValidator';
-
 //controllers
 import {
     adminAuthController,
@@ -18,35 +16,13 @@ import {
     adminPayoutController,
 } from '@/infrastructure/config/di';
 
-
-
 const router = express.Router();
 
-// const loggerMiddleware = (label: string) => (req: Request, res: Response, next: NextFunction  ) => {
-//   console.log(`>> Hit: ${label}`);
-//   next();
-// };
-
-
-router.post(
-    '/login',
-    loginValidator,
-    loginValidate,
-    adminAuthController.login,
-);
-router.post(
-    '/logout',
-    adminAuthController.logout,
-);
+router.post('/login', loginValidator, loginValidate, adminAuthController.login);
+router.post('/logout', adminAuthController.logout);
 router.post('/refresh-token', adminRefreshTokenController.handle);
-router.post(
-    '/services',
-    uploadSingle,
-    createServiceValidator,
-    validateCreateService,
-    adminServiceController.create,
-);
-router.delete('/services/:id', authenticateAdmin, adminServiceController.delete);
+router.post('/services', uploadSingle, createServiceValidator, validateCreateService, adminServiceController.create);
+router.delete('/services/:serviceId', authenticateAdmin, adminServiceController.delete);
 router.get('/users', authenticateAdmin, adminUserManagementController.getAllUsers);
 router.get('/psychologists', authenticateAdmin, adminUserManagementController.getAllPsychologists);
 router.get('/kyc', authenticateAdmin, adminKycController.getAllKyc);

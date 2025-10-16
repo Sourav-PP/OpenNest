@@ -7,9 +7,7 @@ import { appConfig } from '@/infrastructure/config/config';
 export class GoogleLoginController {
     private _googleLoginUseCase: IGoogleLoginUseCase;
 
-    constructor(
-        googleLoginUseCase: IGoogleLoginUseCase,
-    ) {
+    constructor(googleLoginUseCase: IGoogleLoginUseCase) {
         this._googleLoginUseCase = googleLoginUseCase;
     }
 
@@ -25,6 +23,7 @@ export class GoogleLoginController {
                 sameSite: 'strict',
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
+            
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: authMessages.SUCCESS.LOGIN,

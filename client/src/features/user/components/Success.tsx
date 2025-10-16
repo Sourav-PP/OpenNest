@@ -7,9 +7,7 @@ export default function Success() {
       <div className="animate-fadeInScale">
         <CheckCircle className="text-green-600 w-24 h-24 mb-6 drop-shadow-lg" />
       </div>
-      <h1 className="text-4xl font-extrabold text-green-800 mb-3 tracking-tight">
-        Payment Successful!
-      </h1>
+      <h1 className="text-4xl font-extrabold text-green-800 mb-3 tracking-tight">Payment Successful!</h1>
       <p className="text-gray-600 text-center max-w-md mb-8 text-lg leading-relaxed">
         Your booking is confirmed! We're thrilled to have you on board. Thank you for choosing our service.
       </p>

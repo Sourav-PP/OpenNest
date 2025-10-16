@@ -1,3 +1,4 @@
+import { UserRole } from '@/domain/enums/UserEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IPendingSignupDocument extends Document {
@@ -6,7 +7,7 @@ export interface IPendingSignupDocument extends Document {
   email: string;
   password?: string;
   phone?: string;
-  role: 'user' | 'psychologist';
+  role: UserRole;
   profileImage?: string,
 }
 
@@ -34,7 +35,7 @@ const pendingSignupSchema = new Schema<IPendingSignupDocument>(
         },
         role: {
             type: String,
-            enum: ['user', 'psychologist'],
+            enum: Object.values(UserRole),
             required: true,
         },
         profileImage: {

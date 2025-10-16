@@ -1,3 +1,5 @@
+import { ConsultationStatus } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IGetUserConsultationHistoryUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationHistoryUseCase';
 import { toConsultationDto } from '@/useCases/mappers/consultationMapper';
@@ -18,7 +20,10 @@ export class GetUserConsultationHistoryUseCase implements IGetUserConsultationHi
     ): Promise<IGetUserConsultationHistoryResponse> {
         const { search, sort, page = 1, limit = 10 } = input;
 
-        const finalSort = sort === 'asc' || sort === 'desc' ? sort : 'desc';
+        const finalSort =
+            sort === SortFilter.ASC || sort === SortFilter.DESC
+                ? sort
+                : SortFilter.DESC;
         const skip = (page - 1) * limit;
         const userId = input.patientId;
 
@@ -28,7 +33,7 @@ export class GetUserConsultationHistoryUseCase implements IGetUserConsultationHi
                 search,
                 sort: finalSort,
                 limit,
-                status: 'completed',
+                status: ConsultationStatus.COMPLETED,
                 skip,
             },
         );

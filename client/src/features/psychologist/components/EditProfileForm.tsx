@@ -4,7 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import 'flatpickr/dist/themes/material_blue.css';
 import { psychologistApi } from '@/services/api/psychologist';
-import { updatePsychologistSchema, type updatePsychologistData } from '@/lib/validations/psychologist/updatePsychologistValidation';
+import {
+  updatePsychologistSchema,
+  type updatePsychologistData,
+} from '@/lib/validations/psychologist/updatePsychologistValidation';
 import { useNavigate } from 'react-router-dom';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
@@ -21,7 +24,7 @@ const EditProfileForm = () => {
     setValue,
     formState: { errors },
   } = useForm<updatePsychologistData>({
-    resolver: zodResolver(updatePsychologistSchema)
+    resolver: zodResolver(updatePsychologistSchema),
   });
 
   useEffect(() => {
@@ -55,22 +58,21 @@ const EditProfileForm = () => {
       formData.append('phone', data.phone);
       formData.append('defaultFee', data.defaultFee.toString());
       formData.append('aboutMe', data.aboutMe);
-      if(data.dateOfBirth) {
+      if (data.dateOfBirth) {
         formData.append('dateOfBirth', data.dateOfBirth);
       }
-      if(data.gender) {
+      if (data.gender) {
         formData.append('gender', data.gender);
       }
 
       const file = data.profileImage?.[0];
-      if(file) {
+      if (file) {
         formData.append('file', file);
       }
 
       await psychologistApi.updatePsychologistProfile(formData);
       toast.success('Profile updated successfully');
       navigate('/psychologist/edit-profile');
-        
     } catch (error) {
       handleApiError(error);
     }
@@ -83,47 +85,41 @@ const EditProfileForm = () => {
     }
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
-        {[...Array(8)].map((_, index) => (
-          <div
-            key={index}
-            className="absolute h-2 w-2 bg-gray-300 rounded-full"
-            style={{
-              top: '50%',
-              left: '50%',
-              transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
-            }}
-          ></div>
-        ))}
-        <span className="sr-only">Loading...</span>
+  if (loading)
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
+          {[...Array(8)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute h-2 w-2 bg-gray-300 rounded-full"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+              }}
+            ></div>
+          ))}
+          <span className="sr-only">Loading...</span>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-indigo-50 to-white min-h-screen">
-      <AnimatedTitle><h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">Edit Profile</h2></AnimatedTitle>
+      <AnimatedTitle>
+        <h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">Edit Profile</h2>
+      </AnimatedTitle>
       <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6">
             <div className="relative group">
               <div className="w-24 h-24 bg-gray-50 rounded-lg overflow-hidden ring-2 ring-gray-200 transition-all group-hover:ring-indigo-300">
                 {profileImagePreview ? (
-                  <img
-                    src={profileImagePreview}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={profileImagePreview} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                    <svg
-                      className="w-8 h-8 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -138,7 +134,7 @@ const EditProfileForm = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => {
+                  onChange={e => {
                     handleImageChange(e);
                     if (e.target.files?.[0]) {
                       const fileList = e.target.files;
@@ -164,80 +160,58 @@ const EditProfileForm = () => {
                 </svg>
               </label>
               {errors.profileImage && (
-                <p className="text-red-500 text-xs mt-2 text-center">
-                  {errors.profileImage.message}
-                </p>
+                <p className="text-red-500 text-xs mt-2 text-center">{errors.profileImage.message}</p>
               )}
             </div>
 
             <div className="flex-1 w-full">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Psychologist Details
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Psychologist Details</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                   <input
                     type="text"
                     {...register('name')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="Enter name"
                   />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-                  )}
+                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                   <input
                     type="email"
                     {...register('email')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="Enter email"
                   />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-                  )}
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                   <input
                     type="text"
                     {...register('phone')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="Enter phone number"
                   />
-                  {errors.phone && (
-                    <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
-                  )}
+                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date of Birth
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                   <input
                     type="date"
                     {...register('dateOfBirth')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                   />
-                  {errors.dateOfBirth && (
-                    <p className="text-red-500 text-xs mt-1">{errors.dateOfBirth.message}</p>
-                  )}
+                  {errors.dateOfBirth && <p className="text-red-500 text-xs mt-1">{errors.dateOfBirth.message}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Gender
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                   <select
                     {...register('gender')}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
@@ -247,39 +221,29 @@ const EditProfileForm = () => {
                     <option value="female">Female</option>
                     <option value="other">Other</option>
                   </select>
-                  {errors.gender && (
-                    <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
-                  )}
+                  {errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Default Fees
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Default Fees</label>
                   <input
                     type="number"
                     {...register('defaultFee', { valueAsNumber: true })}
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="e.g. 500"
                   />
-                  {errors.defaultFee && (
-                    <p className="text-red-500 text-xs mt-1">{errors.defaultFee.message}</p>
-                  )}
+                  {errors.defaultFee && <p className="text-red-500 text-xs mt-1">{errors.defaultFee.message}</p>}
                 </div>
               </div>
 
               <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  About Me
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">About Me</label>
                 <textarea
                   {...register('aboutMe')}
                   className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all h-24 resize-none"
                   placeholder="Describe yourself and your approach..."
                 />
-                {errors.aboutMe && (
-                  <p className="text-red-500 text-xs mt-1">{errors.aboutMe.message}</p>
-                )}
+                {errors.aboutMe && <p className="text-red-500 text-xs mt-1">{errors.aboutMe.message}</p>}
               </div>
             </div>
           </div>
@@ -293,7 +257,6 @@ const EditProfileForm = () => {
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );

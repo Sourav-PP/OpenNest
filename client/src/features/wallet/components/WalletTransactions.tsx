@@ -12,7 +12,14 @@ interface Props {
   loading?: boolean;
 }
 
-const WalletTransactions: React.FC<Props> = ({ transactions, itemsPerPage, currentPage, onPageChange, totalCount, loading }) => {
+const WalletTransactions: React.FC<Props> = ({
+  transactions,
+  itemsPerPage,
+  currentPage,
+  onPageChange,
+  totalCount,
+  loading,
+}) => {
   console.log('transactions', transactions);
   const totalPage = Math.ceil(totalCount / itemsPerPage);
 
@@ -35,11 +42,8 @@ const WalletTransactions: React.FC<Props> = ({ transactions, itemsPerPage, curre
           <p className="text-gray-500">No transactions yet.</p>
         ) : (
           <ul className="divide-y">
-            {transactions.map((tx) => (
-              <li
-                key={tx.id}
-                className="py-4 flex justify-between items-center"
-              >
+            {transactions.map(tx => (
+              <li key={tx.id} className="py-4 flex justify-between items-center">
                 {/* Left side: Icon + Details */}
                 <div className="flex items-start gap-3">
                   {tx.type === 'credit' ? (
@@ -50,14 +54,10 @@ const WalletTransactions: React.FC<Props> = ({ transactions, itemsPerPage, curre
 
                   <div>
                     {/* Reason */}
-                    <p className="text-sm font-medium text-gray-900">
-                      {tx.metadata?.reason || 'Wallet transaction'}
-                    </p>
+                    <p className="text-sm font-medium text-gray-900">{tx.metadata?.reason || 'Wallet transaction'}</p>
 
                     {/* Date */}
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formatDate((tx as any).createdAt)}
-                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{formatDate((tx as any).createdAt)}</p>
 
                     {/* Status
                     <span
@@ -76,11 +76,7 @@ const WalletTransactions: React.FC<Props> = ({ transactions, itemsPerPage, curre
 
                 {/* Right side: Amount */}
                 <div className="text-right">
-                  <p
-                    className={`text-lg font-semibold ${
-                      tx.type === 'credit' ? 'text-green-600' : 'text-red-600'
-                    }`}
-                  >
+                  <p className={`text-lg font-semibold ${tx.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
                     {tx.type === 'credit' ? '+' : '-'}${tx.amount.toFixed(2)}
                   </p>
                 </div>
@@ -90,11 +86,7 @@ const WalletTransactions: React.FC<Props> = ({ transactions, itemsPerPage, curre
         )}
 
         {totalPage > 1 && (
-          <CustomPagination
-            currentPage={currentPage}
-            totalPages={totalPage}
-            onPageChange={onPageChange}
-          />
+          <CustomPagination currentPage={currentPage} totalPages={totalPage} onPageChange={onPageChange} />
         )}
       </CardContent>
     </Card>

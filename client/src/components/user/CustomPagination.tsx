@@ -52,7 +52,7 @@ const CustomPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, 
           </>
         )}
 
-        {Array.from({ length: endPage - adjustedStartPage + 1 }, (_, i) => adjustedStartPage + i).map((page) => (
+        {Array.from({ length: endPage - adjustedStartPage + 1 }, (_, i) => adjustedStartPage + i).map(page => (
           <PaginationItem key={page}>
             <PaginationLink
               onClick={() => onPageChange(page)}

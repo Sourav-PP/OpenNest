@@ -1,3 +1,4 @@
+import { PayoutRequestStatus } from '@/domain/enums/PayoutRequestEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
@@ -26,9 +27,7 @@ export class GetPendingAmountUseCase implements IGetPendingAmountUseCase {
         this._payoutRequestRepository = payoutRequestRepository;
     }
 
-    async execute(
-        psychologistId: string,
-    ): Promise<{
+    async execute(psychologistId: string): Promise<{
         totalAmount: number;
         commissionAmount: number;
         payoutAmount: number;
@@ -43,15 +42,22 @@ export class GetPendingAmountUseCase implements IGetPendingAmountUseCase {
                 HttpStatus.NOT_FOUND,
             );
 
-        const pendingRequests = await this._payoutRequestRepository.findByPsychologistId(psychologist.userId);
-        const pendingConsultationIds = pendingRequests.filter(request => request.status === 'pending').flatMap(r => r.consultationIds);
+        const pendingRequests =
+            await this._payoutRequestRepository.findByPsychologistId(
+                psychologist.userId,
+            );
+        const pendingConsultationIds = pendingRequests
+            .filter(request => request.status === PayoutRequestStatus.PENDING)
+            .flatMap(r => r.consultationIds);
 
         const consultations =
             await this._consultationRepository.findUnpaidCompletedConsultationsByPsychologistId(
                 psychologist.id,
             );
 
-        const eligibleConsultations = consultations.filter(c => !pendingConsultationIds.includes(c.id));
+        const eligibleConsultations = consultations.filter(
+            c => !pendingConsultationIds.includes(c.id),
+        );
         if (eligibleConsultations.length === 0) {
             return {
                 totalAmount: 0,

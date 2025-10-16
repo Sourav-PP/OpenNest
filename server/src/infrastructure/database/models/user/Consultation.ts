@@ -1,4 +1,5 @@
 import { Schema, model, Document, Model, Types } from 'mongoose';
+import { ConsultationPaymentMethod, ConsultationPaymentStatus, ConsultationStatus } from '@/domain/enums/ConsultationEnums';
 
 export interface IConsultationDocument extends Document {
     _id: Types.ObjectId;
@@ -9,9 +10,9 @@ export interface IConsultationDocument extends Document {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
-    paymentStatus: 'pending' | 'paid' | 'failed'
-    paymentMethod: 'stripe' | 'wallet' | 'subscription' | null
+    status: ConsultationStatus;
+    paymentStatus: ConsultationPaymentStatus;
+    paymentMethod: ConsultationPaymentMethod;
     paymentIntentId: string | null
     cancellationReason?: string;
     cancelledAt?: Date;
@@ -55,17 +56,17 @@ const ConsultationSchema = new Schema<IConsultationDocument>(
         },
         status: {
             type: String,
-            enum: ['booked', 'cancelled', 'completed', 'rescheduled', 'missed'],
-            default: 'booked',
+            enum: Object.values(ConsultationStatus),
+            default: ConsultationStatus.BOOKED,
         },
         paymentStatus: {
             type: String,
-            enum: ['pending', 'paid', 'failed'],
-            default: 'pending',
+            enum: Object.values(ConsultationPaymentStatus),
+            default: ConsultationPaymentStatus.PENDING,
         },
         paymentMethod: {
             type: String,
-            enum: ['stripe', 'wallet', 'subscription'],
+            enum: Object.values(ConsultationPaymentMethod),
         },
         cancellationReason: { 
             type: String,

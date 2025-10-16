@@ -5,9 +5,9 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { psychologistApi } from '@/services/api/psychologist';
 import type { IGetPendingPayoutData } from '@/types/api/psychologist';
 import { ConfirmationDialog } from '@/components/psychologist/ConfirmationDialog';
-import { CalendarIcon, GroupIcon, IndianRupeeIcon, User2Icon } from 'lucide-react';
+import { CalendarIcon, IndianRupeeIcon, User2Icon } from 'lucide-react';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
-
+import { generalMessages } from '@/messages/GeneralMessages';
 
 const PsychologistDashboardCards = () => {
   const [totalEarning, setTotalEarning] = useState<number>(0);
@@ -21,7 +21,7 @@ const PsychologistDashboardCards = () => {
     try {
       const walletRes = await walletApi.getWallet();
       if (!walletRes.data) {
-        toast.error('Something went wrong');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       setTotalEarning(walletRes.data.balance || 0);
@@ -36,9 +36,8 @@ const PsychologistDashboardCards = () => {
     setPendingLoading(true);
     try {
       const pendingRes = await psychologistApi.getPendingPayout();
-      console.log('pendingRes: ', pendingRes);
       if (!pendingRes.data) {
-        toast.error('Something went wrong');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       setPending(pendingRes.data);
@@ -53,8 +52,8 @@ const PsychologistDashboardCards = () => {
     if (!pending || pending.payoutAmount <= 0) return;
     setRequesting(true);
     try {
-      await psychologistApi.requestPayout();
-      toast.success('Payout request submitted successfully');
+      const res = await psychologistApi.requestPayout();
+      toast.success(res.message);
       fetchPendingPayout();
       fetchWallet();
     } catch (err) {
@@ -117,7 +116,7 @@ const PsychologistDashboardCards = () => {
         <div className="mt-8">
           <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
             <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-3">Pending Payout</h3>
-            <div className="mt-5"> 
+            <div className="mt-5">
               {pendingLoading ? (
                 <div className="space-y-3">
                   {[...Array(4)].map((_, i) => (

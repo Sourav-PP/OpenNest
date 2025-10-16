@@ -1,8 +1,8 @@
+import { ConsultationStatus } from '@/domain/enums/ConsultationEnums';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IUpdateMissedConsultationUseCase } from '@/useCases/interfaces/admin/management/IUpdateMissedConsultationsUseCase';
 
-export class UpdateMissedConsultationUseCase implements IUpdateMissedConsultationUseCase
-{
+export class UpdateMissedConsultationUseCase implements IUpdateMissedConsultationUseCase {
     private _consultationRepository: IConsultationRepository;
 
     constructor(consultationRepository: IConsultationRepository) {
@@ -17,7 +17,7 @@ export class UpdateMissedConsultationUseCase implements IUpdateMissedConsultatio
 
         for (const consultation of missedConsultations) {
             await this._consultationRepository.markAsMissed(consultation.id, {
-                status: 'missed',
+                status: ConsultationStatus.MISSED,
                 includedInPayout: false,
                 cancelledAt: now,
                 cancellationReason: 'Session not attended',

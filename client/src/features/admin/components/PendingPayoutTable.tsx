@@ -7,15 +7,23 @@ import ConfirmModal from '@/components/admin/ConfirmModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import Filters from '@/components/admin/Filters';
 import type { PayoutRequestListItemDto } from '@/types/dtos/payoutRequest';
+import { UserGenderFilter, type UserGenderFilterType } from '@/constants/User';
+import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { PayoutRequestStatus } from '@/constants/PayoutRequest';
 
 const PendingPayoutTable = () => {
   const [payouts, setPayouts] = useState<PayoutRequestListItemDto[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    search: string;
+    gender: UserGenderFilterType;
+    sort: SortFilterType;
+  }>({
     search: '',
-    gender: 'all',
-    sort: 'desc',
+    gender: UserGenderFilter.ALL,
+    sort: SortFilter.Desc,
   });
   const [selectedPayoutId, setSelectedPayoutId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -33,23 +41,22 @@ const PendingPayoutTable = () => {
     return () => clearTimeout(delay);
   }, [filters.search]);
 
-  const fetchPendingPayout = useCallback(async() => {
+  const fetchPendingPayout = useCallback(async () => {
     try {
       const res = await adminApi.getPendingPayouts({
         page: currentPage,
         limit: itemsPerPage,
         search: debouncedSearch,
-        sort: filters.sort as 'asc' | 'desc'
+        sort: filters.sort,
       });
-      console.log('payout res: ', res);
-      if(!res.data) {
-        toast.error('something went wrong');
+
+      if (!res.data) {
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
-  
-      setPayouts(res.data.requests.filter((p) => p.status === 'pending'));
-      setTotalCount(res.data.totalCount);
 
+      setPayouts(res.data.requests.filter(p => p.status === PayoutRequestStatus.PENDING));
+      setTotalCount(res.data.totalCount);
     } catch (error) {
       handleApiError(error);
     }
@@ -71,11 +78,11 @@ const PendingPayoutTable = () => {
     if (!selectedPayoutId || !actionType) return;
     try {
       if (actionType === 'approve') {
-        await adminApi.approvePayout(selectedPayoutId);
-        toast.success('Payout approved successfully');
+        const res = await adminApi.approvePayout(selectedPayoutId);
+        toast.success(res.message);
       } else {
-        await adminApi.rejectPayout(selectedPayoutId);
-        toast.success('Payout rejected successfully');
+        const res = await adminApi.rejectPayout(selectedPayoutId);
+        toast.success(res.message);
       }
       setModalOpen(false);
       fetchPendingPayout();
@@ -86,10 +93,18 @@ const PendingPayoutTable = () => {
 
   const columns = [
     { header: 'Psychologist', render: (p: PayoutRequestListItemDto) => p.psychologist.name, className: 'px-6 py-4' },
-    { header: 'Total Amount', render: (p: PayoutRequestListItemDto) => `₹${p.requestedAmount}`, className: 'px-6 py-4' },
+    {
+      header: 'Total Amount',
+      render: (p: PayoutRequestListItemDto) => `₹${p.requestedAmount}`,
+      className: 'px-6 py-4',
+    },
     { header: 'Commission', render: (p: PayoutRequestListItemDto) => `₹${p.commissionAmount}`, className: 'px-6 py-4' },
     { header: 'Payout Amount', render: (p: PayoutRequestListItemDto) => `₹${p.payoutAmount}`, className: 'px-6 py-4' },
-    { header: 'Consultations', render: (p: PayoutRequestListItemDto) => p.consultationIds.length, className: 'px-6 py-4' },
+    {
+      header: 'Consultations',
+      render: (p: PayoutRequestListItemDto) => p.consultationIds.length,
+      className: 'px-6 py-4',
+    },
     {
       header: 'Action',
       render: (p: PayoutRequestListItemDto) => (
@@ -123,8 +138,8 @@ const PendingPayoutTable = () => {
       key: 'sort',
       placeholder: 'Sort by',
       options: [
-        { label: 'Newest First', value: 'desc' },
-        { label: 'Oldest First', value: 'asc' },
+        { label: 'Newest First', value: SortFilter.Desc },
+        { label: 'Oldest First', value: SortFilter.Asc },
       ],
     },
   ];
@@ -144,11 +159,7 @@ const PendingPayoutTable = () => {
         emptyMessage="No pending payout requests."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       <ConfirmModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

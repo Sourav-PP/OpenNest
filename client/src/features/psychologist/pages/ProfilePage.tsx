@@ -7,7 +7,7 @@ const ProfilePage = () => {
     <div className="relative flex h-screen w-full bg-transparent text-primaryText">
       <Sidebar />
       <div className="flex-1 overflow-auto">
-        <Header/>
+        <Header />
         <Profile />
       </div>
     </div>

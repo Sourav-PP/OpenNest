@@ -1,14 +1,20 @@
+import {
+    PaymentMethod,
+    PaymentPurpose,
+    PaymentStatus,
+} from '../enums/PaymentEnums';
+
 export interface Payment {
     id: string;
     userId: string;
     consultationId?: string;
     amount: number;
     currency: string;
-    paymentMethod: 'stripe' | 'wallet';
-    paymentStatus: 'pending' | 'succeeded' | 'failed';
+    paymentMethod: PaymentMethod;
+    paymentStatus: PaymentStatus;
     refunded: boolean;
     transactionId?: string;
     stripeSessionId?: string;
     slotId: string | null;
-    purpose: 'consultation' | 'wallet' | 'subscription';
+    purpose: PaymentPurpose;
 }

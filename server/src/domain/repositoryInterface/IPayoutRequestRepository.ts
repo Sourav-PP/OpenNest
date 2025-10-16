@@ -1,6 +1,8 @@
 import { ClientSession } from 'mongoose';
 import { PayoutRequest } from '../entities/payoutRequest';
 import { User } from '../entities/user';
+import { PayoutRequestStatus } from '../enums/PayoutRequestEnums';
+import { SortFilter } from '../enums/SortFilterEnum';
 
 export interface IPayoutRequestRepository {
     create(payoutRequest: Omit<PayoutRequest, 'id'>): Promise<PayoutRequest>;
@@ -8,7 +10,7 @@ export interface IPayoutRequestRepository {
     findByPsychologistId(
         psychologistId: string,
         params?: {
-            sort?: 'asc' | 'desc';
+            sort?: SortFilter;
             skip?: number;
             limit?: number;
         },
@@ -18,20 +20,20 @@ export interface IPayoutRequestRepository {
     ): Promise<number>;
     findAll(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
+        sort?: SortFilter;
         skip: number;
         limit: number;
     }): Promise<PayoutRequest[]>;
     findAllWithPsychologist(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
+        sort?: SortFilter;
         skip: number;
         limit: number;
     }): Promise<{ payoutRequest: PayoutRequest; psychologist: User }[]>;
     countAll(params: { search?: string }): Promise<number>;
     updateStatus(
         id: string,
-        status: 'approved' | 'rejected',
+        status: PayoutRequestStatus,
         date: Date,
         session?: ClientSession,
     ): Promise<PayoutRequest | null>;

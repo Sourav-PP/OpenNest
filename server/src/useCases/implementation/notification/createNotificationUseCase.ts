@@ -13,8 +13,6 @@ export class CreateNotificationUseCase implements ICreateNotificationUseCase {
         notification: Omit<Notification, 'id'>,
     ): Promise<Notification> {
         const result = await this._notificationRepo.create(notification);
-        console.log('created notification: ', result);
-        
         return result;
     }
 }

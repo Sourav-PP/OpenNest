@@ -18,17 +18,16 @@ const CreatePlanForm = () => {
 
   const onSubmit = async (data: addPlanData) => {
     try {
-      console.log('Submitting plan with data:', data);
-      await adminApi.addPlan({
+      const res = await adminApi.addPlan({
         name: data.name,
         description: data.description,
         price: Number(data.price),
         currency: 'usd',
         creditsPerPeriod: Number(data.creditsPerPeriod),
-        billingPeriod: data.billingPeriod as 'month' | 'year' | 'week',
+        billingPeriod: data.billingPeriod,
       });
 
-      toast.success('Service created successfully');
+      toast.success(res.message);
       reset();
     } catch (err) {
       handleApiError(err);
@@ -42,10 +41,7 @@ const CreatePlanForm = () => {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
       <h2 className="text-2xl font-semibold text-white mb-6">Create Plan</h2>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-admin-bg-box p-6 rounded-xl space-y-4 mx-auto"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-admin-bg-box p-6 rounded-xl space-y-4 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Name */}
           <div>
@@ -78,9 +74,7 @@ const CreatePlanForm = () => {
               {...register('creditsPerPeriod', { valueAsNumber: true })}
               className="w-full p-3 rounded-lg bg-admin-extra-light text-white outline-none"
             />
-            {errors.creditsPerPeriod && (
-              <p className="text-red-400 text-sm mt-1">{errors.creditsPerPeriod.message}</p>
-            )}
+            {errors.creditsPerPeriod && <p className="text-red-400 text-sm mt-1">{errors.creditsPerPeriod.message}</p>}
           </div>
 
           {/* Billing Period */}
@@ -94,9 +88,7 @@ const CreatePlanForm = () => {
               <option value="year">Year</option>
               <option value="week">Week</option>
             </select>
-            {errors.billingPeriod && (
-              <p className="text-red-400 text-sm mt-1">{errors.billingPeriod.message}</p>
-            )}
+            {errors.billingPeriod && <p className="text-red-400 text-sm mt-1">{errors.billingPeriod.message}</p>}
           </div>
         </div>
 
@@ -108,9 +100,7 @@ const CreatePlanForm = () => {
             rows={4}
             className="w-full p-3 rounded-lg bg-admin-extra-light text-white outline-none"
           />
-          {errors.description && (
-            <p className="text-red-400 text-sm mt-1">{errors.description.message}</p>
-          )}
+          {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description.message}</p>}
         </div>
 
         {/* Submit Button */}

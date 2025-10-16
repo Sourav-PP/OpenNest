@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { PlanBillingPeriod } from '../enums/PlanEnums';
 
 export interface IPaymentService {
   createCheckoutSession(
@@ -20,7 +21,7 @@ export interface IPaymentService {
     description: string,
     amount: number,
     currency: string,
-    billingPeriod: 'month' | 'year' | 'week',
+    billingPeriod: PlanBillingPeriod,
   ): Promise<{ productId: string; priceId: string }>;
 
   cancelSubscription(stripeSubscriptionId: string): Promise<Stripe.Subscription>;

@@ -13,7 +13,10 @@ export class GetSlotForUserUseCase implements IGetSlotForUserUseCase {
     private _slotRepo: ISlotRepository;
     private _psychologistRepo: IPsychologistRepository;
 
-    constructor(slotRepo: ISlotRepository, psychologistRepo: IPsychologistRepository) {
+    constructor(
+        slotRepo: ISlotRepository,
+        psychologistRepo: IPsychologistRepository,
+    ) {
         this._slotRepo = slotRepo;
         this._psychologistRepo = psychologistRepo;
     }
@@ -22,13 +25,21 @@ export class GetSlotForUserUseCase implements IGetSlotForUserUseCase {
         const date = input.date ?? new Date();
         logger.info(date);
 
-        const psychologist = await this._psychologistRepo.findByUserId(input.userId);
+        const psychologist = await this._psychologistRepo.findByUserId(
+            input.userId,
+        );
 
         if (!psychologist || !psychologist.id) {
-            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
-        } 
-        const entities = await this._slotRepo.getSlotByPsychologist(psychologist.id, date);
+            throw new AppError(
+                psychologistMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
+        }
+        const entities = await this._slotRepo.getSlotByPsychologist(
+            psychologist.id,
+            date,
+        );
 
-        return entities.map((entity) => toSlotDto(entity.slot, entity.user)); 
+        return entities.map(entity => toSlotDto(entity.slot, entity.user));
     }
 }

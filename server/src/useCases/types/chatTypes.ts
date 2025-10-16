@@ -1,4 +1,7 @@
-import { IPsychologistChatConsultationDto, IUserChatConsultationDto } from '../dtos/consultation';
+import {
+    IPsychologistChatConsultationDto,
+    IUserChatConsultationDto,
+} from '../dtos/consultation';
 
 export interface ISendMessageInput {
     clientId: string;

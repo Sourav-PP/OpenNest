@@ -10,11 +10,9 @@ const Footer = () => {
             <div className="flex items-center space-x-2">
               <img src={assets.logo} alt="Logo" className="w-28 sm:w-36" />
             </div>
-            <p className="text-gray-600 text-sm">
-              © 2024 OpenNest . All rights reserved.
-            </p>
+            <p className="text-gray-600 text-sm">© 2024 OpenNest . All rights reserved.</p>
           </div>
-          
+
           {/* Middle section - Navigation Links */}
           <div className="grid grid-cols-2 gap-8">
             <div className="space-y-3">
@@ -34,7 +32,7 @@ const Footer = () => {
                 Contact Us
               </a>
             </div>
-            
+
             <div className="space-y-3">
               <a href="#" className="block text-gray-700 hover:text-gray-900 transition-colors">
                 Terms and conditions
@@ -44,23 +42,23 @@ const Footer = () => {
               </a>
             </div>
           </div>
-          
+
           {/* Right section - Social Media Icons */}
           <div className="flex justify-end space-x-4">
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
             >
               <img src={assets.youtube} alt="Youtube icon" />
             </a>
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
             >
               <img src={assets.instagram} alt="Instagram icon" />
             </a>
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
             >
               <img src={assets.facebook} alt="Facebook icon" />

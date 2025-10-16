@@ -12,13 +12,13 @@ import {
 import type { ReactNode } from 'react';
 
 interface ConfirmationDialogProps {
-  trigger: ReactNode
-  title: string
-  description?: string
-  confirmLabel?: string
-  cancelLabel?: string
-  onConfirm: () => void
-  loading?: boolean
+  trigger: ReactNode;
+  title: string;
+  description?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm: () => void;
+  loading?: boolean;
 }
 
 export const ConfirmationDialog = ({
@@ -40,11 +40,7 @@ export const ConfirmationDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={onConfirm}
-            disabled={loading}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
+          <AlertDialogAction onClick={onConfirm} disabled={loading} className="bg-red-600 hover:bg-red-700 text-white">
             {loading ? 'Processing...' : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

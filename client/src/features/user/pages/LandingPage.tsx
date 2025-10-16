@@ -6,14 +6,13 @@ import TherapySection from '../components/TherapySection';
 import TestimonialSection from '../components/TestimonialSection';
 import Footer from '@/components/user/Footer';
 
-
 const LandingPage = () => {
   return (
     <>
       <Navbar />
-      <HeroSection />  
+      <HeroSection />
       <DescriptionSection />
-      <ServiceSection /> 
+      <ServiceSection />
       <TherapySection />
       <TestimonialSection />
       <Footer />

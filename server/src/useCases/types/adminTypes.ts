@@ -2,6 +2,9 @@ import { IUserDto } from '../dtos/user';
 import { IKycDto } from '../dtos/kyc';
 import { IPsychologistListDto } from '../dtos/psychologist';
 import { PayoutRequestListItemDto } from '../dtos/payoutRequest';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { UserGender } from '@/domain/enums/UserEnums';
+import { KycStatusFilter } from '@/domain/enums/KycEnums';
 
 export interface IAdminLoginRequest {
     email: string,
@@ -15,8 +18,8 @@ export interface IAdminLoginResponse {
 
 export interface IGetAllUserRequest {
     search?: string;
-    sort?: 'asc' | 'desc';
-    gender?: 'Male' | 'Female';
+    sort?: SortFilter;
+    gender?: UserGender;
     page?: number;
     limit?: number
 }
@@ -28,7 +31,7 @@ export interface IGetAllUserResponse {
 
 export interface IGetAllPendingPayoutRequest {
     search?: string;
-    sort?: 'asc' | 'desc';
+    sort?: SortFilter;
     page?: number;
     limit?: number
 }
@@ -40,8 +43,8 @@ export interface IGetAllPendingPayoutResponse {
 
 export interface IGetAllPsychologistRequest {
     search?: string;
-    sort?: 'asc' | 'desc';
-    gender?: 'Male' | 'Female';
+    sort?: SortFilter;
+    gender?: UserGender;
     page?: number;
     limit?: number
 }
@@ -53,10 +56,10 @@ export interface IGetAllPsychologistResponse {
 
 export interface IGetAllKycRequest {
     search?: string;
-    sort?: 'asc' | 'desc';
+    sort?: SortFilter;
     page?: number;
     limit?: number;
-    status?: 'pending' | 'approved' | 'rejected' | 'all';
+    status?: KycStatusFilter;
 }
 
 export interface IGetAllKycResponse {

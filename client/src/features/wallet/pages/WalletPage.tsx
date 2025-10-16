@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import Header from '@/components/user/Header';
 import Sidebar from '@/components/user/Sidebar';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 const WalletPage = () => {
   const [wallet, setWallet] = useState<IWallet | null>(null);
@@ -23,9 +24,8 @@ const WalletPage = () => {
   const fetchWallet = async () => {
     try {
       const res = await walletApi.getWallet();
-      console.log('data: ', res.data);
-      if(!res.data) {
-        toast.error('Something went wrong');
+      if (!res.data) {
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       setWallet(res.data);
@@ -34,18 +34,16 @@ const WalletPage = () => {
         fetchTransactions(res.data.id, currentPage);
       }
     } catch (err) {
-      console.error(err);
-      toast.error('Failed to fetch wallet data');
+      handleApiError(err);
     }
   };
 
-  const fetchTransactions = async(walletId: string, page: number) => {
+  const fetchTransactions = async (walletId: string, page: number) => {
     setLoading(true);
     try {
-      const res = await walletApi.listTransactions(walletId, page, itemsPerPage); 
-      console.log('res transaction: ', res);
+      const res = await walletApi.listTransactions(walletId, page, itemsPerPage);
       if (!res.data) {
-        toast.error('Failed to fetch transactions');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       setTransactions(res.data.transactions);
@@ -62,7 +60,7 @@ const WalletPage = () => {
   }, []);
 
   useEffect(() => {
-    if(wallet?.id) {
+    if (wallet?.id) {
       fetchTransactions(wallet?.id, currentPage);
     }
   }, [currentPage, wallet?.id]);
@@ -71,14 +69,10 @@ const WalletPage = () => {
     <div className="flex h-screen w-full bg-[#ECF1F3] text-primaryText overflow-hidden">
       <Sidebar />
       <div className="flex-1 overflow-auto">
-        <Header/>
+        <Header />
         <div className="max-w-3xl mx-auto p-6">
           {wallet && (
-            <WalletBalance
-              balance={wallet.balance}
-              currency={wallet.currency}
-              onAddFunds={() => setShowModal(true)}
-            />
+            <WalletBalance balance={wallet.balance} currency={wallet.currency} onAddFunds={() => setShowModal(true)} />
           )}
 
           <WalletTransactions
@@ -87,14 +81,13 @@ const WalletPage = () => {
             totalCount={totalCount}
             itemsPerPage={itemsPerPage}
             onPageChange={page => setCurrentPage(page)}
-            loading={loading}  
+            loading={loading}
           />
 
           <AddFundsModal open={showModal} onClose={() => setShowModal(false)} />
         </div>
       </div>
     </div>
-    
   );
 };
 

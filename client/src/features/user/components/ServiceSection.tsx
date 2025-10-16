@@ -5,13 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 
-
 type Service = {
-  id: string,
-  name: string,
-  description: string,
-  bannerImage: string
-}
+  id: string;
+  name: string;
+  description: string;
+  bannerImage: string;
+};
 
 const ServiceSession = () => {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ const ServiceSession = () => {
       try {
         const response = await serviceApi.getAll();
 
-        if(!response.data) {
+        if (!response.data) {
           toast.error('Error fetching the services');
           return;
         }
@@ -40,37 +39,37 @@ const ServiceSession = () => {
     };
 
     fetchServices();
-  },[]);
+  }, []);
 
   return (
     <div className="bg-gray-200 py-16 px-8 sm:px-6 lg:px-36 pt-32">
       <div className="max-w-7xl mx-auto">
         {/* Service Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-20 sm:gap-8 mb-12">
-          {services.map((service) => (
-            <div key={service.id} className="relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-center items-center">
+          {services.map(service => (
+            <div
+              key={service.id}
+              className="relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-center items-center"
+            >
               {/* Image */}
               <div className="absolute w-[230px] h-auto top-[-50px] left-1/2 transform -translate-x-1/2 mb-6 overflow-hidden rounded-2xl">
-                <img 
-                  src={getCloudinaryUrl(service.bannerImage) || undefined} 
+                <img
+                  src={getCloudinaryUrl(service.bannerImage) || undefined}
                   alt={service.name}
                   className="w-[230px] h-auto object-cover"
                 />
               </div>
-              
+
               {/* Title */}
-              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center mt-20">
-                {service.name}
-              </h3>
-              
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center mt-20">{service.name}</h3>
+
               {/* Description */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-6 text-center flex-grow">
-                {service.description}
-              </p>
-              
+              <p className="text-gray-600 text-sm leading-relaxed mb-6 text-center flex-grow">{service.description}</p>
+
               {/* Button */}
               <div className="text-center">
-                <button className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors duration-200"
+                <button
+                  className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors duration-200"
                   onClick={() => navigate('/user/therapist')}
                 >
                   Show Psychologists
@@ -79,7 +78,7 @@ const ServiceSession = () => {
             </div>
           ))}
         </div>
-        
+
         {/* See All Therapy Services Button */}
         <div className="group text-center sm:text-center">
           <button

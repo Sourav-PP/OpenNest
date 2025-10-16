@@ -1,4 +1,5 @@
 import { PayoutRequest } from '@/domain/entities/payoutRequest';
+import { PayoutRequestStatus } from '@/domain/enums/PayoutRequestEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
@@ -29,8 +30,13 @@ export class RequestPayoutUseCase implements IRequestPayoutUseCase {
     }
 
     async execute(psychologistId: string): Promise<PayoutRequest> {
-        const psychologist = await this._psychologistRepository.findByUserId(psychologistId);
-        if (!psychologist) throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+        const psychologist =
+            await this._psychologistRepository.findByUserId(psychologistId);
+        if (!psychologist)
+            throw new AppError(
+                psychologistMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
 
         const consultations =
             await this._consultationRepository.findUnpaidCompletedConsultationsByPsychologistId(
@@ -68,7 +74,7 @@ export class RequestPayoutUseCase implements IRequestPayoutUseCase {
             requestedAmount: total,
             commissionAmount,
             payoutAmount,
-            status: 'pending',
+            status: PayoutRequestStatus.PENDING,
         });
 
         return payoutRequest;

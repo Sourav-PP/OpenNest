@@ -52,7 +52,7 @@ const AppRoutesInner = () => {
 
 const AppRoutes = () => (
   <BrowserRouter>
-    <AppRoutesInner/>
+    <AppRoutesInner />
   </BrowserRouter>
 );
 

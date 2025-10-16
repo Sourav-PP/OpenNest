@@ -1,18 +1,20 @@
 import { SpecializationFee } from '@/domain/entities/psychologist';
+import { KycStatus } from '@/domain/enums/KycEnums';
+import { UserGender } from '@/domain/enums/UserEnums';
 
 export interface IPsychologistProfileDto {
     id: string;
     name: string;
     email: string;
     phone?: string;
-    gender?: string;
+    gender?: UserGender;
     dateOfBirth?: Date;
     defaultFee: number;
     qualification: string;
     aboutMe: string;
     specializations: string[];
     profileImage?: string;
-    kycStatus: string;
+    kycStatus: KycStatus;
     specializationFees: SpecializationFee[];
 }
 

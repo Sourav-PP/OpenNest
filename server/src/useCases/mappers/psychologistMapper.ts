@@ -2,6 +2,7 @@ import { Kyc } from '@/domain/entities/kyc';
 import { IPsychologistListDto, IPsychologistListUserDto, IPsychologistProfileDto } from '../dtos/psychologist';
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
+import { KycStatus } from '@/domain/enums/KycEnums';
 
 export function toPsychologistProfileDto(
     user: User,
@@ -21,7 +22,7 @@ export function toPsychologistProfileDto(
         aboutMe: psychologist.aboutMe,
         specializations: specializationNames,
         profileImage: user.profileImage,
-        kycStatus: kyc?.kycStatus || 'pending',
+        kycStatus: kyc?.kycStatus || KycStatus.PENDING,
         specializationFees: psychologist.specializationFees,
     };
 } 

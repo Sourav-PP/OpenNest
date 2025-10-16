@@ -11,22 +11,13 @@ export class ChatFileController {
         this._uploadChatMediaUseCase = uploadChatMediaUseCase;
     }
 
-    uploadMedia = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    uploadMedia = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('its here: ', req.file);
             if (!req.file) {
-                throw new AppError(
-                    chatMessages.ERROR.NO_FILE_PROVIDED,
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new AppError(chatMessages.ERROR.NO_FILE_PROVIDED, HttpStatus.BAD_REQUEST);
             }
 
-            const { mediaUrl, mediaType } =
-                await this._uploadChatMediaUseCase.execute(req.file);
+            const { mediaUrl, mediaType } = await this._uploadChatMediaUseCase.execute(req.file);
 
             res.status(HttpStatus.OK).json({
                 success: true,

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import type { IPsychologistChatConsultationDto, IUserChatConsultationDto } from '@/types/dtos/consultation';
 import Sidebar from '@/components/user/Sidebar';
 import Header from '@/components/user/Header';
+import { UserRole } from '@/constants/User';
 
 export default function PsychologistChatPage() {
   const { role, userId } = useSelector((state: RootState) => state.auth);
@@ -30,7 +31,7 @@ export default function PsychologistChatPage() {
         <Header />
         <div className="flex flex-1 overflow-hidden">
           {/* Chat Sidebar (for conversations) */}
-          {(role === 'user' || role === 'psychologist') && (
+          {(role === UserRole.USER || role === UserRole.PSYCHOLOGIST) && (
             <div
               className={`fixed inset-y-0 left-0 sm:static sm:w-80 w-full transform transition-transform duration-300 ease-in-out ${
                 isChatSidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
@@ -40,7 +41,7 @@ export default function PsychologistChatPage() {
               <ChatSidebar
                 userId={userId!}
                 role={role}
-                onSelect={(c) => {
+                onSelect={c => {
                   setSelectedConsultation(c);
                   setIsChatSidebarOpen(false); // Close chat sidebar on mobile after selection
                 }}
@@ -65,7 +66,7 @@ export default function PsychologistChatPage() {
                 consultationId={selectedConsultation.id}
                 userId={userId!}
                 peerId={
-                  role === 'user'
+                  role === UserRole.USER
                     ? (selectedConsultation as IUserChatConsultationDto).psychologist.userId
                     : (selectedConsultation as IPsychologistChatConsultationDto).patient.id
                 }

@@ -6,15 +6,16 @@ import { IUserConsultationDetailsDto } from '@/useCases/dtos/consultation';
 import { IGetUserConsultationByIdUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationByIdUseCase';
 import { toUserConsultationDetail } from '@/useCases/mappers/consultationMapper';
 
-export class GetUserConsultationByIdUseCase implements IGetUserConsultationByIdUseCase
-{
+export class GetUserConsultationByIdUseCase implements IGetUserConsultationByIdUseCase {
     private _consultationRepo: IConsultationRepository;
 
     constructor(consultationRepo: IConsultationRepository) {
         this._consultationRepo = consultationRepo;
     }
 
-    async execute(consultationId: string): Promise<IUserConsultationDetailsDto> {
+    async execute(
+        consultationId: string,
+    ): Promise<IUserConsultationDetailsDto> {
         if (!consultationId) {
             throw new AppError(
                 bookingMessages.ERROR.CONSULTATION_ID_REQUIRED,
@@ -22,7 +23,8 @@ export class GetUserConsultationByIdUseCase implements IGetUserConsultationByIdU
             );
         }
 
-        const result = await this._consultationRepo.findByIdWithDetails(consultationId);
+        const result =
+            await this._consultationRepo.findByIdWithDetails(consultationId);
         if (!result) {
             throw new AppError(
                 bookingMessages.ERROR.CONSULTATION_NOT_FOUND,

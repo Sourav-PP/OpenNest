@@ -22,13 +22,8 @@ export const NotificationModal = ({ notifications, onClose }: NotificationModalP
           <p className="p-4 text-gray-500 text-sm">No notifications yet</p>
         ) : (
           <ul>
-            {notifications.map((n) => (
-              <li
-                key={n.id}
-                className={`p-3 border-b cursor-pointer ${
-                  n.read ? 'bg-gray-50' : 'bg-blue-50'
-                }`}
-              >
+            {notifications.map(n => (
+              <li key={n.id} className={`p-3 border-b cursor-pointer ${n.read ? 'bg-gray-50' : 'bg-blue-50'}`}>
                 <p className="text-sm">{n.message}</p>
               </li>
             ))}

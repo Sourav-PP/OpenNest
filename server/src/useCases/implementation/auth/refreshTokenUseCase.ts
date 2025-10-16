@@ -5,6 +5,7 @@ import { IRefreshTokenUseCase } from '@/useCases/interfaces/auth/IRefreshTokenUs
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { userMessages } from '@/shared/constants/messages/userMessages';
+import { UserRole } from '@/domain/enums/UserEnums';
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     private _tokenService: ITokenService;
@@ -21,14 +22,20 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     async execute(refreshToken: string): Promise<{ accessToken: string }> {
         const payload = this._tokenService.verifyRefreshToken(refreshToken);
         if (!payload) {
-            throw new AppError(authMessages.ERROR.INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
+            throw new AppError(
+                authMessages.ERROR.INVALID_REFRESH_TOKEN,
+                HttpStatus.UNAUTHORIZED,
+            );
         }
 
         const user = await this._accountRepository.findById(payload.userId);
         if (!user) {
-            throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new AppError(
+                userMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
         }
-        const isActive = user.role === 'user' ? user.isActive ?? true : true;
+        const isActive = user.role === UserRole.USER ? (user.isActive ?? true) : true;
         const newAccessToken = this._tokenService.generateAccessToken(
             payload.userId,
             user.role,

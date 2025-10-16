@@ -1,4 +1,5 @@
 import { Plan } from '@/domain/entities/plan';
+import { PlanBillingPeriod } from '@/domain/enums/PlanEnums';
 
 export interface ICreatePlanUseCase {
     execute(data: {
@@ -7,6 +8,6 @@ export interface ICreatePlanUseCase {
         price: number;
         currency: string;
         creditsPerPeriod: number;
-        billingPeriod: 'month' | 'year' | 'week';
+        billingPeriod: PlanBillingPeriod;
     }): Promise<Plan>;
 }

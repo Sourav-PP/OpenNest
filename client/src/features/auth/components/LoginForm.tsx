@@ -15,13 +15,13 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { Eye, EyeClosed, Lock, Mail } from 'lucide-react';
 import { walletApi } from '@/services/api/wallet';
 import { useState } from 'react';
-
-
+import { UserRole, type UserRoleType } from '@/constants/User';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 interface TokenPayload {
   userId: string;
   email: string;
-  role: 'user' | 'psychologist' | 'admin';
+  role: UserRoleType;
   exp: number;
   iat: number;
 }
@@ -41,12 +41,12 @@ const LoginForm = () => {
     },
   });
 
-  const navigateAfterLogin = (role: string, hasSubmittedVerificationForm?: boolean) => {
-    if (role === 'psychologist') {
+  const navigateAfterLogin = (role: UserRoleType, hasSubmittedVerificationForm?: boolean) => {
+    if (role === UserRole.PSYCHOLOGIST) {
       navigate(hasSubmittedVerificationForm ? '/psychologist/profile' : '/psychologist/verification');
     } else {
       navigate('/');
-    };
+    }
   };
 
   const onSubmit = async (data: LoginData) => {
@@ -54,7 +54,7 @@ const LoginForm = () => {
       const res = await authApi.login(data);
 
       if (!res.data) {
-        toast.error('No data received from server');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       const decoded = jwtDecode<TokenPayload>(res.data.accessToken);
@@ -74,7 +74,6 @@ const LoginForm = () => {
       } catch (error) {
         handleApiError(error);
       }
-  
 
       toast.success(res.message);
       navigateAfterLogin(res.data.user.role, res.data.hasSubmittedVerificationForm);
@@ -109,18 +108,21 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input leftIcon={Lock}
+                <Input
+                  leftIcon={Lock}
                   rightIcon={
-                    <button
-                      type="button"
-                      onClick={() => setShowPass(prev => !prev)}
-                      className="p-1"
-                    >
-                      {showPass ? <Eye className='text-slate-400 w-5 h-5' /> : <EyeClosed className='text-slate-400 w-5 h-5' />}
+                    <button type="button" onClick={() => setShowPass(prev => !prev)} className="p-1">
+                      {showPass ? (
+                        <Eye className="text-slate-400 w-5 h-5" />
+                      ) : (
+                        <EyeClosed className="text-slate-400 w-5 h-5" />
+                      )}
                     </button>
                   }
                   type={showPass ? 'type' : 'password'}
-                  placeholder="Enter your password" {...field} />
+                  placeholder="Enter your password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -128,8 +130,13 @@ const LoginForm = () => {
         />
 
         {/* Submit Button */}
-        <div className='group'>
-          <Button size='lg' type="submit" className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg" disabled={form.formState.isSubmitting}>
+        <div className="group">
+          <Button
+            size="lg"
+            type="submit"
+            className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Loading...' : 'Login'}
           </Button>
         </div>
@@ -138,18 +145,18 @@ const LoginForm = () => {
         <GoogleLoginButton />
 
         {/* Signup Link */}
-        
+
         <p className="text-center text-sm">
           <p
             className="text-center text-sm text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/forgot-password', {state: {role: role}})}
+            onClick={() => navigate('/forgot-password', { state: { role: role } })}
           >
             Forgot Password
           </p>
           Don't have an account?{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/signup', {state: {role: role}})}
+            onClick={() => navigate('/signup', { state: { role: role } })}
           >
             Sign up
           </span>

@@ -11,7 +11,10 @@ export class CreateServiceUseCase implements ICreateServiceUseCase {
     private _serviceRepository: IServiceRepository;
     private _fileStorage: IFileStorage;
 
-    constructor(serviceRepository: IServiceRepository, fileStorage: IFileStorage) {
+    constructor(
+        serviceRepository: IServiceRepository,
+        fileStorage: IFileStorage,
+    ) {
         this._serviceRepository = serviceRepository;
         this._fileStorage = fileStorage;
     }
@@ -25,10 +28,14 @@ export class CreateServiceUseCase implements ICreateServiceUseCase {
 
         const normalizedName = data.name.trim().toLowerCase();
 
-        const existing = await this._serviceRepository.findByName(normalizedName);
-        
+        const existing =
+            await this._serviceRepository.findByName(normalizedName);
+
         if (existing) {
-            throw new AppError(adminMessages.ERROR.SERVICE_ALREADY_EXISTS, HttpStatus.CONFLICT);
+            throw new AppError(
+                adminMessages.ERROR.SERVICE_ALREADY_EXISTS,
+                HttpStatus.CONFLICT,
+            );
         }
 
         return this._serviceRepository.create({

@@ -9,10 +9,7 @@ export class AdminAuthController {
     private _adminLoginUseCase: IAdminLoginUseCase;
     private _adminLogoutUseCase: IAdminLogoutUseCase;
 
-    constructor(
-        adminLoginUseCase: IAdminLoginUseCase,
-        adminLogoutUseCase: IAdminLogoutUseCase,
-    ) {
+    constructor(adminLoginUseCase: IAdminLoginUseCase, adminLogoutUseCase: IAdminLogoutUseCase) {
         this._adminLoginUseCase = adminLoginUseCase;
         this._adminLogoutUseCase = adminLogoutUseCase;
     }
@@ -20,8 +17,7 @@ export class AdminAuthController {
     login = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, password } = req.body;
-            const { accessToken, refreshToken } =
-                await this._adminLoginUseCase.execute({ email, password });
+            const { accessToken, refreshToken } = await this._adminLoginUseCase.execute({ email, password });
 
             res.cookie('adminRefreshToken', refreshToken, {
                 httpOnly: true,

@@ -1,3 +1,8 @@
+import {
+    PaymentMethod,
+    PaymentPurpose,
+    PaymentStatus,
+} from '@/domain/enums/PaymentEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
 import { IPlanRepository } from '@/domain/repositoryInterface/IPlanRepository';
@@ -8,8 +13,7 @@ import { SubscriptionMessages } from '@/shared/constants/messages/subscriptionMe
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { ICreateSubscriptionCheckoutSessionUseCase } from '@/useCases/interfaces/subscription/ICreateSubscriptionCheckoutSessionUseCase';
 
-export class CreateSubscriptionCheckoutSessionUseCase implements ICreateSubscriptionCheckoutSessionUseCase
-{
+export class CreateSubscriptionCheckoutSessionUseCase implements ICreateSubscriptionCheckoutSessionUseCase {
     private _paymentService: IPaymentService;
     private _paymentRepository: IPaymentRepository;
     private _planRepository: IPlanRepository;
@@ -24,7 +28,11 @@ export class CreateSubscriptionCheckoutSessionUseCase implements ICreateSubscrip
         this._planRepository = planRepository;
     }
 
-    async execute(userId: string, planId: string, psychologistId: string): Promise<string> {
+    async execute(
+        userId: string,
+        planId: string,
+        psychologistId: string,
+    ): Promise<string> {
         if (!userId) {
             throw new AppError(
                 adminMessages.ERROR.USER_ID_REQUIRED,
@@ -61,7 +69,7 @@ export class CreateSubscriptionCheckoutSessionUseCase implements ICreateSubscrip
                     userId,
                     priceId: plan.stripePriceId,
                     planId: plan.id,
-                    purpose: 'subscription',
+                    purpose: PaymentPurpose.SUBSCRIPTION,
                 },
             );
 
@@ -69,16 +77,15 @@ export class CreateSubscriptionCheckoutSessionUseCase implements ICreateSubscrip
             userId,
             amount: plan.price,
             currency,
-            paymentMethod: 'stripe',
-            paymentStatus: 'pending',
+            paymentMethod: PaymentMethod.STRIPE,
+            paymentStatus: PaymentStatus.PENDING,
             refunded: false,
             transactionId: undefined,
             stripeSessionId: sessionId,
             slotId: null,
-            purpose: 'subscription',
+            purpose: PaymentPurpose.SUBSCRIPTION,
         });
 
-        console.log('payment created for subscription');
         return url;
     }
 }

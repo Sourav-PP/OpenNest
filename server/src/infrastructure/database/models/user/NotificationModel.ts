@@ -1,3 +1,4 @@
+import { NotificationType } from '@/domain/enums/NotificationEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface INotificationDocument extends Document {
@@ -5,14 +6,7 @@ export interface INotificationDocument extends Document {
   senderId?: Types.ObjectId;
   recipientId: Types.ObjectId;
   consultationId?: Types.ObjectId;
-  type:
-    | 'CONSULTATION_BOOKED'
-    | 'CONSULTATION_CANCELLED'
-    | 'CONSULTATION_REMINDER'
-    | 'NEW_MESSAGE'
-    | 'PAYMENT_SUCCESS'
-    | 'PAYMENT_FAILED'
-    | 'FEEDBACK_RECEIVED';
+  type: NotificationType;
   message: string;
   read: boolean;
   notifyAt: Date;
@@ -40,7 +34,7 @@ const notificationSchema = new Schema<INotificationDocument>(
         },
         type: {
             type: String,
-            enum: ['CONSULTATION_BOOKED', 'CONSULTATION_CANCELLED', 'CONSULTATION_REMINDER', 'NEW_MESSAGE', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'FEEDBACK_RECEIVED'],
+            enum: Object.values(NotificationType),
         },
         message: {
             type: String,

@@ -3,8 +3,7 @@ import { ISubscriptionDto } from '@/useCases/dtos/subscription';
 import { IGetUserActiveSubscriptionUseCase } from '@/useCases/interfaces/subscription/IGetUserActiveSubscriptionUseCase';
 import { toSubscriptionDto } from '@/useCases/mappers/subscriptionMapper';
 
-export class GetUserActiveSubscriptionUseCase implements IGetUserActiveSubscriptionUseCase
-{
+export class GetUserActiveSubscriptionUseCase implements IGetUserActiveSubscriptionUseCase {
     private _subscriptionRepository: ISubscriptionRepository;
 
     constructor(subscriptionRepository: ISubscriptionRepository) {
@@ -14,7 +13,7 @@ export class GetUserActiveSubscriptionUseCase implements IGetUserActiveSubscript
     async execute(userId: string): Promise<ISubscriptionDto | null> {
         const result =
             await this._subscriptionRepository.findActiveByUserId(userId);
-        
+
         if (!result) {
             return null;
         }

@@ -6,6 +6,7 @@ import {
 } from '@/infrastructure/database/models/user/Message';
 import { FilterQuery, Types } from 'mongoose';
 import { GenericRepository } from '../GenericRepository';
+import { MessageStatus } from '@/domain/enums/MessageEnums';
 
 export class MessageRepository extends GenericRepository<Message, IMessageDocument> implements IMessageRepository {
     constructor() {
@@ -89,7 +90,7 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
                 consultationId,
             },
             {
-                $set: { status: 'read', readAt: new Date() },
+                $set: { status: MessageStatus.READ, readAt: new Date() },
                 $addToSet: { deliveredTo: new Types.ObjectId(userId) },
             },
         ).exec();
@@ -107,7 +108,7 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
             },
             {
                 $addToSet: { deliveredTo: new Types.ObjectId(userId) },
-                $set: { status: 'delivered' },
+                $set: { status: MessageStatus.DELIVERED },
             },
         ).exec();
     }
@@ -116,14 +117,14 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
         return MessageModel.countDocuments({
             consultationId,
             receiverId: userId,
-            status: { $ne: 'read' },
+            status: { $ne: MessageStatus.READ },
         });
     }
 
     async markAllAsRead(consultationId: string, userId: string): Promise<void> {
         await MessageModel.updateMany(
-            { consultationId, receiverId: userId, status: { $ne: 'read' } },
-            { $set: { status: 'read', readAt: new Date() } },
+            { consultationId, receiverId: userId, status: { $ne: MessageStatus.READ } },
+            { $set: { status: MessageStatus.READ, readAt: new Date() } },
         );
     }
 }

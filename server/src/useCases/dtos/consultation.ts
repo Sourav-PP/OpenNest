@@ -1,4 +1,6 @@
 import { Message } from '@/domain/entities/message';
+import { ConsultationStatus } from '@/domain/enums/ConsultationEnums';
+import { PaymentMethod, PaymentStatus } from '@/domain/enums/PaymentEnums';
 
 export interface IConsultationDto {
     id?: string;
@@ -6,7 +8,7 @@ export interface IConsultationDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+    status: ConsultationStatus;
     meetingLink?: string;
     psychologist: {
         id: string;
@@ -20,7 +22,7 @@ export interface IPsychologistConsultationDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+    status: ConsultationStatus;
     meetingLink?: string;
     psychologistId: string;
     patient: {
@@ -31,8 +33,8 @@ export interface IPsychologistConsultationDto {
     payment?: {
         amount: number;
         currency: string;
-        paymentMethod: 'stripe' | 'wallet' | null;
-        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        paymentMethod: PaymentMethod;
+        paymentStatus: PaymentStatus;
         refunded: boolean;
     };
 }
@@ -42,7 +44,7 @@ export interface IPatientConsultationHistoryDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+    status: ConsultationStatus;
     meetingLink?: string;
     psychologistId: string;
     patient: {
@@ -55,7 +57,7 @@ export interface IPatientConsultationHistoryDto {
 // chat consultations
 export interface IUserChatConsultationDto {
     id?: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+    status: ConsultationStatus;
     patientId: string;
     psychologist: {
         id: string;
@@ -70,7 +72,7 @@ export interface IUserChatConsultationDto {
 
 export interface IPsychologistChatConsultationDto {
     id?: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+    status: ConsultationStatus;
     psychologistId: string;
     patient: {
         id: string;
@@ -85,7 +87,7 @@ export interface IPsychologistChatConsultationDto {
 export interface IUserConsultationDetailsDto {
     id: string;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+    status: ConsultationStatus;
     meetingLink?: string;
     startDateTime: Date;
     endDateTime: Date;
@@ -107,19 +109,19 @@ export interface IUserConsultationDetailsDto {
         isBooked: boolean;
         bookedBy?: string | null;
     };
-    payment: {  
+    payment: {
         amount: number;
         currency: string;
-        paymentMethod: 'stripe' | 'wallet';
-        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        paymentMethod: PaymentMethod;
+        paymentStatus: PaymentStatus;
         refunded: boolean;
-    };
+    } | null;
 }
 
 export interface IConsultationHistoryDetailsDto {
     id: string;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+    status: ConsultationStatus;
     meetingLink?: string;
     startDateTime: Date;
     endDateTime: Date;
@@ -141,20 +143,19 @@ export interface IConsultationHistoryDetailsDto {
         isBooked: boolean;
         bookedBy?: string | null;
     };
-    payment: {  
+    payment: {
         amount: number;
         currency: string;
-        paymentMethod: 'stripe' | 'wallet';
-        paymentStatus: 'pending' | 'succeeded' | 'failed';
+        paymentMethod: PaymentMethod;
+        paymentStatus: PaymentStatus;
         refunded: boolean;
     };
     video: {
         duration?: number;
         startedAt: Date | null;
         endedAt: Date | null;
-    }
+    };
 }
-
 
 export interface IConsultationDetailsForAdminDto {
     id: string;
@@ -165,7 +166,7 @@ export interface IConsultationDetailsForAdminDto {
     startDateTime: Date;
     endDateTime: Date;
     sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
-    paymentStatus?: 'pending' | 'succeeded' | 'failed';
-    paymentMethod?: 'stripe' | 'wallet' | null;
+    status: ConsultationStatus;
+    paymentStatus?: PaymentStatus;
+    paymentMethod?: PaymentMethod;
 }

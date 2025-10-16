@@ -9,28 +9,18 @@ export class AdminServiceController {
     private _createServiceUseCase: ICreateServiceUseCase;
     private _deleteServiceUseCase: IDeleteServiceUseCase;
 
-    constructor(
-        createServiceUseCase: ICreateServiceUseCase,
-        deleteServiceUseCase: IDeleteServiceUseCase,
-    ) {
+    constructor(createServiceUseCase: ICreateServiceUseCase, deleteServiceUseCase: IDeleteServiceUseCase) {
         this._createServiceUseCase = createServiceUseCase;
         this._deleteServiceUseCase = deleteServiceUseCase;
     }
 
-    create = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    create = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { name, description } = req.body;
             const file = req.file;
 
             if (!file) {
-                throw new AppError(
-                    adminMessages.ERROR.SERVICE_BANNER_REQUIRED,
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new AppError(adminMessages.ERROR.SERVICE_BANNER_REQUIRED, HttpStatus.BAD_REQUEST);
             }
 
             const service = await this._createServiceUseCase.execute({
@@ -49,21 +39,14 @@ export class AdminServiceController {
         }
     };
 
-    delete = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    delete = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { id } = req.params;
-            if (!id) {
-                throw new AppError(
-                    adminMessages.ERROR.SERVICE_ID_REQUIRED,
-                    HttpStatus.BAD_REQUEST,
-                );
+            const { serviceId } = req.params;
+            if (!serviceId) {
+                throw new AppError(adminMessages.ERROR.SERVICE_ID_REQUIRED, HttpStatus.BAD_REQUEST);
             }
 
-            await this._deleteServiceUseCase.execute(id);
+            await this._deleteServiceUseCase.execute(serviceId);
 
             res.status(HttpStatus.OK).json({
                 success: true,

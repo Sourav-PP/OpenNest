@@ -18,9 +18,11 @@ export class ApproveKycUseCase implements IApproveKycUseCase {
     }
 
     async execute(psychologistId: string): Promise<void> {
-
         if (!psychologistId) {
-            throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
+            throw new AppError(
+                adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         await this._kycRepo.approveKyc(psychologistId);

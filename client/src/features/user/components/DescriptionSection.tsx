@@ -8,7 +8,9 @@ const DescriptionSection = () => {
             Best Online Counselling and Therapy Consultation
           </h2>
           <p className="text-sm text-center sm:text-left sm:text-base md:text-lg text-gray-500 leading-relaxed">
-            OpenNest provides the best online therapy and counseling consultation in India and around the globe. Consult Online Psychologist, therapist, counsellors, mental health experts via chat, phone or video call. Best Online Psychologist consultation and Online Psychiatric Consultation.
+            OpenNest provides the best online therapy and counseling consultation in India and around the globe. Consult
+            Online Psychologist, therapist, counsellors, mental health experts via chat, phone or video call. Best
+            Online Psychologist consultation and Online Psychiatric Consultation.
           </p>
         </div>
         {/* Illustration */}

@@ -5,17 +5,15 @@ import { ConfirmationDialog } from '@/components/psychologist/ConfirmationDialog
 import { format } from 'date-fns';
 
 interface SlotDetailModalProps {
-    open: boolean;
-    onClose: () => void;
-    slot: ISlotDto | null
-    onDelete: () => void;
+  open: boolean;
+  onClose: () => void;
+  slot: ISlotDto | null;
+  onDelete: () => void;
 }
 
-
-const SlotDetailModal: React.FC<SlotDetailModalProps> = ({open, onClose, slot, onDelete}) => {
-
-  console.log('slot: ',slot);
-  if(!slot) return null;
+const SlotDetailModal: React.FC<SlotDetailModalProps> = ({ open, onClose, slot, onDelete }) => {
+  console.log('slot: ', slot);
+  if (!slot) return null;
 
   const start = new Date(slot.startDateTime);
   const end = new Date(slot.endDateTime);

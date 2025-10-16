@@ -11,12 +11,12 @@ import { psychologistApi } from '@/services/api/psychologist';
 import { useDispatch } from 'react-redux';
 import { updateVerificationStatus } from '@/redux/slices/authSlice';
 import { handleApiError } from '@/lib/utils/handleApiError';
-
+import { generalMessages } from '@/messages/GeneralMessages';
 
 type Specialization = {
-  id: string,
-  name: string
-}
+  id: string;
+  name: string;
+};
 const VerificationForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,13 +26,13 @@ const VerificationForm = () => {
     const fetchSpecialization = async () => {
       try {
         const res = await serviceApi.getAll();
-        if(!res.data) {
-          toast.error('Something went wrong');
+        if (!res.data) {
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
-        const mapped = res.data.services.map((s:Specialization) => ({
+        const mapped = res.data.services.map((s: Specialization) => ({
           id: s.id,
-          name: s.name
+          name: s.name,
         }));
 
         setSpecializations(mapped);
@@ -48,34 +48,27 @@ const VerificationForm = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    watch
-
+    watch,
   } = useForm<verificationData>({
     resolver: zodResolver(verificationSchema),
     defaultValues: {
-      specializations: [], // ✅ default it to an empty array
+      specializations: [],
     },
   });
 
-  const onSubmit = async( data: verificationData ) => {
-    // const logFormData = (formData: FormData) => {
-    //   for (const [key, value] of formData.entries()) {
-    //     console.log(`${key}:`, value);
-    //   }
-    // };
+  const onSubmit = async (data: verificationData) => {
     const formData = new FormData();
 
     formData.append('qualification', data.qualification);
     formData.append('defaultFee', data.defaultFee.toString());
     formData.append('aboutMe', data.aboutMe);
-    data.specializations.forEach((spec) => {
+    data.specializations.forEach(spec => {
       formData.append('specializations', spec);
     });
 
     formData.append('identificationDoc', data.identificationDoc[0]);
     formData.append('educationalCertification', data.educationalCertification[0]);
     formData.append('experienceCertificate', data.experienceCertificate[0]);
-    // logFormData(formData);
     try {
       const res = await psychologistApi.submitVerification(formData);
 
@@ -91,16 +84,14 @@ const VerificationForm = () => {
   const educationalCertification = watch('educationalCertification') as FileList;
   const experienceCertificate = watch('experienceCertificate') as FileList;
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {/* Qualification */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
         <div className="flex items-center gap-3 px-5 py-2.5 rounded-xl bg-slate-200">
           <img src={assets.qualification} alt="" />
           <input
-            type='text'
+            type="text"
             {...register('qualification')}
             placeholder="qualification"
             className="input bg-transparent outline-none w-full"
@@ -115,7 +106,7 @@ const VerificationForm = () => {
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-200">
           <img src={assets.rupee} alt="" />
           <input
-            type='number'
+            type="number"
             {...register('defaultFee', { valueAsNumber: true })}
             placeholder="Enter you default fee.."
             className="input bg-transparent outline-none w-full"
@@ -126,21 +117,20 @@ const VerificationForm = () => {
 
       {/* Specialization */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-    Specializations
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Specializations</label>
         <div className="space-y-3 mb-6">
-          {specializations.map((spec) => (
-            <label key={spec.id} className="relative flex items-center pl-10 cursor-pointer text-gray-700 text-sm select-none">
+          {specializations.map(spec => (
+            <label
+              key={spec.id}
+              className="relative flex items-center pl-10 cursor-pointer text-gray-700 text-sm select-none"
+            >
               <input
                 type="checkbox"
                 value={spec.id}
                 {...register('specializations')}
                 className="peer absolute opacity-0 h-0 w-0"
               />
-              <span
-                className="absolute left-0 top-0 h-5 w-5 rounded-md bg-gray-200 shadow-md transition-all duration-200 peer-checked:bg-[#5C68FF] peer-checked:shadow-lg"
-              />
+              <span className="absolute left-0 top-0 h-5 w-5 rounded-md bg-gray-200 shadow-md transition-all duration-200 peer-checked:bg-[#5C68FF] peer-checked:shadow-lg" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -151,16 +141,15 @@ const VerificationForm = () => {
                 strokeWidth="5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="absolute left-1.5 top-[3px] h-3 w-2 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100">
-                <path d="M20 6 9 17l-5-5"/>
+                className="absolute left-1.5 top-[3px] h-3 w-2 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100"
+              >
+                <path d="M20 6 9 17l-5-5" />
               </svg>
               {spec.name}
             </label>
           ))}
         </div>
-        {errors.specializations && (
-          <p className="text-red-500 text-sm">{errors.specializations.message}</p>
-        )}
+        {errors.specializations && <p className="text-red-500 text-sm">{errors.specializations.message}</p>}
       </div>
 
       {/* About Me */}
@@ -170,7 +159,7 @@ const VerificationForm = () => {
           <textarea
             {...register('aboutMe')}
             rows={3}
-            placeholder='Enter about you...'
+            placeholder="Enter about you..."
             className="input bg-transparent outline-none w-full"
           />
         </div>
@@ -191,22 +180,12 @@ const VerificationForm = () => {
 
           <label className="px-3.5 py-1.5 bg-[#99afd5] w-24 h-8 hover:bg-[#8399c1] text-white text-sm font-medium rounded-md cursor-pointer transition-all duration-150">
             <span>Add File</span>
-            <input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              {...register('identificationDoc')}
-              className="hidden"
-            />
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" {...register('identificationDoc')} className="hidden" />
           </label>
         </div>
 
-        {errors.identificationDoc && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.identificationDoc.message}
-          </p>
-        )}
+        {errors.identificationDoc && <p className="text-red-500 text-sm mt-1">{errors.identificationDoc.message}</p>}
       </div>
-
 
       {/* Upload Educational Certificate */}
       <div>
@@ -232,9 +211,7 @@ const VerificationForm = () => {
         </div>
 
         {errors.educationalCertification && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.educationalCertification.message}
-          </p>
+          <p className="text-red-500 text-sm mt-1">{errors.educationalCertification.message}</p>
         )}
       </div>
 
@@ -262,24 +239,17 @@ const VerificationForm = () => {
         </div>
 
         {errors.experienceCertificate && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.experienceCertificate.message}
-          </p>
+          <p className="text-red-500 text-sm mt-1">{errors.experienceCertificate.message}</p>
         )}
       </div>
 
       {/* Submit Button */}
       <div className="group text-center">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="btn-primary group-hover:animate-glow-ring"
-        >
+        <button type="submit" disabled={isSubmitting} className="btn-primary group-hover:animate-glow-ring">
           {isSubmitting ? 'Loading...' : 'Submit'}
         </button>
       </div>
     </form>
-
   );
 };
 

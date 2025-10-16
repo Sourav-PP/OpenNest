@@ -1,4 +1,5 @@
 import { PayoutRequest } from '@/domain/entities/payoutRequest';
+import { PayoutRequestStatus } from '@/domain/enums/PayoutRequestEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IPayoutRequestRepository } from '@/domain/repositoryInterface/IPayoutRequestRepository';
 import { payoutMessages } from '@/shared/constants/messages/payoutMessages';
@@ -20,7 +21,7 @@ export class RejectPayoutRequestUseCase implements IRejectPayoutRequestUseCase {
                 payoutMessages.ERROR.NOT_FOUND,
                 HttpStatus.NOT_FOUND,
             );
-        if (payout.status !== 'pending')
+        if (payout.status !== PayoutRequestStatus.PENDING)
             throw new AppError(
                 payoutMessages.ERROR.REJECT_ONLY_PENDING,
                 HttpStatus.BAD_REQUEST,
@@ -28,7 +29,7 @@ export class RejectPayoutRequestUseCase implements IRejectPayoutRequestUseCase {
 
         await this._payoutRequestRepository.updateStatus(
             id,
-            'rejected',
+            PayoutRequestStatus.REJECTED,
             new Date(),
         );
 

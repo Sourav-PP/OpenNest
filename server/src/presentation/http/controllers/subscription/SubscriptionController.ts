@@ -17,17 +17,12 @@ export class SubscriptionController {
         cancelSubscriptionUseCase: ICancelSubscriptionUseCase,
         listPlansUseCase: IListPlansUseCase,
     ) {
-        this._getUserActiveSubscriptionUseCase =
-            getUserActiveSubscriptionUseCase;
+        this._getUserActiveSubscriptionUseCase = getUserActiveSubscriptionUseCase;
         this._cancelSubscriptionUseCase = cancelSubscriptionUseCase;
         this._listPlansUseCase = listPlansUseCase;
     }
 
-    getActiveSubscription = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getActiveSubscription = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
 
@@ -36,12 +31,11 @@ export class SubscriptionController {
                 return;
             }
 
-            const subscription =
-                await this._getUserActiveSubscriptionUseCase.execute(userId);
-            res.status(200).json({
+            const subscription = await this._getUserActiveSubscriptionUseCase.execute(userId);
+
+            res.status(HttpStatus.OK).json({
                 success: true,
-                message:
-                    SubscriptionMessages.SUCCESS.ACTIVE_SUBSCRIPTION_RETRIEVED,
+                message: SubscriptionMessages.SUCCESS.ACTIVE_SUBSCRIPTION_RETRIEVED,
                 data: subscription,
             });
         } catch (error) {
@@ -49,22 +43,15 @@ export class SubscriptionController {
         }
     };
 
-    cancelSubscription = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    cancelSubscription = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
-            const subscription =
-                await this._cancelSubscriptionUseCase.execute(userId);
-            res.status(200).json({
+            const subscription = await this._cancelSubscriptionUseCase.execute(userId);
+
+            res.status(HttpStatus.OK).json({
                 success: true,
                 message: SubscriptionMessages.SUCCESS.SUBSCRIPTION_CANCELLED,
                 data: subscription,
@@ -74,14 +61,11 @@ export class SubscriptionController {
         }
     };
 
-    listPlans = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    listPlans = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const plans = await this._listPlansUseCase.execute();
-            res.status(200).json({
+
+            res.status(HttpStatus.OK).json({
                 success: true,
                 message: SubscriptionMessages.SUCCESS.PLANS_FETCHED,
                 data: plans,

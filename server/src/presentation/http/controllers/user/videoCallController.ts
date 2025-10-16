@@ -20,19 +20,11 @@ export class VideoCallController {
         this._endVideoCallUseCase = endVideoCallUseCase;
     }
 
-    schedule = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    schedule = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { consultationId, patientId, psychologistId } = req.body;
 
-            const call = await this._createVideoCallUseCase.execute(
-                consultationId,
-                patientId,
-                psychologistId,
-            );
+            const call = await this._createVideoCallUseCase.execute(consultationId, patientId, psychologistId);
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -44,15 +36,12 @@ export class VideoCallController {
         }
     };
 
-    start = async(
-        req: Request, 
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    start = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { consultationId } = req.body;
-            
+
             const call = await this._startVideoCallUseCase.execute(consultationId);
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: videoCallMessages.SUCCESS.STARTED,
@@ -63,11 +52,7 @@ export class VideoCallController {
         }
     };
 
-    end = async(
-        req: Request, 
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    end = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { consultationId } = req.body;
             const call = await this._endVideoCallUseCase.execute(consultationId);

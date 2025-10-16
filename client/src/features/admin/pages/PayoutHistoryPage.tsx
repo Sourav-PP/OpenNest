@@ -7,8 +7,8 @@ const PayoutHistoryPage = () => {
     <div className="flex h-screen w-full bg-admin-bg-secondary text-white overflow-hidden">
       <Sidebar />
       <div className="flex-1 overflow-auto">
-        <Header/>
-        <PayoutHistoryTable/>
+        <Header />
+        <PayoutHistoryTable />
       </div>
     </div>
   );

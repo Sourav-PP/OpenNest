@@ -8,7 +8,7 @@ const PsychologistDetailPage = () => {
     <>
       <Navbar />
       <PsychologistDetailsSection />
-      <BookingSession/>
+      <BookingSession />
       <Footer />
     </>
   );

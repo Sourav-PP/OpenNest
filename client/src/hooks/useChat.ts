@@ -1,5 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { joinConsultation, onError, onMessage, onMessageDelete, sendMessage, deleteMessage, emitTyping, emitStopTyping, onTyping } from '@/services/api/socket';
+import {
+  joinConsultation,
+  onError,
+  onMessage,
+  onMessageDelete,
+  sendMessage,
+  deleteMessage,
+  emitTyping,
+  emitStopTyping,
+  onTyping,
+} from '@/services/api/socket';
 import { toast } from 'react-toastify';
 import type { IMessageDto } from '@/types/dtos/message';
 import { chatApi } from '@/services/api/chat';
@@ -28,7 +38,7 @@ export function useChat(consultationId: string) {
 
         if (isMounted && res.data) {
           const transformedMessage = res.data.messages.map(msg => {
-            if(msg.deleted) {
+            if (msg.deleted) {
               return {
                 ...msg,
                 content: msg.deletedBy === userId ? 'You deleted this message' : 'This message was deleted',
@@ -62,16 +72,16 @@ export function useChat(consultationId: string) {
       }
     };
 
-    const handleMessageDeleted = (data: { 
+    const handleMessageDeleted = (data: {
       messageId: string;
       consultationId: string;
       deletedBy: string;
       isDeleted: boolean;
-     }) => {
-      if(data.consultationId === consultationId) {
+    }) => {
+      if (data.consultationId === consultationId) {
         setMessages(prev =>
           prev.map(m => {
-            if(m.id === data.messageId) {
+            if (m.id === data.messageId) {
               return {
                 ...m,
                 content: data.deletedBy === userId ? 'You deleted this message' : 'This message was deleted',
@@ -112,7 +122,7 @@ export function useChat(consultationId: string) {
     };
   }, [consultationId, userId]);
 
-  const handleDelete = (data: {messageId: string, consultationId: string}) => {
+  const handleDelete = (data: { messageId: string; consultationId: string }) => {
     deleteMessage(data);
   };
 

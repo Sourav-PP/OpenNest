@@ -5,6 +5,7 @@ import {
     IGetAllKycResponse,
 } from '@/useCases/types/adminTypes';
 import { toKycDto } from '@/useCases/mappers/kycMapper';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
 export class GetAllKycUseCase implements IGetAllKycUseCase {
     private _kycRepo: IKycRepository;
@@ -16,7 +17,7 @@ export class GetAllKycUseCase implements IGetAllKycUseCase {
     async execute(input: IGetAllKycRequest): Promise<IGetAllKycResponse> {
         const { search, sort, limit = 10, page = 1, status } = input;
 
-        const finalSort = sort === 'asc' || sort === 'desc' ? sort : 'desc';
+        const finalSort = sort === SortFilter.ASC || sort === SortFilter.DESC ? sort : SortFilter.DESC;
         const skip = (page - 1) * limit;
 
         const entities = await this._kycRepo.findAllWithDetails({

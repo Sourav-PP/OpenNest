@@ -10,6 +10,7 @@ import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentReposit
 import { walletMessages } from '@/shared/constants/messages/walletMessages';
 import { generalMessages } from '@/shared/constants/messages/generalMessages';
 import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
+import { ConsultationPaymentStatus, ConsultationStatus } from '@/domain/enums/ConsultationEnums';
 
 export class CancelConsultationUseCase implements ICancelConsultationUseCase {
     private _walletRepo: IWalletRepository;
@@ -50,14 +51,14 @@ export class CancelConsultationUseCase implements ICancelConsultationUseCase {
             );
         }
 
-        if (consultation.status !== 'booked') {
+        if (consultation.status !== ConsultationStatus.BOOKED) {
             throw new AppError(
                 bookingMessages.ERROR.ONLY_BOOKED_CANCEL,
                 HttpStatus.BAD_REQUEST,
             );
         }
 
-        if (consultation.paymentStatus === 'paid') {
+        if (consultation.paymentStatus === ConsultationPaymentStatus.PAID) {
             const wallet = await this._walletRepo.findByUserId(userId);
 
             if (!wallet) {
@@ -84,7 +85,7 @@ export class CancelConsultationUseCase implements ICancelConsultationUseCase {
             );
         }
 
-        consultation.status = 'cancelled';
+        consultation.status = ConsultationStatus.CANCELLED;
         consultation.cancellationReason = reason;
         consultation.cancelledAt = new Date();
 
@@ -99,7 +100,9 @@ export class CancelConsultationUseCase implements ICancelConsultationUseCase {
         }
 
         if (updatedConsultation.slotId) {
-            await this._slotRepo.markSlotAsAvailable(updatedConsultation.slotId);
+            await this._slotRepo.markSlotAsAvailable(
+                updatedConsultation.slotId,
+            );
         }
 
         return updatedConsultation;

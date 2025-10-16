@@ -7,6 +7,7 @@ import {
 } from '@/infrastructure/database/models/user/SubscriptionModel';
 import mongoose, { PipelineStage, Types } from 'mongoose';
 import { Plan } from '@/domain/entities/plan';
+import { SubscriptionStatus } from '@/domain/enums/PlanEnums';
 
 export class SubscriptionRepository
     extends GenericRepository<Subscription, ISubscriptionDocument>
@@ -32,13 +33,12 @@ export class SubscriptionRepository
     }
 
     async findActiveByUserId(userId: string): Promise<{subscription: Subscription; plan: Plan} | null> {
-        console.log('Finding active subscription for userId: ', userId);
         const pipeline: PipelineStage[] = [
-            { $match: { userId: new mongoose.Types.ObjectId(userId), status: 'active', creditRemaining: { $gt: 0 } } },
+            { $match: { userId: new mongoose.Types.ObjectId(userId), status: SubscriptionStatus.ACTIVE, creditRemaining: { $gt: 0 } } },
 
             {
                 $lookup: {
-                    from: 'plans', // collection name of your PlanModel
+                    from: 'plans', 
                     localField: 'planId',
                     foreignField: '_id',
                     as: 'plan',
@@ -48,7 +48,6 @@ export class SubscriptionRepository
         ];
 
         const result = await SubscriptionModel.aggregate(pipeline).exec();
-        console.log('result from findActiveByUserId: ', result);
 
         if (!result || result.length === 0) return null;
 
@@ -82,8 +81,8 @@ export class SubscriptionRepository
 
     async cancelByUserId(userId: string): Promise<Subscription | null> {
         const subscription = await SubscriptionModel.findOneAndUpdate(
-            { userId, status: 'active' },
-            { status: 'canceled' },
+            { userId, status: SubscriptionStatus.ACTIVE },
+            { status: SubscriptionStatus.CANCELED },
             { new: true },
         ).exec();
         if (!subscription) return null;

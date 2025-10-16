@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { serviceApi } from '@/services/api/service';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 export type Service = {
   id: string;
@@ -23,7 +24,7 @@ export const useServices = (search: string) => {
     try {
       const res = await serviceApi.getAll({ page: currentPage, limit: itemsPerPage, search: search });
       if (!res.data) {
-        toast.error('Something went wrong');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       const mapped = res.data.services.map((service: Service) => ({

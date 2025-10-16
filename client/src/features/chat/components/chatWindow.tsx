@@ -8,9 +8,9 @@ import type { IMessageDto } from '@/types/dtos/message';
 import { chatApi } from '@/services/api/chat';
 import { toast } from 'react-toastify';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { getSocket, onOnlineUsers } from '@/services/api/socket';
+import { onOnlineUsers } from '@/services/api/socket';
 import ConfirmationModal from '@/components/user/ConfirmationModal';
-import type { Socket } from 'socket.io-client';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 export default function ChatWindow({
   consultationId,
@@ -21,7 +21,8 @@ export default function ChatWindow({
   userId: string;
   peerId: string;
 }) {
-  const { messages, sendMessage, isReady, handleDelete, peerTyping, handleTyping, handleStopTyping } = useChat(consultationId);
+  const { messages, sendMessage, isReady, handleDelete, peerTyping, handleTyping, handleStopTyping } =
+    useChat(consultationId);
   const [text, setText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,6 @@ export default function ChatWindow({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<{ messageId: string; consultationId: string } | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
-
 
   useEffect(() => {
     return onOnlineUsers(setOnlineUsers);
@@ -48,9 +48,8 @@ export default function ChatWindow({
     setDeleteModalOpen(true);
   };
 
-  
   const handleConfirmDelete = async () => {
-    if(!messageToDelete) return;
+    if (!messageToDelete) return;
 
     setConfirmLoading(true);
     try {
@@ -59,7 +58,7 @@ export default function ChatWindow({
       setMessageToDelete(null);
     } catch (error) {
       toast.error('Failed to delete message');
-      console.log('delete message error: ',error);
+      console.log('delete message error: ', error);
     } finally {
       setConfirmLoading(false);
     }
@@ -67,7 +66,6 @@ export default function ChatWindow({
 
   const handleSend = async () => {
     if (!text.trim() && !file) return;
-    console.log('text: ', text);
 
     let mediaUrl, mediaType;
 
@@ -77,10 +75,8 @@ export default function ChatWindow({
         formData.append('file', file);
 
         const res = await chatApi.uploadMedia(formData);
-
-        console.log('res:::::', res);
         if (!res.data) {
-          toast.error('something went wrong');
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
 
@@ -140,8 +136,7 @@ export default function ChatWindow({
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollElement = scrollAreaRef.current;
-      const isNearBottom =
-        scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight < 100;
+      const isNearBottom = scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight < 100;
       if (isNearBottom) {
         scrollElement.scrollTop = scrollElement.scrollHeight;
       }
@@ -154,11 +149,7 @@ export default function ChatWindow({
     return (
       <div className="relative flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm border border-gray-200">
         {file.type.startsWith('image/') ? (
-          <img
-            src={URL.createObjectURL(file)}
-            className="h-16 w-16 object-cover rounded-md"
-            alt={file.name}
-          />
+          <img src={URL.createObjectURL(file)} className="h-16 w-16 object-cover rounded-md" alt={file.name} />
         ) : (
           <div className="flex items-center gap-2">
             <FileIcon className="h-8 w-8 text-gray-500" />
@@ -202,10 +193,7 @@ export default function ChatWindow({
                 </div>
 
                 {msgs.map(m => (
-                  <div
-                    key={m.id}
-                    className={`flex ${m.senderId === userId ? 'justify-end' : 'justify-start'}`}
-                  >
+                  <div key={m.id} className={`flex ${m.senderId === userId ? 'justify-end' : 'justify-start'}`}>
                     <div
                       className={`relative max-w-[75%] p-3 rounded-2xl shadow-md transition-all duration-200 ${
                         m.deleted
@@ -216,8 +204,8 @@ export default function ChatWindow({
                       }`}
                     >
                       {!m.deleted && m.senderId === userId && (
-                        <DeleteIcon 
-                          onClick={() => confirmDeleteMessage(m.id, m.consultationId)} 
+                        <DeleteIcon
+                          onClick={() => confirmDeleteMessage(m.id, m.consultationId)}
                           className="w-4 h-4 absolute top-1 right-1 text-red-400 hover:text-red-600 cursor-pointer"
                         />
                       )}
@@ -233,18 +221,15 @@ export default function ChatWindow({
                       )}
 
                       {!m.deleted && m.mediaUrl && m.mediaType === 'video' && (
-                        <video
-                          src={m.mediaUrl}
-                          controls
-                          className="mt-1 max-w-full max-h-60 rounded-md"
-                        />
+                        <video src={m.mediaUrl} controls className="mt-1 max-w-full max-h-60 rounded-md" />
                       )}
 
                       {!m.deleted && m.mediaUrl && m.mediaType === 'audio' && (
                         <audio src={m.mediaUrl} controls className="mt-1 block max-w-full" />
                       )}
 
-                      {!m.deleted && m.mediaUrl &&
+                      {!m.deleted &&
+                        m.mediaUrl &&
                         m.mediaType &&
                         !['image', 'video', 'audio'].includes(m.mediaType) && (
                         <div className="mt-1 p-2 bg-gray-100 rounded-md text-sm text-gray-700 truncate">
@@ -254,9 +239,7 @@ export default function ChatWindow({
 
                       {/* Timestamp */}
                       {m.createdAt && !m.deleted && (
-                        <p className="text-xs text-gray-500 mt-1 text-right">
-                          {formatTime(m.createdAt)}
-                        </p>
+                        <p className="text-xs text-gray-500 mt-1 text-right">{formatTime(m.createdAt)}</p>
                       )}
                     </div>
                   </div>
@@ -265,12 +248,7 @@ export default function ChatWindow({
             ))
           )}
         </div>
-        {peerTyping && (
-          <div className="px-4 py-1 text-sm text-gray-600 italic">
-            typing...
-          </div>
-        )}
-
+        {peerTyping && <div className="px-4 py-1 text-sm text-gray-600 italic">typing...</div>}
       </ScrollArea>
 
       {/* Message Input Area */}
@@ -278,12 +256,7 @@ export default function ChatWindow({
         <div className="flex items-center gap-3 max-w-full">
           {/* File input */}
           <label className="cursor-pointer">
-            <input
-              type="file"
-              className="hidden"
-              accept="image/*,video/*,audio/*"
-              onChange={handleFileChange}
-            />
+            <input type="file" className="hidden" accept="image/*,video/*,audio/*" onChange={handleFileChange} />
             <Link className="h-6 w-6 text-gray-600 hover:text-gray-800" />
           </label>
 

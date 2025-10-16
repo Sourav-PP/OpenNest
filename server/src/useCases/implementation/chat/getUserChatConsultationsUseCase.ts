@@ -1,3 +1,4 @@
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IGetUserChatConsultationsUseCase } from '@/useCases/interfaces/chat/IGetUserChatConsultationsUseCase';
 import { toUserChatConsultationDto } from '@/useCases/mappers/consultationMapper';
@@ -16,7 +17,10 @@ export class GetUserChatConsultationsUseCase implements IGetUserChatConsultation
     ): Promise<IGetUserChatConsultationsResponse> {
         const { search, sort, status, page = 1, limit = 10 } = input;
 
-        const finalSort = sort === 'asc' || sort === 'desc' ? sort : 'desc';
+        const finalSort =
+            sort === SortFilter.ASC || sort === SortFilter.DESC
+                ? sort
+                : SortFilter.DESC;
         const skip = (page - 1) * limit;
         const userId = input.patientId;
 
@@ -32,10 +36,18 @@ export class GetUserChatConsultationsUseCase implements IGetUserChatConsultation
         );
 
         const mappedConsultations = consultations.map(c =>
-            toUserChatConsultationDto(c.consultation, c.psychologist, c.user, c.lastMessage, c.lastMessageTime, c.unreadCount),
+            toUserChatConsultationDto(
+                c.consultation,
+                c.psychologist,
+                c.user,
+                c.lastMessage,
+                c.lastMessageTime,
+                c.unreadCount,
+            ),
         );
 
-        const totalCount = await this._consultationRepo.countAllByPatientId(userId);
+        const totalCount =
+            await this._consultationRepo.countAllByPatientId(userId);
 
         return {
             consultations: mappedConsultations,

@@ -1,14 +1,15 @@
+import { UserGender, UserRole } from '../enums/UserEnums';
+
 export interface User {
     id: string;
     name: string;
     email: string;
     phone?: string;
-    role: 'user' | 'psychologist';
+    role: UserRole;
     password?: string;
     profileImage?: string;
     dateOfBirth?: Date;
-    gender?: string;
+    gender?: UserGender;
     isActive: boolean;
     googleId?: string;
 }
-

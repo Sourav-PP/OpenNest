@@ -1,3 +1,5 @@
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { UserGenderFilter } from '@/domain/enums/UserEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
@@ -12,35 +14,30 @@ export class UserPsychologistController {
     constructor(
         getAllPsychologistUseCase: IGetAllPsychologistsForUserUseCase,
         getPsychologistDetails: IGetPsychologistDetailsUseCase,
-    
     ) {
         this._getAllPsychologistUseCase = getAllPsychologistUseCase;
-        this._getPsychologistDetails = getPsychologistDetails;;
+        this._getPsychologistDetails = getPsychologistDetails;
     }
 
-    getAllPsychologists = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getAllPsychologists = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             const result = await this._getAllPsychologistUseCase.execute({
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
-                gender: req.query.gender as 'Male' | 'Female' | 'all',
+                sort: req.query.sort as SortFilter,
+                gender: req.query.gender as UserGenderFilter,
                 expertise: req.query.expertise as string,
                 page,
                 limit,
             });
 
-            console.log('result: ', result);
             const { psychologists, totalCount } = {
                 psychologists: result.psychologists,
                 totalCount: result.totalCount,
             };
+            
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: adminMessages.SUCCESS.FETCHED_PSYCHOLOGISTS,
@@ -63,6 +60,7 @@ export class UserPsychologistController {
             }
 
             const psychologist = await this._getPsychologistDetails.execute(userId);
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: adminMessages.SUCCESS.FETCHED_PSYCHOLOGIST,

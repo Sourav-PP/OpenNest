@@ -4,9 +4,9 @@ import { WalletTransaction } from '@/domain/entities/walletTransaction';
 import { AppError } from '@/domain/errors/AppError';
 import { walletMessages } from '@/shared/constants/messages/walletMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { WalletTransactionStatus, WalletTransactionType } from '@/domain/enums/WalletEnums';
 
-export class CreateWalletTransactionUseCase implements ICreateWalletTransactionUseCase
-{
+export class CreateWalletTransactionUseCase implements ICreateWalletTransactionUseCase {
     private _walletRepo: IWalletRepository;
 
     constructor(walletRepo: IWalletRepository) {
@@ -16,24 +16,19 @@ export class CreateWalletTransactionUseCase implements ICreateWalletTransactionU
     async execute(
         walletId: string,
         amount: number,
-        type: 'credit' | 'debit' | 'transferIn' | 'transferOut',
+        type: WalletTransactionType,
         reference?: string,
         metadata?: any,
     ): Promise<WalletTransaction> {
         if (reference) {
-            const existing =
-                await this._walletRepo.findTransactionByReference(reference);
+            const existing = await this._walletRepo.findTransactionByReference(reference);
             if (existing) return existing;
         }
 
         if (amount < 0) {
             const abs = Math.abs(amount);
             const wallet = await this._walletRepo.safeDebit(walletId, abs);
-            if (!wallet)
-                throw new AppError(
-                    walletMessages.ERROR.INSUFFICIENT_FUNDS,
-                    HttpStatus.BAD_REQUEST,
-                );
+            if (!wallet) throw new AppError(walletMessages.ERROR.INSUFFICIENT_FUNDS, HttpStatus.BAD_REQUEST);
         } else {
             await this._walletRepo.updateBalance(walletId, amount);
         }
@@ -43,6 +38,7 @@ export class CreateWalletTransactionUseCase implements ICreateWalletTransactionU
             amount,
             type,
             reference,
+            status: WalletTransactionStatus.COMPLETED,
             metadata,
         });
     }

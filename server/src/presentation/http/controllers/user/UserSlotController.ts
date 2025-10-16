@@ -10,16 +10,10 @@ export class UserSlotController {
         this._getSlotsForUserUseCase = getSlotsForUserUseCase;
     }
 
-    getAllSlots = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getAllSlots = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { userId } = req.params;
-            const date = req.query.date
-                ? new Date(req.query.date as string)
-                : undefined;
+            const date = req.query.date ? new Date(req.query.date as string) : undefined;
 
             const slots = await this._getSlotsForUserUseCase.execute({
                 userId,
@@ -31,8 +25,7 @@ export class UserSlotController {
                 message: adminMessages.SUCCESS.FETCHED_SLOTS,
                 data: slots.map(slot => ({
                     ...slot,
-                    isExpired:
-                        new Date(slot.endDateTime).getTime() <= Date.now(),
+                    isExpired: new Date(slot.endDateTime).getTime() <= Date.now(),
                 })),
             });
         } catch (error) {

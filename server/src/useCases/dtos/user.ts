@@ -1,15 +1,16 @@
+import { UserGender, UserRole } from '@/domain/enums/UserEnums';
+
 export interface IUserDto {
     id: string;
     name: string;
     email: string;
     phone?: string;
-    role: 'user' | 'psychologist';
+    role: UserRole;
     profileImage?: string;
     dateOfBirth?: Date;
-    gender?: string;
+    gender?: UserGender;
     isActive?: boolean;
 }
-
 
 export interface IUserUpdatedDto {
     id: string;
@@ -18,18 +19,17 @@ export interface IUserUpdatedDto {
     phone?: string;
     profileImage?: string;
     dateOfBirth?: Date;
-    gender?: string;
+    gender?: UserGender;
 }
 
 export interface ILoginOutputDto {
     user: {
         name: string;
         email: string;
-        role: 'user' | 'psychologist';
+        role: UserRole;
         profileImage?: string;
     };
     accessToken: string;
     refreshToken: string;
     hasSubmittedVerificationForm: boolean;
-} 
-
+}

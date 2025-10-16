@@ -1,14 +1,9 @@
+import type { NotificationTypeValue } from '@/constants/Notification';
+
 export interface INotificationDto {
   id: string;
   message: string;
-  type:
-    | 'CONSULTATION_BOOKED'
-    | 'CONSULTATION_CANCELLED'
-    | 'CONSULTATION_REMINDER'
-    | 'NEW_MESSAGE'
-    | 'PAYMENT_SUCCESS'
-    | 'PAYMENT_FAILED'
-    | 'FEEDBACK_RECEIVED';
+  type: NotificationTypeValue;
   consultationId?: string | undefined;
   read: boolean;
 }

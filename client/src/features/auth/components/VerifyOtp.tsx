@@ -10,7 +10,6 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { Mail } from 'lucide-react';
 import { z } from 'zod';
 
-
 const VerifyOtp = () => {
   const location = useLocation();
   const { role, email } = location.state || {};
@@ -20,7 +19,7 @@ const VerifyOtp = () => {
     otp: z.string().length(6, 'OTP must be 6 digits'),
   });
 
-  type VerifyOtpData = z.infer<typeof verifyOtpSchema>
+  type VerifyOtpData = z.infer<typeof verifyOtpSchema>;
 
   const form = useForm<VerifyOtpData>({
     resolver: zodResolver(verifyOtpSchema),
@@ -31,10 +30,10 @@ const VerifyOtp = () => {
 
   const onSubmit = async (data: VerifyOtpData) => {
     try {
-      const res = await authApi.verifyForgotOtp({email, otp: data.otp});
+      const res = await authApi.verifyForgotOtp({ email, otp: data.otp });
 
       toast.success(res.message);
-      navigate('/reset-password', {state: {email: email, role: role}});
+      navigate('/reset-password', { state: { email: email, role: role } });
     } catch (err) {
       handleApiError(err, form.setError);
     }
@@ -58,19 +57,24 @@ const VerifyOtp = () => {
         />
 
         {/* Submit Button */}
-        <div className='group'>
-          <Button size='lg' type="submit" className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg" disabled={form.formState.isSubmitting}>
+        <div className="group">
+          <Button
+            size="lg"
+            type="submit"
+            className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Loading...' : 'Submit OTP'}
           </Button>
         </div>
 
         {/* Login Link */}
-        
+
         <p className="text-center text-sm">
           Back to login{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/login', {state: { role: role }})}
+            onClick={() => navigate('/login', { state: { role: role } })}
           >
             Login
           </span>

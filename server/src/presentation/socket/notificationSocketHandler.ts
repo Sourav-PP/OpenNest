@@ -21,7 +21,7 @@ export class NotificationSocketHandler implements INotificationSocketHandler {
 
     async sendNotification(
         recipientId: string,
-        notification: { id: string; message: string; type: string; consultationId?: string, read: boolean },
+        notification: { id: string; message: string; type: string; consultationId?: string; read: boolean },
     ): Promise<void> {
         this._io.to(recipientId).emit('notification', notification);
     }

@@ -2,35 +2,34 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 
 interface ConfirmModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: (reason?: string) => void
-  title?: string
-  message?: string
-  requireReason?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (reason?: string) => void;
+  title?: string;
+  message?: string;
+  requireReason?: boolean;
 }
 
-const ConfirmModal = ({ isOpen, onClose, onConfirm,title, message, requireReason }: ConfirmModalProps) => {
-
+const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, requireReason }: ConfirmModalProps) => {
   const [reason, setReason] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if(!isOpen) {
+    if (!isOpen) {
       setReason('');
       setError('');
     }
-  },[isOpen]);
+  }, [isOpen]);
 
   const handleConfirm = () => {
-    if(requireReason && !reason.trim()) {
+    if (requireReason && !reason.trim()) {
       setError('Reason is required to reject this KYC!');
       return;
     }
     setError('');
     onConfirm(reason.trim());
   };
-  
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -63,7 +62,13 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm,title, message, requireReason
                   className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700 transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-7 h-7 text-gray-300 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg
+                    className="w-7 h-7 text-gray-300 hover:text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -77,16 +82,14 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm,title, message, requireReason
                 </p>
 
                 {requireReason && (
-                  <div className='mb-6 text-left'>
+                  <div className="mb-6 text-left">
                     <textarea
                       className="w-full p-3 bg-admin-bg-secondary text-whit mb-1 rounded-xl"
                       placeholder="Enter rejection reason..."
                       value={reason}
-                      onChange={(e) => setReason(e.target.value)}
+                      onChange={e => setReason(e.target.value)}
                     />
-                    {error && (
-                      <p className='text-red-500 text-sm'>{error}</p>
-                    )}
+                    {error && <p className="text-red-500 text-sm">{error}</p>}
                   </div>
                 )}
 

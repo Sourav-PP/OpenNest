@@ -9,7 +9,7 @@ export class SlotRepository extends GenericRepository<Slot, ISlotDocument> imple
     constructor() {
         super(SlotModel);
     }
-    async createSlot(slots: Omit<Slot, 'id' | 'isBooked'>[]): Promise<void> {
+    async createSlot(slots: Omit<Slot, 'id' | 'isBooked' | 'isAvailable'>[]): Promise<void> {
         await SlotModel.insertMany(slots);
     }
 
@@ -45,7 +45,7 @@ export class SlotRepository extends GenericRepository<Slot, ISlotDocument> imple
 
             {
                 $lookup: {
-                    from: 'users', // MongoDB collection name for UserModel
+                    from: 'users', 
                     localField: 'bookedBy',
                     foreignField: '_id',
                     as: 'bookedByUser',
@@ -118,7 +118,6 @@ export class SlotRepository extends GenericRepository<Slot, ISlotDocument> imple
 
     async getSlotByPsychologist(psychologistId: string, date: Date): Promise<{slot: Slot, user: User | null}[]> {
         const matchStage: Record<string, unknown> = { psychologistId: new Types.ObjectId(psychologistId) };
-        console.log('date in repo: ', date);
         if (date) {
             const startOfDayUTC = new Date(date); // frontend sends date as midnight
             const endOfDayUTC = new Date(startOfDayUTC.getTime() + 24 * 60 * 60 * 1000);

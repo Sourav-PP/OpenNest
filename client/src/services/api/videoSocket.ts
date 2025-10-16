@@ -4,10 +4,10 @@ import { io, Socket } from 'socket.io-client';
 let socket: Socket | null = null;
 
 export function connectVideoSocket(token: string) {
-  if( socket && socket.connected ) return socket;
+  if (socket && socket.connected) return socket;
 
   socket = io(import.meta.env.VITE_BACKEND_URL, {
-    transports: [ 'websocket' ],
+    transports: ['websocket'],
     auth: { token },
   });
 
@@ -16,7 +16,7 @@ export function connectVideoSocket(token: string) {
     console.error('Socket error:', data.message);
     toast.error(data.message); // optional: show to user
   });
-  socket.on('disconnect', (reason) => console.log('Video socket disconnected', reason));
+  socket.on('disconnect', reason => console.log('Video socket disconnected', reason));
 
   return socket;
 }
@@ -34,7 +34,7 @@ export function joinCall(consultationId: string) {
 }
 
 export function leaveCall(consultationId: string) {
-  socket?.emit('leave_call', { consultationId }); 
+  socket?.emit('leave_call', { consultationId });
 }
 
 export function sendOffer(to: string, offer: RTCSessionDescriptionInit) {
@@ -49,7 +49,7 @@ export function sendIceCandidate(to: string, candidate: RTCIceCandidate) {
   socket?.emit('ice_candidate', { to, candidate });
 }
 
-export function onUserJoined(cb: (data: { socketId: string, name: string }) => void) {
+export function onUserJoined(cb: (data: { socketId: string; name: string }) => void) {
   socket?.on('user_joined', cb);
 }
 
@@ -69,6 +69,6 @@ export function onIceCandidate(cb: (data: { candidate: RTCIceCandidate; from: st
   socket?.on('ice_candidate', cb);
 }
 
-export function onCurrentParticipants(cb: (participants: { socketId: string; name: string; }[]) => void) {
+export function onCurrentParticipants(cb: (participants: { socketId: string; name: string }[]) => void) {
   socket?.on('current_participants', cb);
 }

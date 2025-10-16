@@ -9,6 +9,9 @@ import { User } from '@/domain/entities/user';
 import { PipelineStage } from 'mongoose';
 import { GenericRepository } from '../GenericRepository';
 import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
+import { UserGender, UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
+import { ConsultationPaymentStatus, ConsultationStatus } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
 export class PsychologistRepository
     extends GenericRepository<Psychologist, IPsychologistDocument>
@@ -41,14 +44,14 @@ export class PsychologistRepository
 
     async findAllPsychologists(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
-        gender?: 'Male' | 'Female' | 'all';
+        sort?: SortFilter;
+        gender?: UserGenderFilter;
         expertise?: string;
         skip: number;
         limit: number;
     }): Promise<{ psychologist: Psychologist; user: User }[]> {
         const matchStage: Record<string, unknown> = {
-            'user.role': 'psychologist',
+            'user.role': UserRole.PSYCHOLOGIST,
         };
 
         if (params.search) {
@@ -59,7 +62,7 @@ export class PsychologistRepository
             matchStage['user.gender'] = params.gender;
         }
 
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
         const pipeline: PipelineStage[] = [
             {
@@ -127,10 +130,10 @@ export class PsychologistRepository
 
     async countAllPsychologist(params: {
         search?: string;
-        gender?: 'Male' | 'Female';
+        gender?: UserGender;
     }): Promise<number> {
         const matchStage: Record<string, unknown> = {
-            'user.role': 'psychologist',
+            'user.role': UserRole.PSYCHOLOGIST,
         };
 
         if (params.search) {
@@ -195,7 +198,7 @@ export class PsychologistRepository
         totalConsultations: number;
     }[]> {
         const topPsychologists = await ConsultationModel.aggregate([
-            { $match: { paymentStatus: 'paid', status: 'completed' } },
+            { $match: { paymentStatus: ConsultationPaymentStatus.PAID, status: ConsultationStatus.COMPLETED } },
 
             {
                 $group: {

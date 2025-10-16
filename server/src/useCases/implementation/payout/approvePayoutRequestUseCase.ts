@@ -1,4 +1,9 @@
 import { PayoutRequest } from '@/domain/entities/payoutRequest';
+import { PayoutRequestStatus } from '@/domain/enums/PayoutRequestEnums';
+import {
+    WalletTransactionStatus,
+    WalletTransactionType,
+} from '@/domain/enums/WalletEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPayoutRequestRepository } from '@/domain/repositoryInterface/IPayoutRequestRepository';
@@ -37,16 +42,16 @@ export class ApprovePayoutRequestUseCase implements IApprovePayoutRequest {
                     payoutMessages.ERROR.NOT_FOUND,
                     HttpStatus.NOT_FOUND,
                 );
-            if (payout.status !== 'pending')
+            if (payout.status !== PayoutRequestStatus.PENDING)
                 throw new AppError(
                     payoutMessages.ERROR.NOT_PENDING,
                     HttpStatus.BAD_REQUEST,
                 );
-            console.log('payout :', payout);
+
             const consultations = await this._consultationRepository.findByIds(
                 payout.consultationIds,
             );
-            console.log('consultations:', consultations);
+
             if (!consultations || consultations.length === 0)
                 throw new AppError(
                     payoutMessages.ERROR.NO_ELIGIBLE_CONSULTATIONS,
@@ -79,8 +84,8 @@ export class ApprovePayoutRequestUseCase implements IApprovePayoutRequest {
                 {
                     walletId: psychologistWallet.id,
                     amount: payout.payoutAmount,
-                    type: 'credit',
-                    status: 'completed',
+                    type: WalletTransactionType.CREDIT,
+                    status: WalletTransactionStatus.COMPLETED,
                     reference: payoutRequestId,
                     metadata: {
                         type: 'payout',
@@ -98,7 +103,7 @@ export class ApprovePayoutRequestUseCase implements IApprovePayoutRequest {
 
             await this._payoutRequestRepository.updateStatus(
                 payoutRequestId,
-                'approved',
+                PayoutRequestStatus.APPROVED,
                 new Date(),
                 session,
             );

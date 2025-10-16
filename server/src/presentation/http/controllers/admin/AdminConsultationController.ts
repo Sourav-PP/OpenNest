@@ -1,3 +1,5 @@
+import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IGetAllConsultationsUseCase } from '@/useCases/interfaces/admin/management/IGetAllConsultationsUseCase';
@@ -16,26 +18,17 @@ export class AdminConsultationController {
         this._getTopPsychologistsUseCase = getTopPsychologistsUseCase;
     }
 
-    getAllConsultations = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getAllConsultations = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             const result = await this._getAllConsultationsUseCase.execute({
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
+                sort: req.query.sort as SortFilter,
                 page,
                 limit,
-                status: req.query.status as
-                    | 'booked'
-                    | 'cancelled'
-                    | 'completed'
-                    | 'rescheduled'
-                    | 'all',
+                status: req.query.status as ConsultationStatusFilter,
             });
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -47,14 +40,11 @@ export class AdminConsultationController {
         }
     };
 
-    getTopPsychologists = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getTopPsychologists = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const limit = parseInt(req.query.limit as string) || 10;
             const result = await this._getTopPsychologistsUseCase.execute(limit);
+            
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: adminMessages.SUCCESS.FETCHED_PSYCHOLOGIST,

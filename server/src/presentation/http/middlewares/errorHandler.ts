@@ -3,12 +3,7 @@ import { AppError } from '@/domain/errors/AppError';
 import { generalMessages } from '@/shared/constants/messages/generalMessages';
 import logger from '@/utils/logger';
 
-export function errorHandler(
-    err: unknown,
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): void {
+export function errorHandler(err: unknown, req: Request, res: Response, next: NextFunction): void {
     if (err instanceof Error) {
         logger.error(`Error occurred on ${req.method} ${req.originalUrl}`, {
             message: err.message,

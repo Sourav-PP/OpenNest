@@ -1,3 +1,5 @@
+import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
@@ -31,32 +33,21 @@ export class UserConsultationController {
         this._getUserConsultationHistoryDetailsUseCase = getUserConsultationHistoryDetailsUseCase;
     }
 
-    getConsultations = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getConsultations = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const result = await this._getUserConsultationsUseCase.execute({
                 patientId: userId,
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
-                status: req.query.status as
-                    | 'booked'
-                    | 'cancelled'
-                    | 'completed'
-                    | 'rescheduled',
+                sort: req.query.sort as SortFilter,
+                status: req.query.status as ConsultationStatusFilter,
                 page,
                 limit,
             });
@@ -86,31 +77,17 @@ export class UserConsultationController {
         }
     };
 
-    cancelConsultation = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    cancelConsultation = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const { consultationId } = req.params;
             const { reason } = req.body;
 
-            console.log('id: ', consultationId);
-            console.log('reason: ', reason);
-
-            const consultation = await this._cancelConsultationUseCase.execute(
-                userId,
-                consultationId,
-                reason,
-            );
+            const consultation = await this._cancelConsultationUseCase.execute(userId, consultationId, reason);
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -124,22 +101,18 @@ export class UserConsultationController {
 
     getHistory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('jere');
             const userId = req.user?.userId;
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const result = await this._getUserConsultationHistoryUseCase.execute({
                 patientId: userId,
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
+                sort: req.query.sort as SortFilter,
                 page,
                 limit,
             });
@@ -154,7 +127,7 @@ export class UserConsultationController {
         }
     };
 
-    getHistoryDetails = async(req: Request, res: Response, next: NextFunction): Promise<void> =>{
+    getHistoryDetails = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { consultationId } = req.params;
             const result = await this._getUserConsultationHistoryDetailsUseCase.execute(consultationId);

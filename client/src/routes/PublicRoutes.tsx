@@ -13,34 +13,58 @@ import LogoutPage from '@/features/user/pages/LogoutPage';
 export const publicRoutes: RouteObject[] = [
   {
     path: '/',
-    element: <LandingPage />
+    element: <LandingPage />,
   },
   {
     path: '/logout',
-    element: <LogoutPage/>
+    element: <LogoutPage />,
   },
   {
     path: '/signup',
-    element: <PublicRoute><SignupPage /></PublicRoute >
+    element: (
+      <PublicRoute>
+        <SignupPage />
+      </PublicRoute>
+    ),
   },
   {
     path: '/login',
-    element: <PublicRoute><LoginPage /></PublicRoute>
+    element: (
+      <PublicRoute>
+        <LoginPage />
+      </PublicRoute>
+    ),
   },
   {
     path: '/admin/login',
-    element: <PublicRoute>< AdminLoginPage /></PublicRoute>
+    element: (
+      <PublicRoute>
+        <AdminLoginPage />
+      </PublicRoute>
+    ),
   },
   {
     path: '/forgot-password',
-    element: <PublicRoute>< ForgotPasswordPage /></PublicRoute>
+    element: (
+      <PublicRoute>
+        <ForgotPasswordPage />
+      </PublicRoute>
+    ),
   },
   {
     path: '/verify-otp',
-    element: <PublicRoute>< VerifyForgotPasswordOtpPage /></PublicRoute>
+    element: (
+      <PublicRoute>
+        <VerifyForgotPasswordOtpPage />
+      </PublicRoute>
+    ),
   },
   {
     path: '/reset-password',
-    element: <PublicRoute>< ResetPasswordPage /></PublicRoute>
+    element: (
+      <PublicRoute>
+        <ResetPasswordPage />
+      </PublicRoute>
+    ),
   },
 ];

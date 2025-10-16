@@ -2,7 +2,7 @@ import { Slot } from '../entities/slot';
 import { User } from '../entities/user';
 
 export interface ISlotRepository {
-    createSlot(slots: Omit<Slot, 'id' | 'isBooked'>[]): Promise<void>
+    createSlot(slots: Omit<Slot, 'id' | 'isBooked' | 'isAvailable'>[]): Promise<void>
     checkConflict(psychologistId: string, start: Date, end: Date): Promise<boolean>
     getAllSlotsByPsychologistId(psychologistId: string): Promise<Slot[]>
     getSlotByPsychologist(psychologistId: string, date: Date): Promise<{slot: Slot, user: User | null}[]>

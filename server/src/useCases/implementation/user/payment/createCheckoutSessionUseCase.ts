@@ -14,6 +14,11 @@ import { appConfig } from '@/infrastructure/config/config';
 import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import {
+    PaymentMethod,
+    PaymentPurpose,
+    PaymentStatus,
+} from '@/domain/enums/PaymentEnums';
 
 export type IStripeMetaData = {
     patientId: string;
@@ -23,11 +28,10 @@ export type IStripeMetaData = {
     endDateTime: string;
     sessionGoal: string;
     subscriptionId?: string;
-    purpose: 'consultation' | 'wallet';
+    purpose: PaymentPurpose;
 };
 
-export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCase
-{
+export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCase {
     private _paymentService: IPaymentService;
     private _paymentRepository: IPaymentRepository;
     private _slotRepo: ISlotRepository;
@@ -40,7 +44,6 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
         slotRepo: ISlotRepository,
         consultationRepo: IConsultationRepository,
         psychologistRepository: IPsychologistRepository,
-
     ) {
         this._paymentService = paymentService;
         this._paymentRepository = paymentRepository;
@@ -58,17 +61,16 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
                 HttpStatus.BAD_REQUEST,
             );
         }
-        console.log('input: ', input);
 
         const currency = appConfig.stripe.currency || 'usd';
         const cancelUrl = appConfig.stripe.frontendCancelUrl;
 
         let successUrl: string;
 
-        if (input.purpose === 'wallet') {
+        if (input.purpose === PaymentPurpose.WALLET) {
             successUrl = `${appConfig.server.frontendUrl}/user/wallet?success=true&session_id={CHECKOUT_SESSION_ID}`;
         } else {
-            successUrl = appConfig.stripe.frontendSuccessUrl;;
+            successUrl = appConfig.stripe.frontendSuccessUrl;
         }
 
         let metadata: Record<string, string> = {
@@ -76,9 +78,7 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             purpose: input.purpose,
         };
 
-
-
-        if (input.purpose === 'consultation') {
+        if (input.purpose === PaymentPurpose.CONSULTATION) {
             const slot = await this._slotRepo.findById(input.slotId);
 
             if (!slot) {
@@ -94,7 +94,6 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
                     HttpStatus.CONFLICT,
                 );
             }
-
 
             metadata = {
                 ...metadata,
@@ -124,20 +123,25 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             userId: input.userId,
             amount: input.amount,
             currency: appConfig.stripe.currency || 'usd',
-            paymentMethod: 'stripe',
-            paymentStatus: 'pending',
+            paymentMethod: PaymentMethod.STRIPE,
+            paymentStatus: PaymentStatus.PENDING,
             refunded: false,
             transactionId: undefined,
             stripeSessionId: sessionId,
-            slotId: input.purpose === 'consultation' ? input.slotId : null,
+            slotId:
+                input.purpose === PaymentPurpose.CONSULTATION
+                    ? input.slotId
+                    : null,
             purpose: input.purpose,
         };
 
         try {
-            console.log('Inserting payment:', payment);
             await this._paymentRepository.create(payment);
         } catch (error: any) {
-            if (error.code === 11000 && input.purpose === 'consultation') {
+            if (
+                error.code === 11000 &&
+                input.purpose === PaymentPurpose.CONSULTATION
+            ) {
                 throw new AppError(
                     bookingMessages.ERROR.SLOT_JUST_BOOKED,
                     HttpStatus.CONFLICT,

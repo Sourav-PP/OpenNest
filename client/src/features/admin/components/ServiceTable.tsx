@@ -25,9 +25,9 @@ const ServiceTable = () => {
       setDebouncedSearch(searchTerm);
       setCurrentPage(1);
     }, 500);
-    
+
     return () => clearTimeout(delay);
-  }, [searchTerm, setCurrentPage]);  
+  }, [searchTerm, setCurrentPage]);
 
   const openDeleteModal = async (id: string) => {
     setSelectedServiceId(id);
@@ -39,8 +39,8 @@ const ServiceTable = () => {
 
     try {
       setIsDeleting(true);
-      await adminApi.deleteService(selectedServiceId);
-      toast.success('Service deleted successfully');
+      const res = await adminApi.deleteService(selectedServiceId);
+      toast.success(res.message);
       setModalOpen(false);
       setSelectedServiceId(null);
       refetch();
@@ -124,7 +124,7 @@ const ServiceTable = () => {
           type="text"
           placeholder="Search services..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           className="w-full sm:w-1/3 px-3 py-2 rounded-lg border border-gray-600 bg-admin-bg-secondary text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -134,11 +134,7 @@ const ServiceTable = () => {
         emptyMessage="No users found."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPage}
-        onPageChange={setCurrentPage}
-      />
+      <CustomPagination currentPage={currentPage} totalPages={totalPage} onPageChange={setCurrentPage} />
       <ConfirmModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

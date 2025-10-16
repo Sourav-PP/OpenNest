@@ -32,7 +32,8 @@ export class UploadChatMediaUseCase implements IUploadChatMediaUseCase {
         let mediaType: string;
         if (type === 'image') mediaType = 'image';
         else if (type === 'video') {
-            if (ext && ['mp3','ogg','wav','m4a','aac'].includes(ext)) mediaType = 'audio';
+            if (ext && ['mp3', 'ogg', 'wav', 'm4a', 'aac'].includes(ext))
+                mediaType = 'audio';
             else mediaType = 'video';
         } else if (type === 'audio') mediaType = 'audio';
         else mediaType = 'file';

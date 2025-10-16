@@ -20,23 +20,34 @@ export class ChangePasswordUseCase implements IChangePasswordUseCase {
         currentPassword: string,
         newPassword: string,
     ): Promise<void> {
-        console.log('currentPass: ', currentPassword);
-        console.log('newPassword: ', newPassword);
-        console.log('userId: ', userId);
         const user = await this._userRepo.findById(userId);
-        if (!user) throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+        if (!user)
+            throw new AppError(
+                userMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
 
         if (!user.password) {
-            throw new AppError(authMessages.ERROR.PASSWORD_CHANGE_FAILED, HttpStatus.NOT_FOUND);
+            throw new AppError(
+                authMessages.ERROR.PASSWORD_CHANGE_FAILED,
+                HttpStatus.NOT_FOUND,
+            );
         }
 
-        const isMatch = await this._authService.comparePassword(currentPassword, user.password);
+        const isMatch = await this._authService.comparePassword(
+            currentPassword,
+            user.password,
+        );
 
         if (!isMatch) {
-            throw new AppError(authMessages.ERROR.INCORRECT_CURRENT_PASSWORD, HttpStatus.BAD_REQUEST);
+            throw new AppError(
+                authMessages.ERROR.INCORRECT_CURRENT_PASSWORD,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
-        const hashedPassword = await this._authService.hashPassword(newPassword);
+        const hashedPassword =
+            await this._authService.hashPassword(newPassword);
         await this._userRepo.updatePassword(user.email, hashedPassword);
     }
 }

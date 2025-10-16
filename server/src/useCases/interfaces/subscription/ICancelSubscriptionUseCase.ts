@@ -1,5 +1,5 @@
-import { Subscription } from '@/domain/entities/subscription';
+import { ISubscriptionDto } from '@/useCases/dtos/subscription';
 
 export interface ICancelSubscriptionUseCase {
-    execute(userId: string): Promise<Subscription | null>;
+    execute(userId: string): Promise<ISubscriptionDto | null>;
 }

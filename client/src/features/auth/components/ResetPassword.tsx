@@ -10,43 +10,44 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { Mail } from 'lucide-react';
 import { z } from 'zod';
 
-
 const ResetPassword = () => {
   const location = useLocation();
   const { role, email } = location.state || {};
   const navigate = useNavigate();
 
-  const verifyResetPassSchema = z.object({
-    password: z
-      .string()
-      .trim()
-      .min(6, { message: 'Password must be at least 6 characters long' })
-      .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
-      .regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter' })
-      .regex(/[0-9]/, { message: 'Password must contain at least one number' })
-      .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least one special character' }),
-    confirmPassword: z.string().trim().min(6),
-  }).refine((data) => data.password === data.confirmPassword, {
-    message: 'Password do not match',
-    path:['confirmPassword']
-  });
+  const verifyResetPassSchema = z
+    .object({
+      password: z
+        .string()
+        .trim()
+        .min(6, { message: 'Password must be at least 6 characters long' })
+        .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
+        .regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter' })
+        .regex(/[0-9]/, { message: 'Password must contain at least one number' })
+        .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least one special character' }),
+      confirmPassword: z.string().trim().min(6),
+    })
+    .refine(data => data.password === data.confirmPassword, {
+      message: 'Password do not match',
+      path: ['confirmPassword'],
+    });
 
-  type VerifyResetPassData = z.infer<typeof verifyResetPassSchema>
+  type VerifyResetPassData = z.infer<typeof verifyResetPassSchema>;
 
   const form = useForm<VerifyResetPassData>({
     resolver: zodResolver(verifyResetPassSchema),
     defaultValues: {
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     },
   });
 
   const onSubmit = async (data: VerifyResetPassData) => {
     try {
-      const res = await authApi.resetPassword({email, password: data.password});
+      const res = await authApi.resetPassword({ email, password: data.password });
 
       toast.success(res.message);
-      navigate('/login', {state: { role: role }});
+      navigate('/login', { state: { role: role } });
     } catch (err) {
       handleApiError(err, form.setError);
     }
@@ -62,7 +63,7 @@ const ResetPassword = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input type='password' leftIcon={Mail} placeholder="Enter the password" {...field} />
+                <Input type="password" leftIcon={Mail} placeholder="Enter the password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -75,7 +76,7 @@ const ResetPassword = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input type='password' leftIcon={Mail} placeholder="Confirm your password" {...field} />
+                <Input type="password" leftIcon={Mail} placeholder="Confirm your password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,19 +84,24 @@ const ResetPassword = () => {
         />
 
         {/* Submit Button */}
-        <div className='group'>
-          <Button size='lg' type="submit" className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg" disabled={form.formState.isSubmitting}>
+        <div className="group">
+          <Button
+            size="lg"
+            type="submit"
+            className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Loading...' : 'Reset Password'}
           </Button>
         </div>
 
         {/* Login Link */}
-        
+
         <p className="text-center text-sm">
           Back to login{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/login', {state: { role: role }})}
+            onClick={() => navigate('/login', { state: { role: role } })}
           >
             Login
           </span>

@@ -8,15 +8,22 @@ import ConfirmModal from '@/components/admin/ConfirmModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import Filters from '@/components/admin/Filters';
+import { UserGenderFilter, type UserGenderFilterType } from '@/constants/User';
+import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 const UserTable = () => {
   const [users, setUsers] = useState<IUserDto[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    search: string;
+    gender: UserGenderFilterType;
+    sort: SortFilterType;
+  }>({
     search: '',
-    gender: 'all',
-    sort: 'desc',
+    gender: UserGenderFilter.ALL,
+    sort: SortFilter.Desc,
   });
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -39,13 +46,13 @@ const UserTable = () => {
       const res = await adminApi.getAllUser({
         page: currentPage,
         limit: itemsPerPage,
-        gender: filters.gender as 'all' | 'male' | 'female' || undefined,
+        gender: filters.gender || undefined,
         search: debouncedSearch,
-        sort: filters.sort as 'asc' | 'desc',
+        sort: filters.sort,
       });
 
       if (!res.data) {
-        toast.error('Something went wrong');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
 
@@ -79,9 +86,7 @@ const UserTable = () => {
 
       setUsers(prev =>
         prev.map(user =>
-          user.id === selectedUserId
-            ? { ...user, isActive: newStatus === 'active' ? true : false }
-            : user
+          user.id === selectedUserId ? { ...user, isActive: newStatus === 'active' ? true : false } : user
         )
       );
     } catch (err) {
@@ -159,9 +164,9 @@ const UserTable = () => {
       key: 'gender',
       placeholder: 'Filter by gender',
       options: [
-        { label: 'All Genders', value: 'all' },
-        { label: 'Male', value: 'male' },
-        { label: 'Female', value: 'female' },
+        { label: 'All Genders', value: UserGenderFilter.ALL },
+        { label: 'Male', value: UserGenderFilter.MALE },
+        { label: 'Female', value: UserGenderFilter.FEMALE },
       ],
     },
   ];
@@ -181,11 +186,7 @@ const UserTable = () => {
         emptyMessage="No users found."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       <ConfirmModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

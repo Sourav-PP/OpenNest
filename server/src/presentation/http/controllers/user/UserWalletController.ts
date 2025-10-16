@@ -30,23 +30,13 @@ export class UserWalletController {
         this._listWalletTransactionUseCase = listWalletTransactionUseCase;
     }
 
-    create = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    create = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
-            if (!userId)
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+            if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
 
-            const wallet = await this._createWalletUseCase.execute(
-                userId,
-                'USD',
-            );
+            const wallet = await this._createWalletUseCase.execute(userId, 'USD');
+
             res.status(HttpStatus.CREATED).json({
                 success: true,
                 message: walletMessages.SUCCESS.CREATED,
@@ -57,22 +47,18 @@ export class UserWalletController {
         }
     };
 
-    createTransaction = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    createTransaction = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { walletId } = req.params;
             const { amount, type, reference, metadata } = req.body;
-            const transaction =
-                await this._createWalletTransactionUseCase.execute(
-                    walletId,
-                    amount,
-                    type,
-                    reference,
-                    metadata,
-                );
+
+            const transaction = await this._createWalletTransactionUseCase.execute(
+                walletId,
+                amount,
+                type,
+                reference,
+                metadata,
+            );
 
             res.status(HttpStatus.CREATED).json({
                 success: true,
@@ -84,11 +70,7 @@ export class UserWalletController {
         }
     };
 
-    getById = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getById = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { walletId } = req.params;
             const wallet = await this._getWalletByIdUseCase.execute(walletId);
@@ -103,18 +85,11 @@ export class UserWalletController {
         }
     };
 
-    getByUser = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getByUser = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
-            if (!userId)
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+            if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+
             const wallet = await this._getWalletByUserUseCase.execute(userId);
 
             res.status(HttpStatus.OK).json({
@@ -127,24 +102,13 @@ export class UserWalletController {
         }
     };
 
-    listTransactions = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    listTransactions = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { walletId } = req.params;
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
-            const transactions =
-                await this._listWalletTransactionUseCase.execute(
-                    walletId,
-                    page,
-                    limit,
-                );
-
-            console.log('transactions: ', transactions);
+            const transactions = await this._listWalletTransactionUseCase.execute(walletId, page, limit);
 
             res.status(HttpStatus.OK).json({
                 success: true,

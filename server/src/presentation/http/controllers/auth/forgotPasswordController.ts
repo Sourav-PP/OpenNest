@@ -17,17 +17,10 @@ export class ForgotPasswordController {
         this._verifyForgotPasswordOtpUseCase = verifyForgotPasswordUseCase;
     }
 
-    verifyOtp = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    verifyOtp = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, otp } = req.body;
-            const verified = await this._verifyForgotPasswordOtpUseCase.execute(
-                email,
-                otp,
-            );
+            const verified = await this._verifyForgotPasswordOtpUseCase.execute(email, otp);
 
             if (!verified) {
                 throw new AppError(authMessages.ERROR.INVALID_OTP);
@@ -42,11 +35,7 @@ export class ForgotPasswordController {
         }
     };
 
-    resetPassword = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    resetPassword = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, password } = req.body;
 

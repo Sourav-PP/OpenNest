@@ -7,7 +7,7 @@ const ConsultationDetailPage = () => {
     <div className="flex h-screen w-full bg-[#ECF1F3] text-primaryText overflow-hidden">
       <Sidebar />
       <div className="flex-1 overflow-auto">
-        <Header/>
+        <Header />
         <UserConsultationsDetail />
       </div>
     </div>
@@ -15,4 +15,3 @@ const ConsultationDetailPage = () => {
 };
 
 export default ConsultationDetailPage;
-

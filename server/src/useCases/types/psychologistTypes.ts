@@ -3,6 +3,9 @@ import { PayoutRequest } from '@/domain/entities/payoutRequest';
 import { Kyc } from '../../domain/entities/kyc';
 import { Psychologist } from '../../domain/entities/psychologist';
 import { IPatientConsultationHistoryDto, IPsychologistConsultationDto } from '../dtos/consultation';
+import { UserGender } from '@/domain/enums/UserEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
 
 export interface IVerifyProfileInput {
     userId: string;
@@ -29,7 +32,7 @@ export interface IUpdatePsychologistProfileInput {
     name?: string;
     email?: string;
     phone?: string;
-    gender?: string;
+    gender?: UserGender;
     dateOfBirth?: string;
     file?: Express.Multer.File;
     aboutMe?: string;
@@ -60,8 +63,8 @@ export interface IDeleteSlotInput {
 export interface IGetConsultationsRequest {
   psychologistId: string
   search?: string;
-  sort?: 'asc' | 'desc';
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';  
+  sort?: SortFilter;
+  status: ConsultationStatusFilter;  
   page?: number;
   limit?: number; 
 }
@@ -69,7 +72,7 @@ export interface IGetConsultationsRequest {
 export interface IGetConsultationHistoryRequest {
   psychologistId: string
   search?: string;
-  sort?: 'asc' | 'desc';
+  sort?: SortFilter;
   page?: number;
   limit?: number; 
 }
@@ -78,7 +81,7 @@ export interface IGetPatientConsultationHistoryRequest {
   patientId: string
   psychologistUserId: string
   search?: string;
-  sort?: 'asc' | 'desc';
+  sort?: SortFilter;
   page?: number;
   limit?: number; 
 }

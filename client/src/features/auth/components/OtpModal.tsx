@@ -24,7 +24,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
       setTimer(60);
       setCanResend(false);
       const interval = setInterval(() => {
-        setTimer((prev) => {
+        setTimer(prev => {
           if (prev <= 1) {
             clearInterval(interval);
             setCanResend(true);
@@ -40,10 +40,10 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
   const handleResend = async () => {
     setIsLoading(true);
     try {
-      await authApi.sendOtp({email});
+      const res = await authApi.sendOtp({ email });
       setTimer(60);
       setCanResend(false);
-      toast.success('OTP has been resent to your email');
+      toast.success(res.message);
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -58,7 +58,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
     }
     setIsLoading(true);
     try {
-      const res = await authApi.verifyOtp({email, otp, signupToken});
+      const res = await authApi.verifyOtp({ email, otp, signupToken });
       toast.success('Email verified and signup complete!');
       await onSuccess(res.accessToken);
       onClose();
@@ -101,14 +101,13 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
                 </Dialog.Title>
                 <div className="mt-3">
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    A 6-digit OTP was sent to{' '}
-                    <span className="font-medium text-gray-800">{email}</span>.
+                    A 6-digit OTP was sent to <span className="font-medium text-gray-800">{email}</span>.
                   </p>
                   <div className="mt-5">
                     <input
                       type="text"
                       value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
+                      onChange={e => setOtp(e.target.value)}
                       placeholder="Enter 6-digit OTP"
                       className="w-full px-4 py-3 rounded-xl bg-slate-100 text-gray-800 placeholder-gray-400 text-center focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50 transition-all disabled:opacity-50"
                       disabled={isLoading}
@@ -150,9 +149,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
                         'Resend OTP'
                       )}
                     </button>
-                    <p className="text-gray-500">
-                      {timer > 0 ? `Expires in ${timer}s` : 'OTP expired'}
-                    </p>
+                    <p className="text-gray-500">{timer > 0 ? `Expires in ${timer}s` : 'OTP expired'}</p>
                   </div>
                   <div className="mt-6 flex justify-center gap-3 mb-2">
                     <button
@@ -192,7 +189,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
                                 d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
                               />
                             </svg>
-                          Verifying...
+                            Verifying...
                           </span>
                         ) : (
                           'Verify OTP'

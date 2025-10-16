@@ -1,3 +1,5 @@
+import type { PlanBillingPeriodType, SubscriptionStatusType } from '@/constants/Plan';
+
 export interface ISubscriptionDto {
   id: string;
   userId: string;
@@ -5,7 +7,7 @@ export interface ISubscriptionDto {
   currency: string;
   creditRemaining: number;
   creditsPerPeriod: number;
-  status: 'active' | 'past_due' | 'canceled' | 'trialing' | 'unpaid' | 'inactive';
+  status: SubscriptionStatusType;
   currentPeriodStart?: Date;
   currentPeriodEnd: Date;
   canceledAt?: Date;
@@ -16,7 +18,7 @@ export interface ISubscriptionDto {
     name: string;
     description?: string;
     price: number;
-    billingPeriod: 'month' | 'year' | 'week';
+    billingPeriod: PlanBillingPeriodType;
     creditsPerPeriod: number;
   };
 }

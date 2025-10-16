@@ -1,17 +1,11 @@
+import type { NotificationTypeValue } from '@/constants/Notification';
 import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 const notificationHandlers: ((data: {
   id: string;
   message: string;
-  type:
-    | 'CONSULTATION_BOOKED'
-    | 'CONSULTATION_CANCELLED'
-    | 'CONSULTATION_REMINDER'
-    | 'NEW_MESSAGE'
-    | 'PAYMENT_SUCCESS'
-    | 'PAYMENT_FAILED'
-    | 'FEEDBACK_RECEIVED';
+  type: NotificationTypeValue;
   consultationId?: string;
   read: boolean;
 }) => void)[] = [];
@@ -36,20 +30,7 @@ export function connectNotificationSocket(token: string) {
   // listen for notifications
   socket.on(
     'notification',
-    (data: {
-      id: string;
-      message: string;
-      type:
-        | 'CONSULTATION_BOOKED'
-        | 'CONSULTATION_CANCELLED'
-        | 'CONSULTATION_REMINDER'
-        | 'NEW_MESSAGE'
-        | 'PAYMENT_SUCCESS'
-        | 'PAYMENT_FAILED'
-        | 'FEEDBACK_RECEIVED';
-      consultationId?: string;
-      read: boolean;
-    }) => {
+    (data: { id: string; message: string; type: NotificationTypeValue; consultationId?: string; read: boolean }) => {
       notificationHandlers.slice().forEach(cb => cb(data));
     }
   );
@@ -61,14 +42,7 @@ export function onNotification(
   cb: (data: {
     id: string;
     message: string;
-    type:
-      | 'CONSULTATION_BOOKED'
-      | 'CONSULTATION_CANCELLED'
-      | 'CONSULTATION_REMINDER'
-      | 'NEW_MESSAGE'
-      | 'PAYMENT_SUCCESS'
-      | 'PAYMENT_FAILED'
-      | 'FEEDBACK_RECEIVED';
+    type: NotificationTypeValue;
     consultationId?: string;
     read: boolean;
   }) => void
@@ -86,5 +60,5 @@ export function disconnectNotificationSocket() {
     socket.disconnect();
     socket = null;
     notificationHandlers.length = 0;
-  } 
+  }
 }

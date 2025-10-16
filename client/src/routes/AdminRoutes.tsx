@@ -12,47 +12,85 @@ import PlanPage from '@/features/admin/pages/PlanPage';
 import PendingPayoutPage from '@/features/admin/pages/PendingPayoutPage';
 import PayoutHistoryPage from '@/features/admin/pages/PayoutHistoryPage';
 
-
-
 export const adminRoutes: RouteObject[] = [
   {
     path: '/admin/dashboard',
-    element: <PrivateRoute allowedRoles={['admin']}>< AdminDashboard /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <AdminDashboard />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/users',
-    element: <PrivateRoute allowedRoles={['admin']}><UserManagement /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <UserManagement />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/psychologists',
-    element: <PrivateRoute allowedRoles={['admin']}><PsychologistManagement /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <PsychologistManagement />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/kyc',
-    element: <PrivateRoute allowedRoles={['admin']}><KycManagement /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <KycManagement />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/kyc/:psychologistId',
-    element: <PrivateRoute allowedRoles={['admin']}><KycVerificationPage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <KycVerificationPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/services',
-    element: <PrivateRoute allowedRoles={['admin']}><ServicePage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <ServicePage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/sessions',
-    element: <PrivateRoute allowedRoles={['admin']}><ConsultationManagement /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <ConsultationManagement />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/plans',
-    element: <PrivateRoute allowedRoles={['admin']}><PlanPage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <PlanPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/payouts/pending',
-    element: <PrivateRoute allowedRoles={['admin']}><PendingPayoutPage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <PendingPayoutPage />
+      </PrivateRoute>
+    ),
   },
   {
     path: '/admin/payouts/history',
-    element: <PrivateRoute allowedRoles={['admin']}><PayoutHistoryPage /></PrivateRoute>
+    element: (
+      <PrivateRoute allowedRoles={['admin']}>
+        <PayoutHistoryPage />
+      </PrivateRoute>
+    ),
   },
 ];

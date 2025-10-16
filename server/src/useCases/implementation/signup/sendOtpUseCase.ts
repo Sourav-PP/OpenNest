@@ -4,7 +4,7 @@ import { ISendOtpUseCase } from '@/useCases/interfaces/signup/ISendOtpUseCase';
 export class SendOtpUseCase implements ISendOtpUseCase {
     private _otpService: IOtpService;
 
-    constructor(otpService: IOtpService){
+    constructor(otpService: IOtpService) {
         this._otpService = otpService;
     }
 

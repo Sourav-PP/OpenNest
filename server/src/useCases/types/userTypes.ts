@@ -1,12 +1,15 @@
+import { UserGender, UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
 import { IConsultationDto } from '../dtos/consultation';
 import { IPsychologistListUserDto } from '../dtos/psychologist';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
 
 export interface IUpdateUserProfileInput {
   userId: string;
   name?: string;
   email?: string;
   phone?: string;
-  gender?: string;
+  gender?: UserGender;
   dateOfBirth?: Date;
   file?: Express.Multer.File;
 }
@@ -16,7 +19,7 @@ export interface IUpdateUserProfileOutput {
     name?: string;
     email?: string;
     phone?: string;
-    gender?: string;
+    gender?: UserGender;
     dateOfBirth?: Date;
     profileImage?: string;
 }
@@ -30,10 +33,10 @@ export interface IGetUserProfileOutput {
     name: string;
     email: string;
     phone: string;
-    role: 'user' | 'psychologist';
+    role: UserRole;
     profileImage?: string;
     dateOfBirth?: Date;
-    gender?: string;
+    gender?: UserGender;
     isActive?: boolean;
 }
 
@@ -43,8 +46,8 @@ export interface IGetSlotForUserInput {
 }
 export interface IGetAllPsychologistRequest {
   search?: string;
-  sort?: 'asc' | 'desc';
-  gender?: 'Male' | 'Female' | 'all',
+  sort?: SortFilter;
+  gender?: UserGenderFilter,
   expertise?: string  
   page?: number;
   limit?: number;
@@ -57,8 +60,8 @@ export interface IGetAllPsychologistResponse {
 export interface IGetConsultationsRequest {
   patientId: string
   search?: string;
-  sort?: 'asc' | 'desc';
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';  
+  sort?: SortFilter;
+  status: ConsultationStatusFilter;  
   page?: number;
   limit?: number; 
 }
@@ -71,7 +74,7 @@ export interface IGetConsultationsResponse {
 export interface IGetUserConsultationHistoryRequest {
   patientId: string
   search?: string;
-  sort?: 'asc' | 'desc';  
+  sort?: SortFilter;  
   page?: number;
   limit?: number;
 }

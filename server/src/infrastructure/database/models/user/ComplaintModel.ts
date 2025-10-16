@@ -1,3 +1,4 @@
+import { ComplaintStatus } from '@/domain/enums/ComplaintEnums';
 import { Schema, Model, model, Types, Document } from 'mongoose';
 
 export interface IComplaintDocument extends Document {
@@ -5,7 +6,7 @@ export interface IComplaintDocument extends Document {
     consultationId: Types.ObjectId;
     userId: Types.ObjectId;
     description: string;
-    status: 'pending' | 'verified' | 'rejected';
+    status: ComplaintStatus;
 }
 
 const complaintSchema = new Schema<IComplaintDocument>(
@@ -19,8 +20,8 @@ const complaintSchema = new Schema<IComplaintDocument>(
         description: { type: String, required: true },
         status: {
             type: String,
-            enum: ['pending', 'verified', 'rejected'],
-            default: 'pending',
+            enum: Object.values(ComplaintStatus),
+            default: ComplaintStatus.PENDING,
         },
     },
     { timestamps: true },

@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { UserGender } from '@/constants/User';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -35,8 +37,8 @@ const UserProfile = () => {
       try {
         const res = await userApi.getProfile();
 
-        if(!res.data) {
-          toast.error('Something went wrong');
+        if (!res.data) {
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
 
@@ -99,7 +101,9 @@ const UserProfile = () => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-br from-slate-200 to-white min-h-screen">
-      <AnimatedTitle><h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-3 tracking-tight text-start">My Profile</h2></AnimatedTitle>
+      <AnimatedTitle>
+        <h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-3 tracking-tight text-start">My Profile</h2>
+      </AnimatedTitle>
       <p className="mb-6 sm:mb-8 text-gray-600 text-sm sm:text-lg max-w-2xl">
         Keep your personal information up to date to ensure your account stays current
       </p>
@@ -122,7 +126,7 @@ const UserProfile = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => {
+                      onChange={e => {
                         const file = e.target.files?.[0];
                         if (file) {
                           setProfileImagePreview(URL.createObjectURL(file));
@@ -158,9 +162,9 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Full Name</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Enter your name" 
-                          {...field} 
+                        <Input
+                          placeholder="Enter your name"
+                          {...field}
                           className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                         />
                       </FormControl>
@@ -176,10 +180,10 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Email Address</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="Enter your email" 
-                          {...field} 
+                        <Input
+                          type="email"
+                          placeholder="Enter your email"
+                          {...field}
                           className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                         />
                       </FormControl>
@@ -195,9 +199,9 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Mobile Number</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Enter your mobile number" 
-                          {...field} 
+                        <Input
+                          placeholder="Enter your mobile number"
+                          {...field}
                           className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                         />
                       </FormControl>
@@ -213,9 +217,9 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Date of Birth</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="date" 
-                          {...field} 
+                        <Input
+                          type="date"
+                          {...field}
                           className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                         />
                       </FormControl>
@@ -230,18 +234,16 @@ const UserProfile = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Gender</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value ?? undefined}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
                         <FormControl>
                           <SelectTrigger className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base">
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-xl">
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
+                          <SelectItem value={UserGender.MALE}>Male</SelectItem>
+                          <SelectItem value={UserGender.FEMALE}>Female</SelectItem>
+                          <SelectItem value={UserGender.OTHER}>Other</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage className="text-xs sm:text-sm text-red-500" />
@@ -252,9 +254,9 @@ const UserProfile = () => {
             </div>
 
             <div className="group flex justify-end pt-4 sm:pt-6">
-              <Button 
-                type="submit" 
-                className="btn-primary group-hover:animate-glow-ring rounded-full" 
+              <Button
+                type="submit"
+                className="btn-primary group-hover:animate-glow-ring rounded-full"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? 'Saving...' : 'Update Profile'}

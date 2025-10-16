@@ -20,7 +20,7 @@ const ICE_SERVERS: RTCConfiguration = { iceServers: [{ urls: 'stun:stun.l.google
 
 export function useVideoCall(token: string, consultationId: string) {
   const [joined, setJoined] = useState(false);
-  const [remoteStreams, setRemoteStreams] = useState<{ id: string; stream: MediaStream, name: string }[]>([]);
+  const [remoteStreams, setRemoteStreams] = useState<{ id: string; stream: MediaStream; name: string }[]>([]);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const peersRef = useRef<Record<string, RTCPeerConnection>>({});
@@ -67,7 +67,6 @@ export function useVideoCall(token: string, consultationId: string) {
     return pc;
   };
 
-  
   const createOfferPeer = async (socketId: string) => {
     const pc = getOrCreatePeer(socketId);
 
@@ -81,7 +80,7 @@ export function useVideoCall(token: string, consultationId: string) {
       console.log('[createOfferPeer] creating offer for', socketId);
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-  
+
       sendOffer(socketId, offer);
       console.log('[createOfferPeer] offer sent to', socketId);
     } catch (err) {
@@ -94,14 +93,14 @@ export function useVideoCall(token: string, consultationId: string) {
 
     const handleCurrentParticipants = (participants: { socketId: string; name: string }[]) => {
       console.log('[onCurrentParticipants] got:', participants);
-      
+
       participants.forEach(p => {
         peersNameRef.current[p.socketId] = p.name;
         createOfferPeer(p.socketId);
       });
     };
 
-    const handleUserJoined = (data: { socketId: string, name: string }) => {
+    const handleUserJoined = (data: { socketId: string; name: string }) => {
       console.log('[onUserJoined] user joined:', data.socketId);
       peersNameRef.current[data.socketId] = data.name;
       createOfferPeer(data.socketId);
@@ -139,8 +138,12 @@ export function useVideoCall(token: string, consultationId: string) {
         console.warn('[onAnswer] no pc found for', from);
         return;
       }
-    
-      if (pc.signalingState === 'have-local-offer' || pc.signalingState === 'have-remote-offer' || pc.signalingState === 'stable') {
+
+      if (
+        pc.signalingState === 'have-local-offer' ||
+        pc.signalingState === 'have-remote-offer' ||
+        pc.signalingState === 'stable'
+      ) {
         try {
           await pc.setRemoteDescription(new RTCSessionDescription(answer));
           console.log('[onAnswer] setRemoteDescription successful for', from);
@@ -196,12 +199,12 @@ export function useVideoCall(token: string, consultationId: string) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       console.log('Local stream tracks:', stream.getTracks());
       localStreamRef.current = stream;
-      
+
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
         localVideoRef.current.play().catch(err => console.warn('Local video play prevented:', err));
       }
-      
+
       console.log('stream: ', stream);
       console.log('localStreamRef.current: ', localStreamRef.current);
 
@@ -234,7 +237,7 @@ export function useVideoCall(token: string, consultationId: string) {
     if (!localStreamRef.current) return false;
     const enabled = !localStreamRef.current.getAudioTracks()[0]?.enabled;
     localStreamRef.current.getAudioTracks().forEach(track => (track.enabled = enabled));
-    return enabled; 
+    return enabled;
   };
 
   const toggleCamera = () => {
@@ -242,7 +245,7 @@ export function useVideoCall(token: string, consultationId: string) {
     if (!localStreamRef.current) return false;
     const enabled = !localStreamRef.current.getVideoTracks()[0]?.enabled;
     localStreamRef.current.getVideoTracks().forEach(track => (track.enabled = enabled));
-    return enabled; 
+    return enabled;
   };
 
   const leave = () => {

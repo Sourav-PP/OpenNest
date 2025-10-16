@@ -5,6 +5,8 @@ import { Payment } from '../entities/payment';
 import { Psychologist } from '../entities/psychologist';
 import { Slot } from '../entities/slot';
 import { User } from '../entities/user';
+import { ConsultationStatusFilter } from '../enums/ConsultationEnums';
+import { SortFilter } from '../enums/SortFilterEnum';
 
 export interface IConsultationRepository {
     create(data: Omit<Consultation, 'id'>): Promise<Consultation>;
@@ -14,7 +16,7 @@ export interface IConsultationRepository {
         patientId: string,
         params: {
             search?: string;
-            sort?: 'asc' | 'desc';
+            sort?: SortFilter;
             skip?: number;
             limit?: number;
         },
@@ -23,30 +25,20 @@ export interface IConsultationRepository {
         psychologistId: string,
         params?: {
             search?: string;
-            sort?: 'asc' | 'desc';
+            sort?: SortFilter;
             skip?: number;
             limit?: number;
-            status:
-                | 'booked'
-                | 'cancelled'
-                | 'completed'
-                | 'rescheduled'
-                | 'all';
+            status: ConsultationStatusFilter;
         },
     ): Promise<{ consultation: Consultation; patient: User; payment?: Payment; lastMessage?: Message; lastMessageTime?: Date; unreadCount: number }[]>;
     findByPatientId(
         patientId: string,
         params: {
             search?: string;
-            sort?: 'asc' | 'desc';
+            sort?: SortFilter;
             skip?: number;
             limit?: number;
-            status?:
-                | 'booked'
-                | 'cancelled'
-                | 'completed'
-                | 'rescheduled'
-                | 'all';
+            status?: ConsultationStatusFilter;
         },
     ): Promise<
         { consultation: Consultation; psychologist: Psychologist; user: User; lastMessage?: Message;
@@ -55,7 +47,7 @@ export interface IConsultationRepository {
     >;
     findById(id: string): Promise<Consultation | null>;
     findByIds(ids: string[]): Promise<Consultation[]>;
-    findByIdWithDetails(id: string): Promise<{ consultation: Consultation, psychologist: Psychologist & User, user: User, slot: Slot, payment: Payment } | null>
+    findByIdWithDetails(id: string): Promise<{ consultation: Consultation, psychologist: Psychologist & User, user: User, slot: Slot, payment: Payment | null } | null>
     countAllByPatientId(patientId: string): Promise<number>;
     countAllByPsychologistId(psychologistId: string): Promise<number>
     countPatientHistory(psychologistId: string, patientId: string): Promise<number>;
@@ -63,17 +55,12 @@ export interface IConsultationRepository {
     updateConsultation(id: string, update: Partial<Consultation>): Promise<Consultation | null>;
     findAllWithDetails(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
+        sort?: SortFilter;
         skip?: number;
         limit?: number;
-        status?:
-            | 'booked'
-            | 'cancelled'
-            | 'completed'
-            | 'rescheduled'
-            | 'all';
+        status?: ConsultationStatusFilter;
     }): Promise<{ consultation: Consultation; psychologist: Psychologist & User; patient: User; payment?: Payment;}[]>;
-    countAll(params: { search?: string; status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all' }): Promise<number>;
+    countAll(params: { search?: string; status?: ConsultationStatusFilter; }): Promise<number>;
     findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]>;
     findUnpaidCompletedConsultationsByPsychologistId(psychologistId: string): Promise<Consultation[]>;
     markIncludedInPayout(consultationIds: string[], session?: ClientSession): Promise<void>;

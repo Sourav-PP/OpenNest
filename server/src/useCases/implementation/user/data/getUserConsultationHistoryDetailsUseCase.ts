@@ -39,10 +39,14 @@ export class GetUserConsultationHistoryDetailsUseCase implements IGetUserConsult
             );
         }
 
-        const call = await this._videoCallRepo.findByConsultationId(consultationId);
+        const call =
+            await this._videoCallRepo.findByConsultationId(consultationId);
 
         if (!call) {
-            throw new AppError(videoCallMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new AppError(
+                videoCallMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
         }
 
         const mappedConsultation = toConsultationHistoryDetails(

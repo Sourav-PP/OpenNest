@@ -25,12 +25,13 @@ const ServiceList = () => {
           Our Services
         </h1>
         <p className="text-gray-500 mb-20 font-extralight sm:text-lg text-center max-w-2xl mx-auto leading-relaxed">
-          Discover a range of services tailored to support your mindfulness journey. Find the perfect fit for your needs.
+          Discover a range of services tailored to support your mindfulness journey. Find the perfect fit for your
+          needs.
         </p>
 
         {/* Service Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-24 sm:gap-y-20">
-          {services.map((service) => (
+          {services.map(service => (
             <div
               key={service.id}
               className="relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-center items-center animate-fadeIn"
@@ -45,18 +46,15 @@ const ServiceList = () => {
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center mt-20">
-                {service.name}
-              </h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center mt-20">{service.name}</h3>
 
               {/* Description */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-6 text-center flex-grow">
-                {service.description}
-              </p>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6 text-center flex-grow">{service.description}</p>
 
               {/* Button */}
               <div className="text-center">
-                <button className="text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors duration-300 hover:underline"
+                <button
+                  className="text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors duration-300 hover:underline"
                   onClick={() => navigate('/user/therapist')}
                 >
                   Show Psychologists

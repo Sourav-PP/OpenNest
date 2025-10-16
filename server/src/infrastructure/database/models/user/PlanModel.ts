@@ -1,3 +1,4 @@
+import { PlanBillingPeriod } from '@/domain/enums/PlanEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IPlanDocument extends Document {
@@ -7,7 +8,7 @@ export interface IPlanDocument extends Document {
     price: number;
     currency: string;
     creditsPerPeriod: number;
-    billingPeriod: 'month' | 'year';
+    billingPeriod: PlanBillingPeriod;
     stripePriceId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -22,7 +23,7 @@ const PlanSchema = new Schema<IPlanDocument>(
         creditsPerPeriod: { type: Number, required: true },
         billingPeriod: {
             type: String,
-            enum: ['month', 'year'],
+            enum: Object.values(PlanBillingPeriod),
             required: true,
         },
         stripePriceId: { type: String, required: true },

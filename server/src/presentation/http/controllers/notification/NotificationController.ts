@@ -18,23 +18,15 @@ export class NotificationController {
         this._markNotificationAsReadUseCase = markNotificationAsReadUseCase;
     }
 
-    getNotifications = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getNotifications = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const notifications =
-                await this._getNotificationUseCase.execute(userId);
+            const notifications = await this._getNotificationUseCase.execute(userId);
 
             res.status(HttpStatus.OK).json({
                 success: true,

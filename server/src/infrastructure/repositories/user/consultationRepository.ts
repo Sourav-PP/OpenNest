@@ -8,15 +8,24 @@ import { Message } from '@/domain/entities/message';
 import { Slot } from '@/domain/entities/slot';
 import { Payment } from '@/domain/entities/payment';
 import { GenericRepository } from '../GenericRepository';
+import {
+    ConsultationPaymentStatus,
+    ConsultationStatus,
+    ConsultationStatusFilter,
+} from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
-export class ConsultationRepository extends GenericRepository<Consultation, IConsultationDocument> implements IConsultationRepository {
+export class ConsultationRepository
+    extends GenericRepository<Consultation, IConsultationDocument>
+    implements IConsultationRepository
+{
     constructor() {
         super(ConsultationModel);
     }
 
     protected map(doc: IConsultationDocument): Consultation {
         const mapped = super.map(doc);
-        
+
         return {
             id: mapped.id,
             patientId: mapped.patientId as string,
@@ -26,7 +35,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             startDateTime: mapped.startDateTime,
             endDateTime: mapped.endDateTime,
             sessionGoal: mapped.sessionGoal,
-            status: mapped.status as 'booked' | 'cancelled' | 'completed' | 'rescheduled',
+            status: mapped.status,
             paymentStatus: mapped.paymentStatus,
             paymentMethod: mapped.paymentMethod,
             paymentIntentId: mapped.paymentIntentId,
@@ -40,20 +49,29 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
     async isSlotBooked(slotId: string): Promise<boolean> {
         const existing = await ConsultationModel.findOne({
             slotId,
-            status: 'booked',
+            status: ConsultationStatus.BOOKED,
         });
 
         return existing ? true : false;
     }
 
-    async findPatientHistory(psychologistId: string, patientId: string, params: { search?: string; sort?: 'asc' | 'desc'; skip?: number; limit?: number; }): Promise<{ consultation: Consultation; patient: User; }[]> {
+    async findPatientHistory(
+        psychologistId: string,
+        patientId: string,
+        params: {
+            search?: string;
+            sort?: SortFilter;
+            skip?: number;
+            limit?: number;
+        },
+    ): Promise<{ consultation: Consultation; patient: User }[]> {
         const matchStage: Record<string, unknown> = {
             psychologistId: new mongoose.Types.ObjectId(psychologistId),
             patientId: new mongoose.Types.ObjectId(patientId),
-            status: 'completed',
+            status: ConsultationStatus.COMPLETED,
         };
 
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
         const pipeline: PipelineStage[] = [
             { $match: matchStage },
@@ -103,17 +121,21 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
         psychologistId: string,
         params?: {
             search?: string;
-            sort?: 'asc' | 'desc';
+            sort?: SortFilter;
             skip?: number;
             limit?: number;
-            status:
-                | 'booked'
-                | 'cancelled'
-                | 'completed'
-                | 'rescheduled'
-                | 'all';
+            status: ConsultationStatusFilter;
         },
-    ): Promise<{ consultation: Consultation; patient: User; payment?: Payment; lastMessage?: Message; lastMessageTime?: Date; unreadCount: number }[]> {
+    ): Promise<
+        {
+            consultation: Consultation;
+            patient: User;
+            payment?: Payment;
+            lastMessage?: Message;
+            lastMessageTime?: Date;
+            unreadCount: number;
+        }[]
+    > {
         const matchStage: Record<string, unknown> = {
             psychologistId: new mongoose.Types.ObjectId(psychologistId),
         };
@@ -122,7 +144,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             matchStage.status = params.status;
         }
 
-        const sortOrder = params && params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params && params.sort === SortFilter.ASC ? 1 : -1;
 
         const pipeline: PipelineStage[] = [
             { $match: matchStage },
@@ -140,7 +162,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                 $lookup: {
                     from: 'payments',
                     localField: '_id',
-                    foreignField: 'consultationId', 
+                    foreignField: 'consultationId',
                     as: 'payment',
                 },
             },
@@ -152,7 +174,9 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                     pipeline: [
                         {
                             $match: {
-                                $expr: { $eq: ['$consultationId', '$$consultationId'] },
+                                $expr: {
+                                    $eq: ['$consultationId', '$$consultationId'],
+                                },
                             },
                         },
                         { $sort: { createdAt: -1 } },
@@ -164,7 +188,9 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             {
                 $addFields: {
                     lastMessage: { $arrayElemAt: ['$lastMessage', 0] },
-                    lastMessageTime: { $arrayElemAt: ['$lastMessage.createdAt', 0] },
+                    lastMessageTime: {
+                        $arrayElemAt: ['$lastMessage.createdAt', 0],
+                    },
                 },
             },
             {
@@ -174,7 +200,9 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                     pipeline: [
                         {
                             $match: {
-                                $expr: { $eq: ['$consultationId', '$$consultationId'] },
+                                $expr: {
+                                    $eq: ['$consultationId', '$$consultationId'],
+                                },
                                 status: { $in: ['sent', 'delivered'] },
                                 receiverId: new mongoose.Types.ObjectId(psychologistId),
                             },
@@ -226,7 +254,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                 createdAt: item.createdAt,
             } as Consultation,
             payment: item.payment
-                ? {
+                ? ({
                     id: item.payment._id.toString(),
                     userId: item.payment.userId.toString(),
                     consultationId: item.payment.consultationId?.toString(),
@@ -239,7 +267,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                     stripeSessionId: item.payment.stripeSessionId,
                     slotId: item.payment.slotId?.toString() ?? null,
                     purpose: item.payment.purpose,
-                } as Payment
+                } as Payment)
                 : undefined,
             patient: {
                 id: item.patient._id.toString(),
@@ -256,20 +284,20 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
         patientId: string,
         params: {
             search?: string;
-            sort?: 'asc' | 'desc';
+            sort?: SortFilter;
             skip?: number;
             limit?: number;
-            status:
-                | 'booked'
-                | 'cancelled'
-                | 'completed'
-                | 'rescheduled'
-                | 'all';
+            status: ConsultationStatusFilter;
         },
     ): Promise<
-        { consultation: Consultation; psychologist: Psychologist; user: User; lastMessage?: Message;
-        lastMessageTime?: Date;
-        unreadCount: number; }[]
+        {
+            consultation: Consultation;
+            psychologist: Psychologist;
+            user: User;
+            lastMessage?: Message;
+            lastMessageTime?: Date;
+            unreadCount: number;
+        }[]
     > {
         const matchStage: Record<string, unknown> = {
             patientId: new mongoose.Types.ObjectId(patientId),
@@ -279,7 +307,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             matchStage.status = params.status;
         }
 
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
         const pipeline: PipelineStage[] = [
             { $match: matchStage },
@@ -311,10 +339,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                         {
                             $match: {
                                 $expr: {
-                                    $eq: [
-                                        '$consultationId',
-                                        '$$consultationId',
-                                    ],
+                                    $eq: ['$consultationId', '$$consultationId'],
                                 },
                             },
                         },
@@ -340,15 +365,10 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                         {
                             $match: {
                                 $expr: {
-                                    $eq: [
-                                        '$consultationId',
-                                        '$$consultationId',
-                                    ],
+                                    $eq: ['$consultationId', '$$consultationId'],
                                 },
                                 status: { $in: ['sent', 'delivered'] },
-                                receiverId: new mongoose.Types.ObjectId(
-                                    patientId,
-                                ),
+                                receiverId: new mongoose.Types.ObjectId(patientId),
                             },
                         },
                         { $count: 'unreadCount' },
@@ -403,7 +423,8 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                 id: item.psychologist._id.toString(),
                 userId: item.psychologist.userId.toString(),
             } as Psychologist,
-            user: { // user collection of psychologist
+            user: {
+                // user collection of psychologist
                 id: item.psychologist.user._id.toString(),
                 name: item.psychologist.user.name,
                 profileImage: item.psychologist.user.profileImage,
@@ -415,7 +436,10 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
     }
 
     async findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]> {
-        const consultations = await ConsultationModel.find({ patientId, psychologistId });
+        const consultations = await ConsultationModel.find({
+            patientId,
+            psychologistId,
+        });
 
         return consultations.map(consultation => ({
             ...consultation.toObject(),
@@ -474,13 +498,9 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             meetingLink: updated.meetingLink,
         };
     }
-    
+
     async updateConsultation(id: string, update: Partial<Consultation>): Promise<Consultation | null> {
-        const updated = await ConsultationModel.findByIdAndUpdate(
-            id,
-            { $set: update },
-            { new: true },
-        ).lean();
+        const updated = await ConsultationModel.findByIdAndUpdate(id, { $set: update }, { new: true }).lean();
 
         if (!updated) return null;
 
@@ -500,11 +520,18 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             cancellationReason: updated.cancellationReason,
             cancelledAt: updated.cancelledAt,
             includedInPayout: updated.includedInPayout,
-            meetingLink: updated.meetingLink, 
+            meetingLink: updated.meetingLink,
         };
     }
 
-    async findByIdWithDetails(id: string): Promise<{ consultation: Consultation; psychologist: Psychologist & User; user: User; slot: Slot; payment: Payment } | null> {
+    async findByIdWithDetails(id: string): Promise<{
+        consultation: Consultation;
+        psychologist: Psychologist & User;
+        user: User;
+        slot: Slot;
+        payment: Payment | null;
+    } | null> {
+        console.log('id in repo: ', id);
         const pipeline: PipelineStage[] = [
             { $match: { _id: new mongoose.Types.ObjectId(id) } },
 
@@ -554,10 +581,11 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                     as: 'payment',
                 },
             },
-            { $unwind: '$payment' },
+            { $unwind: { path: '$payment', preserveNullAndEmptyArrays: true } },
         ];
 
         const result = await ConsultationModel.aggregate(pipeline);
+        console.log('result: ', result);
 
         if (!result || result.length === 0) return null;
         const item = result[0];
@@ -579,7 +607,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                 userId: item.psychologist.userId.toString(),
                 name: item.psychologist.user.name,
                 profileImage: item.psychologist.user.profileImage,
-            } as Psychologist & User, 
+            } as Psychologist & User,
             user: {
                 id: item.patient._id.toString(),
                 name: item.patient.name,
@@ -593,22 +621,23 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
                 isBooked: item.slot.isBooked ?? false,
                 bookedBy: item.slot.bookedBy ? item.slot.bookedBy.toString() : null,
             } as Slot,
-            payment: {
-                id: item.payment._id.toString(),
-                userId: item.payment.userId.toString(),
-                consultationId: item.payment.consultationId?.toString(),
-                amount: item.payment.amount,
-                currency: item.payment.currency,
-                paymentMethod: item.payment.paymentMethod,
-                paymentStatus: item.payment.paymentStatus,
-                refunded: item.payment.refunded,
-                transactionId: item.payment.transactionId,
-                stripeSessionId: item.payment.stripeSessionId,
-                slotId: item.payment.slotId?.toString() ?? null,
-                purpose: item.payment.purpose,
-            } as Payment,
+            payment: item.payment
+                ? {
+                    id: item.payment._id.toString(),
+                    userId: item.payment.userId.toString(),
+                    consultationId: item.payment.consultationId?.toString(),
+                    amount: item.payment.amount,
+                    currency: item.payment.currency,
+                    paymentMethod: item.payment.paymentMethod,
+                    paymentStatus: item.payment.paymentStatus,
+                    refunded: item.payment.refunded,
+                    transactionId: item.payment.transactionId,
+                    stripeSessionId: item.payment.stripeSessionId,
+                    slotId: item.payment.slotId?.toString() ?? null,
+                    purpose: item.payment.purpose,
+                }
+                : null,
         };
-
     }
 
     async countAllByPatientId(patientId: string): Promise<number> {
@@ -623,28 +652,30 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
         return await ConsultationModel.countDocuments({
             psychologistId,
             patientId,
-            status: 'completed',
+            status: ConsultationStatus.COMPLETED,
         });
     }
 
     async findAllWithDetails(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
+        sort?: SortFilter;
         skip?: number;
         limit?: number;
-        status?:
-            | 'booked'
-            | 'cancelled'
-            | 'completed'
-            | 'rescheduled'
-            | 'all';
-    }): Promise<{ consultation: Consultation; psychologist: Psychologist & User; patient: User; payment?: Payment;}[]> {
+        status?: ConsultationStatusFilter;
+    }): Promise<
+        {
+            consultation: Consultation;
+            psychologist: Psychologist & User;
+            patient: User;
+            payment?: Payment;
+        }[]
+    > {
         const matchStage: Record<string, unknown> = {};
         if (params.status && params.status !== 'all') {
             matchStage.status = params.status;
         }
 
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
         const pipeline: PipelineStage[] = [
             { $match: matchStage },
@@ -692,9 +723,24 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             pipeline.push({
                 $match: {
                     $or: [
-                        { 'patient.name': { $regex: params.search, $options: 'i' } },
-                        { 'psychologist.user.name': { $regex: params.search, $options: 'i' } },
-                        { sessionGoal: { $regex: params.search, $options: 'i' } },
+                        {
+                            'patient.name': {
+                                $regex: params.search,
+                                $options: 'i',
+                            },
+                        },
+                        {
+                            'psychologist.user.name': {
+                                $regex: params.search,
+                                $options: 'i',
+                            },
+                        },
+                        {
+                            sessionGoal: {
+                                $regex: params.search,
+                                $options: 'i',
+                            },
+                        },
                     ],
                 },
             });
@@ -761,7 +807,7 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
         }));
     }
 
-    async countAll(params: { search?: string; status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all' }): Promise<number> {
+    async countAll(params: { search?: string; status?: ConsultationStatusFilter }): Promise<number> {
         const matchStage: Record<string, unknown> = {};
         if (params.status && params.status !== 'all') {
             matchStage.status = params.status;
@@ -793,8 +839,18 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
             pipeline.push({
                 $match: {
                     $or: [
-                        { 'patient.name': { $regex: params.search, $options: 'i' } },
-                        { 'psychologistUser.name': { $regex: params.search, $options: 'i' } },
+                        {
+                            'patient.name': {
+                                $regex: params.search,
+                                $options: 'i',
+                            },
+                        },
+                        {
+                            'psychologistUser.name': {
+                                $regex: params.search,
+                                $options: 'i',
+                            },
+                        },
                     ],
                 },
             });
@@ -810,8 +866,8 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
     async findUnpaidCompletedConsultationsByPsychologistId(psychologistId: string): Promise<Consultation[]> {
         const consultations = await ConsultationModel.find({
             psychologistId,
-            status: 'completed',
-            paymentStatus: 'paid',
+            status: ConsultationStatus.COMPLETED,
+            paymentStatus: ConsultationPaymentStatus.PAID,
             includedInPayout: false,
         });
 
@@ -830,22 +886,31 @@ export class ConsultationRepository extends GenericRepository<Consultation, ICon
         if (!ids || ids.length === 0) return [];
 
         const objectIds = ids.map(id => new mongoose.Types.ObjectId(id));
-        const consultations = await ConsultationModel.find({ _id: { $in: objectIds } }).exec();
+        const consultations = await ConsultationModel.find({
+            _id: { $in: objectIds },
+        }).exec();
 
         return consultations.map(c => this.map(c));
     }
 
     async findMissedConsultation(currentDate: Date): Promise<Consultation[]> {
         const consultations = await ConsultationModel.find({
-            status: 'booked',
+            status: ConsultationStatus.BOOKED,
             endDateTime: { $lt: currentDate },
         }).exec();
 
         return consultations.map(c => this.map(c));
     }
 
-    async markAsMissed(consultationId: string, update: { status: string; includedInPayout: boolean; cancelledAt: Date; cancellationReason: string; }): Promise<void> {
+    async markAsMissed(
+        consultationId: string,
+        update: {
+            status: string;
+            includedInPayout: boolean;
+            cancelledAt: Date;
+            cancellationReason: string;
+        },
+    ): Promise<void> {
         await ConsultationModel.findByIdAndUpdate(consultationId, update);
     }
 }
-    

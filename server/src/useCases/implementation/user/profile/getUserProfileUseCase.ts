@@ -7,7 +7,6 @@ import { IUserDto } from '@/useCases/dtos/user';
 import { userMessages } from '@/shared/constants/messages/userMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 
-
 export class GetUserProfileUseCase implements IGetUserProfileUseCase {
     private _userRepo: IUserRepository;
 

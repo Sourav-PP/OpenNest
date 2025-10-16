@@ -1,14 +1,16 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ConsultationStatusFilter, type ConsultationStatusFilterType } from '@/constants/Consultation';
+import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
 
 interface ConsultationFiltersProps {
   search: string;
   setSearch: (value: string) => void;
-  sort: 'asc' | 'desc';
-  setSort: (value: 'asc' | 'desc') => void;
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';
-  setStatus: (value: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all') => void;
+  sort: SortFilterType;
+  setSort: (value: SortFilterType) => void;
+  status: ConsultationStatusFilterType;
+  setStatus: (value: ConsultationStatusFilterType) => void;
   setCurrentPage: (page: number) => void;
 }
 
@@ -26,7 +28,7 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
       <Input
         placeholder="Search by session goal or psychologist"
         value={search}
-        onChange={(e) => {
+        onChange={e => {
           setSearch(e.target.value);
           setCurrentPage(1);
         }}
@@ -35,7 +37,7 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
       />
       <Select
         value={sort}
-        onValueChange={(value) => {
+        onValueChange={value => {
           setSort(value as 'asc' | 'desc');
           setCurrentPage(1);
         }}
@@ -47,14 +49,14 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
           <SelectValue placeholder="Sort by date" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="asc">Start Date Asc</SelectItem>
-          <SelectItem value="desc">Start Date Desc</SelectItem>
+          <SelectItem value={SortFilter.Asc}>Start Date Asc</SelectItem>
+          <SelectItem value={SortFilter.Desc}>Start Date Desc</SelectItem>
         </SelectContent>
       </Select>
       <Select
         value={status}
-        onValueChange={(value) => {
-          setStatus(value as 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all');
+        onValueChange={value => {
+          setStatus(value as ConsultationStatusFilterType);
           setCurrentPage(1);
         }}
       >
@@ -65,11 +67,12 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Statuses</SelectItem>
-          <SelectItem value="booked">Booked</SelectItem>
-          <SelectItem value="cancelled">Canceled</SelectItem>
-          <SelectItem value="completed">Completed</SelectItem>
-          <SelectItem value="rescheduled">Rescheduled</SelectItem>
+          <SelectItem value={ConsultationStatusFilter.All}>All Statuses</SelectItem>
+          <SelectItem value={ConsultationStatusFilter.Booked}>Booked</SelectItem>
+          <SelectItem value={ConsultationStatusFilter.Cancelled}>Canceled</SelectItem>
+          <SelectItem value={ConsultationStatusFilter.Completed}>Completed</SelectItem>
+          <SelectItem value={ConsultationStatusFilter.Rescheduled}>Rescheduled</SelectItem>
+          <SelectItem value={ConsultationStatusFilter.Missed}>Missed</SelectItem>
         </SelectContent>
       </Select>
     </div>

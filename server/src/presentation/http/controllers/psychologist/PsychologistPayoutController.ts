@@ -1,3 +1,4 @@
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { payoutMessages } from '@/shared/constants/messages/payoutMessages';
@@ -22,11 +23,7 @@ export class PsychologistPayoutController {
         this._getPendingAmountUseCase = getPendingAmountUseCase;
     }
 
-    getPendingAmount = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getPendingAmount = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
@@ -42,23 +39,14 @@ export class PsychologistPayoutController {
         }
     };
 
-    requestPayout = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    requestPayout = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const payout = await this._requestPayoutUseCase.execute(
-                userId,
-            );
+            const payout = await this._requestPayoutUseCase.execute(userId);
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -70,31 +58,21 @@ export class PsychologistPayoutController {
         }
     };
 
-    listPayouts = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    listPayouts = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
-            
+
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const results = await this._listPayoutRequestUseCase.execute(
-                userId,
-                {
-                    sort: req.query.sort as 'asc' | 'desc',
-                    page,
-                    limit,
-                },
-            );
+            const results = await this._listPayoutRequestUseCase.execute(userId, {
+                sort: req.query.sort as SortFilter,
+                page,
+                limit,
+            });
 
             res.status(HttpStatus.OK).json({
                 success: true,

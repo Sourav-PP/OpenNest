@@ -1,3 +1,5 @@
+import type { PlanBillingPeriodType } from '@/constants/Plan';
+
 export interface IPlanDto {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export interface IPlanDto {
   price: number;
   currency: string;
   creditsPerPeriod: number;
-  billingPeriod: 'month' | 'year' | 'week'
+  billingPeriod: PlanBillingPeriodType;
   stripePriceId: string;
   createdAt?: Date;
   updatedAt?: Date;

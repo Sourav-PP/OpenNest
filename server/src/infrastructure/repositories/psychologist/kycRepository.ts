@@ -5,6 +5,8 @@ import { KycModel, IKycDocument } from '../../database/models/psychologist/kycMo
 import { Psychologist } from '@/domain/entities/psychologist';
 import { User } from '@/domain/entities/user';
 import { GenericRepository } from '../GenericRepository';
+import { KycStatus, KycStatusFilter } from '@/domain/enums/KycEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
 
 export class KycRepository extends GenericRepository<Kyc, IKycDocument> implements IKycRepository {
@@ -21,7 +23,7 @@ export class KycRepository extends GenericRepository<Kyc, IKycDocument> implemen
             identificationDoc: mapped.identificationDoc,
             educationalCertification: mapped.educationalCertification,
             experienceCertificate: mapped.experienceCertificate,
-            kycStatus: mapped.kycStatus as 'pending' | 'approved' | 'rejected',
+            kycStatus: mapped.kycStatus,
             rejectionReason: mapped.rejectionReason,
             verifiedAt: mapped.verifiedAt,
         };
@@ -29,10 +31,10 @@ export class KycRepository extends GenericRepository<Kyc, IKycDocument> implemen
 
     async findAllWithDetails(params: {
         search?: string,
-        sort?:'asc' | 'desc',
+        sort?: SortFilter,
         skip?: number,
         limit?: number,
-        status: 'pending' | 'approved' | 'rejected' | 'all';
+        status: KycStatusFilter;
     }): Promise<{ kyc: Kyc; psychologist: Psychologist; user: User }[]> {
 
         const matchStage: Record<string , unknown> = {};
@@ -48,7 +50,7 @@ export class KycRepository extends GenericRepository<Kyc, IKycDocument> implemen
             ];
         }
 
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
         const pipeline: PipelineStage[] = [
             {
@@ -86,7 +88,7 @@ export class KycRepository extends GenericRepository<Kyc, IKycDocument> implemen
                 identificationDoc: item.identificationDoc,
                 educationalCertification: item.educationalCertification,
                 experienceCertificate: item.experienceCertificate,
-                kycStatus: item.kycStatus as 'pending' | 'approved' | 'rejected',
+                kycStatus: item.kycStatus,
                 rejectionReason: item.rejectionReason,
                 verifiedAt: item.verifiedAt,
             } as Kyc,
@@ -150,7 +152,7 @@ export class KycRepository extends GenericRepository<Kyc, IKycDocument> implemen
                 identificationDoc: obj.identificationDoc,
                 educationalCertification: obj.educationalCertification,
                 experienceCertificate: obj.experienceCertificate,
-                kycStatus: obj.kycStatus as 'pending' | 'approved' | 'rejected',
+                kycStatus: obj.kycStatus,
                 rejectionReason: obj.rejectionReason,
                 verifiedAt: obj.verifiedAt,
             } as Kyc,
@@ -200,7 +202,7 @@ export class KycRepository extends GenericRepository<Kyc, IKycDocument> implemen
         await KycModel.updateOne(
             { psychologistId },
             { $set: {
-                kycStatus: 'approved',
+                kycStatus: KycStatus.APPROVED,
                 verifiedAt: new Date(),
                 rejectionReason: null,
             } },
@@ -212,7 +214,7 @@ export class KycRepository extends GenericRepository<Kyc, IKycDocument> implemen
         await KycModel.updateOne(
             { psychologistId },
             { $set: {
-                kycStatus: 'rejected',
+                kycStatus: KycStatus.REJECTED,
                 rejectionReason: reason,
                 verifiedAt: null,
             } },

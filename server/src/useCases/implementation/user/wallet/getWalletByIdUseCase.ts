@@ -15,11 +15,7 @@ export class GetWalletByIdUseCase implements IGetWalletByIdUseCase {
     async execute(walletId: string): Promise<Wallet> {
         const wallet = await this._walletRepo.findById(walletId);
 
-        if (!wallet)
-            throw new AppError(
-                walletMessages.ERROR.WALLET_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+        if (!wallet) throw new AppError(walletMessages.ERROR.WALLET_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         return wallet;
     }
 }

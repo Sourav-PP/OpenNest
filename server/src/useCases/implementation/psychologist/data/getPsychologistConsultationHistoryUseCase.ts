@@ -1,3 +1,5 @@
+import { ConsultationStatus } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
@@ -37,7 +39,10 @@ export class GetPsychologistConsultationHistoryUseCase implements IGetPsychologi
             );
         }
 
-        const finalSort = sort === 'asc' || sort === 'desc' ? sort : 'desc';
+        const finalSort =
+            sort === SortFilter.ASC || sort === SortFilter.DESC
+                ? sort
+                : SortFilter.DESC;
         const skip = (page - 1) * limit;
         const id = psychologist.id;
 
@@ -47,7 +52,7 @@ export class GetPsychologistConsultationHistoryUseCase implements IGetPsychologi
                 search,
                 sort: finalSort,
                 limit,
-                status: 'completed',
+                status: ConsultationStatus.COMPLETED,
                 skip,
             },
         );

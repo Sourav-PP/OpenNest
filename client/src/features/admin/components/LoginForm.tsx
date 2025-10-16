@@ -12,11 +12,12 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Lock, Mail } from 'lucide-react';
+import type { UserRoleType } from '@/constants/User';
 
 interface TokenPayload {
   userId: string;
   email: string;
-  role: 'user' | 'psychologist' | 'admin';
+  role: UserRoleType;
   exp: number;
   iat: number;
 }
@@ -32,23 +33,23 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = async(data: LoginData) => {
+  const onSubmit = async (data: LoginData) => {
     try {
       const res = await adminApi.login(data);
       const { accessToken } = res;
       const decoded = jwtDecode<TokenPayload>(accessToken);
-            
+
       dispatch(
         loginSuccess({
           accessToken,
           email: decoded.email,
           role: decoded.role,
-          userId: decoded.userId
+          userId: decoded.userId,
         })
       );
 
       toast.success('Login successful');
-            
+
       navigate('/admin/dashboard');
     } catch (err) {
       handleApiError(err);
@@ -65,7 +66,12 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input leftIcon={Mail} placeholder="Enter your email" className='bg-admin-bg-secondary border-none hover:bg-admin-bg-secondary' {...field} />
+                <Input
+                  leftIcon={Mail}
+                  placeholder="Enter your email"
+                  className="bg-admin-bg-secondary border-none hover:bg-admin-bg-secondary"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,7 +86,13 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input leftIcon={Lock} type="password" placeholder="Enter your password" className='bg-admin-bg-secondary border-none hover:bg-admin-bg-secondary' {...field} />
+                <Input
+                  leftIcon={Lock}
+                  type="password"
+                  placeholder="Enter your password"
+                  className="bg-admin-bg-secondary border-none hover:bg-admin-bg-secondary"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

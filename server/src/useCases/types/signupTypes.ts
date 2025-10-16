@@ -1,22 +1,13 @@
-export interface ISignupInput {
-    name: string,
-    email: string,
-    phone: string,
-    password: string,
-    confirmPassword: string,
-    file: Express.Multer.File,
-    role: 'user' | 'psychologist'
-}
+import { UserRole } from '@/domain/enums/UserEnums';
 
-// export interface ISignupOutput {
-//     user: {
-//         name: string,
-//         email: string,
-//         role: "user" | "psychologist",
-//         profileImage: string
-//     }
-//     accessToken: string,
-//     refreshToken: string
-// }
+export interface ISignupInput {
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+    confirmPassword: string;
+    file: Express.Multer.File;
+    role: UserRole;
+}
 
 export type ISignupOutput = string;

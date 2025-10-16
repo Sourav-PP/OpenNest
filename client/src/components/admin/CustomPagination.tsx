@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 
@@ -15,7 +14,9 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, totalP
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className={`p-2 rounded-full ${
-          currentPage === 1 ? 'text-gray-500 cursor-not-allowed bg-admin-bg-box' : 'text-white bg-admin-bg-box hover:bg-gray-700'
+          currentPage === 1
+            ? 'text-gray-500 cursor-not-allowed bg-admin-bg-box'
+            : 'text-white bg-admin-bg-box hover:bg-gray-700'
         }`}
       >
         <FiArrowLeft size={20} className="stroke-green-700" />
@@ -27,7 +28,9 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, totalP
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className={`p-2 rounded-full ${
-          currentPage === totalPages ? 'text-gray-500 cursor-not-allowed bg-admin-bg-box' : 'text-white hover:bg-gray-700 bg-admin-bg-box'
+          currentPage === totalPages
+            ? 'text-gray-500 cursor-not-allowed bg-admin-bg-box'
+            : 'text-white hover:bg-gray-700 bg-admin-bg-box'
         }`}
       >
         <FiArrowRight size={20} className="stroke-green-700" />

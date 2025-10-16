@@ -1,11 +1,12 @@
+import { WalletTransactionStatus, WalletTransactionType } from '@/domain/enums/WalletEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IWalletTransactionDocument extends Document {
   _id: Types.ObjectId;
   walletId: Types.ObjectId;
   amount: number,
-  type: 'credit' | 'debit' | 'transferIn' | 'transferOut',
-  status: 'pending' | 'completed' | 'failed',
+  type: WalletTransactionType,
+  status: WalletTransactionStatus,
   reference?: string,
   metadata?: any,
   createdAt: Date;
@@ -25,13 +26,13 @@ const WalletTransactionSchema = new Schema<IWalletTransactionDocument>(
         },
         type: {
             type: String,
-            enum: ['credit', 'debit', 'transferIn', 'transferOut'],
+            enum: Object.values(WalletTransactionType),
             required: true,
         },
         status: {
             type: String,
-            enum: ['pending', 'completed', 'failed'],
-            default: 'pending',
+            enum: Object.values(WalletTransactionStatus),
+            default: WalletTransactionStatus.PENDING,
         },
         reference: {
             type: String,

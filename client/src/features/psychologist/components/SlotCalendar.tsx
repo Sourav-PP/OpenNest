@@ -21,7 +21,7 @@ interface SlotCalendarProps {
   slotsChanged: boolean;
 }
 
-const SlotCalendar: React.FC<SlotCalendarProps> = ({slotsChanged}) => {
+const SlotCalendar: React.FC<SlotCalendarProps> = ({ slotsChanged }) => {
   const [events, setEvents] = useState<SlotEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<ISlotDto | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,7 +32,7 @@ const SlotCalendar: React.FC<SlotCalendarProps> = ({slotsChanged}) => {
 
       if (!slots || slots.length === 0) {
         toast.info('No slots available.');
-        setEvents([]); 
+        setEvents([]);
         return;
       }
 
@@ -170,11 +170,7 @@ const SlotCalendar: React.FC<SlotCalendarProps> = ({slotsChanged}) => {
                         By: {bookedBy.name || 'User'}
                       </div>
                     )} */}
-                    {notes && (
-                      <div className="mt-0.5 text-[8px] xs:text-[9px] sm:text-[10px] truncate">
-                        {notes}
-                      </div>
-                    )}
+                    {notes && <div className="mt-0.5 text-[8px] xs:text-[9px] sm:text-[10px] truncate">{notes}</div>}
                   </div>
                 );
               }}

@@ -1,4 +1,6 @@
+import type { ConsultationStatusType } from '@/constants/Consultation';
 import type { IMessageDto } from './message';
+import type { PaymentMethodType, PaymentStatusType } from '@/constants/Payment';
 
 export interface IConsultationDto {
   id: string;
@@ -6,7 +8,7 @@ export interface IConsultationDto {
   startDateTime: string;
   endDateTime: string;
   sessionGoal: string;
-  status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+  status?: ConsultationStatusType;
   meetingLink?: string;
   unreadCount: number;
   psychologist: {
@@ -25,9 +27,9 @@ export interface IConsultationDtoForAdmin {
   startDateTime: string;
   endDateTime: string;
   sessionGoal: string;
-  status: 'booked' | 'completed' | 'cancelled' | 'rescheduled';
-  paymentStatus: 'pending' | 'succeeded' | 'failed' | null;
-  paymentMethod: 'stripe' | 'wallet' | null;
+  status: ConsultationStatusType;
+  paymentStatus: PaymentStatusType | null;
+  paymentMethod: PaymentMethodType | null;
 }
 
 export interface IPsychologistConsultationDto {
@@ -36,7 +38,7 @@ export interface IPsychologistConsultationDto {
   startDateTime: string;
   endDateTime: string;
   sessionGoal: string;
-  status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+  status?: ConsultationStatusType;
   meetingLink?: string;
   unreadCount: number;
   patient: {
@@ -47,24 +49,24 @@ export interface IPsychologistConsultationDto {
 }
 
 export interface IPatientConsultationHistoryDto {
-    id?: string;
-    startDateTime: Date;
-    endDateTime: Date;
-    sessionGoal: string;
-    status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
-    meetingLink?: string;
-    psychologistId: string;
-    patient: {
-        id: string;
-        name: string;
-        profileImage?: string;
-    };
+  id?: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  sessionGoal: string;
+  status: ConsultationStatusType;
+  meetingLink?: string;
+  psychologistId: string;
+  patient: {
+    id: string;
+    name: string;
+    profileImage?: string;
+  };
 }
 
 //chat consultations
 export interface IUserChatConsultationDto {
   id: string;
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+  status: ConsultationStatusType;
   patientId: string;
   psychologist: {
     id: string;
@@ -79,7 +81,7 @@ export interface IUserChatConsultationDto {
 
 export interface IPsychologistChatConsultationDto {
   id: string;
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+  status: ConsultationStatusType;
   psychologistId: string;
   patient: {
     id: string;

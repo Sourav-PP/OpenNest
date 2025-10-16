@@ -10,7 +10,6 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { userMessages } from '@/shared/constants/messages/userMessages';
 import { appConfig } from '@/infrastructure/config/config';
 
-
 export class AuthController {
     private _signupUseCase: ISignupUseCase;
     private _sendOtpUseCase: ISendOtpUseCase;
@@ -35,6 +34,7 @@ export class AuthController {
     sendOtp = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             await this._sendOtpUseCase.execute(req.body.email);
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: authMessages.SUCCESS.OTP_SENT,
@@ -44,19 +44,11 @@ export class AuthController {
         }
     };
 
-    verifyOtp = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    verifyOtp = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, otp, signupToken } = req.body;
 
-            const response = await this._verifyOtpUseCase.execute(
-                email,
-                otp,
-                signupToken,
-            );
+            const response = await this._verifyOtpUseCase.execute(email, otp, signupToken);
 
             res.cookie('refreshToken', response.refreshToken, {
                 httpOnly: true,
@@ -77,11 +69,7 @@ export class AuthController {
         }
     };
 
-    signup = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    signup = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const file = req.file;
 
@@ -108,11 +96,7 @@ export class AuthController {
         }
     };
 
-    login = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    login = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const response = await this._loginUseCase.execute(req.body);
 
@@ -131,7 +115,6 @@ export class AuthController {
                     accessToken: response.accessToken,
                     hasSubmittedVerificationForm: response.hasSubmittedVerificationForm,
                 },
-                
             });
         } catch (error) {
             next(error);

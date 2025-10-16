@@ -1,3 +1,4 @@
+import type { ConsultationStatusFilterType, ConsultationStatusType } from '@/constants/Consultation';
 import type { IConsultationDto } from '../dtos/consultation';
 import type { INotificationDto } from '../dtos/notification';
 import type { IPlanDto } from '../dtos/plan';
@@ -5,6 +6,9 @@ import type { IPsychologistDto, IPsychologistProfileDto } from '../dtos/psycholo
 import type { ISlotDto } from '../dtos/slot';
 import type { ISubscriptionDto } from '../dtos/subscription';
 import type { BackendResponse } from './api';
+import type { SortFilterType } from '@/constants/SortFilter';
+import type { UserGenderFilterType, UserGenderType, UserRoleType } from '@/constants/User';
+import type { PaymentMethodType, PaymentPurposeType, PaymentStatusType } from '@/constants/Payment';
 
 export interface IGetAllPsychologistResponseData {
   psychologists: IPsychologistDto[];
@@ -14,8 +18,8 @@ export interface IGetAllPsychologistResponseData {
 export interface IGetAllPsychologistRequest {
   search?: string;
   specialization?: string;
-  sort?: 'asc' | 'desc';
-  gender: 'Male' | 'Female' | 'all';
+  sort?: SortFilterType;
+  gender: UserGenderFilterType;
   page?: number;
   limit?: number;
   expertise?: string;
@@ -26,7 +30,7 @@ export interface ICreateCheckoutSessionInput {
   slotId?: string;
   amount: number;
   sessionGoal?: string;
-  purpose?: 'consultation' | 'wallet';
+  purpose?: PaymentPurposeType;
 }
 
 export interface ICreateCheckoutSessionResponseData {
@@ -38,24 +42,24 @@ export interface IGetUserProfileResponseData {
   name: string;
   email: string;
   phone: string;
-  role: 'user' | 'psychologist';
+  role: UserRoleType;
   profileImage?: string;
   dateOfBirth?: string;
-  gender?: 'male' | 'female' | 'other';
+  gender?: UserGenderType;
   isActive?: boolean;
 }
 
 export interface IGetUserConsultationsRequest {
   search?: string;
-  sort?: 'asc' | 'desc';
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed' | 'all';
+  sort?: SortFilterType;
+  status: ConsultationStatusFilterType;
   page?: number;
   limit?: number;
 }
 
 export interface IGetUserConsultationHistoryRequest {
   search?: string;
-  sort?: 'asc' | 'desc';
+  sort?: SortFilterType;
   page?: number;
   limit?: number;
 }
@@ -68,7 +72,7 @@ export interface IGetUserConsultationsResponseData {
 export interface IUserConsultationDetailsResponseData {
   id: string;
   sessionGoal: string;
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'missed';
+  status: ConsultationStatusType;
   meetingLink?: string;
   startDateTime: Date;
   endDateTime: Date;
@@ -91,18 +95,18 @@ export interface IUserConsultationDetailsResponseData {
     bookedBy?: string | null;
   };
   payment: {
-    amount: number;
-    currency: string;
-    paymentMethod: 'stripe' | 'wallet';
-    paymentStatus: 'pending' | 'succeeded' | 'failed';
-    refunded: boolean;
-  };
+      amount: number;
+      currency: string;
+      paymentMethod: PaymentMethodType;
+      paymentStatus: PaymentStatusType;
+      refunded: boolean;
+  } | null;
 }
 
 export interface IUserConsultationHistoryDetailsResponseData {
   id: string;
   sessionGoal: string;
-  status: 'booked' | 'cancelled' | 'completed' | 'rescheduled';
+  status: ConsultationStatusType;
   meetingLink?: string;
   startDateTime: Date;
   endDateTime: Date;
@@ -127,8 +131,8 @@ export interface IUserConsultationHistoryDetailsResponseData {
   payment: {
     amount: number;
     currency: string;
-    paymentMethod: 'stripe' | 'wallet';
-    paymentStatus: 'pending' | 'succeeded' | 'failed';
+    paymentMethod: PaymentMethodType;
+    paymentStatus: PaymentStatusType;
     refunded: boolean;
   };
   video: {
@@ -145,10 +149,8 @@ export interface IGetPsychologistByIdResponseData {
 export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>;
 export type IGetPsychologistByIdResponse = BackendResponse<IGetPsychologistByIdResponseData>;
 export type IGetUserConsultationsResponse = BackendResponse<IGetUserConsultationsResponseData>;
-export type IUserConsultationDetailsResponse =
-  BackendResponse<IUserConsultationDetailsResponseData>;
-export type IUserConsultationHistoryDetailResponse =
-  BackendResponse<IUserConsultationHistoryDetailsResponseData>;
+export type IUserConsultationDetailsResponse = BackendResponse<IUserConsultationDetailsResponseData>;
+export type IUserConsultationHistoryDetailResponse = BackendResponse<IUserConsultationHistoryDetailsResponseData>;
 export type IGetUserProfileResponse = BackendResponse<IGetUserProfileResponseData>;
 export type IGetNotificationsResponse = BackendResponse<INotificationDto[]>;
 export type IGetActiveSubscriptionResponse = BackendResponse<ISubscriptionDto>;

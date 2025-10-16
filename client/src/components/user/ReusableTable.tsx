@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Column<T> {
   header: string;
@@ -63,11 +56,9 @@ const ReusableTable = <T,>({ data, columns, emptyMessage, className, onRowClick 
                     key={col.header}
                     className={`py-4 px-6 text-gray-500 text-sm sm:text-base ${
                       col.className || ''
-                    } ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${
-                      colIndex === 0 ? 'pl-6 sm:pl-8' : ''
-                    }`}
+                    } ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${colIndex === 0 ? 'pl-6 sm:pl-8' : ''}`}
                     onClick={() => {
-                      if(onRowClick) onRowClick(item);
+                      if (onRowClick) onRowClick(item);
                     }}
                   >
                     {col.render(item, index)}

@@ -1,3 +1,4 @@
+import { PaymentMethod, PaymentPurpose, PaymentStatus } from '@/domain/enums/PaymentEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IPaymentDocument extends Document {
@@ -6,13 +7,13 @@ export interface IPaymentDocument extends Document {
     consultationId: Types.ObjectId;
     amount: number;
     currency: string;
-    paymentMethod: 'stripe' | 'wallet';
-    paymentStatus: 'pending' | 'succeeded' | 'failed';
+    paymentMethod: PaymentMethod;
+    paymentStatus: PaymentStatus;
     refunded: boolean;
     transactionId?: string;
     stripeSessionId?: string;
     slotId: Types.ObjectId;
-    purpose: 'consultation' | 'wallet' | 'subscription';
+    purpose: PaymentPurpose;
 }
 
 const PaymentSchema = new Schema<IPaymentDocument>(
@@ -38,12 +39,12 @@ const PaymentSchema = new Schema<IPaymentDocument>(
         },
         paymentMethod: {
             type: String,
-            enum: ['stripe', 'wallet'],
+            enum: Object.values(PaymentMethod),
             required: true,
         },
         paymentStatus: {
             type: String,
-            enum: ['pending', 'succeeded', 'failed'],
+            enum: Object.values(PaymentStatus),
             required: true,
         },
         refunded: {
@@ -63,7 +64,7 @@ const PaymentSchema = new Schema<IPaymentDocument>(
         },
         purpose: {
             type: String,
-            enum: ['consultation', 'wallet', 'subscription'],
+            enum: Object.values(PaymentPurpose),
             required: true,
         },
     },

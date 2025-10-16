@@ -1,3 +1,5 @@
+import { KycStatusFilter } from '@/domain/enums/KycEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
@@ -18,7 +20,6 @@ export class AdminKycController {
         getKycForPsychologistUseCase: IGetKycForPsychologistUseCase,
         approveKycUseCase: IApproveKycUseCase,
         rejectKycUseCase: IRejectKycUseCase,
-      
     ) {
         this._getAllKycUseCase = getAllKycUseCase;
         this._getKycForPsychologistUseCase = getKycForPsychologistUseCase;
@@ -26,23 +27,15 @@ export class AdminKycController {
         this._rejectKycUseCase = rejectKycUseCase;
     }
 
-    getAllKyc = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getAllKyc = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             const result = await this._getAllKycUseCase.execute({
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
-                status: req.query.status as
-                    | 'pending'
-                    | 'approved'
-                    | 'rejected'
-                    | 'all',
+                sort: req.query.sort as SortFilter,
+                status: req.query.status as KycStatusFilter,
                 page,
                 limit,
             });
@@ -56,9 +49,9 @@ export class AdminKycController {
     getKycForPsychologist = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const psychologistId = req.params.psychologistId as string;
-    
+
             if (!psychologistId) {
-                throw new AppError( adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
+                throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
             }
 
             const kyc = await this._getKycForPsychologistUseCase.execute(psychologistId);
@@ -105,7 +98,7 @@ export class AdminKycController {
             }
 
             await this._rejectKycUseCase.execute(psychologistId, reason);
-            
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: adminMessages.SUCCESS.KYC_REJECTED,

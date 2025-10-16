@@ -4,7 +4,13 @@ import { connectDB } from './infrastructure/database/mongoose';
 import { app } from './presentation/http/server';
 import logger from './utils/logger';
 import { Server } from 'socket.io';
-import { chatSocketHandler, videoCallSocketHandler, tokenService, notificationRepository, updateMissedConsultationsUseCase } from './infrastructure/config/di';
+import {
+    chatSocketHandler,
+    videoCallSocketHandler,
+    tokenService,
+    notificationRepository,
+    updateMissedConsultationsUseCase,
+} from './infrastructure/config/di';
 import { configureSocket } from './infrastructure/config/socket';
 import { NotificationSocketHandler } from './presentation/socket/notificationSocketHandler';
 import { NotificationJob } from './infrastructure/cron/notificationJob';

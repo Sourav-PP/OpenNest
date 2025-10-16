@@ -1,3 +1,5 @@
+import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
@@ -22,43 +24,29 @@ export class PsychologistConsultationController {
         getPatientConsultationHistoryUseCase: IGetPatientConsultationHistoryUseCase,
     ) {
         this._getPsychologistConsultationUseCase = getPsychologistConsultationUseCase;
-        this._psychologistCancelConsultationUseCase =psychologistCancelConsultationUseCase;
+        this._psychologistCancelConsultationUseCase = psychologistCancelConsultationUseCase;
         this._getPsychologistConsultationHistoryUseCase = getPsychologistConsultationHistoryUseCase;
         this._getPatientConsultationHistoryUseCase = getPatientConsultationHistoryUseCase;
     }
 
-    getConsultations = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getConsultations = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const result =
-                await this._getPsychologistConsultationUseCase.execute({
-                    psychologistId: userId,
-                    search: req.query.search as string,
-                    sort: req.query.sort as 'asc' | 'desc',
-                    status: req.query.status as
-                        | 'booked'
-                        | 'cancelled'
-                        | 'completed'
-                        | 'rescheduled',
-                    page,
-                    limit,
-                });
-
-            console.log('consultations: ', result);
+            const result = await this._getPsychologistConsultationUseCase.execute({
+                psychologistId: userId,
+                search: req.query.search as string,
+                sort: req.query.sort as SortFilter,
+                status: req.query.status as ConsultationStatusFilter,
+                page,
+                limit,
+            });
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -70,29 +58,21 @@ export class PsychologistConsultationController {
         }
     };
 
-    cancelConsultation = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    cancelConsultation = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const { consultationId } = req.params;
             const { reason } = req.body;
 
-            const consultation =
-                await this._psychologistCancelConsultationUseCase.execute(
-                    userId,
-                    consultationId,
-                    reason,
-                );
+            const consultation = await this._psychologistCancelConsultationUseCase.execute(
+                userId,
+                consultationId,
+                reason,
+            );
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -104,31 +84,23 @@ export class PsychologistConsultationController {
         }
     };
 
-    getHistory = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getHistory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
-            const result =
-                await this._getPsychologistConsultationHistoryUseCase.execute({
-                    psychologistId: userId,
-                    search: req.query.search as string,
-                    sort: req.query.sort as 'asc' | 'desc',
-                    page,
-                    limit,
-                });
+            const result = await this._getPsychologistConsultationHistoryUseCase.execute({
+                psychologistId: userId,
+                search: req.query.search as string,
+                sort: req.query.sort as SortFilter,
+                page,
+                limit,
+            });
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -140,11 +112,7 @@ export class PsychologistConsultationController {
         }
     };
 
-    getPatientHistory = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getPatientHistory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             const page = Number(req.query.page) || 1;
@@ -152,22 +120,17 @@ export class PsychologistConsultationController {
             const { patientId } = req.params;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const result = await this._getPatientConsultationHistoryUseCase.execute({
                 patientId,
                 psychologistUserId: userId,
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
+                sort: req.query.sort as SortFilter,
                 page,
                 limit,
             });
-
-            console.log('consultations: ', result);
 
             res.status(HttpStatus.OK).json({
                 success: true,

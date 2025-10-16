@@ -3,25 +3,20 @@ import { userApi } from '@/services/api/user';
 import type { IPsychologistDto } from '@/types/dtos/psychologist';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { toast } from 'react-toastify';
+import type { UserGenderFilterType } from '@/constants/User';
+import type { SortFilterType } from '@/constants/SortFilter';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 interface UsePsychologistsProps {
   page: number;
   limit: number;
   search: string;
-  gender: 'Male' | 'Female' | 'all';
-  sort: 'asc' | 'desc';
+  gender: UserGenderFilterType;
+  sort: SortFilterType;
   expertise: string;
 }
 
-export function usePsychologists({
-  page,
-  limit,
-  search,
-  gender,
-  sort,
-  expertise,
-}: UsePsychologistsProps) {
-
+export function usePsychologists({ page, limit, search, gender, sort, expertise }: UsePsychologistsProps) {
   const [psychologists, setPsychologists] = useState<IPsychologistDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -32,11 +27,16 @@ export function usePsychologists({
         setLoading(true);
 
         const res = await userApi.getAllPsychologists({
-          page, search, gender, sort, expertise: expertise !== 'all' ? expertise : undefined, limit
+          page,
+          search,
+          gender,
+          sort,
+          expertise: expertise !== 'all' ? expertise : undefined,
+          limit,
         });
 
-        if(!res.data) {
-          toast.error('something went wrong');
+        if (!res.data) {
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
 
@@ -52,5 +52,5 @@ export function usePsychologists({
     fetchData();
   }, [page, search, gender, limit, sort, expertise]);
 
-  return { psychologists, totalCount, loading};
+  return { psychologists, totalCount, loading };
 }

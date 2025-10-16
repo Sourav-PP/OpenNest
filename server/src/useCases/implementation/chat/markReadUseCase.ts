@@ -6,13 +6,18 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
 import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
 import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { UserRole } from '@/domain/enums/UserEnums';
 
 export class MarkReadUseCase implements IMarkReadUseCase {
     private _messageRepo: IMessageRepository;
     private _psychologistRepo: IPsychologistRepository;
     private _userRepo: IUserRepository;
 
-    constructor(messageRepo: IMessageRepository, psychologistRepo: IPsychologistRepository, userRepo: IUserRepository) {
+    constructor(
+        messageRepo: IMessageRepository,
+        psychologistRepo: IPsychologistRepository,
+        userRepo: IUserRepository,
+    ) {
         this._messageRepo = messageRepo;
         this._psychologistRepo = psychologistRepo;
         this._userRepo = userRepo;
@@ -30,9 +35,9 @@ export class MarkReadUseCase implements IMarkReadUseCase {
 
         let receiverId: string;
 
-        if (user.role === 'user') {
+        if (user.role === UserRole.USER) {
             receiverId = userId;
-        } else if (user.role === 'psychologist') {
+        } else if (user.role === UserRole.PSYCHOLOGIST) {
             const psychologist =
                 await this._psychologistRepo.findByUserId(userId);
 

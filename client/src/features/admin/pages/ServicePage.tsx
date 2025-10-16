@@ -8,9 +8,9 @@ const ServicePage = () => {
     <div className="flex h-screen w-full bg-admin-bg-secondary text-white overflow-hidden">
       <Sidebar />
       <div className="flex-1 overflow-auto">
-        <Header/>
-        <AddServiceForm/>
-        <ServiceTable/>
+        <Header />
+        <AddServiceForm />
+        <ServiceTable />
       </div>
     </div>
   );

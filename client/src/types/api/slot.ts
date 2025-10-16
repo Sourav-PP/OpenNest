@@ -1,23 +1,23 @@
 export interface ISingleSlotInput {
-    startDateTime: string;
-    endDateTime: string;
+  startDateTime: string;
+  endDateTime: string;
 }
 
 export interface IRecurringSlotInput {
-    fromDate: string;
-    toDate: string;
-    weekDays: string[]
-    startTime: string;
-    endTime: string;
-    duration: number;  
-    timeZone: string;      
+  fromDate: string;
+  toDate: string;
+  weekDays: string[];
+  startTime: string;
+  endTime: string;
+  duration: number;
+  timeZone: string;
 }
 
 export interface IDeleteSlotInput {
-    slotId: string
+  slotId: string;
 }
 
 export interface IDeleteSlotResponse {
-    success: boolean
-    message: string;
+  success: boolean;
+  message: string;
 }

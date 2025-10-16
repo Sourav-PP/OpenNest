@@ -8,7 +8,7 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     try {
       await adminApi.logout();
 
@@ -25,10 +25,8 @@ const Header = () => {
   return (
     <div className="flex justify-between items-center px-6 py-4 text-white">
       <div></div>
-      <button
-        onClick={handleLogout}
-        className="btn-logout flex rounded-full">
-            Logout
+      <button onClick={handleLogout} className="btn-logout flex rounded-full">
+        Logout
       </button>
     </div>
   );

@@ -1,13 +1,13 @@
+import type { UserRoleType } from '@/constants/User';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-
 interface AuthState {
-    accessToken: string | null,
-    role: 'user' | 'psychologist' | 'admin' | null,
-    isAuthenticated: boolean
-    email: string | null,
-    userId: string | null,
-    isSubmittedVerification?: boolean;
+  accessToken: string | null;
+  role: UserRoleType | null;
+  isAuthenticated: boolean;
+  email: string | null;
+  userId: string | null;
+  isSubmittedVerification?: boolean;
 }
 
 const initialState: AuthState = {
@@ -16,7 +16,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   email: null,
   userId: null,
-  isSubmittedVerification: false
+  isSubmittedVerification: false,
 };
 
 const authSlice = createSlice({
@@ -26,14 +26,14 @@ const authSlice = createSlice({
     loginSuccess: (state, action: PayloadAction<Omit<AuthState, 'isAuthenticated'>>) => {
       return {
         ...action.payload,
-        isAuthenticated: true
+        isAuthenticated: true,
       };
     },
     updateVerificationStatus: (state, action: PayloadAction<boolean>) => {
       state.isSubmittedVerification = action.payload;
     },
-    logout: () =>initialState
-  }
+    logout: () => initialState,
+  },
 });
 
 export const { loginSuccess, logout, updateVerificationStatus } = authSlice.actions;

@@ -1,16 +1,18 @@
 import { Kyc } from '../entities/kyc';
 import { User } from '../entities/user';
 import { Psychologist } from '../entities/psychologist';
+import { KycStatusFilter } from '../enums/KycEnums';
+import { SortFilter } from '../enums/SortFilterEnum';
 
 export interface IKycRepository {
     create(data: Omit<Kyc, 'id'>): Promise<Kyc>;
 
     findAllWithDetails(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
+        sort?: SortFilter;
         skip?: number;
         limit?: number;
-        status: 'pending' | 'approved' | 'rejected' | 'all';
+        status: KycStatusFilter;
     }): Promise<{ kyc: Kyc; psychologist: Psychologist; user: User }[]>;
 
     countAll(): Promise<number>;

@@ -20,18 +20,16 @@ const logger = createLogger({
     transports: [
         // MongoDB transport
         new transports.MongoDB({
-            db: `${appConfig.db.url}/opennest?retryWrites=true&w=majority`,          
-            collection: 'app_logs',     
-            level: 'info',               
+            db: `${appConfig.db.url}/opennest?retryWrites=true&w=majority`,
+            collection: 'app_logs',
+            level: 'info',
             options: { useUnifiedTopology: true },
-            expireAfterSeconds: 30 * 24 * 60 * 60, 
-            storeHost: true,                     
-            capped: false,                     
+            expireAfterSeconds: 30 * 24 * 60 * 60,
+            storeHost: true,
+            capped: false,
         }),
-        
-        ...(isDev
-            ? [new transports.Console({ format: format.combine(format.colorize(), customFormat) })]
-            : []),
+
+        ...(isDev ? [new transports.Console({ format: format.combine(format.colorize(), customFormat) })] : []),
     ],
 });
 

@@ -1,3 +1,5 @@
+import type { MessageStatusType } from '@/constants/Message';
+
 export interface IMessageDto {
   id: string;
   consultationId: string;
@@ -5,15 +7,15 @@ export interface IMessageDto {
   senderId: string;
   receiverId: string;
   content: string;
-  status: 'sent' | 'delivered' | 'read';
+  status: MessageStatusType;
   deliveredTo?: string[];
   readAt?: Date;
   mediaUrl?: string;
   mediaType?: string | null;
   deleted: boolean;
-  deletedBy?: string; 
+  deletedBy?: string;
   replyToId?: string;
-  reaction?: Array<{userId: string; emoji: string}>;
+  reaction?: Array<{ userId: string; emoji: string }>;
   createdAt: string;
   updatedAt?: string;
 }

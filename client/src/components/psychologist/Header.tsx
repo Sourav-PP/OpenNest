@@ -24,9 +24,7 @@ const Header = () => {
       {/* Right side */}
       <div className="flex items-center gap-4">
         {/* Email */}
-        <p className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700">
-          {email}
-        </p>
+        <p className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700">{email}</p>
 
         {/* Avatar */}
         <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">

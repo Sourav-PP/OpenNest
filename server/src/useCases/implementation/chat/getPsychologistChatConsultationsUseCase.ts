@@ -1,3 +1,4 @@
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
@@ -12,21 +13,37 @@ export class GetPsychologistChatConsultationsUseCase implements IGetPsychologist
     private _consultationRepo: IConsultationRepository;
     private _psychologistRepo: IPsychologistRepository;
 
-    constructor(consultationRepo: IConsultationRepository, psychologistRepo: IPsychologistRepository) {
+    constructor(
+        consultationRepo: IConsultationRepository,
+        psychologistRepo: IPsychologistRepository,
+    ) {
         this._consultationRepo = consultationRepo;
         this._psychologistRepo = psychologistRepo;
     }
 
-    async execute(input: IGetConsultationsRequest): Promise<IGetPsychologistChatConsultationsResponse> {
-        const { search, sort, status, page = 1, limit = 10, psychologistId } = input;
+    async execute(
+        input: IGetConsultationsRequest,
+    ): Promise<IGetPsychologistChatConsultationsResponse> {
+        const {
+            search,
+            sort,
+            status,
+            page = 1,
+            limit = 10,
+            psychologistId,
+        } = input;
 
-        const psychologist = await this._psychologistRepo.findByUserId(psychologistId);
-        
+        const psychologist =
+            await this._psychologistRepo.findByUserId(psychologistId);
+
         if (!psychologist) {
-            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new AppError(
+                psychologistMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
         }
 
-        const finalSort = sort === 'asc' || sort === 'desc' ? sort : 'desc';
+        const finalSort = sort === SortFilter.ASC || sort === SortFilter.DESC ? sort : SortFilter.DESC;
         const skip = (page - 1) * limit;
         const id = psychologist.id;
 
@@ -42,7 +59,13 @@ export class GetPsychologistChatConsultationsUseCase implements IGetPsychologist
         );
 
         const mappedConsultations = consultations.map(c =>
-            toPsychologistChatConsultationDto(c.consultation, c.patient, c.lastMessage, c.lastMessageTime, c.unreadCount),
+            toPsychologistChatConsultationDto(
+                c.consultation,
+                c.patient,
+                c.lastMessage,
+                c.lastMessageTime,
+                c.unreadCount,
+            ),
         );
 
         const totalCount = await this._consultationRepo.countAllByPatientId(id);

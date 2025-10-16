@@ -5,11 +5,11 @@ export const createAdmin = async() => {
     const existing = await AdminModel.findOne({ email: 'admin@example.com' });
     if (existing) return; 
 
-    const hashPasword = await bcrypt.hash('Admin@123', 10);
+    const hashPassword = await bcrypt.hash('Admin@123', 10);
 
     await AdminModel.create({
         email: 'admin@example.com',
-        password: hashPasword,
+        password: hashPassword,
     });
 
     console.log('admin user created');

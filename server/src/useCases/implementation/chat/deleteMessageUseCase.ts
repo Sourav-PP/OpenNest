@@ -17,11 +17,17 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
         const message = await this._messageRepo.findById(messageId);
 
         if (!message) {
-            throw new AppError(chatMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new AppError(
+                chatMessages.ERROR.NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
         }
 
         if (message.deleted) {
-            throw new AppError(chatMessages.ERROR.ALREADY_DELETED, HttpStatus.BAD_REQUEST); 
+            throw new AppError(
+                chatMessages.ERROR.ALREADY_DELETED,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         const updatedMessage = await this._messageRepo.updateById(messageId, {
@@ -31,7 +37,10 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
         });
 
         if (!updatedMessage) {
-            throw new AppError(generalMessages.ERROR.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new AppError(
+                generalMessages.ERROR.INTERNAL_SERVER_ERROR,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
 
         return updatedMessage;

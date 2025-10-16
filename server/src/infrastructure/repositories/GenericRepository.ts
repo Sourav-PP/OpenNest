@@ -51,7 +51,6 @@ export class GenericRepository<T extends { id?: string }, D extends Document & {
     }
 
     async create(data: Omit<T, 'id'>): Promise<T> {
-        console.log('create: ', data);
         const doc = await this._model.create(data);
         return this.map(doc);
     }

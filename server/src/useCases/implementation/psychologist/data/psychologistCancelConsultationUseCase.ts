@@ -11,9 +11,12 @@ import { generalMessages } from '@/shared/constants/messages/generalMessages';
 import { Consultation } from '@/domain/entities/consultation';
 import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
+import {
+    ConsultationPaymentStatus,
+    ConsultationStatus,
+} from '@/domain/enums/ConsultationEnums';
 
-export class PsychologistCancelConsultationUseCase  implements IPsychologistCancelConsultationUseCase
-{
+export class PsychologistCancelConsultationUseCase implements IPsychologistCancelConsultationUseCase {
     private _walletRepo: IWalletRepository;
     private _consultationRepo: ConsultationRepository;
     private _paymentRepo: IPaymentRepository;
@@ -39,9 +42,8 @@ export class PsychologistCancelConsultationUseCase  implements IPsychologistCanc
         consultationId: string,
         reason: string,
     ): Promise<Consultation> {
-
         const psychologist = await this._psychologistRepo.findByUserId(userId);
-        
+
         if (!psychologist) {
             throw new AppError(
                 authMessages.ERROR.UNAUTHORIZED,
@@ -67,14 +69,14 @@ export class PsychologistCancelConsultationUseCase  implements IPsychologistCanc
             );
         }
 
-        if (consultation.status !== 'booked') {
+        if (consultation.status !== ConsultationStatus.BOOKED) {
             throw new AppError(
                 bookingMessages.ERROR.ONLY_BOOKED_CANCEL,
                 HttpStatus.BAD_REQUEST,
             );
         }
 
-        if (consultation.paymentStatus === 'paid') {
+        if (consultation.paymentStatus === ConsultationPaymentStatus.PAID) {
             const wallet = await this._walletRepo.findByUserId(
                 consultation.patientId,
             );
@@ -96,7 +98,6 @@ export class PsychologistCancelConsultationUseCase  implements IPsychologistCanc
                 );
             }
 
-            console.log('payment: ', payment);
             await this._walletRepo.refundToWallet(
                 wallet.id,
                 payment.amount,
@@ -104,7 +105,7 @@ export class PsychologistCancelConsultationUseCase  implements IPsychologistCanc
             );
         }
 
-        consultation.status = 'cancelled';
+        consultation.status = ConsultationStatus.CANCELLED;
         consultation.cancellationReason = reason;
         consultation.cancelledAt = new Date();
 
@@ -119,9 +120,7 @@ export class PsychologistCancelConsultationUseCase  implements IPsychologistCanc
         }
 
         if (consultation.slotId) {
-            await this._slotRepo.markSlotAsNotAvailable(
-                consultation.slotId,
-            );
+            await this._slotRepo.markSlotAsNotAvailable(consultation.slotId);
         }
 
         return updatedConsultation;

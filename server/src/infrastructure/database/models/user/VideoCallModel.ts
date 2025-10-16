@@ -1,3 +1,4 @@
+import { VideoCallStatus } from '@/domain/enums/VideoCallEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 
@@ -7,7 +8,7 @@ export interface IVideoCallDocument extends Document {
     patientId: Types.ObjectId;
     psychologistId: Types.ObjectId;
     callUrl: string;
-    status: 'scheduled' | 'in-progress' | 'completed' | 'canceled' | 'missed';
+    status: VideoCallStatus;
     startedAt: Date | null;
     endedAt: Date | null;
     duration?: number; 
@@ -40,8 +41,8 @@ const videoCallSchema = new Schema<IVideoCallDocument>(
         },  
         status: {
             type: String,
-            enum: ['scheduled', 'in-progress', 'completed', 'canceled', 'missed'],  
-            default: 'scheduled',
+            enum: Object.values(VideoCallStatus),  
+            default: VideoCallStatus.SCHEDULED,
         },  
         startedAt: {  
             type: Date,

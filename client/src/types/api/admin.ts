@@ -1,90 +1,94 @@
+import type { PlanBillingPeriodType } from '@/constants/Plan';
 import type { IConsultationDtoForAdmin } from '../dtos/consultation';
 import type { IPayoutRequestDto, PayoutRequestListItemDto } from '../dtos/payoutRequest';
 import type { IGetAllPsychologistsDto, ITopPsychologistDto } from '../dtos/psychologist';
 import type { IUserDto } from '../dtos/user';
 import type { BackendResponse } from './api';
+import type { SortFilterType } from '@/constants/SortFilter';
+import type { KycStatusFilterType, KycStatusType } from '@/constants/Kyc';
+import type { UserGenderFilterType } from '@/constants/User';
 
 export interface IAdminLoginRequest {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 export interface IAdminLoginResponse {
-    accessToken: string;
+  accessToken: string;
 }
 
 export interface IAddServiceResponse {
-    message: string;
-    data: {
-        name: string;
-        description: string;
-        bannerImage: string;
-    }
+  message: string;
+  data: {
+    name: string;
+    description: string;
+    bannerImage: string;
+  };
 }
 
 export interface IAddPlanRequestData {
-    name: string;
-    description?: string;
-    price: number;
-    currency: string;
-    creditsPerPeriod: number;
-    billingPeriod: 'month' | 'year' | 'week';
+  name: string;
+  description?: string;
+  price: number;
+  currency: string;
+  creditsPerPeriod: number;
+  billingPeriod: PlanBillingPeriodType;
 }
 
 export interface IAddPlanResponseData {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-    currency: string;
-    creditsPerPeriod: number;
-    billingPeriod: 'month' | 'year' | 'week';
-    stripePriceId: string;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  currency: string;
+  creditsPerPeriod: number;
+  billingPeriod: PlanBillingPeriodType;
+  stripePriceId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IGetAllUserRequest {
-    search?: string;
-    sort?: 'asc' | 'desc';
-    gender: 'male' | 'female' | 'all';
-    page?: number;
-    limit?: number
+  search?: string;
+  sort?: SortFilterType;
+  gender: UserGenderFilterType;
+  page?: number;
+  limit?: number;
 }
 
 export interface IGetAllUserResponseData {
-    user: IUserDto[],
-    totalCount?: number
+  user: IUserDto[];
+  totalCount?: number;
 }
 
 export interface IGetAllPendingPayoutRequest {
-    search?: string;
-    sort?: 'asc' | 'desc';
-    page?: number;
-    limit?: number
+  search?: string;
+  sort?: SortFilterType;
+  page?: number;
+  limit?: number;
 }
 
 export interface IGetAllPendingPayoutResponseData {
-    requests: PayoutRequestListItemDto[],
-    totalCount: number
+  requests: PayoutRequestListItemDto[];
+  totalCount: number;
 }
 
 export interface IGetAllConsultationsResponseData {
-    consultations: IConsultationDtoForAdmin[],
-    totalCount?: number
+  consultations: IConsultationDtoForAdmin[];
+  totalCount?: number;
 }
 
 export interface IGetAllPsychologistsRequest {
-    search?: string;
-    sort?: 'asc' | 'desc';
-    gender?: 'male' | 'female' | 'all';
-    page?: number;
-    limit?: number
+  search?: string;
+  sort?: SortFilterType;
+  gender?: UserGenderFilterType;
+  page?: number;
+  limit?: number;
 }
 
 export interface IGetAllPsychologistResponseData {
-    psychologists: IGetAllPsychologistsDto[],
-    totalCount: number
+  psychologists: IGetAllPsychologistsDto[];
+  totalCount: number;
 }
 
 export interface IToggleStatusRequest {
@@ -92,37 +96,37 @@ export interface IToggleStatusRequest {
 }
 
 export interface IAdminKycDto {
-    id: string;
-    identificationDoc: string;
-    educationalCertification: string;
-    experienceCertificate: string;
-    psychologistId: string;
-    psychologistName: string;
-    psychologistEmail: string;
-    profileImage: string;
-    qualification: string;
-    status: 'pending' | 'approved' | 'rejected'
+  id: string;
+  identificationDoc: string;
+  educationalCertification: string;
+  experienceCertificate: string;
+  psychologistId: string;
+  psychologistName: string;
+  psychologistEmail: string;
+  profileImage: string;
+  qualification: string;
+  status: KycStatusType;
 }
 
 export interface IGetAllKycDetailsRequest {
-    search?: string;
-    sort?: 'asc' | 'desc';
-    status?: 'pending' | 'approved' | 'rejected' | 'all'
-    page?: number;
-    limit?: number
+  search?: string;
+  sort?: SortFilterType;
+  status?: KycStatusFilterType;
+  page?: number;
+  limit?: number;
 }
 
 export interface IGetAllKycDetailsResponse {
-    kycs: IAdminKycDto[],
-    totalCount: number
+  kycs: IAdminKycDto[];
+  totalCount: number;
 }
 
-export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>
-export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>
-export type IGetAllConsultationResponse = BackendResponse<IGetAllConsultationsResponseData>
-export type IAddPlanResponse = BackendResponse<IAddPlanResponseData>
-export type IGetAllPlanResponse = BackendResponse<IAddPlanResponseData[]>
-export type IGetPendingPayoutResponse = BackendResponse<IGetAllPendingPayoutResponseData>
-export type IApprovePayoutResponse = BackendResponse<IPayoutRequestDto>
-export type IRejectPayoutResponse = BackendResponse<IPayoutRequestDto>
-export type ITopPsychologistResponse = BackendResponse<ITopPsychologistDto[]>
+export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>;
+export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>;
+export type IGetAllConsultationResponse = BackendResponse<IGetAllConsultationsResponseData>;
+export type IAddPlanResponse = BackendResponse<IAddPlanResponseData>;
+export type IGetAllPlanResponse = BackendResponse<IAddPlanResponseData[]>;
+export type IGetPendingPayoutResponse = BackendResponse<IGetAllPendingPayoutResponseData>;
+export type IApprovePayoutResponse = BackendResponse<IPayoutRequestDto>;
+export type IRejectPayoutResponse = BackendResponse<IPayoutRequestDto>;
+export type ITopPsychologistResponse = BackendResponse<ITopPsychologistDto[]>;

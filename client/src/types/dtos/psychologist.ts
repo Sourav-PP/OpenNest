@@ -1,3 +1,6 @@
+import type { KycStatusType } from '@/constants/Kyc';
+import type { UserGenderType } from '@/constants/User';
+
 export interface IPsychologistDto {
   id: string;
   userId: string;
@@ -16,14 +19,14 @@ export interface IPsychologistProfileDto {
   name: string;
   email: string;
   phone?: string;
-  gender?: 'male' | 'female' | 'other';
+  gender?: UserGenderType;
   dateOfBirth?: string;
   defaultFee: number;
   qualification: string;
   aboutMe: string;
   specializations: string[];
   profileImage: string;
-  kycStatus: 'approved' | 'pending' | 'rejected';
+  kycStatus: KycStatusType;
   specializationFees: string[];
 }
 

@@ -7,6 +7,7 @@ import { toUserUpdatedDto } from '@/useCases/mappers/userMapper';
 import { userMessages } from '@/shared/constants/messages/userMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IFileStorage } from '@/useCases/interfaces/IFileStorage';
+import { UserGender } from '@/domain/enums/UserEnums';
 
 export class UpdateUserProfileUseCase implements IUpdateUserProfileUseCase {
     private _userRepo: IUserRepository;
@@ -33,12 +34,10 @@ export class UpdateUserProfileUseCase implements IUpdateUserProfileUseCase {
 
         const updates: Partial<User> = {};
 
-        console.log('input: ', input);
-
         if (input.name?.trim()) updates.name = input.name?.trim();
         if (input.email?.trim()) updates.email = input.email?.trim();
         if (input.phone?.trim()) updates.phone = input.phone.trim();
-        if (input.gender?.trim()) updates.gender = input.gender.trim();
+        if (input.gender?.trim()) updates.gender = input.gender.trim() as UserGender;
         if (input.dateOfBirth) updates.dateOfBirth = new Date(input.dateOfBirth);
         if (profileImageUrl) updates.profileImage = profileImageUrl;
 

@@ -29,14 +29,21 @@ export class SignupUseCase implements ISignupUseCase {
             'profile_images',
         );
 
-        console.log('public Id: ', publicId);
-        const existingUser = await this._userRepository.findByEmail(request.email);
+        const existingUser = await this._userRepository.findByEmail(
+            request.email,
+        );
         if (existingUser) {
-            throw new AppError(authMessages.ERROR.EMAIL_ALREADY_EXISTS, HttpStatus.CONFLICT);
-        } 
+            throw new AppError(
+                authMessages.ERROR.EMAIL_ALREADY_EXISTS,
+                HttpStatus.CONFLICT,
+            );
+        }
 
         if (request.password !== request.confirmPassword) {
-            throw new AppError(authMessages.ERROR.PASSWORDS_DO_NOT_MATCH, HttpStatus.BAD_REQUEST);
+            throw new AppError(
+                authMessages.ERROR.PASSWORDS_DO_NOT_MATCH,
+                HttpStatus.BAD_REQUEST,
+            );
         }
 
         await this._userRepository.createPendingSignup({
@@ -48,11 +55,16 @@ export class SignupUseCase implements ISignupUseCase {
             profileImage: publicId,
         });
 
-        const signupToken = this._tokenService.generateSignupToken(request.email);
+        const signupToken = this._tokenService.generateSignupToken(
+            request.email,
+        );
 
         if (!signupToken) {
-            throw new AppError(authMessages.ERROR.TOKEN_GENERATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
-        };
+            throw new AppError(
+                authMessages.ERROR.TOKEN_GENERATION_FAILED,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
 
         return signupToken;
     }

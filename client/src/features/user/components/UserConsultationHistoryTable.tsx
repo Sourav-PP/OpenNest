@@ -8,13 +8,15 @@ import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 const UserConsultationHistoryTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sort, setSort] = useState<'asc' | 'desc'>('desc'); // default: newest first
+  const [sort, setSort] = useState<SortFilterType>(SortFilter.Desc);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ const UserConsultationHistoryTable = () => {
         });
 
         if (!res.data) {
-          toast.error('Something went wrong');
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
 
@@ -83,9 +85,7 @@ const UserConsultationHistoryTable = () => {
     },
     {
       header: 'Session Goal',
-      render: (c: IConsultationDto) => (
-        <span className="line-clamp-1">{c.sessionGoal}</span>
-      ),
+      render: (c: IConsultationDto) => <span className="line-clamp-1">{c.sessionGoal}</span>,
     },
     {
       header: 'Start Date & Time',
@@ -152,8 +152,8 @@ const UserConsultationHistoryTable = () => {
             onChange={e => setSort(e.target.value as 'asc' | 'desc')}
             className="px-3 py-2 border rounded-lg"
           >
-            <option value="desc">Newest First</option>
-            <option value="asc">Oldest First</option>
+            <option value={SortFilter.Desc}>Newest First</option>
+            <option value={SortFilter.Asc}>Oldest First</option>
           </select>
         </div>
 
@@ -165,11 +165,7 @@ const UserConsultationHistoryTable = () => {
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />
 
-        <CustomPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </div>
     </div>
   );

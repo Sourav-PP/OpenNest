@@ -12,6 +12,7 @@ import { authMessages } from '@/shared/constants/messages/authMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { IFileStorage } from '@/useCases/interfaces/IFileStorage';
+import { UserRole } from '@/domain/enums/UserEnums';
 
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
     private _tokenService: ITokenService;
@@ -112,7 +113,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
 
         let hasSubmittedVerificationForm = false;
 
-        if (user.role === 'psychologist') {
+        if (user.role === UserRole.PSYCHOLOGIST) {
             const psychologist = await this._psychologistRepo.findByUserId(
                 user.id,
             );

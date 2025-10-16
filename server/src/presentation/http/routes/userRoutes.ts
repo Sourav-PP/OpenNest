@@ -15,7 +15,6 @@ import {
 
 import { uploadSingle } from '../middlewares/multer';
 
-
 const router = express.Router();
 
 router.get('/services', userServiceController.getAllService);
@@ -25,8 +24,16 @@ router.get('/profile', authenticateUser, userProfileController.getProfile);
 router.put('/profile', authenticateUser, uploadSingle, userProfileController.updateProfile);
 router.get('/psychologists/:userId/slots', userSlotController.getAllSlots);
 router.post('/payment/create-checkout-session', authenticateUser, paymentController.createCheckoutSession);
-router.post('/payment/create-subscription-session', authenticateUser, paymentController.createSubscriptionCheckoutSession);
-router.post('/consultation/book-with-subscription', authenticateUser, paymentController.bookConsultationWithSubscription);
+router.post(
+    '/payment/create-subscription-session',
+    authenticateUser,
+    paymentController.createSubscriptionCheckoutSession,
+);
+router.post(
+    '/consultation/book-with-subscription',
+    authenticateUser,
+    paymentController.bookConsultationWithSubscription,
+);
 router.post('/payment/webhook', express.raw({ type: 'application/json' }), paymentController.handleWebhook);
 router.get('/consultations', authenticateUser, userConsultationController.getConsultations);
 router.get('/consultation/history', authenticateUser, userConsultationController.getHistory);

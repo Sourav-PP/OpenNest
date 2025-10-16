@@ -4,7 +4,12 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 const messageHandlers: ((msg: IMessageDto) => void)[] = [];
-const deleteHandler: ((data: { messageId: string; consultationId: string, deletedBy: string, isDeleted: boolean }) => void)[] = [];
+const deleteHandler: ((data: {
+  messageId: string;
+  consultationId: string;
+  deletedBy: string;
+  isDeleted: boolean;
+}) => void)[] = [];
 const errorListeners: ((err: IChatError) => void)[] = [];
 const typingHandlers: ((data: { consultationId: string; senderId: string }) => void)[] = [];
 
@@ -56,12 +61,7 @@ export function connectSocket(token: string) {
 
   socket.on(
     'message_deleted',
-    (data: {
-      messageId: string;
-      consultationId: string;
-      deletedBy: string;
-      isDeleted: boolean; 
-    }) => {
+    (data: { messageId: string; consultationId: string; deletedBy: string; isDeleted: boolean }) => {
       console.log('message deleted event received: ', data);
       deleteHandler.slice().forEach(cb => cb(data));
     }
@@ -123,7 +123,9 @@ export function onTyping(cb: (data: { consultationId: string; senderId: string }
   };
 }
 
-export function onMessageDelete(cb: (data: { messageId: string; consultationId: string, deletedBy: string, isDeleted: boolean }) => void) {
+export function onMessageDelete(
+  cb: (data: { messageId: string; consultationId: string; deletedBy: string; isDeleted: boolean }) => void
+) {
   if (!deleteHandler.includes(cb)) {
     deleteHandler.push(cb);
   }
@@ -161,14 +163,10 @@ export const joinConsultation = (consultationId: string) => {
 
   return new Promise<void>((resolve, reject) => {
     const join = () =>
-      socket.emit(
-        'join_consultation',
-        consultationId,
-        (res: { success: boolean; roomId?: string; error?: string }) => {
-          if (res.success) resolve();
-          else reject(new Error(res.error || 'Failed to join'));
-        }
-      );
+      socket.emit('join_consultation', consultationId, (res: { success: boolean; roomId?: string; error?: string }) => {
+        if (res.success) resolve();
+        else reject(new Error(res.error || 'Failed to join'));
+      });
 
     if (socket.connected) {
       join();

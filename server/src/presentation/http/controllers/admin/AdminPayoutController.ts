@@ -1,3 +1,4 @@
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { payoutMessages } from '@/shared/constants/messages/payoutMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IApprovePayoutRequest } from '@/useCases/interfaces/payout/IApprovePayoutRequest';
@@ -20,18 +21,14 @@ export class AdminPayoutController {
         this._rejectPayoutUseCase = rejectPayoutUseCase;
     }
 
-    listPayoutRequests = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    listPayoutRequests = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 10;
 
             const requests = await this._listPayoutRequestUseCase.execute({
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
+                sort: req.query.sort as SortFilter,
                 page,
                 limit,
             });
@@ -46,14 +43,9 @@ export class AdminPayoutController {
         }
     };
 
-    approvePayout = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    approvePayout = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { payoutRequestId } = req.params;
-            console.log('its in approve payout controller', payoutRequestId);
             const request = await this._approvePayoutUseCase.execute(payoutRequestId);
 
             res.status(HttpStatus.OK).json({
@@ -66,11 +58,7 @@ export class AdminPayoutController {
         }
     };
 
-    rejectPayout = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    rejectPayout = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { payoutRequestId } = req.params;
             const request = await this._rejectPayoutUseCase.execute(payoutRequestId);

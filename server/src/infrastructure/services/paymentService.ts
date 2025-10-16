@@ -2,6 +2,8 @@ import Stripe from 'stripe';
 import { IPaymentService } from '../../domain/serviceInterface/IPaymentService';
 import { AppError } from '@/domain/errors/AppError';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { ConsultationPaymentMethod } from '@/domain/enums/ConsultationEnums';
+import { PlanBillingPeriod } from '@/domain/enums/PlanEnums';
 
 export class PaymentService implements IPaymentService {
     private _stripe: Stripe;
@@ -17,11 +19,9 @@ export class PaymentService implements IPaymentService {
         cancelUrl: string,
         metadata: Record<string, string>,
     ): Promise<{ url: string; sessionId: string }> {
-        console.log('metadata in createCheckoutSession: ', metadata);
-
-        if (metadata.purpose === 'subscription') {
+        if (metadata.purpose === ConsultationPaymentMethod.SUBSCRIPTION) {
             const session = await this._stripe.checkout.sessions.create({
-                mode: 'subscription',
+                mode: ConsultationPaymentMethod.SUBSCRIPTION,
                 line_items: [
                     {
                         price: metadata.priceId,
@@ -94,7 +94,7 @@ export class PaymentService implements IPaymentService {
         description: string,
         amount: number,
         currency: string,
-        billingPeriod: 'month' | 'year' | 'week',
+        billingPeriod: PlanBillingPeriod,
     ): Promise<{ priceId: string; productId: string }> {
         const product = await this._stripe.products.create({ name, description });
 

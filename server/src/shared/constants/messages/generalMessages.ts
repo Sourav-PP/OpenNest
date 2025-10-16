@@ -11,6 +11,8 @@ export const generalMessages = {
         NOT_FOUND: 'Resource not found',
         FORBIDDEN: 'You do not have permission to perform this action',
         CONFLICT: 'Conflict occurred, please check your request',
+        INVALID_TOKEN: 'Token is invalid',
+        NO_TOKEN: 'No token is provided',
     },
     INFO: {
         PROCESSING: 'Your request is being processed',

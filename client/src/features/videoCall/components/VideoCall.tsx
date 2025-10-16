@@ -2,17 +2,21 @@ import { useEffect, useRef, useState } from 'react';
 import { useVideoCall } from '@/hooks/useVideoCall';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import type { UserRoleType } from '@/constants/User';
 
 export default function VideoCall({
   token,
   consultationId,
-  role
+  role,
 }: {
   token: string;
   consultationId: string;
-  role: 'user' | 'psychologist' | 'admin' | null
+  role: UserRoleType | null;
 }) {
-  const { localVideoRef, remoteStreams, joined, join, leave, toggleCamera, toggleMute, localStreamRef } = useVideoCall(token, consultationId);
+  const { localVideoRef, remoteStreams, joined, join, leave, toggleCamera, toggleMute, localStreamRef } = useVideoCall(
+    token,
+    consultationId
+  );
   const [hasJoinedOnce, setHasJoinedOnce] = useState(false);
   // const [isFullScreen, setIsFullScreen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -127,9 +131,7 @@ export default function VideoCall({
                   <p className="text-gray-400 text-lg">Waiting for participant...</p>
                 </div>
               ) : (
-                remoteStreams.map((remote) => (
-                  <RemoteVideo key={remote.id} stream={remote.stream} name={remote.name} />
-                ))
+                remoteStreams.map(remote => <RemoteVideo key={remote.id} stream={remote.stream} name={remote.name} />)
               )}
             </div>
           </div>
@@ -152,7 +154,7 @@ export default function VideoCall({
               </button>
             </div>
           </div>
-        ): (
+        ) : (
           // ---- Before joining for the first time ----
           <div className="flex flex-col items-center justify-center space-y-6 text-center">
             <h2 className="text-2xl font-semibold">Ready to join the call?</h2>
@@ -177,7 +179,7 @@ export default function VideoCall({
   );
 }
 
-function RemoteVideo({ stream, name }: { stream: MediaStream, name: string }) {
+function RemoteVideo({ stream, name }: { stream: MediaStream; name: string }) {
   const ref = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {

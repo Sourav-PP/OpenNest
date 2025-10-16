@@ -51,7 +51,7 @@ const Sidebar = () => {
     {
       name: 'Session History',
       path: '/psychologist/consultation/history',
-      icon: <History width="20" height="20" stroke="#858585" strokeWidth="1.75" />
+      icon: <History width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'My Chats',
@@ -99,7 +99,7 @@ const Sidebar = () => {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-2">
-          {navItems.map((item) => (
+          {navItems.map(item => (
             <NavLink
               key={item.name}
               to={item.path}
@@ -118,12 +118,7 @@ const Sidebar = () => {
           ))}
         </nav>
       </aside>
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
-          onClick={toggleSidebar}
-        />
-      )}
+      {isOpen && <div className="lg:hidden fixed inset-0 bg-black/50 z-30" onClick={toggleSidebar} />}
     </>
   );
 };

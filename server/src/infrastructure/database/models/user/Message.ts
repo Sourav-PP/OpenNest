@@ -1,3 +1,4 @@
+import { MessageStatus } from '@/domain/enums/MessageEnums';
 import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IMessageDocument extends Document {
@@ -7,7 +8,7 @@ export interface IMessageDocument extends Document {
     senderId: Types.ObjectId;
     receiverId: Types.ObjectId;
     content: string;
-    status: 'sent' | 'delivered' | 'read';
+    status: MessageStatus;
     deliveredTo?: Types.ObjectId[];
     readAt?: Date;
     mediaUrl?: string | null;
@@ -48,8 +49,8 @@ const messageSchema = new Schema<IMessageDocument>(
         },
         status: {
             type: String,
-            enum: ['sent', 'delivered', 'read'],
-            default: 'sent',
+            enum: Object.values(MessageStatus),
+            default: MessageStatus.SENT,
         },
         deliveredTo: [
             {

@@ -10,7 +10,6 @@ import { authApi } from '@/services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { Mail } from 'lucide-react';
 
-
 const ForgotPassword = () => {
   const location = useLocation();
   const { role } = location.state || {};
@@ -25,10 +24,10 @@ const ForgotPassword = () => {
 
   const onSubmit = async (data: ForgotPasswordData) => {
     try {
-      const res = await authApi.sendOtp({email: data.email});
+      const res = await authApi.sendOtp({ email: data.email });
 
       toast.success(res.message);
-      navigate('/verify-otp', {state: {email: data.email, role: role}});
+      navigate('/verify-otp', { state: { email: data.email, role: role } });
     } catch (err) {
       handleApiError(err, form.setError);
     }
@@ -52,19 +51,24 @@ const ForgotPassword = () => {
         />
 
         {/* Submit Button */}
-        <div className='group'>
-          <Button size='lg' type="submit" className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg" disabled={form.formState.isSubmitting}>
+        <div className="group">
+          <Button
+            size="lg"
+            type="submit"
+            className=" btn-primary group-hover:animate-glow-ring w-full rounded-lg"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Loading...' : 'Send OTP'}
           </Button>
         </div>
 
         {/* Login Link */}
-        
+
         <p className="text-center text-sm">
           Back to login{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/login', {state: {role: role}})}
+            onClick={() => navigate('/login', { state: { role: role } })}
           >
             Login
           </span>

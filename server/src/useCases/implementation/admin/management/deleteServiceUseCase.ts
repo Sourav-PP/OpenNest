@@ -14,7 +14,11 @@ export class DeleteServiceUseCase implements IDeleteServiceUseCase {
     async execute(id: string): Promise<void> {
         const service = await this._serviceRepository.findById(id);
 
-        if (!service) throw new AppError(adminMessages.ERROR.SERVICE_NOT_FOUND, HttpStatus.NOT_FOUND);
+        if (!service)
+            throw new AppError(
+                adminMessages.ERROR.SERVICE_NOT_FOUND,
+                HttpStatus.NOT_FOUND,
+            );
 
         await this._serviceRepository.delete(id);
     }

@@ -153,7 +153,7 @@ export function toUserConsultationDetail(
     psychologist: Psychologist & User,
     user: User,
     slot: Slot,
-    payment: Payment,
+    payment?: Payment | null,
 ): IUserConsultationDetailsDto {
     return {
         id: consultation.id,
@@ -180,13 +180,15 @@ export function toUserConsultationDetail(
             isBooked: slot.isBooked,
             bookedBy: slot.bookedBy,
         },
-        payment: {
-            amount: payment.amount,
-            currency: payment.currency,
-            paymentMethod: payment.paymentMethod,
-            paymentStatus: payment.paymentStatus,
-            refunded: payment.refunded,
-        },
+        payment: payment
+            ? {
+                amount: payment.amount,
+                currency: payment.currency,
+                paymentMethod: payment.paymentMethod,
+                paymentStatus: payment.paymentStatus,
+                refunded: payment.refunded,
+            }
+            : null,
     };
 }
 

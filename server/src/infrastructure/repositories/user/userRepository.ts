@@ -5,6 +5,8 @@ import { FilterQuery } from 'mongoose';
 import { PendingSignupModel } from '../../database/models/user/PendinSignupModel';
 import { PendingUser } from '@/domain/entities/pendingUser';
 import { GenericRepository } from '../GenericRepository';
+import { UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
 export class UserRepository
     extends GenericRepository<User, IUserDocument>
@@ -16,12 +18,12 @@ export class UserRepository
 
     async findAll(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
-        gender?: 'Male' | 'Female' | 'all';
+        sort?: SortFilter;
+        gender?: UserGenderFilter;
         skip: number;
         limit: number;
     }): Promise<User[]> {
-        const filter: FilterQuery<User> = { role: 'user' };
+        const filter: FilterQuery<User> = { role: UserRole.USER };
 
         if (params.search) {
             filter.name = { $regex: params.search, $options: 'i' };
@@ -31,15 +33,13 @@ export class UserRepository
             filter.gender = params.gender;
         }
 
-        const sortOrder = params.sort === 'asc' ? 1 : -1;
+        const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
         const users = await userModel
             .find(filter)
             .sort({ createdAt: sortOrder })
             .skip(params.skip)
             .limit(params.limit);
-
-        console.log('all users: ', users);
 
         return users.map(user => ({
             id: user._id.toString(),
@@ -56,9 +56,9 @@ export class UserRepository
 
     async countAll(params: {
         search?: string;
-        gender?: 'Male' | 'Female' | 'all';
+        gender?: UserGenderFilter;
     }): Promise<number> {
-        const filter: FilterQuery<User> = { role: 'user' };
+        const filter: FilterQuery<User> = { role: UserRole.USER };
 
         if (params.search) {
             filter.name = { $regex: params.search, $options: 'i' };
@@ -132,7 +132,6 @@ export class UserRepository
         id: string,
         updates: Partial<User>,
     ): Promise<User | null> {
-        console.log('user id in user: ', id);
         const updated = await userModel.findByIdAndUpdate(id, updates, {
             new: true,
         });

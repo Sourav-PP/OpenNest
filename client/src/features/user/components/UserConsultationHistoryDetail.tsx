@@ -7,11 +7,13 @@ import type { IUserConsultationHistoryDetailsResponseData } from '@/types/api/us
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { formatDuration, formatTime, formatTimeRange } from '@/lib/utils/dateTimeFormatter';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { ConsultationStatus } from '@/constants/Consultation';
+import { PaymentStatus } from '@/constants/Payment';
 
 const UserConsultationHistoryDetail = () => {
   const { consultationId } = useParams<{ consultationId: string }>();
-  const [consultation, setConsultation] =
-    useState<IUserConsultationHistoryDetailsResponseData | null>(null);
+  const [consultation, setConsultation] = useState<IUserConsultationHistoryDetailsResponseData | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -23,7 +25,7 @@ const UserConsultationHistoryDetail = () => {
 
         console.log('res: ', res);
         if (!res.data) {
-          toast.error('Unable to fetch consultation details');
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
         setConsultation(res.data);
@@ -61,9 +63,7 @@ const UserConsultationHistoryDetail = () => {
   if (!consultation) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
-        <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">
-          Consultation not found.
-        </p>
+        <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">Consultation not found.</p>
         <Link
           to="/user/consultation/history"
           className="mt-6 px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300 font-medium"
@@ -87,11 +87,11 @@ const UserConsultationHistoryDetail = () => {
         <div className="flex justify-end">
           <span
             className={`px-4 py-1.5 rounded-full text-sm font-semibold tracking-tight ${
-              consultation.status === 'completed'
+              consultation.status === ConsultationStatus.Completed
                 ? 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-200'
-                : consultation.status === 'cancelled'
+                : consultation.status === ConsultationStatus.Cancelled
                   ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:text-red-200'
-                  : consultation.status === 'rescheduled'
+                  : consultation.status === ConsultationStatus.Rescheduled
                     ? 'bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-200'
                     : 'bg-green-100 text-green-900 dark:bg-green-900 dark:text-green-200'
             }`}
@@ -151,46 +151,36 @@ const UserConsultationHistoryDetail = () => {
 
         {/* Payment Details */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Payment Details
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Details</h3>
           <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-100 dark:border-gray-600 space-y-2">
             <p className="text-gray-900 dark:text-gray-200 font-medium">
               Amount: {consultation.payment.amount} {consultation.payment.currency}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
               Method:{' '}
-              {consultation.payment.paymentMethod.charAt(0).toUpperCase() +
-                consultation.payment.paymentMethod.slice(1)}
+              {consultation.payment.paymentMethod.charAt(0).toUpperCase() + consultation.payment.paymentMethod.slice(1)}
             </p>
             <p
               className={`font-medium ${
-                consultation.payment.paymentStatus === 'succeeded'
+                consultation.payment.paymentStatus === PaymentStatus.SUCCEEDED
                   ? 'text-green-900 dark:text-green-200'
-                  : consultation.payment.paymentStatus === 'failed'
+                  : consultation.payment.paymentStatus === PaymentStatus.FAILED
                     ? 'text-red-900 dark:text-red-200'
                     : 'text-yellow-900 dark:text-yellow-200'
               }`}
             >
               Status:{' '}
-              {consultation.payment.paymentStatus.charAt(0).toUpperCase() +
-                consultation.payment.paymentStatus.slice(1)}
+              {consultation.payment.paymentStatus.charAt(0).toUpperCase() + consultation.payment.paymentStatus.slice(1)}
             </p>
-            {consultation.payment.refunded && (
-              <p className="text-red-900 dark:text-red-200 font-medium">Refunded</p>
-            )}
+            {consultation.payment.refunded && <p className="text-red-900 dark:text-red-200 font-medium">Refunded</p>}
           </div>
         </div>
 
         {/* Video Call Details */}
         {consultation.video &&
-          (consultation.video.startedAt ||
-            consultation.video.endedAt ||
-            consultation.video.duration) && (
+          (consultation.video.startedAt || consultation.video.endedAt || consultation.video.duration) && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Video Call Details
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Video Call Details</h3>
             <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-100 dark:border-gray-600 space-y-2">
               {consultation.video.startedAt && (
                 <p className="text-gray-600 dark:text-gray-400">
@@ -198,14 +188,11 @@ const UserConsultationHistoryDetail = () => {
                 </p>
               )}
               {consultation.video.endedAt && (
-                <p className="text-gray-600 dark:text-gray-400">
-                  Ended: {formatTime(consultation.video.endedAt)}
-                </p>
+                <p className="text-gray-600 dark:text-gray-400">Ended: {formatTime(consultation.video.endedAt)}</p>
               )}
               {consultation.video.duration && (
                 <p className="text-gray-600 dark:text-gray-400">
-                  Duration: {Math.floor(consultation.video.duration / 60)}m{' '}
-                  {consultation.video.duration % 60}s
+                  Duration: {Math.floor(consultation.video.duration / 60)}m {consultation.video.duration % 60}s
                 </p>
               )}
             </div>
@@ -222,11 +209,11 @@ const UserConsultationHistoryDetail = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
-                  consultation.status === 'completed'
+                  consultation.status === ConsultationStatus.Completed
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : consultation.status === 'cancelled'
+                    : consultation.status === ConsultationStatus.Cancelled
                       ? 'bg-red-400 cursor-not-allowed'
-                      : consultation.status === 'rescheduled'
+                      : consultation.status === ConsultationStatus.Rescheduled
                         ? 'bg-amber-400 cursor-not-allowed'
                         : 'bg-indigo-600 hover:bg-indigo-700'
                 }`}
@@ -236,11 +223,11 @@ const UserConsultationHistoryDetail = () => {
                   }
                 }}
               >
-                {consultation.status === 'completed'
+                {consultation.status === ConsultationStatus.Completed
                   ? 'Call Completed'
-                  : consultation.status === 'cancelled'
+                  : consultation.status === ConsultationStatus.Cancelled
                     ? 'Call Cancelled'
-                    : consultation.status === 'rescheduled'
+                    : consultation.status === ConsultationStatus.Rescheduled
                       ? 'Call Rescheduled'
                       : 'Join Meeting'}
               </a>

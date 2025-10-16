@@ -1,12 +1,6 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Option = {
   label: string;
@@ -37,12 +31,7 @@ const Filters: React.FC<FiltersProps> = ({ config, values, onChange, resetPage }
       {searchFilter && (
         <div className="relative w-full md:w-1/3">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg
-              className="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -65,29 +54,30 @@ const Filters: React.FC<FiltersProps> = ({ config, values, onChange, resetPage }
 
       {/* Select Filters (Right Side) */}
       <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-        {selectFilters.map(filter => (
-          filter.options && (
-            <Select
-              key={filter.key}
-              value={values[filter.key] || ''}
-              onValueChange={value => {
-                onChange(filter.key, value);
-                resetPage?.();
-              }}
-            >
-              <SelectTrigger className="w-full sm:w-40 bg-admin-bg-secondary text-white border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-200 hover:bg-gray-600">
-                <SelectValue placeholder={filter.placeholder || 'Select...'} />
-              </SelectTrigger>
-              <SelectContent className="bg-admin-bg-secondary text-white border-gray-600 rounded-lg">
-                {filter.options.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value} className="hover:bg-gray-600">
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )
-        ))}
+        {selectFilters.map(
+          filter =>
+            filter.options && (
+              <Select
+                key={filter.key}
+                value={values[filter.key] || ''}
+                onValueChange={value => {
+                  onChange(filter.key, value);
+                  resetPage?.();
+                }}
+              >
+                <SelectTrigger className="w-full sm:w-40 bg-admin-bg-secondary text-white border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-200 hover:bg-gray-600">
+                  <SelectValue placeholder={filter.placeholder || 'Select...'} />
+                </SelectTrigger>
+                <SelectContent className="bg-admin-bg-secondary text-white border-gray-600 rounded-lg">
+                  {filter.options.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value} className="hover:bg-gray-600">
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )
+        )}
       </div>
     </div>
   );

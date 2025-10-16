@@ -10,10 +10,7 @@ export class PsychologistProfileController {
     private _getProfileUseCase: IGetProfileUseCase;
     private _updatePsychologistUseCase: IUpdatePsychologistProfileUseCase;
 
-    constructor(
-        getProfileUseCase: IGetProfileUseCase,
-        updatePsychologistUseCase: IUpdatePsychologistProfileUseCase,
-    ) {
+    constructor(getProfileUseCase: IGetProfileUseCase, updatePsychologistUseCase: IUpdatePsychologistProfileUseCase) {
         this._getProfileUseCase = getProfileUseCase;
         this._updatePsychologistUseCase = updatePsychologistUseCase;
     }
@@ -22,10 +19,7 @@ export class PsychologistProfileController {
         try {
             const userId = req.user?.userId;
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const data = await this._getProfileUseCase.execute(userId);
@@ -35,11 +29,7 @@ export class PsychologistProfileController {
         }
     };
 
-    updateProfile = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    updateProfile = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
 

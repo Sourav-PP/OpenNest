@@ -8,6 +8,9 @@ import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import ConfirmationModal from '@/components/user/ConfirmationModal';
 import { psychologistApi } from '@/services/api/psychologist';
 import { History } from 'lucide-react';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { ConsultationStatus } from '@/constants/Consultation';
+import { PaymentStatus } from '@/constants/Payment';
 
 const PsychologistConsultationsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,7 +25,7 @@ const PsychologistConsultationsDetail = () => {
   const [hasHistory, setHasHistory] = useState(false);
 
   useEffect(() => {
-    if(!consultation?.startDateTime) return;  
+    if (!consultation?.startDateTime) return;
 
     const updateTimer = () => {
       const startTime = new Date(consultation.startDateTime).getTime();
@@ -35,7 +38,6 @@ const PsychologistConsultationsDetail = () => {
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-
   }, [consultation?.startDateTime]);
 
   const formatTimeLeft = (seconds: number) => {
@@ -58,15 +60,13 @@ const PsychologistConsultationsDetail = () => {
       const res = await userApi.UserConsultationsDetail(id);
 
       if (!res.data) {
-        toast.error('Something went wrong');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
 
-      console.log('res.data: ', res.data);
-
       setConsultation(res.data);
 
-      if(res.data.patient.id) {
+      if (res.data.patient.id) {
         try {
           const historyRes = await psychologistApi.getPatientHistory(res.data.patient.id, {
             page: 1,
@@ -74,13 +74,11 @@ const PsychologistConsultationsDetail = () => {
           });
 
           setHasHistory((historyRes.data?.consultations.length ?? 0) > 0);
-          
         } catch (error) {
           handleApiError(error);
           setHasHistory(false);
         }
       }
-
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -92,7 +90,6 @@ const PsychologistConsultationsDetail = () => {
     fetchConsultation();
   }, [fetchConsultation]);
 
-
   const handleCancelConsultation = async () => {
     if (!id || !reason.trim()) {
       toast.error('Please provide a reason for cancellation');
@@ -102,8 +99,8 @@ const PsychologistConsultationsDetail = () => {
     try {
       setCancelLoading(true);
       const res = await psychologistApi.cancelConsultation(id, reason);
-      if (!res.message) {
-        toast.error('Something went wrong');
+      if (!res.data) {
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       toast.success(res.message);
@@ -129,7 +126,7 @@ const PsychologistConsultationsDetail = () => {
   const getDuration = (start: string | Date, end: string | Date) => {
     const startTime = new Date(start).getTime();
     const endTime = new Date(end).getTime();
-    const durationInMinutes = Math.round((endTime - startTime) / (1000 * 60));  
+    const durationInMinutes = Math.round((endTime - startTime) / (1000 * 60));
     const hours = Math.floor(durationInMinutes / 60);
     const minutes = durationInMinutes % 60;
     return `${hours}h ${minutes}m`;
@@ -161,9 +158,7 @@ const PsychologistConsultationsDetail = () => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-br from-slate-200 to-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-2 text-gray-900">
-        Consultation Details
-      </h2>
+      <h2 className="text-2xl font-bold mb-2 text-gray-900">Consultation Details</h2>
       {hasHistory && consultation?.patient?.id && (
         <Link
           to={`/psychologist/patients/${consultation.patient.id}/history`}
@@ -181,11 +176,11 @@ const PsychologistConsultationsDetail = () => {
         <div className="flex justify-end">
           <span
             className={`px-3 py-1 rounded-full text-sm font-semibold tracking-tight ${
-              consultation.status === 'booked'
+              consultation.status === ConsultationStatus.Booked
                 ? 'bg-green-50 text-green-900'
-                : consultation.status === 'cancelled'
+                : consultation.status === ConsultationStatus.Cancelled
                   ? 'bg-red-50 text-red-900'
-                  : consultation.status === 'completed'
+                  : consultation.status === ConsultationStatus.Completed
                     ? 'bg-blue-50 text-blue-900'
                     : 'bg-yellow-50 text-yellow-900'
             }`}
@@ -237,30 +232,38 @@ const PsychologistConsultationsDetail = () => {
         {/* Payment Details */}
         <div>
           <h4 className="text-md font-semibold text-gray-900 mb-3">Payment Details</h4>
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-2">
-            <p className="text-gray-900 font-medium">
-              Amount: {consultation.payment.amount} {consultation.payment.currency}
-            </p>
-            <p className="text-gray-600 ">
-              Method: {consultation.payment.paymentMethod.charAt(0).toUpperCase() +
-                consultation.payment.paymentMethod.slice(1)}
-            </p>
-            <p
-              className={`font-medium ${
-                consultation.payment.paymentStatus === 'succeeded'
-                  ? 'text-green-900'
-                  : consultation.payment.paymentStatus === 'failed'
-                    ? 'text-red-900'
-                    : 'text-yellow-900'
-              }`}
-            >
-              Status: {consultation.payment.paymentStatus.charAt(0).toUpperCase() +
-                consultation.payment.paymentStatus.slice(1)}
-            </p>
-            {consultation.payment.refunded && (
-              <p className="text-red-900 font-medium">Refunded</p>
-            )}
-          </div>
+          {consultation.payment ? (
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-2">
+              <p className="text-gray-900 font-medium">
+                Amount: {consultation.payment.amount} {consultation.payment.currency}
+              </p>
+              <p className="text-gray-600 ">
+                Method:{' '}
+                {consultation.payment.paymentMethod.charAt(0).toUpperCase() +
+                  consultation.payment.paymentMethod.slice(1)}
+              </p>
+              <p
+                className={`font-medium ${
+                  consultation.payment.paymentStatus === PaymentStatus.SUCCEEDED
+                    ? 'text-green-900'
+                    : consultation.payment.paymentStatus === PaymentStatus.FAILED
+                      ? 'text-red-900'
+                      : 'text-yellow-900'
+                }`}
+              >
+                Status:{' '}
+                {consultation.payment.paymentStatus.charAt(0).toUpperCase() +
+                  consultation.payment.paymentStatus.slice(1)}
+              </p>
+              {consultation.payment.refunded && <p className="text-red-900 font-medium">Refunded</p>}
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-2 text-gray-900 font-medium">
+              <p>Amount: Included in Subscription</p>
+              <p>Method: Subscription</p>
+              <p>Status: Paid</p>
+            </div>
+          )}
         </div>
 
         {/* Schedule */}
@@ -290,21 +293,27 @@ const PsychologistConsultationsDetail = () => {
               <Link
                 to={`/psychologist/consultations/${consultation.id}/video`}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
-                  consultation.status === 'completed' || consultation.status === 'cancelled' || consultation.status === 'missed'
+                  consultation.status === ConsultationStatus.Completed ||
+                  consultation.status === ConsultationStatus.Cancelled ||
+                  consultation.status === ConsultationStatus.Missed
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-indigo-700 hover:bg-indigo-800'
                 }`}
                 onClick={e => {
-                  if (consultation.status === 'completed' || consultation.status === 'cancelled' || consultation.status === 'missed') {
+                  if (
+                    consultation.status === ConsultationStatus.Completed ||
+                    consultation.status === ConsultationStatus.Cancelled ||
+                    consultation.status === ConsultationStatus.Missed
+                  ) {
                     e.preventDefault();
                   }
                 }}
               >
-                {consultation.status === 'completed'
+                {consultation.status === ConsultationStatus.Completed
                   ? 'Call Completed'
-                  : consultation.status === 'cancelled'
+                  : consultation.status === ConsultationStatus.Cancelled
                     ? 'Call Cancelled'
-                    : consultation.status === 'missed'
+                    : consultation.status === ConsultationStatus.Missed
                       ? 'Call Missed'
                       : timeLeft > 0
                         ? `Starts in ${formatTimeLeft(timeLeft)}`
@@ -317,7 +326,7 @@ const PsychologistConsultationsDetail = () => {
         </div>
 
         {/* Actions */}
-        {consultation.status === 'booked' && (
+        {consultation.status === ConsultationStatus.Booked && (
           <div className="pt-2">
             <button
               onClick={() => setShowCancelModal(true)}
@@ -352,7 +361,6 @@ const PsychologistConsultationsDetail = () => {
       </ConfirmationModal>
     </div>
   );
-
 };
 
 export default PsychologistConsultationsDetail;

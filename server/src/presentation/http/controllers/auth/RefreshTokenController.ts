@@ -13,11 +13,7 @@ export class RefreshTokenController {
         this._cookieKey = cookieKey;
     }
 
-    handle = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    handle = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const refreshToken = req.cookies?.[this._cookieKey];
             if (!refreshToken) {
@@ -25,7 +21,7 @@ export class RefreshTokenController {
             }
 
             const accessToken = await this._refreshTokenUseCase.execute(refreshToken);
-            
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 accessToken,

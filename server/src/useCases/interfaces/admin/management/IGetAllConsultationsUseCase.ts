@@ -1,11 +1,13 @@
+import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { IConsultationDetailsForAdminDto } from '@/useCases/dtos/consultation';
 
 export interface IGetAllConsultationsUseCase {
     execute(params: {
         search?: string;
-        sort?: 'asc' | 'desc';
+        sort?: SortFilter;
         page?: number;
         limit?: number;
-        status?: 'booked' | 'cancelled' | 'completed' | 'rescheduled' | 'all';
+        status?: ConsultationStatusFilter;
     }): Promise<{consultations: IConsultationDetailsForAdminDto[], totalCount: number}>;
 }

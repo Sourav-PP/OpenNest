@@ -5,7 +5,7 @@ import { adminApi } from '@/services/api/admin';
 import ReusableTable from '@/components/admin/ReusableTable';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
-import { Verified } from 'lucide-react';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 const TopPsychologistTable = () => {
   const [topPsychologists, setTopPsychologists] = useState<ITopPsychologistDto[]>([]);
@@ -15,7 +15,7 @@ const TopPsychologistTable = () => {
       const res = await adminApi.getTopPsychologists(20);
 
       if (!res.data) {
-        toast.error('Something went wrong');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
 
@@ -30,44 +30,18 @@ const TopPsychologistTable = () => {
   }, [fetchPsychologists]);
 
   const Verified = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="26"
-      height="26"
-      viewBox="0 0 24 24"
-      fill="none"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="10" fill="#0a511d" />
-      <path
-        d="M8 12L11 15L16 9"
-        stroke="#12f549"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M8 12L11 15L16 9" stroke="#12f549" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 
   const NotVerified = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="26"
-      height="26"
-      viewBox="0 0 24 24"
-      fill="none"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="10" fill="#7f1d1d" />
-      <path
-        d="M9 9L15 15M15 9L9 15"
-        stroke="#ff6c5d"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M9 9L15 15M15 9L9 15" stroke="#ff6c5d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
-
-
 
   // table columns
   const columns = [
@@ -115,9 +89,7 @@ const TopPsychologistTable = () => {
     },
     {
       header: 'Is Verified',
-      render: (p: ITopPsychologistDto) => (
-        p.isVerified ? <Verified /> : <NotVerified /> 
-      ),
+      render: (p: ITopPsychologistDto) => (p.isVerified ? <Verified /> : <NotVerified />),
       className: 'px-6 py-4',
     },
   ];

@@ -14,11 +14,11 @@ import type { IPlanDto } from '@/types/dtos/plan';
 import type { ISubscriptionDto } from '@/types/dtos/subscription';
 import { Button } from '@headlessui/react';
 import { formatDateTime } from '@/lib/utils/dateTimeFormatter';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 const BookingSession = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { id } = useParams<{ id: string }>();
-
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [allSlots, setAllSlots] = useState<ISlotDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ const BookingSession = () => {
   // Helper function to get local midnight time
   const getLocalMidnight = (date: Date) => {
     const d = new Date(date);
-    d.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
     return d;
   };
 
@@ -66,9 +66,8 @@ const BookingSession = () => {
       const dateISO = getLocalMidnight(selectedDate).toISOString();
       const res = await userApi.getSlotsByPsychologist(id, dateISO);
 
-      console.log('slots: ',res);
-      if(!res.data) {
-        toast.error('Something went wrong');
+      if (!res.data) {
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       setAllSlots(res.data);
@@ -101,7 +100,6 @@ const BookingSession = () => {
     }
   }, [isAuthenticated]);
 
-
   useEffect(() => {
     const fetchPlansAndSubscription = async () => {
       try {
@@ -115,7 +113,6 @@ const BookingSession = () => {
 
     fetchActiveSubscription();
   }, [fetchActiveSubscription]);
-
 
   const formatTime = (utcTime: string) => {
     return new Date(utcTime).toLocaleTimeString([], {
@@ -143,12 +140,11 @@ const BookingSession = () => {
       }
       const res = await userApi.createSubscriptionCheckoutSession(planId, id);
       if (!res.data || !res.data.url) {
-        toast.error('Something went wrong');
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
-  
+
       window.location.href = res.data.url;
-      
     } catch (error) {
       handleApiError(error);
     }
@@ -172,7 +168,9 @@ const BookingSession = () => {
                 {/* Header */}
                 <div>
                   <p className="text-sm text-gray-600 font-medium">Active Plan</p>
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-green-900">{activeSubscriptionPlan.plan.name}</h3>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-green-900">
+                    {activeSubscriptionPlan.plan.name}
+                  </h3>
                 </div>
 
                 {/* Badge for plan type */}
@@ -184,13 +182,18 @@ const BookingSession = () => {
               {/* Plan details */}
               <div className="mt-6 space-y-3">
                 <p className="text-gray-700 text-base sm:text-lg">
-                  Credits Remaining: <span className="font-semibold">{activeSubscriptionPlan.creditRemaining}</span> / {activeSubscriptionPlan.plan.creditsPerPeriod}
+                  Credits Remaining: <span className="font-semibold">{activeSubscriptionPlan.creditRemaining}</span> /{' '}
+                  {activeSubscriptionPlan.plan.creditsPerPeriod}
                 </p>
                 <p className="text-gray-600 text-sm sm:text-base">
-                  Valid Until: <span className="font-medium">{formatDateTime(activeSubscriptionPlan.currentPeriodEnd)}</span>
+                  Valid Until:{' '}
+                  <span className="font-medium">{formatDateTime(activeSubscriptionPlan.currentPeriodEnd)}</span>
                 </p>
                 <p className="text-gray-600 text-sm sm:text-base">
-                  Price: <span className="font-medium">${activeSubscriptionPlan.plan.price} / {activeSubscriptionPlan.plan.billingPeriod}</span>
+                  Price:{' '}
+                  <span className="font-medium">
+                    ${activeSubscriptionPlan.plan.price} / {activeSubscriptionPlan.plan.billingPeriod}
+                  </span>
                 </p>
                 {activeSubscriptionPlan.plan.description && (
                   <p className="text-gray-700 text-sm sm:text-base mt-2">{activeSubscriptionPlan.plan.description}</p>
@@ -204,14 +207,14 @@ const BookingSession = () => {
                 </button>
               </div> */}
             </Card>
-
           ) : (
             <div>
               <p className="text-gray-600 mb-6 text-lg leading-relaxed">
-                No active subscription found. Choose a plan below for discounted sessions or continue with standard consultations.
+                No active subscription found. Choose a plan below for discounted sessions or continue with standard
+                consultations.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {plans.map((plan) => (
+                {plans.map(plan => (
                   <Card
                     key={plan.id}
                     className="p-8 bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
@@ -219,7 +222,8 @@ const BookingSession = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-3">{plan.name}</h3>
                     <p className="text-gray-600 text-sm mb-4 leading-relaxed">{plan.description}</p>
                     <p className="text-3xl font-bold text-blue-700 mb-6">
-                      ${plan.price.toFixed(2)} <span className="text-base font-normal text-gray-500">/ {plan.billingPeriod}</span>
+                      ${plan.price.toFixed(2)}{' '}
+                      <span className="text-base font-normal text-gray-500">/ {plan.billingPeriod}</span>
                     </p>
                     <Button
                       onClick={() => handleBuyPlan(plan.id)}
@@ -311,10 +315,7 @@ const BookingSession = () => {
                     amount={psychologist.defaultFee}
                     onSuccess={async () => {
                       if (id && selectedDate) {
-                        const res = await userApi.getSlotsByPsychologist(
-                          id,
-                          selectedDate.toISOString()
-                        );
+                        const res = await userApi.getSlotsByPsychologist(id, selectedDate.toISOString());
                         if (!res.data) return;
                         setAllSlots(res.data);
                       }

@@ -21,16 +21,16 @@ export interface IGetPendingPayoutData {
 }
 
 export interface IRequestPayoutResponseData {
-  payoutRequest: IPayoutRequestDto
+  payoutRequest: IPayoutRequestDto;
 }
 
 export interface IGetPayoutHistoryResponseData {
-  requests: IPayoutRequestDto[],
-  totalCount: number
+  requests: IPayoutRequestDto[];
+  totalCount: number;
 }
 
 export type IGetPsychologistConsultationsResponse = BackendResponse<IGetUserConsultationsResponse>;
-export type IGetPatientConsultationHistoryResponse = BackendResponse<IGetPatientConsultationHistoryResponseData>
-export type IGetPendingPayoutResponse = BackendResponse<IGetPendingPayoutData>
-export type IRequestPayoutResponse = BackendResponse<IRequestPayoutResponseData>
-export type IGetPayoutHistoryResponse = BackendResponse<IGetPayoutHistoryResponseData>
+export type IGetPatientConsultationHistoryResponse = BackendResponse<IGetPatientConsultationHistoryResponseData>;
+export type IGetPendingPayoutResponse = BackendResponse<IGetPendingPayoutData>;
+export type IRequestPayoutResponse = BackendResponse<IRequestPayoutResponseData>;
+export type IGetPayoutHistoryResponse = BackendResponse<IGetPayoutHistoryResponseData>;

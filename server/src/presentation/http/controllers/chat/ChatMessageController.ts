@@ -1,3 +1,5 @@
+import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
+import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
@@ -35,15 +37,11 @@ export class ChatMessageController {
         this._getPsychologistChatConsultationUseCase = getPsychologistChatConsultationUseCase;
     }
 
-    send = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    send = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('is it coming here in the controller?');
             const message = await this._sendMessageUseCase.execute(req.body);
-            res.status(200).json({
+
+            res.status(HttpStatus.OK).json({
                 success: true,
                 message: chatMessages.SUCCESS.SENT,
                 data: message,
@@ -55,11 +53,11 @@ export class ChatMessageController {
 
     getHistory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('its here in get history controller: ', req.params.consultationId);
             if (!req.params.consultationId) {
                 throw new AppError(bookingMessages.ERROR.CONSULTATION_ID_REQUIRED, HttpStatus.BAD_REQUEST);
             }
             const messages = await this._getHistoryUseCase.execute(req.params.consultationId);
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 messages: chatMessages.SUCCESS.HISTORY_FETCHED,
@@ -72,20 +70,13 @@ export class ChatMessageController {
         }
     };
 
-    getUnreadCount = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    getUnreadCount = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             const { consultationId } = req.params;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             const count = await this._getUnreadCountUseCase.execute(consultationId, userId);
@@ -100,19 +91,13 @@ export class ChatMessageController {
         }
     };
 
-    markAsRead = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    markAsRead = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
             const { consultationId } = req.params;
+
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             await this._markAsReadUseCase.execute(consultationId, userId);
@@ -134,13 +119,13 @@ export class ChatMessageController {
 
             if (!userId) {
                 throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-            } 
+            }
 
             const result = await this._getUserChatConsultationUseCase.execute({
                 patientId: userId,
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
-                status: req.query.status as 'booked' | 'cancelled' | 'completed' | 'rescheduled',
+                sort: req.query.sort as SortFilter,
+                status: req.query.status as ConsultationStatusFilter,
                 page,
                 limit,
             });
@@ -163,13 +148,13 @@ export class ChatMessageController {
 
             if (!userId) {
                 throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-            } 
+            }
 
             const result = await this._getPsychologistChatConsultationUseCase.execute({
                 psychologistId: userId,
                 search: req.query.search as string,
-                sort: req.query.sort as 'asc' | 'desc',
-                status: req.query.status as 'booked' | 'cancelled' | 'completed' | 'rescheduled',
+                sort: req.query.sort as SortFilter,
+                status: req.query.status as ConsultationStatusFilter,
                 page,
                 limit,
             });

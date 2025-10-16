@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import { userApi } from '@/services/api/user';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import { PaymentPurpose } from '@/constants/Payment';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 interface Props {
   open: boolean;
@@ -18,7 +20,7 @@ const AddFundsModal: React.FC<Props> = ({ open, onClose }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const handleAddFunds = async () => {
-    if(!amount || amount <= 0 || amount > 10000) {
+    if (!amount || amount <= 0 || amount > 10000) {
       toast.error('Enter a valid amount');
       return;
     }
@@ -28,13 +30,11 @@ const AddFundsModal: React.FC<Props> = ({ open, onClose }: Props) => {
 
       const res = await userApi.createCheckoutSession({
         amount,
-        purpose: 'wallet',
+        purpose: PaymentPurpose.WALLET,
       });
 
-      console.log('session res: ', res);
-
-      if(!res.data) {
-        toast.error('Something went wrong');
+      if (!res.data) {
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
       }
       window.location.href = res.data.url;
@@ -61,7 +61,9 @@ const AddFundsModal: React.FC<Props> = ({ open, onClose }: Props) => {
           />
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
           <Button onClick={handleAddFunds} disabled={loading}>
             {loading ? 'Processing...' : 'Add Funds'}
           </Button>

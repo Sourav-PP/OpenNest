@@ -10,7 +10,7 @@ const Sidebar = () => {
     { name: 'My Profile', path: '/user/profile', icon: <Home className="w-5 h-5" /> },
     { name: 'Change Password', path: '/user/change-password', icon: <Lock className="w-5 h-5" /> },
     { name: 'My Sessions', path: '/user/consultations', icon: <Stethoscope className="w-5 h-5" /> },
-    { name: 'Session History', path: '/user/consultation/history', icon: <History className='w-5 h-5' /> },
+    { name: 'Session History', path: '/user/consultation/history', icon: <History className="w-5 h-5" /> },
     { name: 'My Chats', path: '/user/chat', icon: <MessageSquare className="w-5 h-5" /> },
     { name: 'Wallet', path: '/user/wallet', icon: <Wallet className="w-5 h-5" /> },
   ];
@@ -25,7 +25,13 @@ const Sidebar = () => {
           onClick={toggleSidebar}
           className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gradient-to-r from-slate-600 to-slate-400 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -40,13 +46,17 @@ const Sidebar = () => {
         {/* Logo */}
         <NavLink to={'/admin/dashboard'} className="mb-8">
           <div className="flex items-center gap-3 cursor-pointer">
-            <img src={assets.logo} alt="OpenNest Logo" className="w-40 transition-transform duration-300 hover:scale-105" />
+            <img
+              src={assets.logo}
+              alt="OpenNest Logo"
+              className="w-40 transition-transform duration-300 hover:scale-105"
+            />
           </div>
         </NavLink>
 
         {/* Navigation */}
         <nav className="flex flex-col gap-3">
-          {navItems.map((item) => (
+          {navItems.map(item => (
             <NavLink
               key={item.name}
               to={item.path}

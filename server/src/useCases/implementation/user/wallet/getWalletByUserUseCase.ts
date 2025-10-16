@@ -15,11 +15,7 @@ export class GetWalletByUserUseCase implements IGetWalletByUserUseCase {
     async execute(userId: string): Promise<Wallet> {
         const wallet = await this._walletRepo.findByUserId(userId);
 
-        if (!wallet)
-            throw new AppError(
-                adminMessages.ERROR.USER_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+        if (!wallet) throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
 
         return wallet;
     }

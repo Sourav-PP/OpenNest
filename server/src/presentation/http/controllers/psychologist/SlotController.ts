@@ -22,19 +22,12 @@ export class SlotController {
         this._getSlotByPsychologistUseCase = getSlotByPsychologistUseCase;
     }
 
-    createSlot = async(
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
+    createSlot = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.userId;
 
             if (!userId) {
-                throw new AppError(
-                    authMessages.ERROR.UNAUTHORIZED,
-                    HttpStatus.UNAUTHORIZED,
-                );
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
             }
 
             if (req.body.startDateTime && req.body.endDateTime) {
@@ -45,15 +38,7 @@ export class SlotController {
                 });
             } else {
                 // console.log('body: ',JSON.stringify(req.body, null, 2));
-                const {
-                    fromDate,
-                    toDate,
-                    weekDays,
-                    startTime,
-                    endTime,
-                    duration,
-                    timeZone,
-                } = req.body;
+                const { fromDate, toDate, weekDays, startTime, endTime, duration, timeZone } = req.body;
 
                 await this._createSlotUseCase.executeRecurring({
                     userId,
@@ -83,7 +68,7 @@ export class SlotController {
 
             if (!userId) {
                 throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-            }           
+            }
 
             await this._deleteSlotUseCase.execute({ slotId, userId });
 

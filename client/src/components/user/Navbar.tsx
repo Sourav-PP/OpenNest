@@ -19,7 +19,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/login', {state: { role: 'user'}});
+    navigate('/login', { state: { role: 'user' } });
   };
 
   const handleLogout = async () => {
@@ -65,13 +65,22 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <ul className="sm:ms-14 hidden md:flex gap-8 text-gray-700 font-medium">
-          <li onClick={() => navigate('/')} className="cursor-pointer font-semibold transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
+          <li
+            onClick={() => navigate('/')}
+            className="cursor-pointer font-semibold transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]"
+          >
             Home
           </li>
-          <li onClick={() => navigate('/user/services')} className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
+          <li
+            onClick={() => navigate('/user/services')}
+            className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]"
+          >
             Services
           </li>
-          <li onClick={() => navigate('/user/therapist')} className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
+          <li
+            onClick={() => navigate('/user/therapist')}
+            className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]"
+          >
             Therapists
           </li>
           <li className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]">
@@ -138,9 +147,7 @@ const Navbar = () => {
 
           {/* Mobile Toggle Button */}
           <div className="md:hidden text-2xl text-[#3EB1EB]">
-            <button onClick={() => setMenuOpen(!menuOpen)}>
-              {menuOpen ? <FiX /> : <FiMenu />}
-            </button>
+            <button onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <FiX /> : <FiMenu />}</button>
           </div>
         </div>
 
@@ -152,13 +159,19 @@ const Navbar = () => {
               : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
           }`}
         >
-          <button onClick={() => navigate('/')} className="cursor-pointer font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
+          <button
+            onClick={() => navigate('/')}
+            className="cursor-pointer font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
+          >
             Home
           </button>
           <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
             Services
           </button>
-          <button onClick={() => navigate('/user/therapist')} className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
+          <button
+            onClick={() => navigate('/user/therapist')}
+            className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
+          >
             Therapists
           </button>
           <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
