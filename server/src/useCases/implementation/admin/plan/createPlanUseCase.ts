@@ -8,10 +8,7 @@ export class CreatePlanUseCase implements ICreatePlanUseCase {
     private _planRepository: IPlanRepository;
     private _paymentService: IPaymentService;
 
-    constructor(
-        planRepository: IPlanRepository,
-        paymentService: IPaymentService,
-    ) {
+    constructor(planRepository: IPlanRepository, paymentService: IPaymentService) {
         this._planRepository = planRepository;
         this._paymentService = paymentService;
     }
@@ -24,14 +21,13 @@ export class CreatePlanUseCase implements ICreatePlanUseCase {
         creditsPerPeriod: number;
         billingPeriod: PlanBillingPeriod;
     }): Promise<Plan> {
-        const stripePrice =
-            await this._paymentService.createStripeProductAndPrice(
-                data.name,
-                data.description || '',
-                data.price,
-                data.currency,
-                data.billingPeriod,
-            );
+        const stripePrice = await this._paymentService.createStripeProductAndPrice(
+            data.name,
+            data.description || '',
+            data.price,
+            data.currency,
+            data.billingPeriod,
+        );
 
         const plan = await this._planRepository.create({
             name: data.name,

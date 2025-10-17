@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Eye, EyeClosed, Lock } from 'lucide-react';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const ChangePsychologistPassword = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const ChangePsychologistPassword = () => {
       });
       toast.success(res.message);
       form.reset();
-      navigate('/psychologist/change-password');
+      navigate(psychologistFrontendRoutes.changePassword);
     } catch (err) {
       handleApiError(err, form.setError);
     } finally {

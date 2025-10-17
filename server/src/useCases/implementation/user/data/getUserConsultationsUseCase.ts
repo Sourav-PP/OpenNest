@@ -1,9 +1,6 @@
 import { IGetUserConsultationUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationsUseCase';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
-import {
-    IGetConsultationsRequest,
-    IGetConsultationsResponse,
-} from '@/useCases/types/userTypes';
+import { IGetConsultationsRequest, IGetConsultationsResponse } from '@/useCases/types/userTypes';
 import { toConsultationDto } from '@/useCases/mappers/consultationMapper';
 import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
@@ -14,35 +11,24 @@ export class GetUserConsultationsUseCase implements IGetUserConsultationUseCase 
         this._consultationRepo = consultationRepo;
     }
 
-    async execute(
-        input: IGetConsultationsRequest,
-    ): Promise<IGetConsultationsResponse> {
+    async execute(input: IGetConsultationsRequest): Promise<IGetConsultationsResponse> {
         const { search, sort, status, page = 1, limit = 10 } = input;
 
-        const finalSort =
-            sort === SortFilter.ASC || sort === SortFilter.DESC
-                ? sort
-                : SortFilter.DESC;
+        const finalSort = sort === SortFilter.ASC || sort === SortFilter.DESC ? sort : SortFilter.DESC;
         const skip = (page - 1) * limit;
         const userId = input.patientId;
 
-        const consultations = await this._consultationRepo.findByPatientId(
-            userId,
-            {
-                search,
-                sort: finalSort,
-                limit,
-                status,
-                skip,
-            },
-        );
+        const consultations = await this._consultationRepo.findByPatientId(userId, {
+            search,
+            sort: finalSort,
+            limit,
+            status,
+            skip,
+        });
 
-        const mappedConsultations = consultations.map(c =>
-            toConsultationDto(c.consultation, c.psychologist, c.user),
-        );
+        const mappedConsultations = consultations.map(c => toConsultationDto(c.consultation, c.psychologist, c.user));
 
-        const totalCount =
-            await this._consultationRepo.countAllByPatientId(userId);
+        const totalCount = await this._consultationRepo.countAllByPatientId(userId);
 
         return {
             consultations: mappedConsultations,

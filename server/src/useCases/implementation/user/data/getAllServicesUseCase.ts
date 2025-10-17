@@ -1,8 +1,5 @@
 import { IServiceRepository } from '@/domain/repositoryInterface/IServiceRepository';
-import {
-    IGetAllServiceInput,
-    IGetAllServiceOutput,
-} from '@/useCases/types/serviceTypes';
+import { IGetAllServiceInput, IGetAllServiceOutput } from '@/useCases/types/serviceTypes';
 import { IGetAllServiceUseCase } from '@/useCases/interfaces/user/data/IGetAllServiceUseCase';
 
 export class GetAllServiceUseCase implements IGetAllServiceUseCase {
@@ -17,12 +14,7 @@ export class GetAllServiceUseCase implements IGetAllServiceUseCase {
         const page = input?.page || 1;
         const skip = (page - 1) * limit;
 
-        const { services, totalCount } =
-            await this._serviceRepository.getAllServices(
-                limit,
-                skip,
-                input?.search,
-            );
+        const { services, totalCount } = await this._serviceRepository.getAllServices(limit, skip, input?.search);
 
         return {
             services,

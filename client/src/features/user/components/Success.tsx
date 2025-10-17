@@ -1,3 +1,4 @@
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 import { CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -12,7 +13,7 @@ export default function Success() {
         Your booking is confirmed! We're thrilled to have you on board. Thank you for choosing our service.
       </p>
       <Link
-        to="/user/consultations"
+        to={userFrontendRoutes.consultations}
         className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 animate-fadeInUp"
       >
         Go to session page

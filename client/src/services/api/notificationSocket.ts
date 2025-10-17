@@ -1,4 +1,4 @@
-import type { NotificationTypeValue } from '@/constants/Notification';
+import type { NotificationTypeValue } from '@/constants/types/Notification';
 import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;

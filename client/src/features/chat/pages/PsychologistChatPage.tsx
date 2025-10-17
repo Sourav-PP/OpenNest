@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import type { IPsychologistChatConsultationDto, IUserChatConsultationDto } from '@/types/dtos/consultation';
 import Sidebar from '@/components/psychologist/Sidebar';
 import Header from '@/components/psychologist/Header';
-import { UserRole } from '@/constants/User';
+import { UserRole } from '@/constants/types/User';
 
 export default function PsychologistChatPage() {
   const { role, userId } = useSelector((state: RootState) => state.auth);

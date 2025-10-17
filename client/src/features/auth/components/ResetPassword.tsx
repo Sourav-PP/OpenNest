@@ -9,6 +9,7 @@ import { authApi } from '@/services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { Mail } from 'lucide-react';
 import { z } from 'zod';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 const ResetPassword = () => {
   const location = useLocation();
@@ -47,7 +48,7 @@ const ResetPassword = () => {
       const res = await authApi.resetPassword({ email, password: data.password });
 
       toast.success(res.message);
-      navigate('/login', { state: { role: role } });
+      navigate(publicFrontendRoutes.login, { state: { role: role } });
     } catch (err) {
       handleApiError(err, form.setError);
     }
@@ -101,7 +102,7 @@ const ResetPassword = () => {
           Back to login{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/login', { state: { role: role } })}
+            onClick={() => navigate(publicFrontendRoutes.login, { state: { role: role } })}
           >
             Login
           </span>

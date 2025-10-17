@@ -10,10 +10,7 @@ export class GetSlotByPsychologistUseCase implements IGetSlotByPsychologistUseCa
     private _slotRepo: ISlotRepository;
     private _psychologistRepo: IPsychologistRepository;
 
-    constructor(
-        slotRepo: ISlotRepository,
-        psychologistRepo: IPsychologistRepository,
-    ) {
+    constructor(slotRepo: ISlotRepository, psychologistRepo: IPsychologistRepository) {
         this._slotRepo = slotRepo;
         this._psychologistRepo = psychologistRepo;
     }
@@ -22,21 +19,13 @@ export class GetSlotByPsychologistUseCase implements IGetSlotByPsychologistUseCa
         const psychologist = await this._psychologistRepo.findByUserId(userId);
 
         if (!psychologist) {
-            throw new AppError(
-                psychologistMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        const slots = await this._slotRepo.getAllSlotsByPsychologistId(
-            psychologist.id,
-        );
+        const slots = await this._slotRepo.getAllSlotsByPsychologistId(psychologist.id);
 
         if (!slots || slots.length === 0) {
-            throw new AppError(
-                psychologistMessages.ERROR.SLOT_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(psychologistMessages.ERROR.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         return slots;

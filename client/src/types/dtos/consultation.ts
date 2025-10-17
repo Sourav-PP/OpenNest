@@ -1,6 +1,6 @@
-import type { ConsultationStatusType } from '@/constants/Consultation';
+import type { ConsultationStatusType } from '@/constants/types/Consultation';
 import type { IMessageDto } from './message';
-import type { PaymentMethodType, PaymentStatusType } from '@/constants/Payment';
+import type { PaymentMethodType, PaymentStatusType } from '@/constants/types/Payment';
 
 export interface IConsultationDto {
   id: string;
@@ -49,7 +49,7 @@ export interface IPsychologistConsultationDto {
 }
 
 export interface IPatientConsultationHistoryDto {
-  id?: string;
+  id: string;
   startDateTime: Date;
   endDateTime: Date;
   sessionGoal: string;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ConsultationStatusFilter, type ConsultationStatusFilterType } from '@/constants/Consultation';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { ConsultationStatusFilter, type ConsultationStatusFilterType } from '@/constants/types/Consultation';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 
 interface ConsultationFiltersProps {
   search: string;

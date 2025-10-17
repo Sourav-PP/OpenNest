@@ -5,6 +5,7 @@ import { logout } from '@/redux/slices/authSlice';
 import { toast } from 'react-toastify';
 import { authApi } from '@/services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 const LogoutPage = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const LogoutPage = () => {
       } finally {
         dispatch(logout());
         localStorage.removeItem('persist:root');
-        navigate('/', { replace: true });
+        navigate(publicFrontendRoutes.landing, { replace: true });
       }
     };
 

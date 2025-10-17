@@ -11,8 +11,7 @@ export class GetUserActiveSubscriptionUseCase implements IGetUserActiveSubscript
     }
 
     async execute(userId: string): Promise<ISubscriptionDto | null> {
-        const result =
-            await this._subscriptionRepository.findActiveByUserId(userId);
+        const result = await this._subscriptionRepository.findActiveByUserId(userId);
 
         if (!result) {
             return null;

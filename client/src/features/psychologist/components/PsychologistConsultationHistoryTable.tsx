@@ -8,8 +8,9 @@ import { Link } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { psychologistApi } from '@/services/api/psychologist';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const PsychologistConsultationHistoryTable = () => {
   const [consultations, setConsultations] = useState<IPsychologistConsultationDto[]>([]);
@@ -98,7 +99,7 @@ const PsychologistConsultationHistoryTable = () => {
       header: 'View',
       render: (c: IPsychologistConsultationDto) => (
         <Link
-          to={`/psychologist/consultation/${c.id}/history`}
+          to={psychologistFrontendRoutes.consultationHistoryDetail(c.id)}
           state={{ from: 'consultation-history', patientName: c.patient.name }}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >

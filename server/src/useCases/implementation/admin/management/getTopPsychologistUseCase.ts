@@ -11,8 +11,7 @@ export class GetTopPsychologistUseCase implements IGetTopPsychologistUseCase {
     }
 
     async execute(limit: number): Promise<TopPsychologistDTO[]> {
-        const topPsychologists =
-            await this._psychologistRepository.findTopPsychologists(limit);
+        const topPsychologists = await this._psychologistRepository.findTopPsychologists(limit);
         return topPsychologists.map(toTopPsychologistDto);
     }
 }

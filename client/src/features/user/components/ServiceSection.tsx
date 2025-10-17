@@ -4,6 +4,7 @@ import { serviceApi } from '@/services/api/service';
 import { useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 type Service = {
   id: string;
@@ -70,7 +71,7 @@ const ServiceSession = () => {
               <div className="text-center">
                 <button
                   className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors duration-200"
-                  onClick={() => navigate('/user/therapist')}
+                  onClick={() => navigate(userFrontendRoutes.psychologist)}
                 >
                   Show Psychologists
                 </button>
@@ -82,7 +83,7 @@ const ServiceSession = () => {
         {/* See All Therapy Services Button */}
         <div className="group text-center sm:text-center">
           <button
-            onClick={() => navigate('/user/services')}
+            onClick={() => navigate(userFrontendRoutes.services)}
             className="btn-primary px-6 py-2 sm:px-auto sm:py-auto text-white bg-[#3EB1EB] sm:bg-inherit hover:bg-[#2A9CDB] sm:hover:bg-inherit transition-colors duration-200 group-hover:animate-glow-ring"
             aria-label="Login as Therapist"
           >

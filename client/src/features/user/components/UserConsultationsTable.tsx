@@ -12,9 +12,10 @@ import {
   ConsultationStatus,
   ConsultationStatusFilter,
   type ConsultationStatusFilterType,
-} from '@/constants/Consultation';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+} from '@/constants/types/Consultation';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const UserConsultationsTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
@@ -116,7 +117,7 @@ const UserConsultationsTable = () => {
       header: 'View',
       render: (c: IConsultationDto) => (
         <Link
-          to={`/user/consultations/${c.id}`}
+          to={userFrontendRoutes.consultationDetail(c.id)}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
           View
@@ -167,7 +168,7 @@ const UserConsultationsTable = () => {
           data={consultations}
           columns={columns}
           onRowClick={(consultation: IConsultationDto) => {
-            navigate(`/user/consultations/${consultation.id}`);
+            navigate(userFrontendRoutes.consultationDetail(consultation.id));
           }}
           emptyMessage="No consultations found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"

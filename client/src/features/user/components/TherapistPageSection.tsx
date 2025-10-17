@@ -4,8 +4,9 @@ import { Search } from 'lucide-react';
 import CustomPagination from '@/components/user/CustomPagination';
 import { usePsychologists } from '@/hooks/usePsychologists';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
-import { UserGenderFilter, type UserGenderFilterType } from '@/constants/User';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/User';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const TherapistPageSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -143,7 +144,7 @@ const TherapistPageSection = () => {
               <p className="text-green-600 text-sm mb-2 font-medium">{therapist.qualification}</p>
               <p className="text-gray-500 text-xs mb-4 line-clamp-2">{therapist.specializations.join(', ')}</p>
               <div className="group">
-                <Link to={`/user/psychologists/${therapist.userId}`}>
+                <Link to={userFrontendRoutes.psychologistDetail(therapist.userId)}>
                   <button className="btn-primary group-hover:animate-glow-ring mb-2">View Profile</button>
                 </Link>
               </div>

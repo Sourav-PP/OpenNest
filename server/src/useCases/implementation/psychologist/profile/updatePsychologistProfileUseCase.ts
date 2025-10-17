@@ -15,11 +15,7 @@ export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProf
     private _userRepo: IUserRepository;
     private _fileStorage: IFileStorage;
 
-    constructor(
-        psychologistRepo: IPsychologistRepository,
-        userRepo: IUserRepository,
-        fileStorage: IFileStorage,
-    ) {
+    constructor(psychologistRepo: IPsychologistRepository, userRepo: IUserRepository, fileStorage: IFileStorage) {
         this._psychologistRepo = psychologistRepo;
         this._userRepo = userRepo;
         this._fileStorage = fileStorage;
@@ -27,11 +23,7 @@ export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProf
 
     async execute(input: IUpdatePsychologistProfileInput): Promise<void> {
         const user = await this._userRepo.findById(input.userId);
-        if (!user)
-            throw new AppError(
-                userMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+        if (!user) throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
 
         let profileImageUrl: string | undefined;
 
@@ -49,21 +41,15 @@ export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProf
         if (input.email?.trim()) userUpdates.email = input.email?.trim();
         if (input.phone?.trim()) userUpdates.phone = input.phone.trim();
         if (input.gender?.trim()) userUpdates.gender = input.gender.trim() as UserGender;
-        if (input.dateOfBirth)
-            userUpdates.dateOfBirth = new Date(input.dateOfBirth);
+        if (input.dateOfBirth) userUpdates.dateOfBirth = new Date(input.dateOfBirth);
         if (profileImageUrl) userUpdates.profileImage = profileImageUrl;
 
         const psychologistUpdates: Partial<Psychologist> = {};
 
-        if (input.aboutMe?.trim())
-            psychologistUpdates.aboutMe = input.aboutMe.trim();
-        if (input.defaultFee !== undefined)
-            psychologistUpdates.defaultFee = Number(input.defaultFee);
+        if (input.aboutMe?.trim()) psychologistUpdates.aboutMe = input.aboutMe.trim();
+        if (input.defaultFee !== undefined) psychologistUpdates.defaultFee = Number(input.defaultFee);
 
         await this._userRepo.updateProfile(input.userId, userUpdates);
-        await this._psychologistRepo.updateByUserId(
-            input.userId,
-            psychologistUpdates,
-        );
+        await this._psychologistRepo.updateByUserId(input.userId, psychologistUpdates);
     }
 }

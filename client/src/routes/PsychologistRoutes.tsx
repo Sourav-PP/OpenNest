@@ -15,124 +15,126 @@ import PsychologistConsultationHistoryPage from '@/features/psychologist/pages/P
 import PsychologistConsultationHistoryDetailPage from '@/features/psychologist/pages/PsychologistConsultationHistoryDetailPage';
 import PatientHistoryPage from '@/features/psychologist/pages/PatientHistoryPage';
 import PsychologistDashboard from '@/features/psychologist/pages/PsychologistDashboard';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { UserRole } from '@/constants/types/User';
 
 export const psychologistRoutes: RouteObject[] = [
   {
-    path: '/psychologist/verification',
+    path: psychologistFrontendRoutes.verification,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <VerificationPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/profile',
+    path: psychologistFrontendRoutes.profile,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <ProfilePage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/edit-profile',
+    path: psychologistFrontendRoutes.editProfile,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <EditProfilePage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/change-password',
+    path: psychologistFrontendRoutes.changePassword,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <ChangePsychologistPasswordPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/kyc',
+    path: psychologistFrontendRoutes.kyc,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <MyKycDetailsPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/slot',
+    path: psychologistFrontendRoutes.slot,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <CreateSlotPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/consultations',
+    path: psychologistFrontendRoutes.consultations,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <MySessionsPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/consultations/:id',
+    path: psychologistFrontendRoutes.consultationDetailPath,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <ConsultationDetailPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/chat',
+    path: psychologistFrontendRoutes.chat,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PsychologistChatPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/chat/:consultationId',
+    path: psychologistFrontendRoutes.chatWithConsultationPath,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PsychologistChatPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/consultations/:id/video',
+    path: psychologistFrontendRoutes.videoCallPath,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <VideoCallPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/consultation/history',
+    path: psychologistFrontendRoutes.consultationHistory,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PsychologistConsultationHistoryPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/consultation/:consultationId/history',
+    path: psychologistFrontendRoutes.consultationHistoryDetailPath,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PsychologistConsultationHistoryDetailPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/patients/:patientId/history',
+    path: psychologistFrontendRoutes.patientHistoryPath,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PatientHistoryPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/psychologist/dashboard',
+    path: psychologistFrontendRoutes.dashboard,
     element: (
-      <PrivateRoute allowedRoles={['psychologist']}>
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PsychologistDashboard />
       </PrivateRoute>
     ),

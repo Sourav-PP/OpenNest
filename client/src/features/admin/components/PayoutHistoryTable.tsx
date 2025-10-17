@@ -7,10 +7,10 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import Filters from '@/components/admin/Filters';
 import type { PayoutRequestListItemDto } from '@/types/dtos/payoutRequest';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
-import { UserGenderFilter, type UserGenderFilterType } from '@/constants/User';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/User';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { PayoutRequestStatus, PayoutRequestStatusColors } from '@/constants/PayoutRequest';
+import { PayoutRequestStatus, PayoutRequestStatusColors } from '@/constants/types/PayoutRequest';
 
 const ITEM_PER_PAGE = 10;
 

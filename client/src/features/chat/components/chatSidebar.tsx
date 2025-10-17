@@ -10,8 +10,8 @@ import { getSocket, onMessage, joinConsultation, onOnlineUsers } from '@/service
 import type { IMessageDto } from '@/types/dtos/message';
 import { uniqBy } from 'lodash';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { UserRole, type UserRoleType } from '@/constants/User';
-import { ConsultationStatus } from '@/constants/Consultation';
+import { UserRole, type UserRoleType } from '@/constants/types/User';
+import { ConsultationStatus } from '@/constants/types/Consultation';
 
 export default function ChatSidebar({
   userId,
@@ -166,7 +166,7 @@ export default function ChatSidebar({
                     <Avatar className="h-10 w-10">
                       <AvatarImage
                         src={
-                          role === 'user'
+                          role === UserRole.USER
                             ? (getCloudinaryUrl((c as IUserChatConsultationDto).psychologist.profileImage) ?? undefined)
                             : (getCloudinaryUrl((c as IPsychologistChatConsultationDto).patient.profileImage) ??
                               undefined)
@@ -174,7 +174,7 @@ export default function ChatSidebar({
                         className="rounded-full"
                       />
                       <AvatarFallback>
-                        {role === 'user'
+                        {role === UserRole.USER
                           ? (c as IUserChatConsultationDto).psychologist.name[0]
                           : (c as IPsychologistChatConsultationDto).patient.name[0]}
                       </AvatarFallback>
@@ -182,7 +182,7 @@ export default function ChatSidebar({
 
                     {/* ONLINE INDICATOR */}
                     {onlineUsers.has(
-                      role === 'user'
+                      role === UserRole.USER
                         ? (c as IUserChatConsultationDto).psychologist.userId
                         : (c as IPsychologistChatConsultationDto).patient.id
                     ) && (
@@ -192,7 +192,7 @@ export default function ChatSidebar({
 
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">
-                      {role === 'user'
+                      {role === UserRole.USER
                         ? (c as IUserChatConsultationDto).psychologist.name
                         : (c as IPsychologistChatConsultationDto).patient.name}
                     </p>

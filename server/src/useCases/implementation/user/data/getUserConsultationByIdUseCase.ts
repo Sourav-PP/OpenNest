@@ -13,23 +13,14 @@ export class GetUserConsultationByIdUseCase implements IGetUserConsultationByIdU
         this._consultationRepo = consultationRepo;
     }
 
-    async execute(
-        consultationId: string,
-    ): Promise<IUserConsultationDetailsDto> {
+    async execute(consultationId: string): Promise<IUserConsultationDetailsDto> {
         if (!consultationId) {
-            throw new AppError(
-                bookingMessages.ERROR.CONSULTATION_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(bookingMessages.ERROR.CONSULTATION_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
-        const result =
-            await this._consultationRepo.findByIdWithDetails(consultationId);
+        const result = await this._consultationRepo.findByIdWithDetails(consultationId);
         if (!result) {
-            throw new AppError(
-                bookingMessages.ERROR.CONSULTATION_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(bookingMessages.ERROR.CONSULTATION_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         const mappedConsultation = toUserConsultationDetail(

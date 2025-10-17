@@ -6,24 +6,20 @@ import { IAdminLoginUseCase } from '@/useCases/interfaces/admin/auth/ILoginUseCa
 import { AppError } from '@/domain/errors/AppError';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { UserRole } from '@/domain/enums/UserEnums';
 
 export class AdminLoginUseCase implements IAdminLoginUseCase {
     private _adminRepository: IAdminRepository;
     private _tokenService: ITokenService;
     private _authService: IAuthService;
 
-    constructor(
-        adminRepository: IAdminRepository,
-        tokenService: ITokenService,
-        authService: IAuthService,
-    ) {
+    constructor(adminRepository: IAdminRepository, tokenService: ITokenService, authService: IAuthService) {
         this._adminRepository = adminRepository;
         this._tokenService = tokenService;
         this._authService = authService;
     }
 
     async execute(request: IAdminLoginRequest): Promise<IAdminLoginResponse> {
-
         const admin = await this._adminRepository.findByEmail(request.email);
         if (!admin) {
             throw new AppError(authMessages.ERROR.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
@@ -34,8 +30,8 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
             throw new AppError(authMessages.ERROR.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
         }
 
-        const accessToken = this._tokenService.generateAccessToken(admin.id, 'admin', admin.email, true);
-        const refreshToken = this._tokenService.generateRefreshToken(admin.id, 'admin', admin.email, true);
+        const accessToken = this._tokenService.generateAccessToken(admin.id, UserRole.ADMIN, admin.email, true);
+        const refreshToken = this._tokenService.generateRefreshToken(admin.id, UserRole.ADMIN, admin.email, true);
 
         return {
             accessToken,

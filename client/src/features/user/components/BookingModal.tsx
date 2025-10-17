@@ -11,9 +11,9 @@ import {
 } from '@/components/ui/dialog';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { useEffect, useState } from 'react';
-import { ConsultationPaymentMethod, type ConsultationPaymentMethodType } from '@/constants/Consultation';
+import { ConsultationPaymentMethod, type ConsultationPaymentMethodType } from '@/constants/types/Consultation';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { PaymentPurpose } from '@/constants/Payment';
+import { PaymentPurpose } from '@/constants/types/Payment';
 
 interface BookingModalProps {
   isOpen: boolean;

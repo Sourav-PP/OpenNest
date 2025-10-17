@@ -1,12 +1,12 @@
-import type { PlanBillingPeriodType } from '@/constants/Plan';
+import type { PlanBillingPeriodType } from '@/constants/types/Plan';
 import type { IConsultationDtoForAdmin } from '../dtos/consultation';
 import type { IPayoutRequestDto, PayoutRequestListItemDto } from '../dtos/payoutRequest';
 import type { IGetAllPsychologistsDto, ITopPsychologistDto } from '../dtos/psychologist';
 import type { IUserDto } from '../dtos/user';
 import type { BackendResponse } from './api';
-import type { SortFilterType } from '@/constants/SortFilter';
-import type { KycStatusFilterType, KycStatusType } from '@/constants/Kyc';
-import type { UserGenderFilterType } from '@/constants/User';
+import type { SortFilterType } from '@/constants/types/SortFilter';
+import type { KycStatusFilterType, KycStatusType } from '@/constants/types/Kyc';
+import type { UserGenderFilterType } from '@/constants/types/User';
 
 export interface IAdminLoginRequest {
   email: string;

@@ -5,6 +5,7 @@ import { adminApi } from '@/services/api/admin';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { addPlanSchema, type addPlanData } from '@/lib/validations/admin/addPlanValidation';
 import { useEffect } from 'react';
+import { PlanBillingPeriod } from '@/constants/types/Plan';
 
 const CreatePlanForm = () => {
   const {
@@ -84,9 +85,9 @@ const CreatePlanForm = () => {
               {...register('billingPeriod')}
               className="w-full p-3 rounded-lg bg-admin-extra-light text-white outline-none"
             >
-              <option value="month">Month</option>
-              <option value="year">Year</option>
-              <option value="week">Week</option>
+              <option value={PlanBillingPeriod.MONTH}>Month</option>
+              <option value={PlanBillingPeriod.YEAR}>Year</option>
+              <option value={PlanBillingPeriod.WEEK}>Week</option>
             </select>
             {errors.billingPeriod && <p className="text-red-400 text-sm mt-1">{errors.billingPeriod.message}</p>}
           </div>

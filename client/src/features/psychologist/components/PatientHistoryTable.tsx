@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { psychologistApi } from '@/services/api/psychologist';
 import { toast } from 'react-toastify';
-import { AxiosError } from 'axios';
 import ReusableTable from '@/components/user/ReusableTable';
 import CustomPagination from '@/components/user/CustomPagination';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import type { IPatientConsultationHistoryDto } from '@/types/dtos/consultation';
 import { formatDateOnly, formatTimeRange } from '@/lib/utils/dateTimeFormatter';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { ConsultationStatus } from '@/constants/Consultation';
+import { ConsultationStatus } from '@/constants/types/Consultation';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const PatientHistoryTable = () => {
   const { patientId } = useParams<{ patientId: string }>();
@@ -83,7 +83,7 @@ const PatientHistoryTable = () => {
       header: 'View',
       render: (c: IPatientConsultationHistoryDto) => (
         <Link
-          to={`/psychologist/consultation/${c.id}/history`}
+          to={psychologistFrontendRoutes.consultationHistoryDetail(c.id)}
           state={{ from: 'patient-history', patientName: c.patient.name }}
           className="text-blue-600 hover:underline font-medium"
         >

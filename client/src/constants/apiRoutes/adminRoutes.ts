@@ -1,0 +1,20 @@
+export const adminRoutes = {
+  login: '/admin/login',
+  logout: '/admin/logout',
+  services: '/admin/services',
+  serviceById: (id: string) => `/admin/services/${id}`,
+  users: '/admin/users',
+  userStatus: (userId: string) => `/admin/users/${userId}/status`,
+  psychologists: '/admin/psychologists',
+  kyc: '/admin/kyc',
+  kycByPsychologistId: (psychologistId: string) => `/admin/kyc/${psychologistId}`,
+  approveKyc: (psychologistId: string) => `/admin/kyc/${psychologistId}/approve`,
+  rejectKyc: (psychologistId: string) => `/admin/kyc/${psychologistId}/reject`,
+  consultations: '/admin/consultations',
+  plans: '/admin/plans',
+  payoutRequests: '/admin/payout-requests',
+  approvePayout: (payoutRequestId: string) => `/admin/payout-requests/${payoutRequestId}/approve`,
+  rejectPayout: (payoutRequestId: string) => `/admin/payout-requests/${payoutRequestId}/reject`,
+  topPsychologists: '/admin/top-psychologists',
+  refreshToken: '/admin/refresh-token'
+} as const;

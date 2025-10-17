@@ -15,8 +15,10 @@ import { Input } from '@/components/ui/input';
 import { Lock, Mail, Phone, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { walletApi } from '@/services/api/wallet';
-import { UserRole, type UserRoleType } from '@/constants/User';
+import { UserRole, type UserRoleType } from '@/constants/types/User';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 interface TokenPayload {
   userId: string;
@@ -66,7 +68,7 @@ const SignupForm = () => {
       handleApiError(error);
     }
 
-    navigate(decoded.role === UserRole.PSYCHOLOGIST ? '/psychologist/verification' : '/');
+    navigate(decoded.role === UserRole.PSYCHOLOGIST ? psychologistFrontendRoutes.verification : publicFrontendRoutes.landing);
   };
 
   const onSubmit = async (data: SignupData) => {
@@ -222,7 +224,7 @@ const SignupForm = () => {
           Already have an account?{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/login', { state: { role: role } })}
+            onClick={() => navigate(publicFrontendRoutes.login, { state: { role: role } })}
           >
             Login
           </span>

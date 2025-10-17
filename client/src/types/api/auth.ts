@@ -1,4 +1,4 @@
-import type { UserRoleType } from '@/constants/User';
+import type { UserRoleType } from '@/constants/types/User';
 import type { BackendResponse } from './api';
 
 export interface ILoginRequest {

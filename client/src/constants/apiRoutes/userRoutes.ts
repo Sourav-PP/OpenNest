@@ -1,0 +1,22 @@
+export const userRoutes = {
+  psychologists: '/user/psychologists',
+  psychologistById: (id: string) => `/user/psychologists/${id}`,
+  profile: '/user/profile',
+  slotsByPsychologist: (userId: string) => `/user/psychologists/${userId}/slots`,
+  createCheckoutSession: '/user/payment/create-checkout-session',
+  consultations: '/user/consultations',
+  consultationDetail: (id: string) => `/user/consultation/${id}`,
+  consultationCancel: (id: string) => `/user/consultation/${id}/cancel`,
+  consultationHistory: '/user/consultation/history',
+  consultationHistoryDetail: (consultationId: string) => `/user/consultation/${consultationId}/history`,
+  notifications: '/user/notification',
+  markAllNotificationsRead: '/user/notification/mark-all-read',
+  activeSubscription: '/user/subscription/active',
+  plans: '/user/plans',
+  createSubscriptionCheckoutSession: '/user/payment/create-subscription-session',
+  bookConsultationWithSubscription: '/user/consultation/book-with-subscription',
+  wallet: '/user/wallet',
+  walletTransactions: (walletId: string) => `/user/wallet/${walletId}/transactions`,
+  walletTransactionCreate: (walletId: string) => `/user/wallet/${walletId}/transactions`,
+  services: '/user/services'
+} as const;

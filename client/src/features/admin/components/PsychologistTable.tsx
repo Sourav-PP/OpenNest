@@ -8,8 +8,8 @@ import ConfirmModal from '@/components/admin/ConfirmModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import Filters from '@/components/admin/Filters';
-import { UserGenderFilter, type UserGenderFilterType } from '@/constants/User';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/User';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 
 const PsychologistTable = () => {

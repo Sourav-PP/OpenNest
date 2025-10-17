@@ -16,22 +16,11 @@ export class RejectPayoutRequestUseCase implements IRejectPayoutRequestUseCase {
     async execute(id: string): Promise<PayoutRequest | null> {
         const payout = await this._payoutRequestRepository.findById(id);
 
-        if (!payout)
-            throw new AppError(
-                payoutMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+        if (!payout) throw new AppError(payoutMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         if (payout.status !== PayoutRequestStatus.PENDING)
-            throw new AppError(
-                payoutMessages.ERROR.REJECT_ONLY_PENDING,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(payoutMessages.ERROR.REJECT_ONLY_PENDING, HttpStatus.BAD_REQUEST);
 
-        await this._payoutRequestRepository.updateStatus(
-            id,
-            PayoutRequestStatus.REJECTED,
-            new Date(),
-        );
+        await this._payoutRequestRepository.updateStatus(id, PayoutRequestStatus.REJECTED, new Date());
 
         return this._payoutRequestRepository.findById(id);
     }

@@ -9,16 +9,8 @@ export class GetHistoryUseCase implements IGetHistoryUseCase {
         this._messageRepo = messageRepo;
     }
 
-    async execute(
-        consultationId: string,
-        before?: string,
-        limit?: number,
-    ): Promise<Message[]> {
+    async execute(consultationId: string, before?: string, limit?: number): Promise<Message[]> {
         const finalLimit = limit ? limit : 30;
-        return this._messageRepo.findHistory(
-            consultationId,
-            finalLimit,
-            before,
-        );
+        return this._messageRepo.findHistory(consultationId, finalLimit, before);
     }
 }

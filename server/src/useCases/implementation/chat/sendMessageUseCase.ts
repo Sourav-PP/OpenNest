@@ -11,34 +11,22 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     private _messageRepo: IMessageRepository;
     private _ensureMembershipUseCase: IEnsureMembershipUseCase;
 
-    constructor(
-        messageRepo: IMessageRepository,
-        ensureMembershipUseCase: IEnsureMembershipUseCase,
-    ) {
+    constructor(messageRepo: IMessageRepository, ensureMembershipUseCase: IEnsureMembershipUseCase) {
         this._messageRepo = messageRepo;
         this._ensureMembershipUseCase = ensureMembershipUseCase;
     }
 
     async execute(data: ISendMessageInput): Promise<Message> {
         if (!data.content && !data.mediaUrl) {
-            throw new AppError(
-                chatMessages.ERROR.EMPTY_MESSAGE,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(chatMessages.ERROR.EMPTY_MESSAGE, HttpStatus.BAD_REQUEST);
         }
 
         if (data.mediaUrl && !data.mediaType) {
-            throw new AppError(
-                chatMessages.ERROR.EMPTY_MESSAGE,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(chatMessages.ERROR.EMPTY_MESSAGE, HttpStatus.BAD_REQUEST);
         }
 
         // Ensuring weather sender is part of the consultation or not
-        await this._ensureMembershipUseCase.execute(
-            data.senderId,
-            data.consultationId,
-        );
+        await this._ensureMembershipUseCase.execute(data.senderId, data.consultationId);
         return await this._messageRepo.create(data);
     }
 }

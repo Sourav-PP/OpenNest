@@ -13,6 +13,7 @@ import {
   UserCheck,
   History,
 } from 'lucide-react';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,22 +21,22 @@ const Sidebar = () => {
   const navItems = [
     {
       name: 'My Profile',
-      path: '/psychologist/profile',
+      path: psychologistFrontendRoutes.profile,
       icon: <User width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'KYC Document',
-      path: '/psychologist/kyc',
+      path: psychologistFrontendRoutes.kyc,
       icon: <UserCheck width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'Change password',
-      path: '/psychologist/change-password',
+      path: psychologistFrontendRoutes.changePassword,
       icon: <Key width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'My Slots',
-      path: '/psychologist/slot',
+      path: psychologistFrontendRoutes.slot,
       icon: <Calendar width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     // {
@@ -45,27 +46,27 @@ const Sidebar = () => {
     // },
     {
       name: 'My Consultations',
-      path: '/psychologist/consultations',
+      path: psychologistFrontendRoutes.consultations,
       icon: <Clock width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'Session History',
-      path: '/psychologist/consultation/history',
+      path: psychologistFrontendRoutes.consultationHistory,
       icon: <History width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'My Chats',
-      path: '/psychologist/chat',
+      path: psychologistFrontendRoutes.chat,
       icon: <MessageCircle width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'My Reviews',
-      path: '/psychologist/reviews',
+      path: psychologistFrontendRoutes.reviews,
       icon: <FileText width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
     {
       name: 'My Earnings',
-      path: '/psychologist/dashboard',
+      path: psychologistFrontendRoutes.dashboard,
       icon: <DollarSign width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
   ];
@@ -91,7 +92,7 @@ const Sidebar = () => {
         } lg:translate-x-0 w-64 p-6 flex flex-col gap-4 z-50 shadow-lg`}
       >
         {/* Logo */}
-        <NavLink to={'/admin/dashboard'}>
+        <NavLink to={psychologistFrontendRoutes.profile}>
           <div className="flex items-center gap-3 mb-6 cursor-pointer">
             <img src={assets.logo} alt="OpenNest Logo" className="w-[160px]" />
           </div>

@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { UserGender } from '@/constants/types/User';
 
 const EditProfileForm = () => {
   const navigate = useNavigate();
@@ -72,7 +74,7 @@ const EditProfileForm = () => {
 
       await psychologistApi.updatePsychologistProfile(formData);
       toast.success('Profile updated successfully');
-      navigate('/psychologist/edit-profile');
+      navigate(psychologistFrontendRoutes.editProfile);
     } catch (error) {
       handleApiError(error);
     }
@@ -217,9 +219,9 @@ const EditProfileForm = () => {
                     className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                   >
                     <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value={UserGender.MALE}>Male</option>
+                    <option value={UserGender.FEMALE}>Female</option>
+                    <option value={UserGender.OTHER}>Other</option>
                   </select>
                   {errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>}
                 </div>

@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { useServices } from '@/hooks/useServices';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { useNavigate } from 'react-router-dom';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const ServiceList = () => {
   const { services, loading } = useServices();
@@ -55,7 +56,7 @@ const ServiceList = () => {
               <div className="text-center">
                 <button
                   className="text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors duration-300 hover:underline"
-                  onClick={() => navigate('/user/therapist')}
+                  onClick={() => navigate(userFrontendRoutes.psychologist)}
                 >
                   Show Psychologists
                 </button>

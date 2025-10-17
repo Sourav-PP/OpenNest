@@ -19,26 +19,16 @@ export class ListPayoutRequestsByPsychologistUseCase implements IListPayoutReque
         },
     ): Promise<IListPayoutRequestResponse> {
         const { sort, page = 1, limit = 10 } = params;
-        const finalSort =
-            sort === SortFilter.ASC || sort === SortFilter.DESC
-                ? sort
-                : SortFilter.DESC;
+        const finalSort = sort === SortFilter.ASC || sort === SortFilter.DESC ? sort : SortFilter.DESC;
         const skip = (page - 1) * limit;
 
-        const requests =
-            await this._payoutRequestRepository.findByPsychologistId(
-                psychologistId,
-                {
-                    sort: finalSort,
-                    limit,
-                    skip,
-                },
-            );
+        const requests = await this._payoutRequestRepository.findByPsychologistId(psychologistId, {
+            sort: finalSort,
+            limit,
+            skip,
+        });
 
-        const totalCount =
-            await this._payoutRequestRepository.getTotalCountByPsychologistId(
-                psychologistId,
-            );
+        const totalCount = await this._payoutRequestRepository.getTotalCountByPsychologistId(psychologistId);
 
         return {
             requests,

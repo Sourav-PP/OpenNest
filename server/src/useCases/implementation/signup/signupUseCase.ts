@@ -12,11 +12,7 @@ export class SignupUseCase implements ISignupUseCase {
     private _userRepository: IUserRepository;
     private _fileStorage: IFileStorage;
 
-    constructor(
-        userRepository: IUserRepository,
-        tokenService: ITokenService,
-        fileStorage: IFileStorage,
-    ) {
+    constructor(userRepository: IUserRepository, tokenService: ITokenService, fileStorage: IFileStorage) {
         this._userRepository = userRepository;
         this._tokenService = tokenService;
         this._fileStorage = fileStorage;
@@ -29,21 +25,13 @@ export class SignupUseCase implements ISignupUseCase {
             'profile_images',
         );
 
-        const existingUser = await this._userRepository.findByEmail(
-            request.email,
-        );
+        const existingUser = await this._userRepository.findByEmail(request.email);
         if (existingUser) {
-            throw new AppError(
-                authMessages.ERROR.EMAIL_ALREADY_EXISTS,
-                HttpStatus.CONFLICT,
-            );
+            throw new AppError(authMessages.ERROR.EMAIL_ALREADY_EXISTS, HttpStatus.CONFLICT);
         }
 
         if (request.password !== request.confirmPassword) {
-            throw new AppError(
-                authMessages.ERROR.PASSWORDS_DO_NOT_MATCH,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(authMessages.ERROR.PASSWORDS_DO_NOT_MATCH, HttpStatus.BAD_REQUEST);
         }
 
         await this._userRepository.createPendingSignup({
@@ -55,15 +43,10 @@ export class SignupUseCase implements ISignupUseCase {
             profileImage: publicId,
         });
 
-        const signupToken = this._tokenService.generateSignupToken(
-            request.email,
-        );
+        const signupToken = this._tokenService.generateSignupToken(request.email);
 
         if (!signupToken) {
-            throw new AppError(
-                authMessages.ERROR.TOKEN_GENERATION_FAILED,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
+            throw new AppError(authMessages.ERROR.TOKEN_GENERATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return signupToken;

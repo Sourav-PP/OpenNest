@@ -1,3 +1,4 @@
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 import { useNavigate } from 'react-router-dom';
 
 const TherapySection = () => {
@@ -46,7 +47,7 @@ const TherapySection = () => {
             {/* Button */}
             <div className="group text-center sm:text-start">
               <button
-                onClick={() => navigate('/user/therapist')}
+                onClick={() => navigate(userFrontendRoutes.psychologist)}
                 className="btn-primary px-6 py-2 sm:px-auto sm:py-auto text-white bg-[#3EB1EB] sm:bg-inherit hover:bg-[#2A9CDB] sm:hover:bg-inherit transition-colors duration-200 group-hover:animate-glow-ring"
                 aria-label="Login as Therapist"
               >

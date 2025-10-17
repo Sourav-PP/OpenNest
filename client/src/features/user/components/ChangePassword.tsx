@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Eye, EyeClosed, Lock } from 'lucide-react';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const ChangePassword = () => {
       });
       toast.success(res.message);
       form.reset();
-      navigate('/user/change-password');
+      navigate(userFrontendRoutes.changePassword);
     } catch (err) {
       handleApiError(err, form.setError);
     } finally {

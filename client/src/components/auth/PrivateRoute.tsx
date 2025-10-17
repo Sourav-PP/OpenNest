@@ -2,7 +2,8 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { type RootState } from '../../redux/store';
 import type { ReactNode } from 'react';
-import { UserRole, type UserRoleType } from '@/constants/User';
+import { UserRole, type UserRoleType } from '@/constants/types/User';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 interface Props {
   allowedRoles: UserRoleType[];
@@ -17,10 +18,10 @@ const PrivateRoute = ({ allowedRoles, children }: Props) => {
   if (!accessToken || !role) {
     const path = location.pathname;
 
-    let redirect = '/login';
+    let redirect: '/login' | '/admin/login' = publicFrontendRoutes.login;
     let redirectRole: UserRoleType = UserRole.USER;
     if (path.includes('/admin')) {
-      redirect = '/admin/login';
+      redirect = publicFrontendRoutes.adminLogin;
     } else if (path.includes('/psychologist')) {
       redirectRole = UserRole.PSYCHOLOGIST;
     }
@@ -29,11 +30,11 @@ const PrivateRoute = ({ allowedRoles, children }: Props) => {
   }
 
   if (!allowedRoles.includes(role)) {
-    let loginRedirect = '/login';
+    let loginRedirect: '/login' | '/admin/login' = publicFrontendRoutes.login;
     let redirectRole: UserRoleType = UserRole.USER;
 
     if (role === UserRole.ADMIN) {
-      loginRedirect = '/admin/login';
+      loginRedirect = publicFrontendRoutes.adminLogin;
     } else if (role === UserRole.PSYCHOLOGIST) {
       redirectRole = UserRole.PSYCHOLOGIST;
     }

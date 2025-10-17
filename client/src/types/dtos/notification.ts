@@ -1,4 +1,4 @@
-import type { NotificationTypeValue } from '@/constants/Notification';
+import type { NotificationTypeValue } from '@/constants/types/Notification';
 
 export interface INotificationDto {
   id: string;

@@ -7,8 +7,8 @@ import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { formatDateOnly } from '@/lib/utils/dateTimeFormatter';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import type { IPayoutRequestDto } from '@/types/dtos/payoutRequest';
-import { PayoutRequestStatus } from '@/constants/PayoutRequest';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { PayoutRequestStatus } from '@/constants/types/PayoutRequest';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 
 const PayoutHistoryTable = () => {
   const [payouts, setPayouts] = useState<IPayoutRequestDto[]>([]);

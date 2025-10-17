@@ -1,4 +1,4 @@
-import type { KycStatusType } from '@/constants/Kyc';
+import type { KycStatusType } from '@/constants/types/Kyc';
 
 export interface IKycDto {
   id?: string;

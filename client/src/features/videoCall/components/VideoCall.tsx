@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useVideoCall } from '@/hooks/useVideoCall';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import type { UserRoleType } from '@/constants/User';
+import type { UserRoleType } from '@/constants/types/User';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 export default function VideoCall({
   token,
@@ -11,7 +12,7 @@ export default function VideoCall({
 }: {
   token: string;
   consultationId: string;
-  role: UserRoleType | null;
+  role: UserRoleType;
 }) {
   const { localVideoRef, remoteStreams, joined, join, leave, toggleCamera, toggleMute, localStreamRef } = useVideoCall(
     token,
@@ -50,7 +51,7 @@ export default function VideoCall({
       console.log('error leaving call: ', error);
       toast.error('error leaving call');
     } finally {
-      navigate(`/${role}/consultations/${consultationId}`);
+      navigate(userFrontendRoutes.consultationDetailPageAfterVideoCall(role, consultationId));
     }
   };
 
@@ -147,7 +148,7 @@ export default function VideoCall({
                 Rejoin
               </button>
               <button
-                onClick={() => navigate(`/${role}/consultations/${consultationId}`)}
+                onClick={() => navigate(userFrontendRoutes.consultationDetailPageAfterVideoCall(role, consultationId))}
                 className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg font-medium transition-colors duration-200"
               >
                 Go Back

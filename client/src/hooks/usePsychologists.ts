@@ -3,8 +3,8 @@ import { userApi } from '@/services/api/user';
 import type { IPsychologistDto } from '@/types/dtos/psychologist';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { toast } from 'react-toastify';
-import type { UserGenderFilterType } from '@/constants/User';
-import type { SortFilterType } from '@/constants/SortFilter';
+import type { UserGenderFilterType } from '@/constants/types/User';
+import type { SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 
 interface UsePsychologistsProps {

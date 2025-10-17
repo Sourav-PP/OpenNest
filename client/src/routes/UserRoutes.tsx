@@ -15,104 +15,106 @@ import ConsultationDetailPage from '@/features/user/pages/ConsultationDetailPage
 import VideoCallPage from '@/features/videoCall/pages/VideoCallPage';
 import UserConsultationHistoryPage from '@/features/user/pages/UserConsultationHistoryPage';
 import UserConsultationHistoryDetailPage from '@/features/user/pages/UserConsultationHistoryDetailPage';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
+import { UserRole } from '@/constants/types/User';
 
 export const userRoutes: RouteObject[] = [
   {
-    path: '/user/therapist',
+    path: userFrontendRoutes.psychologist,
     element: <TherapistPage />,
   },
   {
-    path: '/user/psychologists/:id',
+    path: userFrontendRoutes.psychologistDetailPath,
     element: <PsychologistDetailPage />,
   },
   {
-    path: '/user/services',
+    path: userFrontendRoutes.services,
     element: <UserServicePage />,
   },
   {
-    path: '/user/success',
+    path: userFrontendRoutes.success,
     element: <Success />,
   },
   {
-    path: '/user/cancel',
+    path: userFrontendRoutes.cancel,
     element: <Cancel />,
   },
   {
-    path: '/user/profile',
+    path: userFrontendRoutes.profile,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <UserProfilePage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/change-password',
+    path: userFrontendRoutes.changePassword,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <ChangePasswordPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/consultations',
+    path: userFrontendRoutes.consultations,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <MySessionsPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/consultations/:id',
+    path: userFrontendRoutes.consultationDetailPath,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <ConsultationDetailPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/chat',
+    path: userFrontendRoutes.chat,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <UserChatPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/chat/:consultationId',
+    path: userFrontendRoutes.chatByConsultationPath,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <UserChatPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/wallet',
+    path: userFrontendRoutes.wallet,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <WalletPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/consultations/:id/video',
+    path: userFrontendRoutes.videoCallPath,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <VideoCallPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/consultation/history',
+    path: userFrontendRoutes.consultationHistory,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <UserConsultationHistoryPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/user/consultation/:consultationId/history',
+    path: userFrontendRoutes.consultationHistoryDetailPath,
     element: (
-      <PrivateRoute allowedRoles={['user']}>
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
         <UserConsultationHistoryDetailPage />
       </PrivateRoute>
     ),

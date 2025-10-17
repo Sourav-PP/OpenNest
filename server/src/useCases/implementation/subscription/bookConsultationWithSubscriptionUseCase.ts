@@ -63,63 +63,35 @@ export class BookConsultationWithSubscriptionUseCase implements IBookConsultatio
         sessionGoal: string,
     ): Promise<{ consultation: Consultation; subscription: Subscription }> {
         if (!userId) {
-            throw new AppError(
-                adminMessages.ERROR.USER_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
         if (!subscriptionId) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.SUBSCRIPTION_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.SUBSCRIPTION_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
         if (!slotId) {
-            throw new AppError(
-                bookingMessages.ERROR.SLOT_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(bookingMessages.ERROR.SLOT_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
-        const subscription =
-            await this._subscriptionRepository.findById(subscriptionId);
+        const subscription = await this._subscriptionRepository.findById(subscriptionId);
         if (!subscription) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.SUBSCRIPTION_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.SUBSCRIPTION_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         if (subscription.userId !== userId) {
-            throw new AppError(
-                authMessages.ERROR.UNAUTHORIZED,
-                HttpStatus.UNAUTHORIZED,
-            );
+            throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
         }
         if (subscription.status !== SubscriptionStatus.ACTIVE) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.SUBSCRIPTION_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.SUBSCRIPTION_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
         const slot = await this._slotRepository.findById(slotId);
         if (!slot) {
-            throw new AppError(
-                bookingMessages.ERROR.SLOT_NOT_AVAILABLE,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(bookingMessages.ERROR.SLOT_NOT_AVAILABLE, HttpStatus.NOT_FOUND);
         }
         if (slot.isBooked) {
-            throw new AppError(
-                bookingMessages.ERROR.SLOT_ALREADY_BOOKED,
-                HttpStatus.CONFLICT,
-            );
+            throw new AppError(bookingMessages.ERROR.SLOT_ALREADY_BOOKED, HttpStatus.CONFLICT);
         }
 
         if (subscription.creditRemaining <= 0) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.INSUFFICIENT_CREDITS,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.INSUFFICIENT_CREDITS, HttpStatus.BAD_REQUEST);
         }
 
         const consultation = await this._consultationRepository.create({
@@ -137,24 +109,15 @@ export class BookConsultationWithSubscriptionUseCase implements IBookConsultatio
             includedInPayout: false,
         });
 
-        const meetingLink = await this._videoCallService.generateMeetingLink(
-            consultation.id,
-        );
+        const meetingLink = await this._videoCallService.generateMeetingLink(consultation.id);
         await this._consultationRepository.updateConsultation(consultation.id, {
             meetingLink,
         });
 
         // Atomically decrement 1 credit and get updated subscription
-        const updated =
-            await this._subscriptionRepository.decrementCreditsAtomically(
-                subscription.id,
-                1,
-            );
+        const updated = await this._subscriptionRepository.decrementCreditsAtomically(subscription.id, 1);
         if (!updated) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.INSUFFICIENT_CREDITS,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.INSUFFICIENT_CREDITS, HttpStatus.BAD_REQUEST);
         }
 
         await this._videoCallRepo.create({
@@ -170,28 +133,20 @@ export class BookConsultationWithSubscriptionUseCase implements IBookConsultatio
         // mark the slot as booked
         await this._slotRepository.markSlotAsBooked(slot.id, userId);
 
-        const psychologist = await this._psychologistRepo.findById(
-            consultation.psychologistId,
-        );
+        const psychologist = await this._psychologistRepo.findById(consultation.psychologistId);
 
         if (!psychologist) {
-            throw new AppError(
-                psychologistMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        const oneHourBefore = new Date(
-            consultation.startDateTime.getTime() - 60 * 60 * 1000,
-        );
+        const oneHourBefore = new Date(consultation.startDateTime.getTime() - 60 * 60 * 1000);
 
         // reminder notification for the patient
         await this._createNotificationUseCase.execute({
             recipientId: consultation.patientId,
             consultationId: consultation.id,
             type: NotificationType.CONSULTATION_REMINDER,
-            message:
-                notificationMessages.CONSULTATION.PATIENT_CONSULTATION_REMINDER,
+            message: notificationMessages.CONSULTATION.PATIENT_CONSULTATION_REMINDER,
             read: false,
             notifyAt: oneHourBefore,
             sent: false,
@@ -202,9 +157,7 @@ export class BookConsultationWithSubscriptionUseCase implements IBookConsultatio
             recipientId: psychologist.userId,
             consultationId: consultation.id,
             type: NotificationType.CONSULTATION_REMINDER,
-            message:
-                notificationMessages.CONSULTATION
-                    .PSYCHOLOGIST_CONSULTATION_REMINDER,
+            message: notificationMessages.CONSULTATION.PSYCHOLOGIST_CONSULTATION_REMINDER,
             read: false,
             notifyAt: oneHourBefore,
             sent: false,

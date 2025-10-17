@@ -1,4 +1,4 @@
-import type { MessageStatusType } from '@/constants/Message';
+import type { MessageStatusType } from '@/constants/types/Message';
 
 export interface IMessageDto {
   id: string;

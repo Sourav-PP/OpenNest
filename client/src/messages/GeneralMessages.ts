@@ -13,6 +13,7 @@ export const generalMessages = {
     CONFLICT: 'Conflict occurred, please check your request',
     INVALID_TOKEN: 'Token is invalid',
     NO_TOKEN: 'No token is provided',
+    BLOCKED_USER: 'Your account has been blocked by the administrator'
   },
   INFO: {
     PROCESSING: 'Your request is being processed',

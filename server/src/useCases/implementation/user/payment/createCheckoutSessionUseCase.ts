@@ -1,8 +1,5 @@
 import { ICreateCheckoutSessionUseCase } from '@/useCases/interfaces/user/payment/ICreateCheckoutSessionUseCase';
-import {
-    ICreateCheckoutSessionInput,
-    ICreateCheckoutSessionOutput,
-} from '@/useCases/types/payment';
+import { ICreateCheckoutSessionInput, ICreateCheckoutSessionOutput } from '@/useCases/types/payment';
 import { IPaymentService } from '@/domain/serviceInterface/IPaymentService';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
 import { ISlotRepository } from '@/domain/repositoryInterface/ISlotRepository';
@@ -14,11 +11,7 @@ import { appConfig } from '@/infrastructure/config/config';
 import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
-import {
-    PaymentMethod,
-    PaymentPurpose,
-    PaymentStatus,
-} from '@/domain/enums/PaymentEnums';
+import { PaymentMethod, PaymentPurpose, PaymentStatus } from '@/domain/enums/PaymentEnums';
 
 export type IStripeMetaData = {
     patientId: string;
@@ -52,14 +45,9 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
         this._psychologistRepository = psychologistRepository;
     }
 
-    async execute(
-        input: ICreateCheckoutSessionInput,
-    ): Promise<ICreateCheckoutSessionOutput> {
+    async execute(input: ICreateCheckoutSessionInput): Promise<ICreateCheckoutSessionOutput> {
         if (!input.userId) {
-            throw new AppError(
-                adminMessages.ERROR.USER_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
         const currency = appConfig.stripe.currency || 'usd';
@@ -82,17 +70,11 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             const slot = await this._slotRepo.findById(input.slotId);
 
             if (!slot) {
-                throw new AppError(
-                    bookingMessages.ERROR.SLOT_NOT_AVAILABLE,
-                    HttpStatus.NOT_FOUND,
-                );
+                throw new AppError(bookingMessages.ERROR.SLOT_NOT_AVAILABLE, HttpStatus.NOT_FOUND);
             }
 
             if (slot.isBooked) {
-                throw new AppError(
-                    bookingMessages.ERROR.SLOT_ALREADY_BOOKED,
-                    HttpStatus.CONFLICT,
-                );
+                throw new AppError(bookingMessages.ERROR.SLOT_ALREADY_BOOKED, HttpStatus.CONFLICT);
             }
 
             metadata = {
@@ -109,14 +91,13 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             }
         }
 
-        const { url, sessionId } =
-            await this._paymentService.createCheckoutSession(
-                input.amount,
-                currency,
-                `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
-                cancelUrl,
-                metadata,
-            );
+        const { url, sessionId } = await this._paymentService.createCheckoutSession(
+            input.amount,
+            currency,
+            `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl,
+            metadata,
+        );
 
         // create the payment document before success
         const payment: Omit<Payment, 'id'> = {
@@ -128,24 +109,15 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             refunded: false,
             transactionId: undefined,
             stripeSessionId: sessionId,
-            slotId:
-                input.purpose === PaymentPurpose.CONSULTATION
-                    ? input.slotId
-                    : null,
+            slotId: input.purpose === PaymentPurpose.CONSULTATION ? input.slotId : null,
             purpose: input.purpose,
         };
 
         try {
             await this._paymentRepository.create(payment);
         } catch (error: any) {
-            if (
-                error.code === 11000 &&
-                input.purpose === PaymentPurpose.CONSULTATION
-            ) {
-                throw new AppError(
-                    bookingMessages.ERROR.SLOT_JUST_BOOKED,
-                    HttpStatus.CONFLICT,
-                );
+            if (error.code === 11000 && input.purpose === PaymentPurpose.CONSULTATION) {
+                throw new AppError(bookingMessages.ERROR.SLOT_JUST_BOOKED, HttpStatus.CONFLICT);
             } else {
                 console.log('err: ', error);
                 throw error;

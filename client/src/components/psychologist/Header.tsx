@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../redux/store';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import BellButton from '@/features/user/components/BellButton';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      navigate('/logout', { replace: true });
+      navigate(publicFrontendRoutes.logout, { replace: true });
     } catch (err) {
       handleApiError(err);
     }
@@ -38,7 +39,7 @@ const Header = () => {
         <div className="group text-center">
           <button
             onClick={handleLogout}
-            className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+            className="text-sm bg-red-500 px-5 py-2 rounded-full text-white hover:bg-red-600 transition-colors duration-200"
           >
             Logout
           </button>

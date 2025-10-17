@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { authApi } from '@/services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { Mail } from 'lucide-react';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 const ForgotPassword = () => {
   const location = useLocation();
@@ -27,7 +28,7 @@ const ForgotPassword = () => {
       const res = await authApi.sendOtp({ email: data.email });
 
       toast.success(res.message);
-      navigate('/verify-otp', { state: { email: data.email, role: role } });
+      navigate(publicFrontendRoutes.verifyOtp, { state: { email: data.email, role: role } });
     } catch (err) {
       handleApiError(err, form.setError);
     }
@@ -68,7 +69,7 @@ const ForgotPassword = () => {
           Back to login{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/login', { state: { role: role } })}
+            onClick={() => navigate(publicFrontendRoutes.login, { state: { role: role } })}
           >
             Login
           </span>

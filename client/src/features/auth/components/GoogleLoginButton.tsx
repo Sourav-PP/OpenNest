@@ -7,7 +7,10 @@ import { toast } from 'react-toastify';
 import { authApi } from '@/services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { walletApi } from '@/services/api/wallet';
-import { UserRole, type UserRoleType } from '@/constants/User';
+import { UserRole, type UserRoleType } from '@/constants/types/User';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 declare global {
   interface Window {
@@ -61,7 +64,7 @@ const GoogleLoginButton = () => {
           });
 
           if (!res.data) {
-            toast.error('Failed to login, please try again!');
+            toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
             return;
           }
 
@@ -87,9 +90,9 @@ const GoogleLoginButton = () => {
 
           // navigation based on role
           if (decoded.role === UserRole.PSYCHOLOGIST) {
-            navigate(res.data.hasSubmittedVerificationForm ? '/psychologist/profile' : '/psychologist/verification');
+            navigate(res.data.hasSubmittedVerificationForm ? psychologistFrontendRoutes.profile : psychologistFrontendRoutes.verification);
           } else {
-            navigate('/');
+            navigate(publicFrontendRoutes.landing);
           }
         } catch (err) {
           handleApiError(err);

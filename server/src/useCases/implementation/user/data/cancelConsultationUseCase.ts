@@ -30,79 +30,47 @@ export class CancelConsultationUseCase implements ICancelConsultationUseCase {
         this._slotRepo = slotRepo;
     }
 
-    async execute(
-        userId: string,
-        consultationId: string,
-        reason: string,
-    ): Promise<Consultation> {
-        const consultation =
-            await this._consultationRepo.findById(consultationId);
+    async execute(userId: string, consultationId: string, reason: string): Promise<Consultation> {
+        const consultation = await this._consultationRepo.findById(consultationId);
         if (!consultation) {
-            throw new AppError(
-                bookingMessages.ERROR.CONSULTATION_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(bookingMessages.ERROR.CONSULTATION_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         if (consultation.patientId !== userId) {
-            throw new AppError(
-                authMessages.ERROR.UNAUTHORIZED,
-                HttpStatus.UNAUTHORIZED,
-            );
+            throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
         }
 
         if (consultation.status !== ConsultationStatus.BOOKED) {
-            throw new AppError(
-                bookingMessages.ERROR.ONLY_BOOKED_CANCEL,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(bookingMessages.ERROR.ONLY_BOOKED_CANCEL, HttpStatus.BAD_REQUEST);
         }
 
         if (consultation.paymentStatus === ConsultationPaymentStatus.PAID) {
             const wallet = await this._walletRepo.findByUserId(userId);
 
             if (!wallet) {
-                throw new AppError(
-                    walletMessages.ERROR.NOT_FOUND,
-                    HttpStatus.NOT_FOUND,
-                );
+                throw new AppError(walletMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
-            const payment = await this._paymentRepo.findByConsultationId(
-                consultation.id,
-            );
+            const payment = await this._paymentRepo.findByConsultationId(consultation.id);
             if (!payment) {
-                throw new AppError(
-                    bookingMessages.ERROR.PAYMENT_NOT_FOUND,
-                    HttpStatus.NOT_FOUND,
-                );
+                throw new AppError(bookingMessages.ERROR.PAYMENT_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
-            await this._walletRepo.refundToWallet(
-                wallet.id,
-                payment.amount,
-                `refund_consultation_${consultation.id}`,
-            );
+            await this._walletRepo.refundToWallet(wallet.id, payment.amount, `refund_consultation_${consultation.id}`);
         }
 
         consultation.status = ConsultationStatus.CANCELLED;
         consultation.cancellationReason = reason;
         consultation.cancelledAt = new Date();
 
-        const updatedConsultation =
-            await this._consultationRepo.update(consultation);
+        const updatedConsultation = await this._consultationRepo.update(consultation);
 
         if (!updatedConsultation) {
-            throw new AppError(
-                generalMessages.ERROR.INTERNAL_SERVER_ERROR,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
+            throw new AppError(generalMessages.ERROR.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (updatedConsultation.slotId) {
-            await this._slotRepo.markSlotAsAvailable(
-                updatedConsultation.slotId,
-            );
+            await this._slotRepo.markSlotAsAvailable(updatedConsultation.slotId);
         }
 
         return updatedConsultation;

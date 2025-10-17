@@ -8,8 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import Filters from '@/components/admin/Filters';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
-import { KycStatusColors, KycStatusFilter, type KycStatusFilterType, type KycStatusType } from '@/constants/Kyc';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
+import { KycStatusColors, KycStatusFilter, type KycStatusFilterType, type KycStatusType } from '@/constants/types/Kyc';
+import { adminFrontendRoutes } from '@/constants/frontendRoutes/adminFrontendRoutes';
 
 const ITEM_PER_PAGE = 10;
 
@@ -63,7 +64,7 @@ const columns = [
   {
     header: 'Action',
     render: (item: IAdminKycDto) => (
-      <Link to={`/admin/kyc/${item.psychologistId}`}>
+      <Link to={adminFrontendRoutes.kycDetails(item.psychologistId)}>
         <button className="bg-admin-extra-light px-4 py-1 rounded-full text-white hover:bg-gray-600">view</button>
       </Link>
     ),

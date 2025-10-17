@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../redux/store';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      navigate('/logout', { replace: true });
+      navigate(publicFrontendRoutes.logout, { replace: true });
     } catch (err) {
       handleApiError(err);
     }

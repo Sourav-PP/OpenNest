@@ -30,39 +30,26 @@ export class RequestPayoutUseCase implements IRequestPayoutUseCase {
     }
 
     async execute(psychologistId: string): Promise<PayoutRequest> {
-        const psychologist =
-            await this._psychologistRepository.findByUserId(psychologistId);
-        if (!psychologist)
-            throw new AppError(
-                psychologistMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+        const psychologist = await this._psychologistRepository.findByUserId(psychologistId);
+        if (!psychologist) throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-        const consultations =
-            await this._consultationRepository.findUnpaidCompletedConsultationsByPsychologistId(
-                psychologist.id,
-            );
+        const consultations = await this._consultationRepository.findUnpaidCompletedConsultationsByPsychologistId(
+            psychologist.id,
+        );
         if (consultations.length === 0) {
             throw new Error(payoutMessages.ERROR.NO_ELIGIBLE_CONSULTATIONS);
         }
 
-        const payments = await this._paymentRepository.findByConsultationIds(
-            consultations.map(c => c.id),
-        );
+        const payments = await this._paymentRepository.findByConsultationIds(consultations.map(c => c.id));
         if (payments.length === 0) {
             throw new Error(payoutMessages.ERROR.NO_ELIGIBLE_CONSULTATIONS);
         }
 
-        const total = payments.reduce(
-            (sum, payment) => sum + payment.amount,
-            0,
-        );
+        const total = payments.reduce((sum, payment) => sum + payment.amount, 0);
         if (total <= 0) {
             throw new Error(payoutMessages.ERROR.INVALID_PAYOUT_AMOUNT);
         }
-        const commissionAmount = Math.round(
-            (total * appConfig.stripe.commissionPercentage) / 100,
-        );
+        const commissionAmount = Math.round((total * appConfig.stripe.commissionPercentage) / 100);
         const payoutAmount = total - commissionAmount;
         if (payoutAmount <= 0) {
             throw new Error(payoutMessages.ERROR.INVALID_PAYOUT_AMOUNT);

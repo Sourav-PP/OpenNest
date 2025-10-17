@@ -8,8 +8,9 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { formatTimeRange, formatDuration, formatTime } from '@/lib/utils/dateTimeFormatter';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { ConsultationStatus } from '@/constants/Consultation';
-import { PaymentStatus } from '@/constants/Payment';
+import { ConsultationStatus } from '@/constants/types/Consultation';
+import { PaymentStatus } from '@/constants/types/Payment';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const PsychologistConsultationHistoryDetail = () => {
   const { consultationId } = useParams<{ consultationId: string }>();
@@ -31,7 +32,7 @@ const PsychologistConsultationHistoryDetail = () => {
         setConsultation(res.data);
       } catch (err) {
         handleApiError(err);
-        navigate('/psychologist/consultation/history');
+        navigate(psychologistFrontendRoutes.consultationHistory);
       } finally {
         setLoading(false);
       }
@@ -153,29 +154,39 @@ const PsychologistConsultationHistoryDetail = () => {
 
         {/* Payment Details */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Details</h3>
-          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-100 dark:border-gray-600 space-y-2">
-            <p className="text-gray-900 dark:text-gray-200 font-medium">
-              Amount: {consultation.payment.amount} {consultation.payment.currency}
-            </p>
-            <p className="text-gray-600 dark:text-gray-400">
-              Method:{' '}
-              {consultation.payment.paymentMethod.charAt(0).toUpperCase() + consultation.payment.paymentMethod.slice(1)}
-            </p>
-            <p
-              className={`font-medium ${
-                consultation.payment.paymentStatus === PaymentStatus.SUCCEEDED
-                  ? 'text-green-900 dark:text-green-200'
-                  : consultation.payment.paymentStatus === PaymentStatus.FAILED
-                    ? 'text-red-900 dark:text-red-200'
-                    : 'text-yellow-900 dark:text-yellow-200'
-              }`}
-            >
-              Status:{' '}
-              {consultation.payment.paymentStatus.charAt(0).toUpperCase() + consultation.payment.paymentStatus.slice(1)}
-            </p>
-            {consultation.payment.refunded && <p className="text-red-900 dark:text-red-200 font-medium">Refunded</p>}
-          </div>
+          <h4 className="text-md font-semibold text-gray-900 mb-3">Payment Details</h4>
+          {consultation.payment ? (
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-2">
+              <p className="text-gray-900 font-medium">
+                Amount: {consultation.payment.amount} {consultation.payment.currency}
+              </p>
+              <p className="text-gray-600 ">
+                Method:{' '}
+                {consultation.payment.paymentMethod.charAt(0).toUpperCase() +
+                  consultation.payment.paymentMethod.slice(1)}
+              </p>
+              <p
+                className={`font-medium ${
+                  consultation.payment.paymentStatus === PaymentStatus.SUCCEEDED
+                    ? 'text-green-900'
+                    : consultation.payment.paymentStatus === PaymentStatus.FAILED
+                      ? 'text-red-900'
+                      : 'text-yellow-900'
+                }`}
+              >
+                Status:{' '}
+                {consultation.payment.paymentStatus.charAt(0).toUpperCase() +
+                  consultation.payment.paymentStatus.slice(1)}
+              </p>
+              {consultation.payment.refunded && <p className="text-red-900 font-medium">Refunded</p>}
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-2 text-gray-900 font-medium">
+              <p>Amount: Included in Subscription</p>
+              <p>Method: Subscription</p>
+              <p>Status: Paid</p>
+            </div>
+          )}
         </div>
 
         {/* Video Call Details */}

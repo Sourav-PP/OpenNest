@@ -5,6 +5,11 @@ import { toast } from 'react-toastify';
 import { navigateTo } from './utils/navigation';
 import { HttpStatus } from './constants/httpStatus';
 import { jwtDecode } from 'jwt-decode';
+import { UserRole, type UserRoleType } from '@/constants/types/User';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { authRoutes } from '@/constants/apiRoutes/authRoutes';
+import { adminRoutes } from '@/constants/apiRoutes/adminRoutes';
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
@@ -13,7 +18,7 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 let baseURL = import.meta.env.VITE_API_BASE_URL;
 
 if (window.location.hostname.includes('devtunnels.ms')) {
-  baseURL = 'https://mc7th69v-5006.inc1.devtunnels.ms/api';
+  baseURL = import.meta.env.DEV_TUNNEL_URL;
 }
 
 const instance = axios.create({
@@ -41,11 +46,16 @@ instance.interceptors.response.use(
 
     // blocked account
     if (error.response?.status === HttpStatus.FORBIDDEN) {
-      toast.error('Your account has been blocked. Please contact support.');
+      toast.error(generalMessages.ERROR.BLOCKED_USER);
       const role = store.getState().auth.role;
       store.dispatch(logout());
 
-      const loginRedirect = role === 'psychologist' ? '/login' : role === 'admin' ? '/admin/login' : '/login';
+      const loginRedirect =
+        role === UserRole.PSYCHOLOGIST
+          ? publicFrontendRoutes.login
+          : role === UserRole.ADMIN
+            ? publicFrontendRoutes.adminLogin
+            : publicFrontendRoutes.login;
 
       setTimeout(() => {
         navigateTo(loginRedirect, { role });
@@ -58,27 +68,26 @@ instance.interceptors.response.use(
       !originalRequest._retry &&
       !originalRequest.url?.includes('/refresh-token') &&
       ![
-        '/auth/login',
-        '/auth/signup',
-        '/auth/send-otp',
-        '/auth/verify-otp',
-        '/admin/login',
-        '/admin/refresh-token',
+        authRoutes.login,
+        authRoutes.signup,
+        authRoutes.sendOtp,
+        authRoutes.verifyOtp,
+        adminRoutes.login,
+        adminRoutes.refreshToken,
       ].some(path => originalRequest.url?.includes(path))
     ) {
       originalRequest._retry = true;
 
-      const { role, email, userId } = store.getState().auth;
+      const { role } = store.getState().auth;
 
       // Role-based refresh endpoint
-      const refreshEndpoint = role === 'admin' ? '/admin/refresh-token' : '/auth/refresh-token';
+      const refreshEndpoint = role === UserRole.ADMIN ? adminRoutes.refreshToken : authRoutes.refreshToken;
 
       try {
         const { data } = await instance.post(refreshEndpoint);
         const accessToken = data.accessToken.accessToken;
 
-        const decoded: { email: string; userId: string; role: 'user' | 'psychologist' | 'admin' } =
-          jwtDecode(accessToken);
+        const decoded: { email: string; userId: string; role: UserRoleType } = jwtDecode(accessToken);
 
         store.dispatch(
           loginSuccess({
@@ -97,7 +106,12 @@ instance.interceptors.response.use(
       } catch (err) {
         store.dispatch(logout());
 
-        const loginRedirect = role === 'admin' ? '/admin/login' : role === 'psychologist' ? '/login' : '/login';
+        const loginRedirect =
+          role === UserRole.ADMIN
+            ? publicFrontendRoutes.adminLogin
+            : role === UserRole.PSYCHOLOGIST
+              ? publicFrontendRoutes.login
+              : publicFrontendRoutes.login;
 
         navigateTo(loginRedirect, { role });
         return Promise.reject(err);

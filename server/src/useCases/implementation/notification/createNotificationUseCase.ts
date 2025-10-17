@@ -9,9 +9,7 @@ export class CreateNotificationUseCase implements ICreateNotificationUseCase {
         this._notificationRepo = notificationRepo;
     }
 
-    async execute(
-        notification: Omit<Notification, 'id'>,
-    ): Promise<Notification> {
+    async execute(notification: Omit<Notification, 'id'>): Promise<Notification> {
         const result = await this._notificationRepo.create(notification);
         return result;
     }

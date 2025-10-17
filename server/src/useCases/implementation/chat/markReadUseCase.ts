@@ -13,11 +13,7 @@ export class MarkReadUseCase implements IMarkReadUseCase {
     private _psychologistRepo: IPsychologistRepository;
     private _userRepo: IUserRepository;
 
-    constructor(
-        messageRepo: IMessageRepository,
-        psychologistRepo: IPsychologistRepository,
-        userRepo: IUserRepository,
-    ) {
+    constructor(messageRepo: IMessageRepository, psychologistRepo: IPsychologistRepository, userRepo: IUserRepository) {
         this._messageRepo = messageRepo;
         this._psychologistRepo = psychologistRepo;
         this._userRepo = userRepo;
@@ -27,10 +23,7 @@ export class MarkReadUseCase implements IMarkReadUseCase {
         const user = await this._userRepo.findById(userId);
 
         if (!user) {
-            throw new AppError(
-                userMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         let receiverId: string;
@@ -38,22 +31,15 @@ export class MarkReadUseCase implements IMarkReadUseCase {
         if (user.role === UserRole.USER) {
             receiverId = userId;
         } else if (user.role === UserRole.PSYCHOLOGIST) {
-            const psychologist =
-                await this._psychologistRepo.findByUserId(userId);
+            const psychologist = await this._psychologistRepo.findByUserId(userId);
 
             if (!psychologist) {
-                throw new AppError(
-                    psychologistMessages.ERROR.NOT_FOUND,
-                    HttpStatus.NOT_FOUND,
-                );
+                throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
             }
 
             receiverId = psychologist.id;
         } else {
-            throw new AppError(
-                userMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         await this._messageRepo.markAllAsRead(consultationId, receiverId);

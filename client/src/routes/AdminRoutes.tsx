@@ -11,84 +11,86 @@ import ConsultationManagement from '@/features/admin/pages/ConsultationManagemen
 import PlanPage from '@/features/admin/pages/PlanPage';
 import PendingPayoutPage from '@/features/admin/pages/PendingPayoutPage';
 import PayoutHistoryPage from '@/features/admin/pages/PayoutHistoryPage';
+import { adminFrontendRoutes } from '@/constants/frontendRoutes/adminFrontendRoutes';
+import { UserRole } from '@/constants/types/User';
 
 export const adminRoutes: RouteObject[] = [
   {
-    path: '/admin/dashboard',
+    path: adminFrontendRoutes.dashboard,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <AdminDashboard />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/users',
+    path: adminFrontendRoutes.users,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <UserManagement />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/psychologists',
+    path: adminFrontendRoutes.psychologists,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <PsychologistManagement />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/kyc',
+    path: adminFrontendRoutes.kyc,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <KycManagement />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/kyc/:psychologistId',
+    path: adminFrontendRoutes.kycDetailsPath,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <KycVerificationPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/services',
+    path: adminFrontendRoutes.services,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <ServicePage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/sessions',
+    path: adminFrontendRoutes.sessions,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <ConsultationManagement />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/plans',
+    path: adminFrontendRoutes.plans,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <PlanPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/payouts/pending',
+    path: adminFrontendRoutes.pendingPayouts,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <PendingPayoutPage />
       </PrivateRoute>
     ),
   },
   {
-    path: '/admin/payouts/history',
+    path: adminFrontendRoutes.payoutHistory,
     element: (
-      <PrivateRoute allowedRoles={['admin']}>
+      <PrivateRoute allowedRoles={[UserRole.ADMIN]}>
         <PayoutHistoryPage />
       </PrivateRoute>
     ),

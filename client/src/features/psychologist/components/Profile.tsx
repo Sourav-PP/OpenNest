@@ -5,7 +5,8 @@ import type { IPsychologistProfileDto } from '@/types/dtos/psychologist';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { KycStatus } from '@/constants/Kyc';
+import { KycStatus } from '@/constants/types/Kyc';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -127,7 +128,7 @@ const Profile = () => {
         <div className="mt-8 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <div className="group text-center">
             <button
-              onClick={() => navigate('/psychologist/edit-profile')}
+              onClick={() => navigate(psychologistFrontendRoutes.editProfile)}
               className="btn-primary w-full group-hover:animate-glow-ring mb-2"
             >
               Edit Profile

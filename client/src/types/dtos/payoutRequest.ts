@@ -1,4 +1,4 @@
-import type { PayoutRequestStatusType } from '@/constants/PayoutRequest';
+import type { PayoutRequestStatusType } from '@/constants/types/PayoutRequest';
 
 export interface IPayoutRequestDto {
   id: string;

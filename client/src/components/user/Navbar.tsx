@@ -9,6 +9,9 @@ import { type RootState } from '../../redux/store';
 import { toast } from 'react-toastify';
 import { authApi } from '../../services/api/auth';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
+import { UserRole } from '@/constants/types/User';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const Navbar = () => {
   const { accessToken } = useSelector((state: RootState) => state.auth);
@@ -19,7 +22,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/login', { state: { role: 'user' } });
+    navigate(publicFrontendRoutes.login, { state: { role: UserRole.USER } });
   };
 
   const handleLogout = async () => {
@@ -61,24 +64,24 @@ const Navbar = () => {
     <div className="px-7 py-4 w-full sm:px-24 sm:py-6 fixed z-50">
       <nav className="relative flex justify-between items-center px-3 py-2 sm:px-2 sm:py-2 bg-white shadow-md border-[3px] border-[#3EB1EB] rounded-full">
         {/* Logo */}
-        <img onClick={() => navigate('/')} src={assets.logo} alt="Logo" className="w-20 sm:w-28 ms-2 cursor-pointer" />
+        <img onClick={() => navigate(publicFrontendRoutes.landing)} src={assets.logo} alt="Logo" className="w-20 sm:w-28 ms-2 cursor-pointer" />
 
         {/* Desktop Menu */}
         <ul className="sm:ms-14 hidden md:flex gap-8 text-gray-700 font-medium">
           <li
-            onClick={() => navigate('/')}
+            onClick={() => navigate(publicFrontendRoutes.landing)}
             className="cursor-pointer font-semibold transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]"
           >
             Home
           </li>
           <li
-            onClick={() => navigate('/user/services')}
+            onClick={() => navigate(userFrontendRoutes.services)}
             className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]"
           >
             Services
           </li>
           <li
-            onClick={() => navigate('/user/therapist')}
+            onClick={() => navigate(userFrontendRoutes.psychologist)}
             className="cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:text-[#3bcca5]"
           >
             Therapists
@@ -160,7 +163,7 @@ const Navbar = () => {
           }`}
         >
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(publicFrontendRoutes.landing)}
             className="cursor-pointer font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
           >
             Home
@@ -169,13 +172,13 @@ const Navbar = () => {
             Services
           </button>
           <button
-            onClick={() => navigate('/user/therapist')}
+            onClick={() => navigate(userFrontendRoutes.psychologist)}
             className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
           >
             Therapists
           </button>
           <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
-            Blog
+            About
           </button>
           <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
             Contact
@@ -183,7 +186,7 @@ const Navbar = () => {
           {accessToken ? (
             <>
               <button
-                onClick={() => navigate('/user/profile')}
+                onClick={() => navigate(userFrontendRoutes.profile)}
                 className="text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
               >
                 Profile

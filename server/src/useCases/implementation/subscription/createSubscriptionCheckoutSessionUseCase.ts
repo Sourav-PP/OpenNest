@@ -1,8 +1,4 @@
-import {
-    PaymentMethod,
-    PaymentPurpose,
-    PaymentStatus,
-} from '@/domain/enums/PaymentEnums';
+import { PaymentMethod, PaymentPurpose, PaymentStatus } from '@/domain/enums/PaymentEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
 import { IPlanRepository } from '@/domain/repositoryInterface/IPlanRepository';
@@ -28,50 +24,36 @@ export class CreateSubscriptionCheckoutSessionUseCase implements ICreateSubscrip
         this._planRepository = planRepository;
     }
 
-    async execute(
-        userId: string,
-        planId: string,
-        psychologistId: string,
-    ): Promise<string> {
+    async execute(userId: string, planId: string, psychologistId: string): Promise<string> {
         if (!userId) {
-            throw new AppError(
-                adminMessages.ERROR.USER_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
         if (!planId) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.PLAN_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.PLAN_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
         const plan = await this._planRepository.findById(planId);
         if (!plan) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.PLAN_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         const currency = appConfig.stripe.currency || 'usd';
         const successUrl = `${appConfig.server.frontendUrl}/user/psychologists/${psychologistId}`;
         const cancelUrl = `${appConfig.server.frontendUrl}/user/psychologists/${psychologistId}`;
 
-        const { url, sessionId } =
-            await this._paymentService.createCheckoutSession(
-                plan.price,
-                currency,
-                successUrl,
-                cancelUrl,
-                {
-                    userId,
-                    priceId: plan.stripePriceId,
-                    planId: plan.id,
-                    purpose: PaymentPurpose.SUBSCRIPTION,
-                },
-            );
+        const { url, sessionId } = await this._paymentService.createCheckoutSession(
+            plan.price,
+            currency,
+            successUrl,
+            cancelUrl,
+            {
+                userId,
+                priceId: plan.stripePriceId,
+                planId: plan.id,
+                purpose: PaymentPurpose.SUBSCRIPTION,
+            },
+        );
 
         await this._paymentRepository.create({
             userId,

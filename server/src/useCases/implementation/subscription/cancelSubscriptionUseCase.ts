@@ -10,25 +10,17 @@ export class CancelSubscriptionUseCase implements ICancelSubscriptionUseCase {
     private _subscriptionRepository: ISubscriptionRepository;
     private _paymentService: IPaymentService;
 
-    constructor(
-        subscriptionRepository: ISubscriptionRepository,
-        paymentService: IPaymentService,
-    ) {
+    constructor(subscriptionRepository: ISubscriptionRepository, paymentService: IPaymentService) {
         this._subscriptionRepository = subscriptionRepository;
         this._paymentService = paymentService;
     }
 
     async execute(userId: string): Promise<ISubscriptionDto | null> {
-        const result =
-            await this._subscriptionRepository.findActiveByUserId(userId);
+        const result = await this._subscriptionRepository.findActiveByUserId(userId);
         if (!result) {
-            throw new AppError(
-                SubscriptionMessages.ERROR.NO_ACTIVE_SUBSCRIPTION,
-            );
+            throw new AppError(SubscriptionMessages.ERROR.NO_ACTIVE_SUBSCRIPTION);
         }
-        await this._paymentService.cancelSubscription(
-            result.subscription.stripeSubscriptionId,
-        );
+        await this._paymentService.cancelSubscription(result.subscription.stripeSubscriptionId);
 
         await this._subscriptionRepository.cancelByUserId(userId);
         const mapped = toSubscriptionDto(result.subscription, result.plan);

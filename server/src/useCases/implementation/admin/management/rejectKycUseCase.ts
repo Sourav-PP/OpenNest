@@ -9,20 +9,14 @@ export class RejectKycUseCase implements IRejectKycUseCase {
     private _kycRepo: IKycRepository;
     private _psychologistRepo: IPsychologistRepository;
 
-    constructor(
-        kycRepo: IKycRepository,
-        psychologistRepo: IPsychologistRepository,
-    ) {
+    constructor(kycRepo: IKycRepository, psychologistRepo: IPsychologistRepository) {
         this._kycRepo = kycRepo;
         this._psychologistRepo = psychologistRepo;
     }
 
     async execute(psychologistId: string, reason: string): Promise<void> {
         if (!psychologistId) {
-            throw new AppError(
-                adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(adminMessages.ERROR.PSYCHOLOGIST_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
         await this._kycRepo.rejectKyc(psychologistId, reason);

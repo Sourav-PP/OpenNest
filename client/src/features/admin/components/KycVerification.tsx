@@ -6,7 +6,7 @@ import { adminApi } from '@/services/api/admin';
 import ConfirmModal from '../../../components/admin/ConfirmModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
-import { KycStatus, KycStatusColors, type KycStatusType } from '@/constants/Kyc';
+import { KycStatus, KycStatusColors, type KycStatusType } from '@/constants/types/Kyc';
 
 const KycVerification = () => {
   const { psychologistId } = useParams<{ psychologistId: string }>();
@@ -135,7 +135,7 @@ const KycVerification = () => {
           disabled={kyc.status === KycStatus.APPROVED || actionLoading}
           className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full"
           onClick={() => {
-            setAction('approved');
+            setAction(KycStatus.APPROVED);
             setMessage('Are you sure you want to approve this KYC?');
             setModalOpen(true);
           }}
@@ -173,9 +173,9 @@ const KycVerification = () => {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={reason => action && handleAction(action, reason)}
-        title={action === 'approved' ? 'Approve KYC?' : 'Reject KYC?'}
+        title={action === KycStatus.APPROVED ? 'Approve KYC?' : 'Reject KYC?'}
         message={message}
-        requireReason={action === 'rejected'}
+        requireReason={action === KycStatus.REJECTED}
       />
     </div>
   );

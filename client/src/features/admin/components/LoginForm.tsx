@@ -12,7 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Lock, Mail } from 'lucide-react';
-import type { UserRoleType } from '@/constants/User';
+import type { UserRoleType } from '@/constants/types/User';
+import { adminFrontendRoutes } from '@/constants/frontendRoutes/adminFrontendRoutes';
 
 interface TokenPayload {
   userId: string;
@@ -50,7 +51,7 @@ const LoginForm = () => {
 
       toast.success('Login successful');
 
-      navigate('/admin/dashboard');
+      navigate(adminFrontendRoutes.dashboard);
     } catch (err) {
       handleApiError(err);
     }

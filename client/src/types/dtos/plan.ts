@@ -1,4 +1,4 @@
-import type { PlanBillingPeriodType } from '@/constants/Plan';
+import type { PlanBillingPeriodType } from '@/constants/types/Plan';
 
 export interface IPlanDto {
   id: string;

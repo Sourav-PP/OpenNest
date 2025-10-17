@@ -7,8 +7,9 @@ import type { IUserConsultationDetailsResponseData } from '@/types/api/user';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import ConfirmationModal from '@/components/user/ConfirmationModal';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { ConsultationStatus } from '@/constants/Consultation';
-import { PaymentStatus } from '@/constants/Payment';
+import { ConsultationStatus } from '@/constants/types/Consultation';
+import { PaymentStatus } from '@/constants/types/Payment';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const UserConsultationsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -85,7 +86,7 @@ const UserConsultationsDetail = () => {
       setShowCancelModal(false);
       await fetchConsultation();
 
-      navigate('/user/consultations');
+      navigate(userFrontendRoutes.consultations);
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -257,7 +258,7 @@ const UserConsultationsDetail = () => {
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
             {consultation.meetingLink ? (
               <Link
-                to={`/user/consultations/${consultation.id}/video`}
+                to={userFrontendRoutes.videoCall(consultation.id)}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
                   consultation.status === ConsultationStatus.Completed ||
                   consultation.status === ConsultationStatus.Cancelled ||

@@ -1,4 +1,4 @@
-import type { WalletTransactionStatusType, WalletTransactionTypeValue } from '@/constants/Wallet';
+import type { WalletTransactionStatusType, WalletTransactionTypeValue } from '@/constants/types/Wallet';
 
 export interface IWallet {
   id: string;

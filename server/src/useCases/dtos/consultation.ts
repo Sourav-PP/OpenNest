@@ -149,7 +149,7 @@ export interface IConsultationHistoryDetailsDto {
         paymentMethod: PaymentMethod;
         paymentStatus: PaymentStatus;
         refunded: boolean;
-    };
+    } | null;
     video: {
         duration?: number;
         startedAt: Date | null;

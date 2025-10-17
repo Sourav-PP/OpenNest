@@ -9,8 +9,9 @@ import ConfirmationModal from '@/components/user/ConfirmationModal';
 import { psychologistApi } from '@/services/api/psychologist';
 import { History } from 'lucide-react';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { ConsultationStatus } from '@/constants/Consultation';
-import { PaymentStatus } from '@/constants/Payment';
+import { ConsultationStatus } from '@/constants/types/Consultation';
+import { PaymentStatus } from '@/constants/types/Payment';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const PsychologistConsultationsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -107,7 +108,7 @@ const PsychologistConsultationsDetail = () => {
       setShowCancelModal(false);
       await fetchConsultation();
 
-      navigate('/psychologist/consultations');
+      navigate(psychologistFrontendRoutes.consultations);
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -161,7 +162,7 @@ const PsychologistConsultationsDetail = () => {
       <h2 className="text-2xl font-bold mb-2 text-gray-900">Consultation Details</h2>
       {hasHistory && consultation?.patient?.id && (
         <Link
-          to={`/psychologist/patients/${consultation.patient.id}/history`}
+          to={psychologistFrontendRoutes.patientHistory(consultation.patient.id)}
           state={{ from: 'consultation-detail', patientName: consultation.patient.name }}
           className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg 
                     bg-indigo-700 hover:bg-indigo-800 text-white shadow-md transition-colors 
@@ -291,7 +292,7 @@ const PsychologistConsultationsDetail = () => {
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
             {consultation.meetingLink ? (
               <Link
-                to={`/psychologist/consultations/${consultation.id}/video`}
+                to={psychologistFrontendRoutes.videoCall(consultation.id)}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
                   consultation.status === ConsultationStatus.Completed ||
                   consultation.status === ConsultationStatus.Cancelled ||

@@ -1,9 +1,6 @@
 import { IGetAllPsychologistsForUserUseCase } from '@/useCases/interfaces/signup/IGetAllPsychologistsForUserUseCase';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
-import {
-    IGetAllPsychologistRequest,
-    IGetAllPsychologistResponse,
-} from '@/useCases/types/userTypes';
+import { IGetAllPsychologistRequest, IGetAllPsychologistResponse } from '@/useCases/types/userTypes';
 import { toUserPsychologistListDto } from '@/useCases/mappers/psychologistMapper';
 import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
@@ -14,14 +11,9 @@ export class GetAllPsychologistsForUserUseCase implements IGetAllPsychologistsFo
         this._psychologistRepo = psychologistRepo;
     }
 
-    async execute(
-        input: IGetAllPsychologistRequest,
-    ): Promise<IGetAllPsychologistResponse> {
+    async execute(input: IGetAllPsychologistRequest): Promise<IGetAllPsychologistResponse> {
         const { search, sort, gender, expertise, page = 1, limit = 10 } = input;
-        const finalSort =
-            sort === SortFilter.ASC || sort === SortFilter.DESC
-                ? sort
-                : SortFilter.DESC;
+        const finalSort = sort === SortFilter.ASC || sort === SortFilter.DESC ? sort : SortFilter.DESC;
         const skip = (page - 1) * limit;
 
         const entities = await this._psychologistRepo.findAllPsychologists({
@@ -33,9 +25,7 @@ export class GetAllPsychologistsForUserUseCase implements IGetAllPsychologistsFo
             limit,
         });
 
-        const mapped = entities.map(entity =>
-            toUserPsychologistListDto(entity.psychologist, entity.user),
-        );
+        const mapped = entities.map(entity => toUserPsychologistListDto(entity.psychologist, entity.user));
 
         const totalCount = await this._psychologistRepo.countAllVerified();
 

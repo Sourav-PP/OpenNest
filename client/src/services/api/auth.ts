@@ -13,19 +13,20 @@ import type {
   IResetPasswordRequest,
 } from '../../types/api/auth';
 import type { BackendResponse } from '@/types/api/api';
+import { authRoutes } from '@/constants/apiRoutes/authRoutes';
 
 export const authApi = {
-  login: async (data: ILoginRequest) => server.post<ILoginResponse, ILoginRequest>('/auth/login', data),
+  login: async (data: ILoginRequest) => server.post<ILoginResponse, ILoginRequest>(authRoutes.login, data),
   googleLogin: async (data: IGoogleLoginInput) =>
-    server.post<ILoginResponse, IGoogleLoginInput>('/auth/google-login', data),
-  logout: async () => server.post<BackendResponse, undefined>('/auth/logout', undefined),
-  preSignup: async (data: FormData) => server.post<IPreSignupResponse, FormData>('/auth/signup', data),
-  signup: async (data: FormData) => server.post<ISignupResponse, FormData>('/auth/signup', data),
-  sendOtp: async (data: ISendOtpRequest) => server.post<BackendResponse, ISendOtpRequest>('/auth/send-otp', data),
+    server.post<ILoginResponse, IGoogleLoginInput>(authRoutes.googleLogin, data),
+  logout: async () => server.post<BackendResponse, undefined>(authRoutes.logout, undefined),
+  preSignup: async (data: FormData) => server.post<IPreSignupResponse, FormData>(authRoutes.preSignup, data),
+  signup: async (data: FormData) => server.post<ISignupResponse, FormData>(authRoutes.signup, data),
+  sendOtp: async (data: ISendOtpRequest) => server.post<BackendResponse, ISendOtpRequest>(authRoutes.sendOtp, data),
   verifyOtp: async (data: IVerifyOtpRequest) =>
-    server.post<IVerifyOtpResponse, IVerifyOtpRequest>('/auth/verify-otp', data),
+    server.post<IVerifyOtpResponse, IVerifyOtpRequest>(authRoutes.verifyOtp, data),
   verifyForgotOtp: async (data: IVerifyForgotOtpRequest) =>
-    server.post<BackendResponse, IVerifyForgotOtpRequest>('/auth/forgot/verify-otp', data),
+    server.post<BackendResponse, IVerifyForgotOtpRequest>(authRoutes.verifyForgotOtp, data),
   resetPassword: async (data: IResetPasswordRequest) =>
-    server.post<BackendResponse, IResetPasswordRequest>('/auth/forgot/reset-password', data),
+    server.post<BackendResponse, IResetPasswordRequest>(authRoutes.resetPassword, data),
 };

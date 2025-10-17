@@ -12,41 +12,25 @@ export class GetUserConsultationHistoryDetailsUseCase implements IGetUserConsult
     private _consultationRepo: IConsultationRepository;
     private _videoCallRepo: IVideoCallRepository;
 
-    constructor(
-        consultationRepo: IConsultationRepository,
-        videoCallRepo: IVideoCallRepository,
-    ) {
+    constructor(consultationRepo: IConsultationRepository, videoCallRepo: IVideoCallRepository) {
         this._consultationRepo = consultationRepo;
         this._videoCallRepo = videoCallRepo;
     }
 
-    async execute(
-        consultationId: string,
-    ): Promise<IConsultationHistoryDetailsDto> {
+    async execute(consultationId: string): Promise<IConsultationHistoryDetailsDto> {
         if (!consultationId) {
-            throw new AppError(
-                bookingMessages.ERROR.CONSULTATION_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(bookingMessages.ERROR.CONSULTATION_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
-        const result =
-            await this._consultationRepo.findByIdWithDetails(consultationId);
+        const result = await this._consultationRepo.findByIdWithDetails(consultationId);
         if (!result) {
-            throw new AppError(
-                bookingMessages.ERROR.CONSULTATION_NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(bookingMessages.ERROR.CONSULTATION_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        const call =
-            await this._videoCallRepo.findByConsultationId(consultationId);
+        const call = await this._videoCallRepo.findByConsultationId(consultationId);
 
         if (!call) {
-            throw new AppError(
-                videoCallMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+            throw new AppError(videoCallMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
         const mappedConsultation = toConsultationHistoryDetails(
@@ -54,8 +38,8 @@ export class GetUserConsultationHistoryDetailsUseCase implements IGetUserConsult
             result?.psychologist,
             result?.user,
             result?.slot,
-            result?.payment,
             call,
+            result?.payment,
         );
 
         return mappedConsultation;

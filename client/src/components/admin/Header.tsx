@@ -4,6 +4,7 @@ import { logout } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../services/api/admin';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ const Header = () => {
       localStorage.removeItem('persist:root');
       toast.success('Logout successfully');
 
-      navigate('/admin/login');
+      navigate(publicFrontendRoutes.adminLogin);
     } catch (err) {
       handleApiError(err);
     }

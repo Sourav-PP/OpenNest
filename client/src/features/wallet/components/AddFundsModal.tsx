@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { userApi } from '@/services/api/user';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { PaymentPurpose } from '@/constants/Payment';
+import { PaymentPurpose } from '@/constants/types/Payment';
 import { generalMessages } from '@/messages/GeneralMessages';
 
 interface Props {

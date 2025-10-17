@@ -1,10 +1,12 @@
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
+import { UserRole } from '@/constants/types/User';
 import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   const handleTherapistLogin = () => {
-    navigate('/signup', { state: { role: 'psychologist' } });
+    navigate(publicFrontendRoutes.signup, { state: { role: UserRole.PSYCHOLOGIST } });
   };
   return (
     <section className="relative w-full h-[60vh] sm:h-auto">

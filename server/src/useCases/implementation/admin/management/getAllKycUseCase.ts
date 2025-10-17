@@ -1,9 +1,6 @@
 import { IGetAllKycUseCase } from '@/useCases/interfaces/admin/management/IGetAllKycUseCase';
 import { IKycRepository } from '@/domain/repositoryInterface/IKycRepository';
-import {
-    IGetAllKycRequest,
-    IGetAllKycResponse,
-} from '@/useCases/types/adminTypes';
+import { IGetAllKycRequest, IGetAllKycResponse } from '@/useCases/types/adminTypes';
 import { toKycDto } from '@/useCases/mappers/kycMapper';
 import { SortFilter } from '@/domain/enums/SortFilterEnum';
 
@@ -28,9 +25,7 @@ export class GetAllKycUseCase implements IGetAllKycUseCase {
             skip,
         });
 
-        const mapped = entities.map(entity =>
-            toKycDto(entity.kyc, entity.psychologist, entity.user),
-        );
+        const mapped = entities.map(entity => toKycDto(entity.kyc, entity.psychologist, entity.user));
 
         const totalCount = await this._kycRepo.countAll();
 

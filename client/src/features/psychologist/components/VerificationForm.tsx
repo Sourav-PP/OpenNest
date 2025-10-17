@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { updateVerificationStatus } from '@/redux/slices/authSlice';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 type Specialization = {
   id: string;
@@ -74,7 +75,7 @@ const VerificationForm = () => {
 
       dispatch(updateVerificationStatus(true));
       toast.success(res.message);
-      navigate('/psychologist/profile');
+      navigate(psychologistFrontendRoutes.profile);
     } catch (err) {
       handleApiError(err);
     }

@@ -15,8 +15,10 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { Eye, EyeClosed, Lock, Mail } from 'lucide-react';
 import { walletApi } from '@/services/api/wallet';
 import { useState } from 'react';
-import { UserRole, type UserRoleType } from '@/constants/User';
+import { UserRole, type UserRoleType } from '@/constants/types/User';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 interface TokenPayload {
   userId: string;
@@ -43,9 +45,9 @@ const LoginForm = () => {
 
   const navigateAfterLogin = (role: UserRoleType, hasSubmittedVerificationForm?: boolean) => {
     if (role === UserRole.PSYCHOLOGIST) {
-      navigate(hasSubmittedVerificationForm ? '/psychologist/profile' : '/psychologist/verification');
+      navigate(hasSubmittedVerificationForm ? psychologistFrontendRoutes.profile : psychologistFrontendRoutes.verification);
     } else {
-      navigate('/');
+      navigate(publicFrontendRoutes.landing);
     }
   };
 
@@ -156,7 +158,7 @@ const LoginForm = () => {
           Don't have an account?{' '}
           <span
             className="text-blue-500 cursor-pointer hover:underline"
-            onClick={() => navigate('/signup', { state: { role: role } })}
+            onClick={() => navigate(publicFrontendRoutes.signup, { state: { role: role } })}
           >
             Sign up
           </span>

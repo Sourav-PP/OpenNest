@@ -197,8 +197,8 @@ export function toConsultationHistoryDetails(
     psychologist: Psychologist & User,
     user: User,
     slot: Slot,
-    payment: Payment,
     video: VideoCall,
+    payment?: Payment | null,
 ): IConsultationHistoryDetailsDto {
     return {
         id: consultation.id,
@@ -225,13 +225,15 @@ export function toConsultationHistoryDetails(
             isBooked: slot.isBooked,
             bookedBy: slot.bookedBy,
         },
-        payment: {
-            amount: payment.amount,
-            currency: payment.currency,
-            paymentMethod: payment.paymentMethod,
-            paymentStatus: payment.paymentStatus,
-            refunded: payment.refunded,
-        },
+        payment: payment
+            ? {
+                amount: payment.amount,
+                currency: payment.currency,
+                paymentMethod: payment.paymentMethod,
+                paymentStatus: payment.paymentStatus,
+                refunded: payment.refunded,
+            }
+            : null,
         video: {
             duration: video.duration,
             startedAt: video.startedAt,

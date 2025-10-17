@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { assets } from '../../assets/assets';
+import { adminFrontendRoutes } from '@/constants/frontendRoutes/adminFrontendRoutes';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,7 +9,7 @@ const Sidebar = () => {
   const navItems = [
     {
       name: 'Dashboard',
-      path: '/admin/dashboard',
+      path: adminFrontendRoutes.dashboard,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +30,7 @@ const Sidebar = () => {
     },
     {
       name: 'Users',
-      path: '/admin/users',
+      path: adminFrontendRoutes.users,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +51,7 @@ const Sidebar = () => {
     },
     {
       name: 'Psychologists',
-      path: '/admin/psychologists',
+      path: adminFrontendRoutes.psychologists,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +75,7 @@ const Sidebar = () => {
     },
     {
       name: 'Services',
-      path: '/admin/services',
+      path: adminFrontendRoutes.services,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +96,7 @@ const Sidebar = () => {
     },
     {
       name: 'Plans',
-      path: '/admin/plans',
+      path: adminFrontendRoutes.plans,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -117,7 +118,7 @@ const Sidebar = () => {
     },
     {
       name: 'KYC Management',
-      path: '/admin/kyc',
+      path: adminFrontendRoutes.kyc,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -142,7 +143,7 @@ const Sidebar = () => {
     // { name: 'Complaints', path: '/admin/complaints', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-scroll-text-icon lucide-scroll-text"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg>) },
     {
       name: 'Sessions',
-      path: '/admin/sessions',
+      path: adminFrontendRoutes.sessions,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +164,7 @@ const Sidebar = () => {
     },
     {
       name: 'Pending Payout',
-      path: '/admin/payouts/pending',
+      path: adminFrontendRoutes.pendingPayouts,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -187,7 +188,7 @@ const Sidebar = () => {
     },
     {
       name: 'Payout History',
-      path: '/admin/payouts/history',
+      path: adminFrontendRoutes.payoutHistory,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -207,7 +208,6 @@ const Sidebar = () => {
         </svg>
       ),
     },
-    // { name: 'All Subscriptions', path: '/admin/subscriptions', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-crown-icon lucide-crown"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>) },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -231,7 +231,7 @@ const Sidebar = () => {
         } lg:translate-x-0 w-64 p-6 flex flex-col gap-4 z-40 shadow-lg`}
       >
         {/* Logo */}
-        <NavLink to={'/admin/dashboard'}>
+        <NavLink to={adminFrontendRoutes.dashboard}>
           <div className="flex items-center gap-3 mb-6 cursor-pointer">
             <img src={assets.logo_dark} alt="OpenNest Logo" className="w-[160px]" />
           </div>

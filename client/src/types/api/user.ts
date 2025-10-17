@@ -1,4 +1,4 @@
-import type { ConsultationStatusFilterType, ConsultationStatusType } from '@/constants/Consultation';
+import type { ConsultationStatusFilterType, ConsultationStatusType } from '@/constants/types/Consultation';
 import type { IConsultationDto } from '../dtos/consultation';
 import type { INotificationDto } from '../dtos/notification';
 import type { IPlanDto } from '../dtos/plan';
@@ -6,9 +6,9 @@ import type { IPsychologistDto, IPsychologistProfileDto } from '../dtos/psycholo
 import type { ISlotDto } from '../dtos/slot';
 import type { ISubscriptionDto } from '../dtos/subscription';
 import type { BackendResponse } from './api';
-import type { SortFilterType } from '@/constants/SortFilter';
-import type { UserGenderFilterType, UserGenderType, UserRoleType } from '@/constants/User';
-import type { PaymentMethodType, PaymentPurposeType, PaymentStatusType } from '@/constants/Payment';
+import type { SortFilterType } from '@/constants/types/SortFilter';
+import type { UserGenderFilterType, UserGenderType, UserRoleType } from '@/constants/types/User';
+import type { PaymentMethodType, PaymentPurposeType, PaymentStatusType } from '@/constants/types/Payment';
 
 export interface IGetAllPsychologistResponseData {
   psychologists: IPsychologistDto[];
@@ -129,12 +129,12 @@ export interface IUserConsultationHistoryDetailsResponseData {
     bookedBy?: string | null;
   };
   payment: {
-    amount: number;
-    currency: string;
-    paymentMethod: PaymentMethodType;
-    paymentStatus: PaymentStatusType;
-    refunded: boolean;
-  };
+      amount: number;
+      currency: string;
+      paymentMethod: PaymentMethodType;
+      paymentStatus: PaymentStatusType;
+      refunded: boolean;
+  } | null;
   video: {
     duration?: number;
     startedAt: Date | null;

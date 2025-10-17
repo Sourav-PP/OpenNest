@@ -1,4 +1,4 @@
-import type { UserRoleType } from '@/constants/User';
+import type { UserRoleType } from '@/constants/types/User';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthState {

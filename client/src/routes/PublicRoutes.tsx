@@ -9,18 +9,19 @@ import ForgotPasswordPage from '@/features/user/pages/ForgotPasswordPage';
 import VerifyForgotPasswordOtpPage from '@/features/auth/pages/VerifyForgotPasswordOtpPage';
 import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage';
 import LogoutPage from '@/features/user/pages/LogoutPage';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 export const publicRoutes: RouteObject[] = [
   {
-    path: '/',
+    path: publicFrontendRoutes.landing,
     element: <LandingPage />,
   },
   {
-    path: '/logout',
+    path: publicFrontendRoutes.logout,
     element: <LogoutPage />,
   },
   {
-    path: '/signup',
+    path: publicFrontendRoutes.signup,
     element: (
       <PublicRoute>
         <SignupPage />
@@ -28,7 +29,7 @@ export const publicRoutes: RouteObject[] = [
     ),
   },
   {
-    path: '/login',
+    path: publicFrontendRoutes.login,
     element: (
       <PublicRoute>
         <LoginPage />
@@ -36,7 +37,7 @@ export const publicRoutes: RouteObject[] = [
     ),
   },
   {
-    path: '/admin/login',
+    path: publicFrontendRoutes.adminLogin,
     element: (
       <PublicRoute>
         <AdminLoginPage />
@@ -44,7 +45,7 @@ export const publicRoutes: RouteObject[] = [
     ),
   },
   {
-    path: '/forgot-password',
+    path: publicFrontendRoutes.forgotPassword,
     element: (
       <PublicRoute>
         <ForgotPasswordPage />
@@ -52,7 +53,7 @@ export const publicRoutes: RouteObject[] = [
     ),
   },
   {
-    path: '/verify-otp',
+    path: publicFrontendRoutes.verifyOtp,
     element: (
       <PublicRoute>
         <VerifyForgotPasswordOtpPage />
@@ -60,7 +61,7 @@ export const publicRoutes: RouteObject[] = [
     ),
   },
   {
-    path: '/reset-password',
+    path: publicFrontendRoutes.resetPassword,
     element: (
       <PublicRoute>
         <ResetPasswordPage />

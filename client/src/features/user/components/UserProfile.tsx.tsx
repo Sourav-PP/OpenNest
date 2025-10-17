@@ -13,7 +13,8 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { UserGender } from '@/constants/User';
+import { UserGender } from '@/constants/types/User';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const UserProfile = () => {
 
       const res = await userApi.updateProfile(formData);
       toast.success(res.message);
-      navigate('/user/profile');
+      navigate(userFrontendRoutes.profile);
     } catch (err) {
       handleApiError(err, form.setError);
     }

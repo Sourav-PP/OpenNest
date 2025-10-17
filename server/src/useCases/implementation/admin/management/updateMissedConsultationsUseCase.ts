@@ -12,8 +12,7 @@ export class UpdateMissedConsultationUseCase implements IUpdateMissedConsultatio
     async execute(): Promise<void> {
         const now = new Date();
 
-        const missedConsultations =
-            await this._consultationRepository.findMissedConsultation(now);
+        const missedConsultations = await this._consultationRepository.findMissedConsultation(now);
 
         for (const consultation of missedConsultations) {
             await this._consultationRepository.markAsMissed(consultation.id, {

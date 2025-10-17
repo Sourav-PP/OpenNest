@@ -1,5 +1,5 @@
-import type { KycStatusType } from '@/constants/Kyc';
-import type { UserGenderType } from '@/constants/User';
+import type { KycStatusType } from '@/constants/types/Kyc';
+import type { UserGenderType } from '@/constants/types/User';
 
 export interface IPsychologistDto {
   id: string;

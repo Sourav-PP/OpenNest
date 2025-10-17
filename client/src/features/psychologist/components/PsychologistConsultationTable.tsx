@@ -12,15 +12,17 @@ import {
   ConsultationStatus,
   ConsultationStatusFilter,
   type ConsultationStatusFilterType,
-} from '@/constants/Consultation';
+} from '@/constants/types/Consultation';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
+import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
 const PsychologistConsultationsTable = () => {
   const [consultations, setConsultations] = useState<IPsychologistConsultationDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<'asc' | 'desc'>('asc');
+  const [sort, setSort] = useState<SortFilterType>(SortFilter.Asc);
   const [status, setStatus] = useState<ConsultationStatusFilterType>(ConsultationStatusFilter.All);
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,7 +118,7 @@ const PsychologistConsultationsTable = () => {
       header: 'View',
       render: (c: IPsychologistConsultationDto) => (
         <Link
-          to={`/psychologist/consultations/${c.id}`}
+          to={psychologistFrontendRoutes.consultationDetail(c.id)}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
           View
@@ -167,7 +169,7 @@ const PsychologistConsultationsTable = () => {
           data={consultations}
           columns={columns}
           onRowClick={(consultation: IPsychologistConsultationDto) => {
-            navigate(`/psychologist/consultations/${consultation.id}`);
+            navigate(psychologistFrontendRoutes.consultationDetail(consultation.id));
           }}
           emptyMessage="No consultations found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"

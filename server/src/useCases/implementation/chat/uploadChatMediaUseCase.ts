@@ -11,29 +11,19 @@ export class UploadChatMediaUseCase implements IUploadChatMediaUseCase {
         this._chatFileStorage = chatFileStorage;
     }
 
-    async execute(
-        file: Express.Multer.File,
-    ): Promise<{ mediaUrl: string; mediaType: string }> {
+    async execute(file: Express.Multer.File): Promise<{ mediaUrl: string; mediaType: string }> {
         if (!file) {
-            throw new AppError(
-                chatMessages.ERROR.NO_FILE_PROVIDED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(chatMessages.ERROR.NO_FILE_PROVIDED, HttpStatus.BAD_REQUEST);
         }
 
-        const { url, type } = await this._chatFileStorage.upload(
-            file.buffer,
-            file.originalname,
-            'chat-media',
-        );
+        const { url, type } = await this._chatFileStorage.upload(file.buffer, file.originalname, 'chat-media');
 
         const ext = file.originalname.split('.').pop()?.toLowerCase();
 
         let mediaType: string;
         if (type === 'image') mediaType = 'image';
         else if (type === 'video') {
-            if (ext && ['mp3', 'ogg', 'wav', 'm4a', 'aac'].includes(ext))
-                mediaType = 'audio';
+            if (ext && ['mp3', 'ogg', 'wav', 'm4a', 'aac'].includes(ext)) mediaType = 'audio';
             else mediaType = 'video';
         } else if (type === 'audio') mediaType = 'audio';
         else mediaType = 'file';

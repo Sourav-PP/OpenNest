@@ -8,8 +8,9 @@ import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const UserConsultationHistoryTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
@@ -99,7 +100,7 @@ const UserConsultationHistoryTable = () => {
       header: 'View',
       render: (c: IConsultationDto) => (
         <Link
-          to={`/user/consultation/${c.id}/history`}
+          to={userFrontendRoutes.consultationHistoryDetail(c.id)}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
           View
@@ -160,7 +161,7 @@ const UserConsultationHistoryTable = () => {
         <ReusableTable
           data={consultations}
           columns={columns}
-          onRowClick={(c: IConsultationDto) => navigate(`/user/consultation/${c.id}/history`)}
+          onRowClick={(c: IConsultationDto) => navigate(userFrontendRoutes.consultationHistoryDetail(c.id))}
           emptyMessage="No consultation history found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />

@@ -8,7 +8,7 @@ import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Loader2 } from 'lucide-react';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { KycStatus } from '@/constants/Kyc';
+import { KycStatus } from '@/constants/types/Kyc';
 
 const KycDetails = () => {
   const [kyc, setKyc] = useState<IKycDto | null>(null);

@@ -13,33 +13,34 @@ import type {
   IRequestPayoutResponse,
 } from '@/types/api/psychologist';
 import type { IConsultationDto } from '@/types/dtos/consultation';
+import { psychologistRoutes } from '@/constants/apiRoutes/psychologistRoutes';
+import type { SortFilterType } from '@/constants/types/SortFilter';
 
 export const psychologistApi = {
-  getProfile: async () => server.get<IPsychologistProfileDto>('/psychologist/profile'),
+  getProfile: async () => server.get<IPsychologistProfileDto>(psychologistRoutes.profile),
   submitVerification: async (data: FormData) =>
-    server.post<BackendResponse, FormData>('/auth/psychologist/verify-profile', data),
+    server.post<BackendResponse, FormData>(psychologistRoutes.verifyProfile, data),
   updatePsychologistProfile: async (data: FormData) =>
-    server.put<IPsychologistProfileDto, FormData>('/psychologist/profile', data, {
+    server.put<IPsychologistProfileDto, FormData>(psychologistRoutes.profile, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
-  createSingleSlot: async (data: ISingleSlotInput) => server.post('/psychologist/slot', data),
-  createRecurringSlot: async (data: IRecurringSlotInput) => server.post('/psychologist/slot', data),
-  getPsychologistSlots: async () => server.get<ISlotDto[]>('/psychologist/slot'),
+  createSingleSlot: async (data: ISingleSlotInput) => server.post(psychologistRoutes.slot, data),
+  createRecurringSlot: async (data: IRecurringSlotInput) => server.post(psychologistRoutes.slot, data),
+  getPsychologistSlots: async () => server.get<ISlotDto[]>(psychologistRoutes.slot),
   deleteSlotByPsychologist: async (input: IDeleteSlotInput) =>
-    server.delete<IDeleteSlotResponse>(`/psychologist/slot/${input.slotId}`),
-  getKycDetails: async () => server.get<IKycDto>('/psychologist/kyc'),
+    server.delete<IDeleteSlotResponse>(psychologistRoutes.slotById(input.slotId)),
+  getKycDetails: async () => server.get<IKycDto>(psychologistRoutes.kyc),
   getPsychologistConsultations: async (params?: IGetUserConsultationsRequest) =>
-    server.get<IGetPsychologistConsultationsResponse>('/psychologist/consultations', { params }),
+    server.get<IGetPsychologistConsultationsResponse>(psychologistRoutes.consultations, { params }),
   cancelConsultation: async (id: string, reason: string) =>
-    server.put<BackendResponse<IConsultationDto>, { reason: string }>(`/psychologist/consultation/${id}/cancel`, {
-      reason,
-    }),
+    server.put<BackendResponse<IConsultationDto>, { reason: string }>(
+      psychologistRoutes.consultationCancel(id), { reason }),
   getPsychologistConsultationHistory: async (params?: IGetUserConsultationHistoryRequest) =>
-    server.get<IGetPsychologistConsultationsResponse>('/psychologist/consultation/history', { params }),
+    server.get<IGetPsychologistConsultationsResponse>(psychologistRoutes.consultationHistory, { params }),
   getPatientHistory: async (patientId: string, params?: IGetUserConsultationHistoryRequest) =>
-    server.get<IGetPatientConsultationHistoryResponse>(`/psychologist/patients/${patientId}/history`, { params }),
-  getPendingPayout: async () => server.get<IGetPendingPayoutResponse>('/psychologist/payout/pending'),
-  requestPayout: async () => server.post<IRequestPayoutResponse, void>('/psychologist/payout-requests'),
-  getPayoutHistory: async (params?: { page?: number; limit?: number; sort?: 'asc' | 'desc' }) =>
-    server.get<IGetPayoutHistoryResponse>('/psychologist/payout-requests', { params }),
+    server.get<IGetPatientConsultationHistoryResponse>(psychologistRoutes.patientHistory(patientId), { params }),
+  getPendingPayout: async () => server.get<IGetPendingPayoutResponse>(psychologistRoutes.pendingPayout),
+  requestPayout: async () => server.post<IRequestPayoutResponse, void>(psychologistRoutes.requestPayout),
+  getPayoutHistory: async (params?: { page?: number; limit?: number; sort?: SortFilterType }) =>
+    server.get<IGetPayoutHistoryResponse>(psychologistRoutes.payoutHistory, { params }),
 };

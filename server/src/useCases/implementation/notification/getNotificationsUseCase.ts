@@ -15,14 +15,10 @@ export class GetNotificationUseCase implements IGetNotificationsUseCase {
 
     async execute(recipientId: string): Promise<INotificationDto[]> {
         if (!recipientId) {
-            throw new AppError(
-                authMessages.ERROR.UNAUTHORIZED,
-                HttpStatus.UNAUTHORIZED,
-            );
+            throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
         }
 
-        const notifications =
-            await this._notificationRepo.findByRecipient(recipientId);
+        const notifications = await this._notificationRepo.findByRecipient(recipientId);
         return notifications.map(n => toNotificationDto(n));
     }
 }

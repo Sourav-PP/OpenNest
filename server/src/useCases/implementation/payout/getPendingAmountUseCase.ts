@@ -34,30 +34,19 @@ export class GetPendingAmountUseCase implements IGetPendingAmountUseCase {
         consultationCount: number;
         consultationIds: string[];
     }> {
-        const psychologist =
-            await this._psychologistRepository.findByUserId(psychologistId);
-        if (!psychologist)
-            throw new AppError(
-                psychologistMessages.ERROR.NOT_FOUND,
-                HttpStatus.NOT_FOUND,
-            );
+        const psychologist = await this._psychologistRepository.findByUserId(psychologistId);
+        if (!psychologist) throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-        const pendingRequests =
-            await this._payoutRequestRepository.findByPsychologistId(
-                psychologist.userId,
-            );
+        const pendingRequests = await this._payoutRequestRepository.findByPsychologistId(psychologist.userId);
         const pendingConsultationIds = pendingRequests
             .filter(request => request.status === PayoutRequestStatus.PENDING)
             .flatMap(r => r.consultationIds);
 
-        const consultations =
-            await this._consultationRepository.findUnpaidCompletedConsultationsByPsychologistId(
-                psychologist.id,
-            );
-
-        const eligibleConsultations = consultations.filter(
-            c => !pendingConsultationIds.includes(c.id),
+        const consultations = await this._consultationRepository.findUnpaidCompletedConsultationsByPsychologistId(
+            psychologist.id,
         );
+
+        const eligibleConsultations = consultations.filter(c => !pendingConsultationIds.includes(c.id));
         if (eligibleConsultations.length === 0) {
             return {
                 totalAmount: 0,
@@ -68,9 +57,7 @@ export class GetPendingAmountUseCase implements IGetPendingAmountUseCase {
             };
         }
 
-        const payments = await this._paymentRepository.findByConsultationIds(
-            eligibleConsultations.map(c => c.id),
-        );
+        const payments = await this._paymentRepository.findByConsultationIds(eligibleConsultations.map(c => c.id));
 
         if (payments.length === 0) {
             return {
@@ -82,14 +69,9 @@ export class GetPendingAmountUseCase implements IGetPendingAmountUseCase {
             };
         }
 
-        const totalAmount = payments.reduce(
-            (sum, payment) => sum + payment.amount,
-            0,
-        );
+        const totalAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
 
-        const commissionAmount = Math.round(
-            (totalAmount * appConfig.stripe.commissionPercentage) / 100,
-        );
+        const commissionAmount = Math.round((totalAmount * appConfig.stripe.commissionPercentage) / 100);
 
         const payoutAmount = totalAmount - commissionAmount;
 

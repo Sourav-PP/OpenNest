@@ -41,10 +41,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         const payload = await this._googleAuthService.verifyToken(credential);
 
         if (!payload || !payload.email) {
-            throw new AppError(
-                authMessages.ERROR.INVALID_GOOGLE_TOKEN,
-                HttpStatus.UNAUTHORIZED,
-            );
+            throw new AppError(authMessages.ERROR.INVALID_GOOGLE_TOKEN, HttpStatus.UNAUTHORIZED);
         }
 
         const { email, name, picture, sub: googleId } = payload;
@@ -56,16 +53,9 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
 
             if (picture) {
                 try {
-                    profileImageUrl = await this._fileStorage.uploadFromUrl(
-                        picture,
-                        googleId,
-                        'profile_images',
-                    );
+                    profileImageUrl = await this._fileStorage.uploadFromUrl(picture, googleId, 'profile_images');
                 } catch (err) {
-                    console.error(
-                        'Cloudinary upload failed, fallback to google picture',
-                        err,
-                    );
+                    console.error('Cloudinary upload failed, fallback to google picture', err);
                     profileImageUrl = picture; // fallback
                 }
             }
@@ -85,48 +75,25 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         }
 
         if (!user.isActive) {
-            throw new AppError(
-                authMessages.ERROR.BLOCKED_USER,
-                HttpStatus.FORBIDDEN,
-            );
+            throw new AppError(authMessages.ERROR.BLOCKED_USER, HttpStatus.FORBIDDEN);
         }
 
         if (!user.id) {
-            throw new AppError(
-                adminMessages.ERROR.USER_ID_REQUIRED,
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new AppError(adminMessages.ERROR.USER_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
 
-        const accessToken = this._tokenService.generateAccessToken(
-            user.id,
-            user.role,
-            user.email,
-            user.isActive,
-        );
-        const refreshToken = this._tokenService.generateRefreshToken(
-            user.id,
-            user.role,
-            user.email,
-            user.isActive,
-        );
+        const accessToken = this._tokenService.generateAccessToken(user.id, user.role, user.email, user.isActive);
+        const refreshToken = this._tokenService.generateRefreshToken(user.id, user.role, user.email, user.isActive);
 
         let hasSubmittedVerificationForm = false;
 
         if (user.role === UserRole.PSYCHOLOGIST) {
-            const psychologist = await this._psychologistRepo.findByUserId(
-                user.id,
-            );
+            const psychologist = await this._psychologistRepo.findByUserId(user.id);
             if (psychologist) {
                 hasSubmittedVerificationForm = true;
             }
         }
 
-        return toLoginOutputDto(
-            user,
-            accessToken,
-            refreshToken,
-            hasSubmittedVerificationForm,
-        );
+        return toLoginOutputDto(user, accessToken, refreshToken, hasSubmittedVerificationForm);
     }
 }

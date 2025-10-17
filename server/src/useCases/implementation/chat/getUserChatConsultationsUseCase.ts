@@ -12,28 +12,20 @@ export class GetUserChatConsultationsUseCase implements IGetUserChatConsultation
         this._consultationRepo = consultationRepo;
     }
 
-    async execute(
-        input: IGetConsultationsRequest,
-    ): Promise<IGetUserChatConsultationsResponse> {
+    async execute(input: IGetConsultationsRequest): Promise<IGetUserChatConsultationsResponse> {
         const { search, sort, status, page = 1, limit = 10 } = input;
 
-        const finalSort =
-            sort === SortFilter.ASC || sort === SortFilter.DESC
-                ? sort
-                : SortFilter.DESC;
+        const finalSort = sort === SortFilter.ASC || sort === SortFilter.DESC ? sort : SortFilter.DESC;
         const skip = (page - 1) * limit;
         const userId = input.patientId;
 
-        const consultations = await this._consultationRepo.findByPatientId(
-            userId,
-            {
-                search,
-                sort: finalSort,
-                limit,
-                status,
-                skip,
-            },
-        );
+        const consultations = await this._consultationRepo.findByPatientId(userId, {
+            search,
+            sort: finalSort,
+            limit,
+            status,
+            skip,
+        });
 
         const mappedConsultations = consultations.map(c =>
             toUserChatConsultationDto(
@@ -46,8 +38,7 @@ export class GetUserChatConsultationsUseCase implements IGetUserChatConsultation
             ),
         );
 
-        const totalCount =
-            await this._consultationRepo.countAllByPatientId(userId);
+        const totalCount = await this._consultationRepo.countAllByPatientId(userId);
 
         return {
             consultations: mappedConsultations,

@@ -1,4 +1,4 @@
-import type { UserGenderType, UserRoleType } from '@/constants/User';
+import type { UserGenderType, UserRoleType } from '@/constants/types/User';
 
 export interface IUserDto {
   id: string;

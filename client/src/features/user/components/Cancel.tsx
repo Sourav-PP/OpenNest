@@ -1,3 +1,4 @@
+import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 import { XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ export default function Cancel() {
         Your payment was cancelled. If this was a mistake, please try again.
       </p>
       <Link
-        to="/user/therapist"
+        to={userFrontendRoutes.psychologist}
         className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-md transition-all"
       >
         Try Again

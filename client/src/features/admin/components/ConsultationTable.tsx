@@ -11,8 +11,8 @@ import {
   ConsultationStatusFilter,
   type ConsultationStatusFilterType,
   type ConsultationStatusType,
-} from '@/constants/Consultation';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+} from '@/constants/types/Consultation';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { generalMessages } from '@/messages/GeneralMessages';
 

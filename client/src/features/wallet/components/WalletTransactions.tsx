@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import type { IWalletTransaction } from '@/types/dtos/wallet';
 import { ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import CustomPagination from '@/components/user/CustomPagination';
+import { WalletTransactionType } from '@/constants/types/Wallet';
 
 interface Props {
   transactions: IWalletTransaction[];
@@ -46,7 +47,7 @@ const WalletTransactions: React.FC<Props> = ({
               <li key={tx.id} className="py-4 flex justify-between items-center">
                 {/* Left side: Icon + Details */}
                 <div className="flex items-start gap-3">
-                  {tx.type === 'credit' ? (
+                  {tx.type === WalletTransactionType.CREDIT ? (
                     <ArrowDownCircle className="text-green-500 w-7 h-7 mt-1" />
                   ) : (
                     <ArrowUpCircle className="text-red-500 w-7 h-7 mt-1" />
@@ -76,8 +77,8 @@ const WalletTransactions: React.FC<Props> = ({
 
                 {/* Right side: Amount */}
                 <div className="text-right">
-                  <p className={`text-lg font-semibold ${tx.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
-                    {tx.type === 'credit' ? '+' : '-'}${tx.amount.toFixed(2)}
+                  <p className={`text-lg font-semibold ${tx.type === WalletTransactionType.CREDIT ? 'text-green-600' : 'text-red-600'}`}>
+                    {tx.type === WalletTransactionType.CREDIT ? '+' : '-'}${tx.amount.toFixed(2)}
                   </p>
                 </div>
               </li>

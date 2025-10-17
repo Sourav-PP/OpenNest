@@ -7,10 +7,10 @@ import ConfirmModal from '@/components/admin/ConfirmModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import Filters from '@/components/admin/Filters';
 import type { PayoutRequestListItemDto } from '@/types/dtos/payoutRequest';
-import { UserGenderFilter, type UserGenderFilterType } from '@/constants/User';
-import { SortFilter, type SortFilterType } from '@/constants/SortFilter';
+import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/User';
+import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
-import { PayoutRequestStatus } from '@/constants/PayoutRequest';
+import { PayoutRequestStatus } from '@/constants/types/PayoutRequest';
 
 const PendingPayoutTable = () => {
   const [payouts, setPayouts] = useState<PayoutRequestListItemDto[]>([]);
