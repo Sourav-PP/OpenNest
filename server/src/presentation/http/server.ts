@@ -9,6 +9,7 @@ import adminRoutes from './routes/adminRoutes';
 import userRoutes from './routes/userRoutes';
 import psychologistRoutes from './routes/psychologistRoutes';
 import chatRoutes from './routes/chatRoutes';
+import { notFoundHandler } from './middlewares/notFoundHandler';
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/psychologist', psychologistRoutes);
 app.use('/api/chat', chatRoutes);
 
+app.use(notFoundHandler);
 app.use(errorHandler as ErrorRequestHandler);
 
 export { app };

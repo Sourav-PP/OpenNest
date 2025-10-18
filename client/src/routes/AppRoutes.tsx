@@ -7,6 +7,8 @@ import { userRoutes } from './UserRoutes';
 import { psychologistRoutes } from './PsychologistRoutes';
 import { adminRoutes } from './AdminRoutes';
 import { publicRoutes } from './PublicRoutes';
+import NotFound from '@/components/user/NotFound';
+import SystemError from '@/components/user/systemErrorPage';
 
 const AppRoutesInner = () => {
   const navigate = useNavigate();
@@ -45,6 +47,9 @@ const AppRoutesInner = () => {
         {adminRoutes.map(route => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
+
+        <Route path="/system-error" element={<SystemError />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </>
   );

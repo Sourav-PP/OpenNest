@@ -44,7 +44,7 @@ instance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomAxiosRequestConfig;
 
-    // blocked account
+    // blocked account (403)
     if (error.response?.status === HttpStatus.FORBIDDEN) {
       toast.error(generalMessages.ERROR.BLOCKED_USER);
       const role = store.getState().auth.role;
@@ -63,6 +63,7 @@ instance.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // unauthorized (401)
     if (
       error.response?.status === HttpStatus.UNAUTHORIZED &&
       !originalRequest._retry &&
@@ -117,6 +118,16 @@ instance.interceptors.response.use(
         return Promise.reject(err);
       }
     }
+
+    // 🔹 404 handling
+    if (error.response?.status === HttpStatus.NOT_FOUND) {
+      const message = (error.response.data as any)?.message;
+      if (message === 'Route not found') {
+        navigateTo('/system-error');    
+        return Promise.reject(error); 
+      }
+    }
+
     return Promise.reject(error);
   }
 );

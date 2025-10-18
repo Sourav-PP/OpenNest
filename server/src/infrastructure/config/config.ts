@@ -38,6 +38,12 @@ export const appConfig = {
         url: required('MONGODB_URI', process.env.MONGODB_URI),
     },
 
+    redis: {
+        redisHost: process.env.REDIS_HOST,
+        redisPort: Number(process.env.REDIS_PORT),
+        redisPassword: process.env.REDIS_PASSWORD,
+    },
+
     nodemailer: {
         emailHost: required('EMAIL_HOST', process.env.EMAIL_HOST),
         emailPort: Number(process.env.EMAIL_PORT) || 587,

@@ -7,7 +7,7 @@ export class JwtTokenService implements ITokenService {
     private _generateSignupTokenSecret: string;
 
     constructor() {
-        this._accessTokenSecret =process.env.ACCESS_TOKEN_SECRET || '';
+        this._accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || '';
         this._refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || '';
         this._generateSignupTokenSecret = process.env.SIGNUP_TOKEN_SECRET || '';
     }
@@ -21,18 +21,31 @@ export class JwtTokenService implements ITokenService {
     }
 
     verifyRefreshToken(token: string): { userId: string; role: string; email: string; isActive: boolean } | null {
-        return jwt.verify(token, this._refreshTokenSecret) as { userId: string, role: string, email: string, isActive: boolean};
+        return jwt.verify(token, this._refreshTokenSecret) as {
+            userId: string;
+            role: string;
+            email: string;
+            isActive: boolean;
+        };
     }
 
-    verifyAccessToken(token: string): { userId: string; email: string; role: string; isActive: boolean } | null {
-        return jwt.verify(token, this._accessTokenSecret) as { userId: string, role: string, email: string, isActive: boolean};
+    verifyAccessToken(
+        token: string,
+    ): { userId: string; email: string; role: string; isActive: boolean; exp: number } | null {
+        return jwt.verify(token, this._accessTokenSecret) as {
+            userId: string;
+            role: string;
+            email: string;
+            isActive: boolean;
+            exp: number;
+        };
     }
 
     generateSignupToken(email: string): string {
         return jwt.sign({ email }, this._generateSignupTokenSecret, { expiresIn: '10m' });
     }
 
-    verifySignupToken(token: string): { email: string; } | null {
-        return jwt.verify(token, this._generateSignupTokenSecret) as {email: string};
+    verifySignupToken(token: string): { email: string } | null {
+        return jwt.verify(token, this._generateSignupTokenSecret) as { email: string };
     }
 }

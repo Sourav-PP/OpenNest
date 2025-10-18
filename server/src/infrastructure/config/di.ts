@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import { appConfig } from './config';
 
 const stripe = new Stripe(appConfig.stripe.secretKey, {
-    apiVersion:  '2025-09-30.clover' ,
+    apiVersion: '2025-09-30.clover',
 });
 
 const baseUrl = appConfig.server.frontendUrl;
@@ -37,7 +37,6 @@ import { AdminAuthAccountRepository } from '../repositories/admin/adminAuthAccou
 import { ServiceRepository } from '../repositories/admin/serviceRepository';
 import { TransactionManager } from '../repositories/transactionManager';
 
-
 //===================== SERVICES ======================
 
 // shared services
@@ -47,6 +46,7 @@ import { JwtTokenService } from '../services/tokenService';
 import { NodemailerOtpService } from '../services/otpService';
 import { PaymentService } from '../services/paymentService';
 import { VideoCallService } from '../services/videoCallService';
+import { RedisTokenBlacklistService } from '../services/RedisTokenBlacklistService';
 
 // ==================== USE CASES =======================
 
@@ -96,7 +96,7 @@ import { GetSlotByPsychologistUseCase } from '../../useCases/implementation/psyc
 import { DeleteSlotUseCase } from '../../useCases/implementation/psychologist/availability/DeleteSlotUseCase';
 import { GetKycDetailsUseCase } from '../../useCases/implementation/psychologist/profile/getKycDetailsUseCase';
 import { GetPsychologistConsultationUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistConsultationsUseCase';
-import { PsychologistCancelConsultationUseCase } from '@/useCases/implementation/psychologist/data/psychologistCancelConsultationUseCase';  
+import { PsychologistCancelConsultationUseCase } from '@/useCases/implementation/psychologist/data/psychologistCancelConsultationUseCase';
 import { GetPsychologistConsultationHistoryUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistConsultationHistoryUseCase';
 import { GetPatientConsultationHistoryUseCase } from '@/useCases/implementation/psychologist/data/getPatientConsultationHistoryUseCase';
 import { RequestPayoutUseCase } from '@/useCases/implementation/payout/requestPayoutUseCase';
@@ -163,8 +163,6 @@ import { GoogleLoginController } from '../../presentation/http/controllers/auth/
 import { PaymentController } from '../../presentation/http/controllers/user/paymentController';
 import { SubscriptionController } from '@/presentation/http/controllers/subscription/SubscriptionController';
 
-
-
 //---------------- psychologist -----------------
 import { SlotController } from '@/presentation/http/controllers/psychologist/SlotController';
 import { PsychologistConsultationController } from '@/presentation/http/controllers/psychologist/PsychologistConsultationController';
@@ -192,8 +190,6 @@ import { NotificationController } from '@/presentation/http/controllers/notifica
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
 import { MessageRepository } from '../repositories/user/messageRepository';
 
-
-
 // ======================= DI IMPLEMENTATION =======================
 
 // ---------- SERVICES ----------
@@ -203,12 +199,12 @@ const otpRepository = new OtpRepository();
 const otpService = new NodemailerOtpService(otpRepository);
 const userRepository = new UserRepository();
 const transactionManager = new TransactionManager();
+const redisTokenBlacklistService = new RedisTokenBlacklistService();
 
-export const authenticateUser = authMiddleware(tokenService, ['user']);
-export const authenticatePsychologist = authMiddleware(tokenService, ['psychologist']);
-export const authenticateAdmin = authMiddleware(tokenService, ['admin']);
-export const authenticateAll = authMiddleware(tokenService, ['user', 'psychologist']);
-
+export const authenticateUser = authMiddleware(tokenService, redisTokenBlacklistService, ['user']);
+export const authenticatePsychologist = authMiddleware(tokenService, redisTokenBlacklistService, ['psychologist']);
+export const authenticateAdmin = authMiddleware(tokenService, redisTokenBlacklistService, ['admin']);
+export const authenticateAll = authMiddleware(tokenService, redisTokenBlacklistService, ['user', 'psychologist']);
 
 // ---------- user ------------
 
@@ -231,14 +227,19 @@ export const notificationRepository = new NotificationRepository();
 const subscriptionRepository = new SubscriptionRepository();
 const planRepository = new PlanRepository();
 
-
 const signupUseCase = new SignupUseCase(userRepository, tokenService, fileStorage);
-const loginUseCase = new LoginUseCase( userRepository, authService, tokenService, psychologistRepository );
-const googleLoginUseCase = new GoogleLoginUseCase(tokenService,userRepository, googleAuthService, psychologistRepository, fileStorage);
+const loginUseCase = new LoginUseCase(userRepository, authService, tokenService, psychologistRepository);
+const googleLoginUseCase = new GoogleLoginUseCase(
+    tokenService,
+    userRepository,
+    googleAuthService,
+    psychologistRepository,
+    fileStorage,
+);
 const verifyForgotPasswordUseCase = new VerifyForgotPasswordUseCase(otpRepository);
 const resetPasswordUseCase = new ResetPasswordUseCase(otpRepository, userRepository, authService);
 const changePasswordUseCase = new ChangePasswordUseCase(userRepository, authService);
-const logoutUseCase = new LogoutUseCase();
+const logoutUseCase = new LogoutUseCase(redisTokenBlacklistService, tokenService);
 const sendOtpUseCase = new SendOtpUseCase(otpService);
 const verifyOtpUseCase = new VerifyOtpUseCase(otpService, tokenService, userRepository, authService);
 const refreshTokenUseCase = new RefreshTokenUseCase(tokenService, userAuthRepository);
@@ -246,11 +247,33 @@ const getAllServicesUseCase = new GetAllServiceUseCase(userServiceRepository);
 const getAllPsychologistUseCase = new GetAllPsychologistsForUserUseCase(psychologistRepository);
 const getUserProfileUseCase = new GetUserProfileUseCase(userRepository);
 const updateUserProfileUseCase = new UpdateUserProfileUseCase(userRepository, fileStorage);
-const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(psychologistRepository, kycRepository, userRepository);
+const getPsychologistDetailsUseCase = new GetPsychologistDetailsUseCase(
+    psychologistRepository,
+    kycRepository,
+    userRepository,
+);
 const getSlotsForUserUseCase = new GetSlotForUserUseCase(slotRepository, psychologistRepository);
-const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(paymentService, paymentRepository, slotRepository, consultationRepository);
+const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(
+    paymentService,
+    paymentRepository,
+    slotRepository,
+    consultationRepository,
+    psychologistRepository,
+);
 const createNotificationUseCase = new CreateNotificationUseCase(notificationRepository);
-const handleWebhookUseCase = new HandleWebhookUseCase(paymentRepository, paymentService, consultationRepository, slotRepository, walletRepository, videoCallService, videoCallRepository, psychologistRepository, createNotificationUseCase,subscriptionRepository, planRepository );
+const handleWebhookUseCase = new HandleWebhookUseCase(
+    paymentRepository,
+    paymentService,
+    consultationRepository,
+    slotRepository,
+    walletRepository,
+    videoCallService,
+    videoCallRepository,
+    psychologistRepository,
+    createNotificationUseCase,
+    subscriptionRepository,
+    planRepository,
+);
 const getUserConsultationsUseCase = new GetUserConsultationsUseCase(consultationRepository);
 const createWalletUseCase = new CreateWalletUseCase(walletRepository);
 const getWalletByIdUseCase = new GetWalletByIdUseCase(walletRepository);
@@ -258,15 +281,37 @@ const getWalletByUserUseCase = new GetWalletByUserUseCase(walletRepository);
 const createWalletTransactionUseCase = new CreateWalletTransactionUseCase(walletRepository);
 const listWalletTransactionsUseCase = new ListWalletTransactionsUseCase(walletRepository);
 const getUserConsultationByIdUseCase = new GetUserConsultationByIdUseCase(consultationRepository);
-const cancelConsultationUseCase = new CancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository, slotRepository);
+const cancelConsultationUseCase = new CancelConsultationUseCase(
+    walletRepository,
+    consultationRepository,
+    paymentRepository,
+    slotRepository,
+);
 const getUserConsultationHistoryUseCase = new GetUserConsultationHistoryUseCase(consultationRepository);
-const getUserConsultationHistoryDetailsUseCase = new GetUserConsultationHistoryDetailsUseCase(consultationRepository, videoCallRepository);
-const createSubscriptionCheckoutSessionUseCase = new CreateSubscriptionCheckoutSessionUseCase(paymentService, paymentRepository, planRepository);
-const bookConsultationWithSubscriptionUseCase = new BookConsultationWithSubscriptionUseCase(subscriptionRepository, slotRepository, consultationRepository, videoCallService, videoCallRepository, createNotificationUseCase, psychologistRepository, paymentRepository);
+const getUserConsultationHistoryDetailsUseCase = new GetUserConsultationHistoryDetailsUseCase(
+    consultationRepository,
+    videoCallRepository,
+);
+const createSubscriptionCheckoutSessionUseCase = new CreateSubscriptionCheckoutSessionUseCase(
+    paymentService,
+    paymentRepository,
+    planRepository,
+);
+const bookConsultationWithSubscriptionUseCase = new BookConsultationWithSubscriptionUseCase(
+    subscriptionRepository,
+    slotRepository,
+    consultationRepository,
+    videoCallService,
+    videoCallRepository,
+    createNotificationUseCase,
+    psychologistRepository,
+    paymentRepository,
+);
 const getUserActiveSubscriptionUseCase = new GetUserActiveSubscriptionUseCase(subscriptionRepository);
-const cancelSubscriptionUseCase = new CancelSubscriptionUseCase(subscriptionRepository, paymentService);    
+const cancelSubscriptionUseCase = new CancelSubscriptionUseCase(subscriptionRepository, paymentService);
 const listPlansUseCase = new ListPlansUseCase(planRepository);
 
+// controllers
 export const authController = new AuthController(
     signupUseCase,
     sendOtpUseCase,
@@ -274,20 +319,42 @@ export const authController = new AuthController(
     loginUseCase,
     logoutUseCase,
 );
-
-export const userConsultationController = new UserConsultationController(getUserConsultationsUseCase, getUserConsultationByIdUseCase, cancelConsultationUseCase, getUserConsultationHistoryUseCase, getUserConsultationHistoryDetailsUseCase);
-export const userPsychologistController = new UserPsychologistController(getAllPsychologistUseCase, getPsychologistDetailsUseCase);
+export const userConsultationController = new UserConsultationController(
+    getUserConsultationsUseCase,
+    getUserConsultationByIdUseCase,
+    cancelConsultationUseCase,
+    getUserConsultationHistoryUseCase,
+    getUserConsultationHistoryDetailsUseCase,
+);
+export const userPsychologistController = new UserPsychologistController(
+    getAllPsychologistUseCase,
+    getPsychologistDetailsUseCase,
+);
 export const userProfileController = new UserProfileController(getUserProfileUseCase, updateUserProfileUseCase);
 export const userServiceController = new UserServiceController(getAllServicesUseCase);
 export const userSlotController = new UserSlotController(getSlotsForUserUseCase);
-export const userWalletController = new UserWalletController(createWalletUseCase, createWalletTransactionUseCase, getWalletByIdUseCase, getWalletByUserUseCase, listWalletTransactionsUseCase);
-
+export const userWalletController = new UserWalletController(
+    createWalletUseCase,
+    createWalletTransactionUseCase,
+    getWalletByIdUseCase,
+    getWalletByUserUseCase,
+    listWalletTransactionsUseCase,
+);
 export const forgotPasswordController = new ForgotPasswordController(verifyForgotPasswordUseCase, resetPasswordUseCase);
 export const googleLoginController = new GoogleLoginController(googleLoginUseCase);
 export const refreshTokenController = new RefreshTokenController(refreshTokenUseCase, 'refreshToken');
 export const changePasswordController = new ChangePasswordController(changePasswordUseCase);
-export const paymentController = new PaymentController(createCheckoutSessionUseCase, handleWebhookUseCase, createSubscriptionCheckoutSessionUseCase, bookConsultationWithSubscriptionUseCase);
-export const subscriptionController = new SubscriptionController(getUserActiveSubscriptionUseCase, cancelSubscriptionUseCase, listPlansUseCase);    
+export const paymentController = new PaymentController(
+    createCheckoutSessionUseCase,
+    handleWebhookUseCase,
+    createSubscriptionCheckoutSessionUseCase,
+    bookConsultationWithSubscriptionUseCase,
+);
+export const subscriptionController = new SubscriptionController(
+    getUserActiveSubscriptionUseCase,
+    cancelSubscriptionUseCase,
+    listPlansUseCase,
+);
 
 // ---------- PSYCHOLOGIST ----------
 
@@ -295,24 +362,66 @@ const payoutRequestRepository = new PayoutRequestRepository();
 
 const verifyPsychologistUseCase = new VerifyPsychologistUseCase(psychologistRepository, kycRepository, fileStorage);
 const getProfileUseCase = new GetProfileUseCase(psychologistRepository, kycRepository, userRepository);
-const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(psychologistRepository, userRepository, fileStorage);
+const updatePsychologistProfileUseCase = new UpdatePsychologistProfileUseCase(
+    psychologistRepository,
+    userRepository,
+    fileStorage,
+);
 const createSlotUseCase = new CreateSlotUseCase(slotRepository, psychologistRepository);
 const getSlotByPsychologistUseCase = new GetSlotByPsychologistUseCase(slotRepository, psychologistRepository);
 const deleteSlotUseCase = new DeleteSlotUseCase(slotRepository, psychologistRepository);
 const getKycDetailsUseCase = new GetKycDetailsUseCase(kycRepository, psychologistRepository);
-const getPsychologistConsultationsUseCase = new GetPsychologistConsultationUseCase(consultationRepository, psychologistRepository);
-const psychologistCancelConsultationUseCase = new PsychologistCancelConsultationUseCase(walletRepository, consultationRepository, paymentRepository, slotRepository, psychologistRepository);
-const getPsychologistConsultationHistoryUseCase = new GetPsychologistConsultationHistoryUseCase(consultationRepository, psychologistRepository);
-const getPatientConsultationHistoryUseCase = new GetPatientConsultationHistoryUseCase(consultationRepository, psychologistRepository);
-const requestPayoutUseCase = new RequestPayoutUseCase(consultationRepository, payoutRequestRepository, paymentRepository, psychologistRepository);
+const getPsychologistConsultationsUseCase = new GetPsychologistConsultationUseCase(
+    consultationRepository,
+    psychologistRepository,
+);
+const psychologistCancelConsultationUseCase = new PsychologistCancelConsultationUseCase(
+    walletRepository,
+    consultationRepository,
+    paymentRepository,
+    slotRepository,
+    psychologistRepository,
+);
+const getPsychologistConsultationHistoryUseCase = new GetPsychologistConsultationHistoryUseCase(
+    consultationRepository,
+    psychologistRepository,
+);
+const getPatientConsultationHistoryUseCase = new GetPatientConsultationHistoryUseCase(
+    consultationRepository,
+    psychologistRepository,
+);
+const requestPayoutUseCase = new RequestPayoutUseCase(
+    consultationRepository,
+    payoutRequestRepository,
+    paymentRepository,
+    psychologistRepository,
+);
 const listPayoutRequestsByPsychologistUseCase = new ListPayoutRequestsByPsychologistUseCase(payoutRequestRepository);
-const getPendingAmountUseCase = new GetPendingAmountUseCase(consultationRepository, paymentRepository, psychologistRepository, payoutRequestRepository);
+const getPendingAmountUseCase = new GetPendingAmountUseCase(
+    consultationRepository,
+    paymentRepository,
+    psychologistRepository,
+    payoutRequestRepository,
+);
 
+// controllers
 export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
-export const psychologistConsultationController = new PsychologistConsultationController(getPsychologistConsultationsUseCase, psychologistCancelConsultationUseCase, getPsychologistConsultationHistoryUseCase, getPatientConsultationHistoryUseCase);
-export const psychologistProfileController = new PsychologistProfileController(getProfileUseCase, updatePsychologistProfileUseCase);
+export const psychologistConsultationController = new PsychologistConsultationController(
+    getPsychologistConsultationsUseCase,
+    psychologistCancelConsultationUseCase,
+    getPsychologistConsultationHistoryUseCase,
+    getPatientConsultationHistoryUseCase,
+);
+export const psychologistProfileController = new PsychologistProfileController(
+    getProfileUseCase,
+    updatePsychologistProfileUseCase,
+);
 export const psychologistKycController = new PsychologistKycController(getKycDetailsUseCase, verifyPsychologistUseCase);
-export const psychologistPayoutController = new PsychologistPayoutController(requestPayoutUseCase, listPayoutRequestsByPsychologistUseCase, getPendingAmountUseCase);
+export const psychologistPayoutController = new PsychologistPayoutController(
+    requestPayoutUseCase,
+    listPayoutRequestsByPsychologistUseCase,
+    getPendingAmountUseCase,
+);
 
 // ---------- ADMIN ----------
 
@@ -326,35 +435,60 @@ const createServiceUseCase = new CreateServiceUseCase(serviceRepository, fileSto
 const deleteServiceUseCase = new DeleteServiceUseCase(serviceRepository);
 const getAllUserUseCase = new GetAllUserUseCase(userRepository);
 const getAllPsychologistsUseCase = new GetAllPsychologistsForAdminUseCase(psychologistRepository);
-const toggleUserStatusUseCase = new ToggleUserStatusUseCase(userRepository);
+const toggleUserStatusUseCase = new ToggleUserStatusUseCase(userRepository, redisTokenBlacklistService);
 const getAllKycUseCase = new GetAllKycUseCase(kycRepository);
 const getKycForPsychologistUseCase = new GetKycForPsychologistUseCase(kycRepository);
-const approveKycUseCase = new ApproveKycUseCase(kycRepository,psychologistRepository);
-const rejectKycUseCase = new RejectKycUseCase(kycRepository,psychologistRepository);
+const approveKycUseCase = new ApproveKycUseCase(kycRepository, psychologistRepository);
+const rejectKycUseCase = new RejectKycUseCase(kycRepository, psychologistRepository);
 const getAllConsultationsUseCase = new GetAllConsultationsUseCase(consultationRepository);
 const createPlanUseCase = new CreatePlanUseCase(planRepository, paymentService);
 const getAllPlansUseCase = new GetAllPlansUseCase(planRepository);
 const listAllPayoutRequestsUseCase = new ListAllPayoutRequestsUseCase(payoutRequestRepository);
-const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(payoutRequestRepository, walletRepository, transactionManager, consultationRepository);
+const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(
+    payoutRequestRepository,
+    walletRepository,
+    transactionManager,
+    consultationRepository,
+);
 const rejectPayoutRequestUseCase = new RejectPayoutRequestUseCase(payoutRequestRepository);
 export const updateMissedConsultationsUseCase = new UpdateMissedConsultationUseCase(consultationRepository);
 const getTopPsychologistsUseCase = new GetTopPsychologistUseCase(psychologistRepository);
 
-export const adminKycController = new AdminKycController(getAllKycUseCase, getKycForPsychologistUseCase, approveKycUseCase, rejectKycUseCase);
-export const adminUserManagementController = new AdminUserManagementController(getAllUserUseCase, getAllPsychologistsUseCase, toggleUserStatusUseCase);
+// controllers
+export const adminKycController = new AdminKycController(
+    getAllKycUseCase,
+    getKycForPsychologistUseCase,
+    approveKycUseCase,
+    rejectKycUseCase,
+);
+export const adminUserManagementController = new AdminUserManagementController(
+    getAllUserUseCase,
+    getAllPsychologistsUseCase,
+    toggleUserStatusUseCase,
+);
 export const adminServiceController = new AdminServiceController(createServiceUseCase, deleteServiceUseCase);
-export const adminConsultationController = new AdminConsultationController(getAllConsultationsUseCase, getTopPsychologistsUseCase);
+export const adminConsultationController = new AdminConsultationController(
+    getAllConsultationsUseCase,
+    getTopPsychologistsUseCase,
+);
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase);
-export const adminRefreshTokenController  = new RefreshTokenController(adminRefreshTokenUseCase, 'adminRefreshToken');
+export const adminRefreshTokenController = new RefreshTokenController(adminRefreshTokenUseCase, 'adminRefreshToken');
 export const planController = new PlanController(getAllPlansUseCase, createPlanUseCase);
-export const adminPayoutController = new AdminPayoutController(listAllPayoutRequestsUseCase, approvePayoutRequestUseCase, rejectPayoutRequestUseCase);
+export const adminPayoutController = new AdminPayoutController(
+    listAllPayoutRequestsUseCase,
+    approvePayoutRequestUseCase,
+    rejectPayoutRequestUseCase,
+);
 
 //--------------- chat -----------------------
 
 const messageRepository = new MessageRepository();
 
 const getUserChatConsultationsUseCase = new GetUserChatConsultationsUseCase(consultationRepository);
-const getPsychologistChatConsultationsUseCase = new GetPsychologistChatConsultationsUseCase(consultationRepository, psychologistRepository);
+const getPsychologistChatConsultationsUseCase = new GetPsychologistChatConsultationsUseCase(
+    consultationRepository,
+    psychologistRepository,
+);
 const ensureMembershipUseCase = new EnsureMembershipUseCase(consultationRepository, psychologistRepository);
 const sendMessageUseCase = new SendMessageUseCase(messageRepository, ensureMembershipUseCase);
 const getHistoryUseCase = new GetHistoryUseCase(messageRepository);
@@ -363,7 +497,15 @@ const markReadUseCase = new MarkReadUseCase(messageRepository, psychologistRepos
 const uploadChatMediaUseCase = new UploadChatMediaUseCase(chatFileStorage);
 const deleteMessageUseCase = new DeleteMessageUseCase(messageRepository);
 
-export const chatMessageController = new ChatMessageController(sendMessageUseCase, getHistoryUseCase, getUnreadCountUseCase, markReadUseCase, getUserChatConsultationsUseCase, getPsychologistChatConsultationsUseCase);
+// controllers
+export const chatMessageController = new ChatMessageController(
+    sendMessageUseCase,
+    getHistoryUseCase,
+    getUnreadCountUseCase,
+    markReadUseCase,
+    getUserChatConsultationsUseCase,
+    getPsychologistChatConsultationsUseCase,
+);
 export const chatFileController = new ChatFileController(uploadChatMediaUseCase);
 //----------------video call--------------------
 
@@ -375,8 +517,19 @@ const endVideoCallUseCase = new EndVideoCallUseCase(videoCallRepository, consult
 const getNotificationsUseCase = new GetNotificationUseCase(notificationRepository);
 const markNotificationAsReadUseCase = new MarkNotificationAsReadUseCase(notificationRepository);
 
-export const notificationController = new NotificationController(getNotificationsUseCase, markNotificationAsReadUseCase);
+// controllers
+export const notificationController = new NotificationController(
+    getNotificationsUseCase,
+    markNotificationAsReadUseCase,
+);
 
 // socket handler
 export const chatSocketHandler = new ChatSocketHandler(sendMessageUseCase, markReadUseCase, deleteMessageUseCase);
-export const videoCallSocketHandler = new VideoCallSocketHandler(startVideoCallUseCase, endVideoCallUseCase, consultationRepository, videoCallRepository, psychologistRepository, userRepository);
+export const videoCallSocketHandler = new VideoCallSocketHandler(
+    startVideoCallUseCase,
+    endVideoCallUseCase,
+    consultationRepository,
+    videoCallRepository,
+    psychologistRepository,
+    userRepository,
+);

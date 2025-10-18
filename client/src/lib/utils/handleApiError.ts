@@ -18,6 +18,11 @@ export const handleApiError = <T extends FieldValues>(err: unknown, setError?: U
     });
   }
 
+  if (error.response?.status === 404) {
+    const message = error.response.data?.message;
+    if (message === 'Route not found') return; 
+  }
+
   // Show general error toast
   const message =
     error.response?.data?.message || (error.response ? `HTTP ${error.response.status} Error` : 'Network error');

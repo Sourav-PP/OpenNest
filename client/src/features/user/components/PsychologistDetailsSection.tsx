@@ -23,6 +23,7 @@ const PsychologistDetailsSection = () => {
         }
         setPsychologist(res.data.psychologist);
       } catch (err) {
+        console.log('its here: ', err);
         handleApiError(err);
       } finally {
         setLoading(false);

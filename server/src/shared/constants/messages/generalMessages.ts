@@ -13,6 +13,7 @@ export const generalMessages = {
         CONFLICT: 'Conflict occurred, please check your request',
         INVALID_TOKEN: 'Token is invalid',
         NO_TOKEN: 'No token is provided',
+        ROUTE_NOT_FOUND: 'Route not found',
     },
     INFO: {
         PROCESSING: 'Your request is being processed',

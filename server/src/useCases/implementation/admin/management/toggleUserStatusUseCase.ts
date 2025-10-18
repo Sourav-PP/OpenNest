@@ -1,14 +1,17 @@
 import { AppError } from '@/domain/errors/AppError';
 import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
+import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlackListService';
 import { userMessages } from '@/shared/constants/messages/userMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IToggleUserStatusUseCase } from '@/useCases/interfaces/admin/management/IToggleUserStatusUseCase';
 
 export class ToggleUserStatusUseCase implements IToggleUserStatusUseCase {
     private _userRepo: IUserRepository;
+    private _tokenBlacklistService: ITokenBlacklistService;
 
-    constructor(userRepo: IUserRepository) {
+    constructor(userRepo: IUserRepository, tokenBlacklistService: ITokenBlacklistService) {
         this._userRepo = userRepo;
+        this._tokenBlacklistService = tokenBlacklistService;
     }
 
     async execute(userId: string, status: 'active' | 'inactive'): Promise<void> {
@@ -17,5 +20,12 @@ export class ToggleUserStatusUseCase implements IToggleUserStatusUseCase {
 
         const isActive = status === 'active';
         await this._userRepo.updateStatus(userId, isActive);
+
+        if (!isActive) {
+            const ttl = 5 * 60;
+            await this._tokenBlacklistService.blackListUser(userId, ttl);
+        } else {
+            await this._tokenBlacklistService.removeBlockedUser(userId);
+        }
     }
 }

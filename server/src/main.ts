@@ -15,9 +15,11 @@ import { configureSocket } from './infrastructure/config/socket';
 import { NotificationSocketHandler } from './presentation/socket/notificationSocketHandler';
 import { NotificationJob } from './infrastructure/cron/notificationJob';
 import { ConsultationMissedJob } from './infrastructure/cron/consultationMissedJob';
+import { connectRedis } from './infrastructure/redis/redisClient';
 
 async function startServer() {
     await connectDB();
+    await connectRedis();
 
     const httpServer = createServer(app);
 
