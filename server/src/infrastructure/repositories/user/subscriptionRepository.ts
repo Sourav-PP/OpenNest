@@ -1,10 +1,7 @@
 import { ISubscriptionRepository } from '@/domain/repositoryInterface/ISubscriptionRepository';
 import { GenericRepository } from '../GenericRepository';
 import { Subscription } from '@/domain/entities/subscription';
-import {
-    ISubscriptionDocument,
-    SubscriptionModel,
-} from '@/infrastructure/database/models/user/SubscriptionModel';
+import { ISubscriptionDocument, SubscriptionModel } from '@/infrastructure/database/models/user/SubscriptionModel';
 import mongoose, { PipelineStage, Types } from 'mongoose';
 import { Plan } from '@/domain/entities/plan';
 import { SubscriptionStatus } from '@/domain/enums/PlanEnums';
@@ -17,9 +14,7 @@ export class SubscriptionRepository
         super(SubscriptionModel);
     }
 
-    async findByStripeSubscriptionId(
-        stripeSubscriptionId: string,
-    ): Promise<Subscription | null> {
+    async findByStripeSubscriptionId(stripeSubscriptionId: string): Promise<Subscription | null> {
         const subscription = await SubscriptionModel.findOne({
             stripeSubscriptionId,
         }).exec();
@@ -32,13 +27,19 @@ export class SubscriptionRepository
         return subscriptions.map(s => this.map(s));
     }
 
-    async findActiveByUserId(userId: string): Promise<{subscription: Subscription; plan: Plan} | null> {
+    async findActiveByUserId(userId: string): Promise<{ subscription: Subscription; plan: Plan } | null> {
         const pipeline: PipelineStage[] = [
-            { $match: { userId: new mongoose.Types.ObjectId(userId), status: SubscriptionStatus.ACTIVE, creditRemaining: { $gt: 0 } } },
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    status: SubscriptionStatus.ACTIVE,
+                    creditRemaining: { $gt: 0 },
+                },
+            },
 
             {
                 $lookup: {
-                    from: 'plans', 
+                    from: 'plans',
                     localField: 'planId',
                     foreignField: '_id',
                     as: 'plan',
@@ -87,12 +88,9 @@ export class SubscriptionRepository
         ).exec();
         if (!subscription) return null;
         return this.map(subscription);
-    }   
+    }
 
-    async decrementCreditsAtomically(
-        subscriptionId: string,
-        amount: number,
-    ): Promise<Subscription | null> {
+    async decrementCreditsAtomically(subscriptionId: string, amount: number): Promise<Subscription | null> {
         const subscription = await SubscriptionModel.findOneAndUpdate(
             {
                 _id: new Types.ObjectId(subscriptionId),
@@ -106,10 +104,18 @@ export class SubscriptionRepository
         return this.map(subscription);
     }
 
-    async resetCredits(
-        subscriptionId: string,
-        credits: number,
-    ): Promise<Subscription | null> {
+    async incrementCredit(subscriptionId: string, amount: number): Promise<Subscription | null> {
+        const subscription = await SubscriptionModel.findByIdAndUpdate(
+            subscriptionId,
+            { $inc: { creditRemaining: amount } }, // increase credit
+            { new: true },
+        ).exec();
+
+        if (!subscription) return null;
+        return this.map(subscription);
+    }
+
+    async resetCredits(subscriptionId: string, credits: number): Promise<Subscription | null> {
         const updated = await SubscriptionModel.findByIdAndUpdate(
             subscriptionId,
             { $set: { creditRemaining: credits } },

@@ -50,5 +50,7 @@ export function toNotificationDto(notification: Notification): INotificationDto 
         type: notification.type,
         consultationId: notification.consultationId,
         read: notification.read,
+        createdAt: notification.createdAt,
+        notifyAt: notification.notifyAt,
     };
 }

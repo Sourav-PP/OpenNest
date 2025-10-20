@@ -8,7 +8,7 @@ export interface Notification {
     type: NotificationType;
     message: string;
     read: boolean;
-    notifyAt: Date;
+    notifyAt?: Date;
     sent: boolean;
     createdAt?: Date;
 }

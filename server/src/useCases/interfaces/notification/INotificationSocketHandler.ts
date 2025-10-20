@@ -4,6 +4,6 @@ export interface INotificationSocketHandler {
     register(socket: Socket): void;
     sendNotification(
         recipientId: string,
-        notification: { id: string; message: string; type: string; consultationId?: string, read: boolean },
+        notification: { id: string; message: string; type: string; consultationId?: string, read: boolean, createdAt?: Date, notifyAt?: Date },
     ): Promise<void>;
 }

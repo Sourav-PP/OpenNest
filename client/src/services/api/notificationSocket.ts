@@ -8,6 +8,8 @@ const notificationHandlers: ((data: {
   type: NotificationTypeValue;
   consultationId?: string;
   read: boolean;
+  createdAt: Date;
+  notifyAt?: Date;
 }) => void)[] = [];
 
 export function connectNotificationSocket(token: string) {
@@ -30,7 +32,7 @@ export function connectNotificationSocket(token: string) {
   // listen for notifications
   socket.on(
     'notification',
-    (data: { id: string; message: string; type: NotificationTypeValue; consultationId?: string; read: boolean }) => {
+    (data: { id: string; message: string; type: NotificationTypeValue; consultationId?: string; read: boolean, createdAt: Date, notifyAt?: Date }) => {
       notificationHandlers.slice().forEach(cb => cb(data));
     }
   );
@@ -45,6 +47,8 @@ export function onNotification(
     type: NotificationTypeValue;
     consultationId?: string;
     read: boolean;
+    createdAt: Date;
+    notifyAt?: Date;
   }) => void
 ) {
   if (!notificationHandlers.includes(cb)) notificationHandlers.push(cb);

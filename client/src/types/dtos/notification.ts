@@ -6,4 +6,6 @@ export interface INotificationDto {
   type: NotificationTypeValue;
   consultationId?: string | undefined;
   read: boolean;
+  createdAt: Date;
+  notifyAt?: Date;
 }

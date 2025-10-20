@@ -1,3 +1,4 @@
+import { NotificationType } from '@/domain/enums/NotificationEnums';
 import { INotificationSocketHandler } from '@/useCases/interfaces/notification/INotificationSocketHandler';
 import { Server, Socket } from 'socket.io';
 
@@ -21,7 +22,7 @@ export class NotificationSocketHandler implements INotificationSocketHandler {
 
     async sendNotification(
         recipientId: string,
-        notification: { id: string; message: string; type: string; consultationId?: string; read: boolean },
+        notification: { id: string; message: string; type: NotificationType; consultationId?: string; read: boolean, createAt?: Date, notifyAt?: Date },
     ): Promise<void> {
         this._io.to(recipientId).emit('notification', notification);
     }
