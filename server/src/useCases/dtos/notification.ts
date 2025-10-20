@@ -6,4 +6,6 @@ export interface INotificationDto {
     type: NotificationType;
     consultationId?: string;
     read: boolean;
+    createdAt?: Date,
+    notifyAt?: Date,
 }

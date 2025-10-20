@@ -30,6 +30,7 @@ export class NotificationJob {
                         type: notification.type,
                         consultationId: notification.consultationId,
                         read: notification.read,
+                        notifyAt: notification.notifyAt,
                     },
                 );
 

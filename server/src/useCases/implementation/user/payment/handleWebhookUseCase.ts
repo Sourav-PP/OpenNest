@@ -27,6 +27,9 @@ import { VideoCallStatus } from '@/domain/enums/VideoCallEnums';
 import { NotificationType } from '@/domain/enums/NotificationEnums';
 import { WalletTransactionStatus, WalletTransactionType } from '@/domain/enums/WalletEnums';
 import { PlanBillingPeriod, SubscriptionStatus } from '@/domain/enums/PlanEnums';
+import { INotificationService } from '@/domain/serviceInterface/INotificationService';
+import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
+import { userMessages } from '@/shared/constants/messages/userMessages';
 
 export class HandleWebhookUseCase implements IHandleWebhookUseCase {
     private _paymentRepo: IPaymentRepository;
@@ -40,6 +43,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
     private _createNotificationUseCase: ICreateNotificationUseCase;
     private _subscriptionRepo: ISubscriptionRepository;
     private _planRepo: IPlanRepository;
+    private _getNotificationService: () => INotificationService;
+    private _userRepo: IUserRepository;
 
     constructor(
         paymentRepo: IPaymentRepository,
@@ -53,6 +58,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
         createNotificationUseCase: ICreateNotificationUseCase,
         subscriptionRepo: ISubscriptionRepository,
         planRepo: IPlanRepository,
+        notificationService: () => INotificationService,
+        userRepo: IUserRepository,
     ) {
         this._paymentRepo = paymentRepo;
         this._paymentService = paymentService;
@@ -65,6 +72,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
         this._createNotificationUseCase = createNotificationUseCase;
         this._subscriptionRepo = subscriptionRepo;
         this._planRepo = planRepo;
+        this._getNotificationService = notificationService;
+        this._userRepo = userRepo;
     }
 
     async execute(payload: Buffer, signature: string, endpointSecret: string): Promise<void> {
@@ -133,14 +142,23 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 payment.transactionId = (session.payment_intent as string) ?? null;
                 payment.consultationId = consultation.id;
                 await this._paymentRepo.updateBySessionId(sessionId, payment);
-
                 await this._slotRepo.markSlotAsBooked(meta.slotId, payment.userId);
+
+                const patient = await this._userRepo.findById(consultation.patientId);
+                if (!patient) {
+                    throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+                }
 
                 const psychologist = await this._psychologistRepo.findById(consultation.psychologistId);
                 if (!psychologist) {
                     throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
                 }
 
+                //user document of psychologist
+                const psychologistUser = await this._userRepo.findById(psychologist.userId);
+                if (!psychologistUser) {
+                    throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+                }
                 const oneHourBefore = new Date(consultation.startDateTime.getTime() - 60 * 60 * 1000);
 
                 // reminder notification for the patient
@@ -163,6 +181,24 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                     read: false,
                     notifyAt: oneHourBefore,
                     sent: false,
+                });
+                const notificationService = this._getNotificationService();
+                console.log('service: ', notificationService);
+
+                // event based notification for user
+                await notificationService.send({
+                    recipientId: consultation.patientId,
+                    consultationId: consultation.id,
+                    type: NotificationType.CONSULTATION_BOOKED,
+                    message: `Your consultations with ${psychologistUser.name} has been booked successfully`,
+                });
+
+                // event based notification for psychologist
+                await notificationService.send({
+                    recipientId: psychologist.userId,
+                    consultationId: consultation.id,
+                    type: NotificationType.CONSULTATION_BOOKED,
+                    message: `New consultation booked by ${patient.name} for ${consultation.startDateTime.toLocaleDateString()}`,
                 });
 
                 console.log(`Consultation ${consultation.id} created for session ${sessionId}`);
@@ -189,6 +225,15 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 payment.paymentStatus = PaymentStatus.SUCCEEDED;
                 payment.transactionId = (session.payment_intent as string) ?? null;
                 await this._paymentRepo.updateBySessionId(sessionId, payment);
+
+                const notificationService = this._getNotificationService();
+                console.log('service: ', notificationService);
+                // event based notification for wallet credit
+                await notificationService.send({
+                    recipientId: wallet.userId,
+                    type: NotificationType.WALLET_CREDITED,
+                    message: `Your wallet has been credit with ${payment.amount}$`,
+                });
                 console.log(`Wallet credited for user ${payment.userId} for session ${sessionId}`);
             }
 
@@ -262,6 +307,14 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 payment.paymentStatus = PaymentStatus.SUCCEEDED;
                 payment.transactionId = (session.payment_intent as string) ?? null;
                 await this._paymentRepo.updateBySessionId(sessionId, payment);
+
+                const notificationService = this._getNotificationService();
+                // event based notification for subscribing to plan
+                await notificationService.send({
+                    recipientId: payment.userId,
+                    type: NotificationType.SUBSCRIPTION_PURCHASED,
+                    message: `Your subscription to ${plan.name} has been activated successfully`,
+                });
                 console.log(`Subscription created/updated for user ${payment.userId} for session ${sessionId}`);
             }
             break;

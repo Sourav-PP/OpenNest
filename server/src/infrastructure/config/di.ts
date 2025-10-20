@@ -47,6 +47,7 @@ import { NodemailerOtpService } from '../services/otpService';
 import { PaymentService } from '../services/paymentService';
 import { VideoCallService } from '../services/videoCallService';
 import { RedisTokenBlacklistService } from '../services/RedisTokenBlacklistService';
+import { NotificationService } from '../services/notificationService';
 
 // ==================== USE CASES =======================
 
@@ -189,6 +190,7 @@ import { NotificationController } from '@/presentation/http/controllers/notifica
 //===================== MIDDLEWARE ========================
 import { authMiddleware } from '../../presentation/http/middlewares/authMiddleware';
 import { MessageRepository } from '../repositories/user/messageRepository';
+import { NotificationSocketHandler } from '@/presentation/socket/notificationSocketHandler';
 
 // ======================= DI IMPLEMENTATION =======================
 
@@ -200,6 +202,56 @@ const otpService = new NodemailerOtpService(otpRepository);
 const userRepository = new UserRepository();
 const transactionManager = new TransactionManager();
 const redisTokenBlacklistService = new RedisTokenBlacklistService();
+
+let notificationSocketHandlerInstance: NotificationSocketHandler | null = null;
+let notificationServiceInstance: NotificationService | null = null;
+
+// --- Socket handler controls ---
+export function setNotificationSocketHandler(handler: NotificationSocketHandler) {
+    notificationSocketHandlerInstance = handler;
+}
+
+// --- Lazy builder ---
+export function buildNotificationService(): NotificationService {
+    if (!notificationSocketHandlerInstance) {
+        throw new Error('NotificationSocketHandler not set yet.');
+    }
+
+    return new NotificationService(
+        createNotificationUseCase,
+        notificationSocketHandlerInstance,
+        notificationRepository,
+    );
+}
+
+// --- Initialization and getter ---
+export function initNotificationService() {
+    if (!notificationServiceInstance) {
+        notificationServiceInstance = buildNotificationService();
+        console.log('NotificationService initialized');
+    }
+}
+
+export function getNotificationService(): NotificationService {
+    if (!notificationServiceInstance) {
+        throw new Error(
+            'NotificationService not initialized. Call initNotificationService() after setting the socket handler.',
+        );
+    }
+    return notificationServiceInstance;
+}
+
+// --- Lazy provider for use cases ---
+export function provideNotificationService(): NotificationService {
+    try {
+        return getNotificationService();
+    } catch (e) {
+        console.log(e);
+        initNotificationService();
+        return getNotificationService();
+    }
+}
+
 
 export const authenticateUser = authMiddleware(tokenService, redisTokenBlacklistService, ['user']);
 export const authenticatePsychologist = authMiddleware(tokenService, redisTokenBlacklistService, ['psychologist']);
@@ -261,6 +313,8 @@ const createCheckoutSessionUseCase = new CreateCheckoutSessionUseCase(
     psychologistRepository,
 );
 const createNotificationUseCase = new CreateNotificationUseCase(notificationRepository);
+
+
 const handleWebhookUseCase = new HandleWebhookUseCase(
     paymentRepository,
     paymentService,
@@ -273,6 +327,8 @@ const handleWebhookUseCase = new HandleWebhookUseCase(
     createNotificationUseCase,
     subscriptionRepository,
     planRepository,
+    () => provideNotificationService(),
+    userRepository,
 );
 const getUserConsultationsUseCase = new GetUserConsultationsUseCase(consultationRepository);
 const createWalletUseCase = new CreateWalletUseCase(walletRepository);
@@ -286,6 +342,9 @@ const cancelConsultationUseCase = new CancelConsultationUseCase(
     consultationRepository,
     paymentRepository,
     slotRepository,
+    subscriptionRepository,
+    userRepository,
+    () => provideNotificationService(),
 );
 const getUserConsultationHistoryUseCase = new GetUserConsultationHistoryUseCase(consultationRepository);
 const getUserConsultationHistoryDetailsUseCase = new GetUserConsultationHistoryDetailsUseCase(
@@ -435,11 +494,11 @@ const createServiceUseCase = new CreateServiceUseCase(serviceRepository, fileSto
 const deleteServiceUseCase = new DeleteServiceUseCase(serviceRepository);
 const getAllUserUseCase = new GetAllUserUseCase(userRepository);
 const getAllPsychologistsUseCase = new GetAllPsychologistsForAdminUseCase(psychologistRepository);
-const toggleUserStatusUseCase = new ToggleUserStatusUseCase(userRepository, redisTokenBlacklistService);
+const toggleUserStatusUseCase = new ToggleUserStatusUseCase(userRepository, redisTokenBlacklistService, () => provideNotificationService() );
 const getAllKycUseCase = new GetAllKycUseCase(kycRepository);
 const getKycForPsychologistUseCase = new GetKycForPsychologistUseCase(kycRepository);
-const approveKycUseCase = new ApproveKycUseCase(kycRepository, psychologistRepository);
-const rejectKycUseCase = new RejectKycUseCase(kycRepository, psychologistRepository);
+const approveKycUseCase = new ApproveKycUseCase(kycRepository, psychologistRepository, () => provideNotificationService());
+const rejectKycUseCase = new RejectKycUseCase(kycRepository, psychologistRepository, () => provideNotificationService());
 const getAllConsultationsUseCase = new GetAllConsultationsUseCase(consultationRepository);
 const createPlanUseCase = new CreatePlanUseCase(planRepository, paymentService);
 const getAllPlansUseCase = new GetAllPlansUseCase(planRepository);

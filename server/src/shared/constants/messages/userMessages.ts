@@ -2,8 +2,8 @@ export const userMessages = {
     SUCCESS: {
         REGISTRATION: 'Registration completed successfully',
         PROFILE_UPDATE: 'Profile updated successfully',
-        ACCOUNT_ACTIVATED: 'Account activated successfully',
-        ACCOUNT_DEACTIVATED: 'Account deactivated successfully',
+        ACCOUNT_ACTIVATED: 'Your account has been reactivated. You can now log in again.',
+        ACCOUNT_DEACTIVATED: 'Your account has been deactivated. Please contact support for assistance.',
         USER_STATUS_UPDATED: 'User status updated successfully',
     },
     ERROR: {

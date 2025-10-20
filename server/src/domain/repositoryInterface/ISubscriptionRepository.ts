@@ -18,6 +18,10 @@ export interface ISubscriptionRepository {
         subscriptionId: string,
         amount: number,
     ): Promise<Subscription | null>;
+    incrementCredit(
+        subscriptionId: string,
+        amount: number,
+    ): Promise<Subscription | null>;
     resetCredits(
         subscriptionId: string,
         credits: number,

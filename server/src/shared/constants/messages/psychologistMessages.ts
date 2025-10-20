@@ -5,11 +5,13 @@ export const psychologistMessages = {
         SLOT_UPDATED: 'Slot updated successfully',
         SLOT_DELETED: 'Slot deleted successfully',
         KYC_SUBMITTED: 'Psychologist verification profile submitted successfully',
+        KYC_APPROVED: 'Your KYC has been approved. You can now accept consultations.',
     },
     ERROR: {
         NOT_FOUND: 'Psychologist not found',
         NO_SPECIALIZATIONS: 'No specializations found for this psychologist',
         KYC_CREATION_FAILED: 'Unable to process your verification. Please try again later.',
+        KYC_REJECTED: 'Your KYC has been rejected. Please re-upload the correct documents.',
         SLOT_NOT_FOUND: 'Requested slot not found',
         SLOT_ALREADY_BOOKED: 'This slot is already booked',
         PROFILE_UPDATE_FAILED: 'Failed to update profile',

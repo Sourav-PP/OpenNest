@@ -10,6 +10,8 @@ import {
     tokenService,
     notificationRepository,
     updateMissedConsultationsUseCase,
+    setNotificationSocketHandler,
+    initNotificationService,
 } from './infrastructure/config/di';
 import { configureSocket } from './infrastructure/config/socket';
 import { NotificationSocketHandler } from './presentation/socket/notificationSocketHandler';
@@ -32,6 +34,8 @@ async function startServer() {
     });
 
     const notificationSocketHandler = new NotificationSocketHandler(io);
+    setNotificationSocketHandler(notificationSocketHandler);
+    initNotificationService();
     configureSocket(io, chatSocketHandler, videoCallSocketHandler, notificationSocketHandler, tokenService);
     const notificationJob = new NotificationJob(notificationRepository, notificationSocketHandler);
     const consultationMissedJob = new ConsultationMissedJob(updateMissedConsultationsUseCase);
