@@ -103,6 +103,7 @@ import { GetPatientConsultationHistoryUseCase } from '@/useCases/implementation/
 import { RequestPayoutUseCase } from '@/useCases/implementation/payout/requestPayoutUseCase';
 import { ListPayoutRequestsByPsychologistUseCase } from '@/useCases/implementation/payout/listPayoutRequestsByPsychologistUseCase';
 import { GetPendingAmountUseCase } from '@/useCases/implementation/payout/getPendingAmountUseCase';
+import { UpdateConsultationNotesUseCase } from '@/useCases/implementation/psychologist/data/updateConsultaitonNotesUseCase';
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -462,6 +463,7 @@ const getPendingAmountUseCase = new GetPendingAmountUseCase(
     psychologistRepository,
     payoutRequestRepository,
 );
+const updateConsultationNotesUseCase = new UpdateConsultationNotesUseCase(consultationRepository, psychologistRepository);
 
 // controllers
 export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
@@ -470,6 +472,7 @@ export const psychologistConsultationController = new PsychologistConsultationCo
     psychologistCancelConsultationUseCase,
     getPsychologistConsultationHistoryUseCase,
     getPatientConsultationHistoryUseCase,
+    updateConsultationNotesUseCase,
 );
 export const psychologistProfileController = new PsychologistProfileController(
     getProfileUseCase,

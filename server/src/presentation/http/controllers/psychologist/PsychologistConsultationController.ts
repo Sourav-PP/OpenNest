@@ -3,12 +3,14 @@ import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 import { sessionMessages } from '@/shared/constants/messages/sessionMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IGetPatientConsultationHistoryUseCase } from '@/useCases/interfaces/psychologist/data/IGetPatientConsultationHistoryUseCase';
 import { IGetPsychologistConsultationHistoryUseCase } from '@/useCases/interfaces/psychologist/data/IGetPsychologistConsultationHistoryUseCase';
 import { IGetPsychologistConsultationUseCase } from '@/useCases/interfaces/psychologist/data/IGetPsychologistConsultationsUseCase';
 import { IPsychologistCancelConsultationUseCase } from '@/useCases/interfaces/psychologist/data/IPsychologistCancelConsultationUseCase';
+import { IUpdateConsultationNotesUseCase } from '@/useCases/interfaces/psychologist/data/IUpdateConsultationNotesUseCase';
 import { NextFunction, Request, Response } from 'express';
 
 export class PsychologistConsultationController {
@@ -16,17 +18,20 @@ export class PsychologistConsultationController {
     private _psychologistCancelConsultationUseCase: IPsychologistCancelConsultationUseCase;
     private _getPsychologistConsultationHistoryUseCase: IGetPsychologistConsultationHistoryUseCase;
     private _getPatientConsultationHistoryUseCase: IGetPatientConsultationHistoryUseCase;
+    private _updateConsultationNotesUseCase: IUpdateConsultationNotesUseCase;
 
     constructor(
         getPsychologistConsultationUseCase: IGetPsychologistConsultationUseCase,
         psychologistCancelConsultationUseCase: IPsychologistCancelConsultationUseCase,
         getPsychologistConsultationHistoryUseCase: IGetPsychologistConsultationHistoryUseCase,
         getPatientConsultationHistoryUseCase: IGetPatientConsultationHistoryUseCase,
+        updateConsultationNotesUseCase: IUpdateConsultationNotesUseCase,
     ) {
         this._getPsychologistConsultationUseCase = getPsychologistConsultationUseCase;
         this._psychologistCancelConsultationUseCase = psychologistCancelConsultationUseCase;
         this._getPsychologistConsultationHistoryUseCase = getPsychologistConsultationHistoryUseCase;
         this._getPatientConsultationHistoryUseCase = getPatientConsultationHistoryUseCase;
+        this._updateConsultationNotesUseCase = updateConsultationNotesUseCase;
     }
 
     getConsultations = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -135,6 +140,33 @@ export class PsychologistConsultationController {
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
+                data: result,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    updateNotes = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+            }
+
+            const { consultationId } = req.params;
+            const { privateNotes, feedback } = req.body;
+
+            const result = await this._updateConsultationNotesUseCase.execute({
+                consultationId,
+                userId,
+                privateNotes,
+                feedback,
+            });
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: psychologistMessages.SUCCESS.NOTES_SENT,
                 data: result,
             });
         } catch (error) {

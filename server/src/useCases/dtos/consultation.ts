@@ -1,3 +1,4 @@
+import { ConsultationNotes } from '@/domain/entities/consultation';
 import { Message } from '@/domain/entities/message';
 import { ConsultationStatus } from '@/domain/enums/ConsultationEnums';
 import { PaymentMethod, PaymentStatus } from '@/domain/enums/PaymentEnums';
@@ -91,7 +92,7 @@ export interface IUserConsultationDetailsDto {
     meetingLink?: string;
     startDateTime: Date;
     endDateTime: Date;
-
+    notes?: ConsultationNotes;
     psychologist: {
         id: string;
         name: string;
@@ -125,7 +126,7 @@ export interface IConsultationHistoryDetailsDto {
     meetingLink?: string;
     startDateTime: Date;
     endDateTime: Date;
-
+    notes?: ConsultationNotes;
     psychologist: {
         id: string;
         name: string;

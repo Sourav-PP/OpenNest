@@ -14,6 +14,11 @@ export interface IConsultationDocument extends Document {
     paymentStatus: ConsultationPaymentStatus;
     paymentMethod: ConsultationPaymentMethod;
     paymentIntentId: string | null
+    notes?: {
+        privateNotes?: string;
+        feedback?: string;
+        updatedAt?: Date;
+    };
     cancellationReason?: string;
     cancelledAt?: Date;
     includedInPayout: boolean;
@@ -67,6 +72,11 @@ const ConsultationSchema = new Schema<IConsultationDocument>(
         paymentMethod: {
             type: String,
             enum: Object.values(ConsultationPaymentMethod),
+        },
+        notes: {
+            privateNotes: { type: String, default: '' },
+            feedback: { type: String, default: '' },
+            updatedAt: { type: Date, default: null },
         },
         cancellationReason: { 
             type: String,

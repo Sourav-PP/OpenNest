@@ -2,6 +2,12 @@ import type { ConsultationStatusType } from '@/constants/types/Consultation';
 import type { IMessageDto } from './message';
 import type { PaymentMethodType, PaymentStatusType } from '@/constants/types/Payment';
 
+export interface ConsultationNotes {
+    privateNotes?: string;
+    feedback?: string;
+    updatedAt?: Date;
+}
+
 export interface IConsultationDto {
   id: string;
   patientId: string;

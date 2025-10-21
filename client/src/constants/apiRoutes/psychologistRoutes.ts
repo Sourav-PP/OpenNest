@@ -11,4 +11,5 @@ export const psychologistRoutes = {
   pendingPayout: '/psychologist/payout/pending',
   requestPayout: '/psychologist/payout-requests',
   payoutHistory: '/psychologist/payout-requests',
+  updateNotes: (consultationId: string) => `/psychologist/consultation/${consultationId}/notes`
 } as const;

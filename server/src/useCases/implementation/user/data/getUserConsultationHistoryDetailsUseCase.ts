@@ -41,7 +41,7 @@ export class GetUserConsultationHistoryDetailsUseCase implements IGetUserConsult
             call,
             result?.payment,
         );
-
+        console.log('mapped: ', mappedConsultation);
         return mappedConsultation;
     }
 }

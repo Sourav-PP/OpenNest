@@ -1,5 +1,5 @@
 import { ClientSession } from 'mongoose';
-import { Consultation } from '../entities/consultation';
+import { Consultation, ConsultationNotes } from '../entities/consultation';
 import { Message } from '../entities/message';
 import { Payment } from '../entities/payment';
 import { Psychologist } from '../entities/psychologist';
@@ -74,4 +74,5 @@ export interface IConsultationRepository {
             cancellationReason: string;
         },
     ): Promise<void>; 
+    updateNotes(consultationId: string, notes: ConsultationNotes): Promise<Consultation | null>
 }

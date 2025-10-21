@@ -12,6 +12,8 @@ import { generalMessages } from '@/messages/GeneralMessages';
 import { ConsultationStatus } from '@/constants/types/Consultation';
 import { PaymentStatus } from '@/constants/types/Payment';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { Button } from '@/components/ui/button';
+import ConsultationNotesModal from './ConsultationNotesModal';
 
 const PsychologistConsultationsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +21,7 @@ const PsychologistConsultationsDetail = () => {
   const [consultation, setConsultation] = useState<IUserConsultationDetailsResponseData>();
   const [loading, setLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
-
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [reason, setReason] = useState('');
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -60,6 +62,7 @@ const PsychologistConsultationsDetail = () => {
       setLoading(true);
       const res = await userApi.UserConsultationsDetail(id);
 
+      console.log('reere: ', res);
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
@@ -230,6 +233,35 @@ const PsychologistConsultationsDetail = () => {
           </p>
         </div>
 
+        {/* notes */}
+        {consultation.notes && (consultation.notes.privateNotes || consultation.notes.feedback) && (
+          <div className="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-4">
+            {consultation.notes.privateNotes && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">Private Notes</h4>
+                <p className="text-gray-800">{consultation.notes.privateNotes}</p>
+              </div>
+            )}
+            {consultation.notes.feedback && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">Feedback to Patient</h4>
+                <p className="text-gray-800">{consultation.notes.feedback}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        { consultation.status === ConsultationStatus.Completed && (
+          <div>
+            <Button
+              onClick={() => setIsNotesModalOpen(true)}
+              className="mt-4 bg-indigo-700 hover:bg-indigo-800 text-white"
+            >
+              Add / Edit Notes & Feedback
+            </Button>
+          </div>
+        )}
+
         {/* Payment Details */}
         <div>
           <h4 className="text-md font-semibold text-gray-900 mb-3">Payment Details</h4>
@@ -360,6 +392,15 @@ const PsychologistConsultationsDetail = () => {
           placeholder="Enter reason..."
         />
       </ConfirmationModal>
+
+      {/* add notes Modal */}
+      <ConsultationNotesModal
+        consultationId={consultation.id}
+        isOpen={isNotesModalOpen}
+        onClose={() => setIsNotesModalOpen(false)}
+        initialNotes={consultation.notes}
+        onSaved={(notes) => setConsultation({ ...consultation, notes })}
+      />
     </div>
   );
 };

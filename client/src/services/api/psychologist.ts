@@ -43,4 +43,6 @@ export const psychologistApi = {
   requestPayout: async () => server.post<IRequestPayoutResponse, void>(psychologistRoutes.requestPayout),
   getPayoutHistory: async (params?: { page?: number; limit?: number; sort?: SortFilterType }) =>
     server.get<IGetPayoutHistoryResponse>(psychologistRoutes.payoutHistory, { params }),
+  updateConsultationNotes: async (consultationId: string, data: { privateNotes?: string, feedback?: string }) => 
+    server.put<BackendResponse<IConsultationDto>, typeof data>(psychologistRoutes.updateNotes(consultationId), data), 
 };

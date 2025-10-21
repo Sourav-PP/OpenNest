@@ -30,6 +30,7 @@ router.get(
     authenticatePsychologist,
     psychologistConsultationController.getPatientHistory,
 );
+router.put('/consultation/:consultationId/notes', authenticatePsychologist, psychologistConsultationController.updateNotes);
 router.get('/payout/pending', authenticatePsychologist, psychologistPayoutController.getPendingAmount);
 router.post('/payout-requests', authenticatePsychologist, psychologistPayoutController.requestPayout);
 router.get('/payout-requests', authenticatePsychologist, psychologistPayoutController.listPayouts);

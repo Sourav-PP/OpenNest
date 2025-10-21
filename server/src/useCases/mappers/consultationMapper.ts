@@ -162,7 +162,7 @@ export function toUserConsultationDetail(
         meetingLink: consultation.meetingLink,
         startDateTime: consultation.startDateTime,
         endDateTime: consultation.endDateTime,
-
+        notes: consultation.notes,
         psychologist: {
             id: psychologist.id,
             name: psychologist.name,
@@ -207,7 +207,7 @@ export function toConsultationHistoryDetails(
         meetingLink: consultation.meetingLink,
         startDateTime: consultation.startDateTime,
         endDateTime: consultation.endDateTime,
-
+        notes: consultation.notes,
         psychologist: {
             id: psychologist.id,
             name: psychologist.name,

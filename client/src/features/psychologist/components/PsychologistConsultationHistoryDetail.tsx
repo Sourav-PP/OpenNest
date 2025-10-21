@@ -65,6 +65,8 @@ const PsychologistConsultationHistoryDetail = () => {
     );
   }
 
+  console.log('consultation: ', consultation);
+
   if (!consultation) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -132,6 +134,24 @@ const PsychologistConsultationHistoryDetail = () => {
             {consultation.sessionGoal}
           </p>
         </div>
+
+        {/* notes */}
+        {consultation.notes && (consultation.notes.privateNotes || consultation.notes.feedback) && (
+          <div className="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-4">
+            {consultation.notes.privateNotes && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">Private Notes</h4>
+                <p className="text-gray-800">{consultation.notes.privateNotes}</p>
+              </div>
+            )}
+            {consultation.notes.feedback && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">Feedback to Patient</h4>
+                <p className="text-gray-800">{consultation.notes.feedback}</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Schedule */}
         <div>

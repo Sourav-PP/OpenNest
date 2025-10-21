@@ -1,5 +1,11 @@
 import { ConsultationPaymentStatus, ConsultationStatus, ConsultationPaymentMethod } from '../enums/ConsultationEnums';
 
+export interface ConsultationNotes {
+    privateNotes?: string;
+    feedback?: string;
+    updatedAt?: Date;
+}
+
 export interface Consultation {
     id: string;
     patientId: string;
@@ -13,6 +19,7 @@ export interface Consultation {
     paymentStatus: ConsultationPaymentStatus
     paymentMethod: ConsultationPaymentMethod
     paymentIntentId: string | null;
+    notes?: ConsultationNotes;
     cancellationReason?: string;
     cancelledAt?: Date;
     includedInPayout: boolean;

@@ -17,11 +17,12 @@ export class GetUserConsultationByIdUseCase implements IGetUserConsultationByIdU
         if (!consultationId) {
             throw new AppError(bookingMessages.ERROR.CONSULTATION_ID_REQUIRED, HttpStatus.BAD_REQUEST);
         }
-
+        console.log('is it here?');
         const result = await this._consultationRepo.findByIdWithDetails(consultationId);
         if (!result) {
             throw new AppError(bookingMessages.ERROR.CONSULTATION_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
+        console.log('result: ',result);
 
         const mappedConsultation = toUserConsultationDetail(
             result.consultation,

@@ -1,5 +1,5 @@
 import type { ConsultationStatusFilterType, ConsultationStatusType } from '@/constants/types/Consultation';
-import type { IConsultationDto } from '../dtos/consultation';
+import type { ConsultationNotes, IConsultationDto } from '../dtos/consultation';
 import type { INotificationDto } from '../dtos/notification';
 import type { IPlanDto } from '../dtos/plan';
 import type { IPsychologistDto, IPsychologistProfileDto } from '../dtos/psychologist';
@@ -76,7 +76,7 @@ export interface IUserConsultationDetailsResponseData {
   meetingLink?: string;
   startDateTime: Date;
   endDateTime: Date;
-
+  notes: ConsultationNotes;
   psychologist: {
     id: string;
     name: string;
@@ -110,7 +110,7 @@ export interface IUserConsultationHistoryDetailsResponseData {
   meetingLink?: string;
   startDateTime: Date;
   endDateTime: Date;
-
+  notes: ConsultationNotes;
   psychologist: {
     id: string;
     name: string;

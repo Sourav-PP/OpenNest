@@ -1,5 +1,5 @@
 import mongoose, { ClientSession, PipelineStage } from 'mongoose';
-import { Consultation } from '@/domain/entities/consultation';
+import { Consultation, ConsultationNotes } from '@/domain/entities/consultation';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { ConsultationModel, IConsultationDocument } from '@/infrastructure/database/models/user/Consultation';
 import { Psychologist } from '@/domain/entities/psychologist';
@@ -531,7 +531,6 @@ export class ConsultationRepository
         slot: Slot;
         payment: Payment | null;
     } | null> {
-        console.log('id in repo: ', id);
         const pipeline: PipelineStage[] = [
             { $match: { _id: new mongoose.Types.ObjectId(id) } },
 
@@ -585,7 +584,6 @@ export class ConsultationRepository
         ];
 
         const result = await ConsultationModel.aggregate(pipeline);
-        console.log('result: ', result);
 
         if (!result || result.length === 0) return null;
         const item = result[0];
@@ -598,6 +596,7 @@ export class ConsultationRepository
                 endDateTime: item.endDateTime,
                 sessionGoal: item.sessionGoal,
                 status: item.status,
+                notes: item.notes,
                 meetingLink: item.meetingLink,
                 psychologistId: item.psychologist._id.toString(),
                 slotId: item.slot._id.toString(),
@@ -912,5 +911,15 @@ export class ConsultationRepository
         },
     ): Promise<void> {
         await ConsultationModel.findByIdAndUpdate(consultationId, update);
+    }
+    async updateNotes(consultationId: string, notes: ConsultationNotes): Promise<Consultation | null> {
+        const updated = await ConsultationModel.findByIdAndUpdate(
+            consultationId,
+            { $set: { notes } },
+            { new: true },
+        ).exec();
+
+        if (!updated) return null;
+        return this.map(updated);
     }
 }

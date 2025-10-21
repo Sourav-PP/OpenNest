@@ -6,6 +6,7 @@ export const psychologistMessages = {
         SLOT_DELETED: 'Slot deleted successfully',
         KYC_SUBMITTED: 'Psychologist verification profile submitted successfully',
         KYC_APPROVED: 'Your KYC has been approved. You can now accept consultations.',
+        NOTES_SENT: 'Consultation notes and feedback have been successfully saved.',
     },
     ERROR: {
         NOT_FOUND: 'Psychologist not found',

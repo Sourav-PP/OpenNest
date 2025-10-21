@@ -196,6 +196,19 @@ const UserConsultationsDetail = () => {
           </p>
         </div>
 
+        {consultation.status === ConsultationStatus.Completed && (
+          <div>
+            <h4 className="text-md font-semibold text-gray-900 mb-3">Psychologist Feedback</h4>
+            {consultation.notes && consultation.notes.feedback ? (
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                <p className="text-gray-700 leading-relaxed">{consultation.notes.feedback}</p>
+              </div>
+            ) : (
+              <p className="text-gray-500 italic">Feedback not provided yet.</p>
+            )}
+          </div>
+        )}
+
         {/* Payment Details */}
         <div>
           <h4 className="text-md font-semibold text-gray-900 mb-3">Payment Details</h4>
