@@ -14,6 +14,7 @@ import {
     ConsultationStatusFilter,
 } from '@/domain/enums/ConsultationEnums';
 import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { PaginatedPsychologistReviewsDTO, PsychologistReviewDTO } from '@/useCases/dtos/psychologist';
 
 export class ConsultationRepository
     extends GenericRepository<Consultation, IConsultationDocument>
@@ -39,6 +40,15 @@ export class ConsultationRepository
             paymentStatus: mapped.paymentStatus,
             paymentMethod: mapped.paymentMethod,
             paymentIntentId: mapped.paymentIntentId,
+            notes: mapped.notes
+                ? {
+                    privateNotes: mapped.notes.privateNotes || '',
+                    feedback: mapped.notes.feedback || '',
+                    updatedAt: mapped.notes.updatedAt || undefined,
+                }
+                : undefined,
+            rating: mapped.rating,
+            userFeedback: mapped.userFeedback,
             cancellationReason: mapped.cancellationReason,
             cancelledAt: mapped.cancelledAt,
             includedInPayout: mapped.includedInPayout,
@@ -597,6 +607,8 @@ export class ConsultationRepository
                 sessionGoal: item.sessionGoal,
                 status: item.status,
                 notes: item.notes,
+                rating: item.rating,
+                userFeedback: item.userFeedback,
                 meetingLink: item.meetingLink,
                 psychologistId: item.psychologist._id.toString(),
                 slotId: item.slot._id.toString(),
@@ -921,5 +933,81 @@ export class ConsultationRepository
 
         if (!updated) return null;
         return this.map(updated);
+    }
+
+    async findMany(filter: Partial<Consultation>): Promise<Consultation[]> {
+        const consultations = await ConsultationModel.find(filter);
+        return consultations.map(c => this.map(c));
+    }
+
+    async findPsychologistReviews(
+        psychologistId: string,
+        page: number,
+        limit: number,
+    ): Promise<PaginatedPsychologistReviewsDTO> {
+        const skip = (page - 1) * limit;
+        console.log('skip: ', skip, 'limit: ', limit);
+        console.log('psy: ', psychologistId);
+
+        const result = await ConsultationModel.aggregate([
+            {
+                $match: {
+                    psychologistId: new mongoose.Types.ObjectId(psychologistId),
+                    rating: { $exists: true },
+                    userFeedback: { $exists: true },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'patientId',
+                    foreignField: '_id',
+                    as: 'patient',
+                },
+            },
+            { $unwind: '$patient' },
+            {
+                $project: {
+                    _id: 1,
+                    rating: 1,
+                    userFeedback: 1,
+                    createdAt: 1,
+                    patient: {
+                        _id: '$patient._id',
+                        name: '$patient.name',
+                        profileImage: '$patient.profileImage',
+                    },
+                },
+            },
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+        ]);
+
+        const total = await ConsultationModel.countDocuments({
+            psychologistId,
+            rating: { $exists: true },
+            userFeedback: { $exists: true },
+        });
+
+        const reviews: PsychologistReviewDTO[] = result.map(item => ({
+            id: item._id.toString(),
+            rating: item.rating,
+            userFeedback: item.userFeedback,
+            createdAt: item.createdAt,
+            patient: {
+                id: item.patient._id.toString(),
+                name: item.patient.name,
+                profileImage: item.patient.profileImage,
+            },
+        }));
+
+        console.log('reviews: ', reviews);
+
+        return {
+            reviews,
+            total,
+            hasMore: skip + reviews.length < total,
+        };
     }
 }

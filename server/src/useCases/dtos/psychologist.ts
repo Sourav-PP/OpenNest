@@ -16,6 +16,8 @@ export interface IPsychologistProfileDto {
     profileImage?: string;
     kycStatus: KycStatus;
     specializationFees: SpecializationFee[];
+    averageRating?: number;
+    totalReviews?: number
 }
 
 export interface IPsychologistListDto {
@@ -47,6 +49,8 @@ export interface IPsychologistListUserDto {
     qualification: string;
     specializations: string[];
     specializationFees: SpecializationFee[];
+    averageRating?: number;
+    totalReviews?: number
 }
 
 export interface TopPsychologistDTO {
@@ -62,4 +66,22 @@ export interface TopPsychologistDTO {
     defaultFee: number;
     specializations: string[]
     totalConsultations: number;
+}
+
+export interface PsychologistReviewDTO {
+  id: string;
+  rating: number;
+  userFeedback: string;
+  createdAt: Date;
+  patient: {
+    id: string;
+    name: string;
+    profileImage?: string;
+  };
+}
+
+export interface PaginatedPsychologistReviewsDTO {
+  reviews: PsychologistReviewDTO[];
+  total: number;
+  hasMore: boolean;
 }

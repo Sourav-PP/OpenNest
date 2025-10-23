@@ -21,5 +21,6 @@ export const bookingMessages = {
         SLOT_ID_REQUIRED: 'Slot ID is required',
         BOOKING_NOT_FOUND: 'Booking not found',
         ONLY_BOOKED_CANCEL: 'Only booked consultation can be canceled',
+        NOT_COMPLETED: 'Consultation status should be completed',
     },
 } as const;

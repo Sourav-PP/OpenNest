@@ -18,5 +18,6 @@ export const userRoutes = {
   wallet: '/user/wallet',
   walletTransactions: (walletId: string) => `/user/wallet/${walletId}/transactions`,
   walletTransactionCreate: (walletId: string) => `/user/wallet/${walletId}/transactions`,
-  services: '/user/services'
+  services: '/user/services',
+  submitRating: (consultationId: string) => `/user/consultation/${consultationId}/rating`,
 } as const;

@@ -136,9 +136,11 @@ const TherapistPageSection = () => {
                 <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
                   Available
                 </span>
-                <span className="inline-block bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  ★ 4.8
-                </span>
+                {therapist.averageRating !== null && therapist.averageRating !== undefined && therapist.averageRating > 0 && (
+                  <span className="inline-block bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full">
+                    ★ {therapist.averageRating.toFixed(1)}
+                  </span>
+                )}
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-2">{therapist.name}</h3>
               <p className="text-green-600 text-sm mb-2 font-medium">{therapist.qualification}</p>

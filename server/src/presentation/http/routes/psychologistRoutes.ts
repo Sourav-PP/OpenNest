@@ -6,6 +6,8 @@ import {
     psychologistProfileController,
     psychologistKycController,
     psychologistPayoutController,
+    authenticateAll,
+    psychologistReviewController,
 } from '@/infrastructure/config/di';
 
 import { uploadSingle } from '../middlewares/multer';
@@ -34,5 +36,7 @@ router.put('/consultation/:consultationId/notes', authenticatePsychologist, psyc
 router.get('/payout/pending', authenticatePsychologist, psychologistPayoutController.getPendingAmount);
 router.post('/payout-requests', authenticatePsychologist, psychologistPayoutController.requestPayout);
 router.get('/payout-requests', authenticatePsychologist, psychologistPayoutController.listPayouts);
+
+router.get('/:psychologistId/reviews', authenticateAll, psychologistReviewController.getPsychologistReviews);
 
 export default router;

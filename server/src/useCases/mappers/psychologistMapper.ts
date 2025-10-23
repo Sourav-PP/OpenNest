@@ -24,6 +24,8 @@ export function toPsychologistProfileDto(
         profileImage: user.profileImage,
         kycStatus: kyc?.kycStatus || KycStatus.PENDING,
         specializationFees: psychologist.specializationFees,
+        averageRating: psychologist.averageRating,
+        totalReviews: psychologist.totalReviews,
     };
 } 
 
@@ -86,5 +88,7 @@ export function toUserPsychologistListDto(
         qualification: psychologist.qualification,
         specializations: psychologist.specializations,
         specializationFees: psychologist.specializationFees,
+        averageRating: psychologist.averageRating,
+        totalReviews: psychologist.totalReviews,
     };
 }

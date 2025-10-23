@@ -39,6 +39,8 @@ export class PsychologistRepository
                 specializationName: fee.specializationName,
                 fee: fee.fee,
             })),
+            averageRating: mapped.averageRating,
+            totalReviews: mapped.totalReviews,
         };
     }
 
@@ -116,6 +118,8 @@ export class PsychologistRepository
                     (s: any) => s.name,
                 ),
                 specializationFees: item.specializationFees || [],
+                averageRating: item.averageRating,
+                totalReviews: item.totalReviews,
             } as Psychologist,
             user: {
                 id: item.user._id.toString(),

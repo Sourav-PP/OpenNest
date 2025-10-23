@@ -15,6 +15,8 @@ export interface IPsychologistDocument extends Document {
   defaultFee: number;
   isVerified: boolean;
   specializationFees: ISpecializationFee[];
+  averageRating?: number;
+  totalReviews?: number
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -66,6 +68,14 @@ const PsychologistSchema = new Schema<IPsychologistDocument>(
             default: false,
         },
         specializationFees: [SpecializationFeeSchema],
+        averageRating: {
+            type: Number,
+            default: 0,
+        },
+        totalReviews: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true },
 );

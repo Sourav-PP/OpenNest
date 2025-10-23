@@ -12,6 +12,8 @@ export interface IPsychologistDto {
   defaultFee: number;
   specializations: string[];
   specializationFees: string[];
+  averageRating?: number;
+  totalReviews?: number;
 }
 
 export interface IPsychologistProfileDto {
@@ -28,6 +30,8 @@ export interface IPsychologistProfileDto {
   profileImage: string;
   kycStatus: KycStatusType;
   specializationFees: string[];
+  averageRating?: number;
+  totalReviews?: number;
 }
 
 export interface IGetAllPsychologistsDto {

@@ -5,6 +5,7 @@ export const userMessages = {
         ACCOUNT_ACTIVATED: 'Your account has been reactivated. You can now log in again.',
         ACCOUNT_DEACTIVATED: 'Your account has been deactivated. Please contact support for assistance.',
         USER_STATUS_UPDATED: 'User status updated successfully',
+        RATING_SUBMITTED: 'Rating and feedback submitted successfully',
     },
     ERROR: {
         NOT_FOUND: 'User not found',

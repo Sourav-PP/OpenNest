@@ -13,4 +13,6 @@ export interface Psychologist {
     defaultFee: number,
     isVerified: boolean,
     specializationFees: SpecializationFee[]
+    averageRating?: number;
+    totalReviews?: number;
 }   
