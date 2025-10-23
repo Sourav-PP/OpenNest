@@ -8,6 +8,9 @@ export const psychologistMessages = {
         KYC_APPROVED: 'Your KYC has been approved. You can now accept consultations.',
         NOTES_SENT: 'Consultation notes and feedback have been successfully saved.',
         REVIEWS_FETCHED: 'Psychologist reviews fetched successfully',
+        FETCHED_TOP_USERS: 'Fetched top users successfully',
+        FETCHED_TOP_RATED_CONSULTATIONS: 'fetched top rated consultations successfully',
+        FETCHED_TOTALS: 'fetched totals successfully',
     },
     ERROR: {
         NOT_FOUND: 'Psychologist not found',

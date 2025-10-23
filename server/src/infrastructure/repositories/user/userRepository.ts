@@ -54,17 +54,17 @@ export class UserRepository
         }));
     }
 
-    async countAll(params: {
+    async countAll(params?: {
         search?: string;
         gender?: UserGenderFilter;
     }): Promise<number> {
         const filter: FilterQuery<User> = { role: UserRole.USER };
 
-        if (params.search) {
+        if (params && params.search) {
             filter.name = { $regex: params.search, $options: 'i' };
         }
 
-        if (params.gender && params.gender !== 'all') {
+        if (params && params.gender && params.gender !== 'all') {
             filter.gender = params.gender;
         }
 

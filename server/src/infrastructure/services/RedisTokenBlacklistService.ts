@@ -1,4 +1,4 @@
-import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlackListService';
+import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlacklistService';
 import redisClient from '../redis/redisClient';
 
 export class RedisTokenBlacklistService implements ITokenBlacklistService {
@@ -21,6 +21,6 @@ export class RedisTokenBlacklistService implements ITokenBlacklistService {
 
     async isUserBlocked(userId: string): Promise<boolean> {
         const result = await redisClient.get(`blockedUser:${userId}`);
-        return result === 'true';    
+        return result === 'true';
     }
 }

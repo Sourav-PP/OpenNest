@@ -11,7 +11,7 @@ import { GenericRepository } from '../GenericRepository';
 import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
 import { UserGender, UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
 import { ConsultationPaymentStatus, ConsultationStatus } from '@/domain/enums/ConsultationEnums';
-import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { SortFilter, TopPsychologistSortFilter } from '@/domain/enums/SortFilterEnum';
 
 export class PsychologistRepository
     extends GenericRepository<Psychologist, IPsychologistDocument>
@@ -132,7 +132,7 @@ export class PsychologistRepository
         }));
     }
 
-    async countAllPsychologist(params: {
+    async countAllPsychologist(params?: {
         search?: string;
         gender?: UserGender;
     }): Promise<number> {
@@ -140,11 +140,11 @@ export class PsychologistRepository
             'user.role': UserRole.PSYCHOLOGIST,
         };
 
-        if (params.search) {
+        if (params && params.search) {
             matchStage['user.name'] = { $regex: params.search, $options: 'i' };
         }
 
-        if (params.gender) {
+        if (params && params.gender) {
             matchStage['user.gender'] = params.gender;
         }
 
@@ -196,10 +196,15 @@ export class PsychologistRepository
         return specializations.map(s => s.name);
     }
 
-    async findTopPsychologists(limit: number): Promise<{
+    async findTopPsychologists(
+        limit: number,
+        sortBy: TopPsychologistSortFilter = TopPsychologistSortFilter.COMBINED,
+    ): Promise<{
         psychologist: Psychologist;
         user: User;
         totalConsultations: number;
+        averageRating?: number;
+        totalReviews?: number;
     }[]> {
         const topPsychologists = await ConsultationModel.aggregate([
             { $match: { paymentStatus: ConsultationPaymentStatus.PAID, status: ConsultationStatus.COMPLETED } },
@@ -212,8 +217,6 @@ export class PsychologistRepository
             },
 
             { $sort: { totalConsultations: -1 } },
-
-            { $limit: limit },
 
             {
                 $lookup: {
@@ -244,6 +247,27 @@ export class PsychologistRepository
                 },
             },
             {
+                $addFields: {
+                    combinedScore: {
+                        $add: [
+                            { $multiply: ['$totalConsultations', 0.6] },
+                            { $multiply: ['$psychologist.averageRating', 0.4] },
+                        ],
+                    },
+                },
+            },
+            {
+                $sort:
+                    sortBy === 'rating'
+                        ? { 'psychologist.averageRating': -1 }
+                        : sortBy === 'combined'
+                            ? { combinedScore: -1 }
+                            : { totalConsultations: -1 },
+            },
+
+            { $limit: limit },
+
+            {
                 $project: {
                     _id: 1,
                     totalConsultations: 1,
@@ -253,6 +277,8 @@ export class PsychologistRepository
                     'psychologist.defaultFee': 1,
                     'psychologist.isVerified': 1,
                     'psychologist.specializationFees': 1,
+                    'psychologist.averageRating': 1,
+                    'psychologist.totalReviews': 1,
                     specializationData: 1,
                     user: 1,
                 },
@@ -267,6 +293,8 @@ export class PsychologistRepository
                 qualification: item.psychologist.qualification,
                 defaultFee: item.psychologist.defaultFee,
                 isVerified: item.psychologist.isVerified,
+                averageRating: item.psychologist.averageRating ?? 0,
+                totalReviews: item.psychologist.totalReviews ?? 0,
                 specializations: item.specializationData.map(
                     (s: IServiceDocument) => s.name,
                 ),    
@@ -279,6 +307,8 @@ export class PsychologistRepository
                 profileImage: item.user.profileImage,
             } as User,
             totalConsultations: item.totalConsultations,
+            averageRating: item.psychologist.averageRating ?? 0,
+            totalReviews: item.psychologist.totalReviews ?? 0,
         }));
     }
 }

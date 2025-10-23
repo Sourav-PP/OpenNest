@@ -48,6 +48,7 @@ import { PaymentService } from '../services/paymentService';
 import { VideoCallService } from '../services/videoCallService';
 import { RedisTokenBlacklistService } from '../services/RedisTokenBlacklistService';
 import { NotificationService } from '../services/notificationService';
+import { AdminService } from '../services/adminService';
 
 // ==================== USE CASES =======================
 
@@ -106,6 +107,10 @@ import { ListPayoutRequestsByPsychologistUseCase } from '@/useCases/implementati
 import { GetPendingAmountUseCase } from '@/useCases/implementation/payout/getPendingAmountUseCase';
 import { UpdateConsultationNotesUseCase } from '@/useCases/implementation/psychologist/data/updateConsultaitonNotesUseCase';
 import { GetPsychologistReviewsUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistReviewsUseCase';
+import { GetPsychologistRevenueStatsUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistRevenueStatsUseCase';
+import { GetTopUsersUseCase } from '@/useCases/implementation/psychologist/data/getTopUsersUseCase';
+import { GetTopRatedConsultationsUseCase } from '@/useCases/implementation/psychologist/data/getTopRatedConsultaitonsUseCase';
+import { GetPsychologistTotalsUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistTotalsUseCase';
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -127,6 +132,7 @@ import { RejectPayoutRequestUseCase } from '@/useCases/implementation/payout/rej
 import { ListAllPayoutRequestsUseCase } from '@/useCases/implementation/payout/listAllPayoutRequestsUseCase';
 import { UpdateMissedConsultationUseCase } from '@/useCases/implementation/admin/management/updateMissedConsultationsUseCase';
 import { GetTopPsychologistUseCase } from '@/useCases/implementation/admin/management/getTopPsychologistUseCase';
+import { GetRevenueStatsUseCase } from '@/useCases/implementation/admin/management/getRevenueStatsUseCase';
 
 //--------------- chat -------------------
 import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
@@ -174,6 +180,7 @@ import { PsychologistProfileController } from '@/presentation/http/controllers/p
 import { PsychologistKycController } from '@/presentation/http/controllers/psychologist/PsychologistKycController';
 import { PsychologistPayoutController } from '@/presentation/http/controllers/psychologist/PsychologistPayoutController';
 import { PsychologistReviewController } from '@/presentation/http/controllers/psychologist/PsychologistReviewController';
+import { PsychologistDashboardController } from '@/presentation/http/controllers/psychologist/PsychologistDashboardController';
 
 //---------------- admin -------------------
 import { AdminKycController } from '@/presentation/http/controllers/admin/AdminKycController';
@@ -183,6 +190,7 @@ import { AdminConsultationController } from '@/presentation/http/controllers/adm
 import { AdminAuthController } from '../../presentation/http/controllers/admin/adminAuthController';
 import { PlanController } from '@/presentation/http/controllers/admin/PlanController';
 import { AdminPayoutController } from '@/presentation/http/controllers/admin/AdminPayoutController';
+import { AdminDashboardController } from '@/presentation/http/controllers/admin/AdminDashboardController';
 
 //---------------- chat -----------------------
 import { ChatMessageController } from '@/presentation/http/controllers/chat/ChatMessageController';
@@ -470,6 +478,10 @@ const getPendingAmountUseCase = new GetPendingAmountUseCase(
 );
 const updateConsultationNotesUseCase = new UpdateConsultationNotesUseCase(consultationRepository, psychologistRepository);
 const getPsychologistReviewsUseCase = new GetPsychologistReviewsUseCase(consultationRepository);
+const getPsychologistRevenueStatsUseCase = new GetPsychologistRevenueStatsUseCase(consultationRepository, psychologistRepository);
+const getTopUsersUseCase = new GetTopUsersUseCase(psychologistRepository, consultationRepository);
+const getTopRatedConsultationsUseCase = new GetTopRatedConsultationsUseCase(psychologistRepository, consultationRepository);
+const getPsychologistTotalsUseCase = new GetPsychologistTotalsUseCase(psychologistRepository, consultationRepository);
 
 // controllers
 export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
@@ -491,6 +503,7 @@ export const psychologistPayoutController = new PsychologistPayoutController(
     getPendingAmountUseCase,
 );
 export const psychologistReviewController = new PsychologistReviewController(getPsychologistReviewsUseCase);
+export const psychologistDashboardController = new PsychologistDashboardController(getPsychologistRevenueStatsUseCase, getTopUsersUseCase, getTopRatedConsultationsUseCase, getPsychologistTotalsUseCase);
 
 // ---------- ADMIN ----------
 
@@ -500,6 +513,8 @@ const adminRefreshTokenUseCase = new RefreshTokenUseCase(tokenService, adminAuth
 const adminLoginUseCase = new AdminLoginUseCase(adminRepository, tokenService, authService);
 const adminLogoutUseCase = new AdminLogoutUseCase();
 const serviceRepository = new ServiceRepository();
+const adminService = new AdminService(userRepository, psychologistRepository, consultationRepository, paymentRepository);
+
 const createServiceUseCase = new CreateServiceUseCase(serviceRepository, fileStorage);
 const deleteServiceUseCase = new DeleteServiceUseCase(serviceRepository);
 const getAllUserUseCase = new GetAllUserUseCase(userRepository);
@@ -522,6 +537,7 @@ const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(
 const rejectPayoutRequestUseCase = new RejectPayoutRequestUseCase(payoutRequestRepository);
 export const updateMissedConsultationsUseCase = new UpdateMissedConsultationUseCase(consultationRepository);
 const getTopPsychologistsUseCase = new GetTopPsychologistUseCase(psychologistRepository);
+const getRevenueStatsUseCase = new GetRevenueStatsUseCase(consultationRepository);
 
 // controllers
 export const adminKycController = new AdminKycController(
@@ -548,6 +564,7 @@ export const adminPayoutController = new AdminPayoutController(
     approvePayoutRequestUseCase,
     rejectPayoutRequestUseCase,
 );
+export const adminDashboardController = new AdminDashboardController(adminService, getRevenueStatsUseCase);
 
 //--------------- chat -----------------------
 

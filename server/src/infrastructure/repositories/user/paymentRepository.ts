@@ -2,6 +2,7 @@ import { Payment } from '@/domain/entities/payment';
 import { IPaymentRepository } from '@/domain/repositoryInterface/IPaymentRepository';
 import { IPaymentDocument, PaymentModel } from '@/infrastructure/database/models/user/Payment';
 import { GenericRepository } from '../GenericRepository';
+import { PaymentStatus } from '@/domain/enums/PaymentEnums';
 
 export class PaymentRepository extends GenericRepository<Payment, IPaymentDocument> implements IPaymentRepository {
     constructor() {
@@ -57,5 +58,33 @@ export class PaymentRepository extends GenericRepository<Payment, IPaymentDocume
     async findByConsultationIds(ids: string[]): Promise<Payment[]> {
         const payments = await PaymentModel.find({ consultationId: { $in: ids } }).exec();
         return payments.map(payment => this.map(payment));
+    }
+
+    async sumPaidAmounts(): Promise<number> {
+        const result = await PaymentModel.aggregate([
+            { $match: { paymentStatus: PaymentStatus.SUCCEEDED } },
+            {
+                $lookup: {
+                    from: 'consultations',
+                    localField: 'consultationId',
+                    foreignField: '_id',
+                    as: 'consultation',
+                },
+            },
+            { $unwind: '$consultation' },
+            {
+                $match: {
+                    'consultation.status': 'completed',
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: '$amount' },
+                },
+            },
+        ]);
+
+        return result[0]?.totalRevenue || 0;
     }
 }

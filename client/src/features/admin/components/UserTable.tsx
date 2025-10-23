@@ -98,7 +98,7 @@ const UserTable = () => {
     {
       header: '',
       render: (u: IUserDto) => (
-        <div>
+        <div className="flex justify-start min-w-[40px]">
           {u.profileImage ? (
             <img
               src={getCloudinaryUrl(u.profileImage) || undefined}

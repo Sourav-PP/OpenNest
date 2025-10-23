@@ -11,6 +11,8 @@ export const adminMessages = {
         FETCHED_SLOTS: 'Slots fetched successfully',
         FETCHED_CONSULTATIONS: 'Consultations fetched successfully',
         FETCHED_USER_PROFILE: 'User profile fetched successfully',
+        FETCHED_DASHBOARD_TOTALS: 'Dashboard totals fetched successfully',
+        STATS_FETCHED: 'Revenue stats fetched successfully',
     },
     ERROR: {
         PSYCHOLOGIST_ID_REQUIRED: 'Psychologist ID is required',

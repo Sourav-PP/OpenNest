@@ -101,7 +101,7 @@ const PsychologistTable = () => {
     {
       header: '',
       render: (p: IGetAllPsychologistsDto) => (
-        <div>
+        <div className="flex justify-start min-w-[40px]">
           {p.user.profileImage ? (
             <img
               src={getCloudinaryUrl(p.user.profileImage) || undefined}

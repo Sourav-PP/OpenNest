@@ -18,6 +18,7 @@ import PsychologistDashboard from '@/features/psychologist/pages/PsychologistDas
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 import { UserRole } from '@/constants/types/User';
 import PsychologistReviewsPage from '@/features/psychologist/pages/PsychologistReviewsPage';
+import PsychologistEarningPage from '@/features/psychologist/pages/PsychologistEarningPage';
 
 export const psychologistRoutes: RouteObject[] = [
   {
@@ -133,10 +134,10 @@ export const psychologistRoutes: RouteObject[] = [
     ),
   },
   {
-    path: psychologistFrontendRoutes.dashboard,
+    path: psychologistFrontendRoutes.myEarning,
     element: (
       <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
-        <PsychologistDashboard />
+        <PsychologistEarningPage />
       </PrivateRoute>
     ),
   },
@@ -145,6 +146,14 @@ export const psychologistRoutes: RouteObject[] = [
     element: (
       <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PsychologistReviewsPage />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: psychologistFrontendRoutes.dashboard,
+    element: (
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
+        <PsychologistDashboard />
       </PrivateRoute>
     ),
   },

@@ -14,6 +14,7 @@ import {
     adminConsultationController,
     planController,
     adminPayoutController,
+    adminDashboardController,
 } from '@/infrastructure/config/di';
 
 const router = express.Router();
@@ -37,5 +38,7 @@ router.get('/payout-requests', authenticateAdmin, adminPayoutController.listPayo
 router.patch('/payout-requests/:payoutRequestId/approve', authenticateAdmin, adminPayoutController.approvePayout);
 router.patch('/payout-requests/:payoutRequestId/reject', authenticateAdmin, adminPayoutController.rejectPayout);
 router.get('/top-psychologists', adminConsultationController.getTopPsychologists);
+router.get('/dashboard/totals', adminDashboardController.getDashboardTotals);
+router.get('/revenue-stats', adminDashboardController.getRevenueStats);
 
 export default router;

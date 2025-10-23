@@ -15,6 +15,8 @@ const PsychologistDashboardCards = () => {
   const [walletLoading, setWalletLoading] = useState(false);
   const [pendingLoading, setPendingLoading] = useState(false);
   const [requesting, setRequesting] = useState(false);
+  const [totalConsultations, setTotalConsultations] = useState<number>(0);
+  const [totalPatients, setTotalPatients] = useState<number>(0);
 
   const fetchWallet = useCallback(async () => {
     setWalletLoading(true);
@@ -29,6 +31,20 @@ const PsychologistDashboardCards = () => {
       handleApiError(err);
     } finally {
       setWalletLoading(false);
+    }
+  }, []);
+
+  const fetchTotals = useCallback(async () => {
+    try {
+      const statsRes = await psychologistApi.getTotals();
+      if (!statsRes.data) {
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
+        return;
+      }
+      setTotalConsultations(statsRes.data.totalConsultations ?? 0);
+      setTotalPatients(statsRes.data.totalPatients ?? 0);
+    } catch (err) {
+      handleApiError(err);
     }
   }, []);
 
@@ -66,7 +82,8 @@ const PsychologistDashboardCards = () => {
   useEffect(() => {
     fetchWallet();
     fetchPendingPayout();
-  }, [fetchWallet, fetchPendingPayout]);
+    fetchTotals();
+  }, [fetchWallet, fetchPendingPayout, fetchTotals]);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gray-100">
@@ -97,7 +114,7 @@ const PsychologistDashboardCards = () => {
               <h3 className="text-lg font-medium text-gray-800">Total Consultations</h3>
             </div>
             <div className="mt-3">
-              <p className="text-2xl font-semibold text-gray-900">{0}</p>
+              <p className="text-2xl font-semibold text-gray-900">{totalConsultations}</p>
             </div>
           </div>
 
@@ -108,7 +125,7 @@ const PsychologistDashboardCards = () => {
               <h3 className="text-lg font-medium text-gray-800">Total Patients</h3>
             </div>
             <div className="mt-3">
-              <p className="text-2xl font-semibold text-gray-900">{0}</p>
+              <p className="text-2xl font-semibold text-gray-900">{totalPatients}</p>
             </div>
           </div>
         </div>

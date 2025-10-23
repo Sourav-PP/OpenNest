@@ -16,5 +16,7 @@ export const adminRoutes = {
   approvePayout: (payoutRequestId: string) => `/admin/payout-requests/${payoutRequestId}/approve`,
   rejectPayout: (payoutRequestId: string) => `/admin/payout-requests/${payoutRequestId}/reject`,
   topPsychologists: '/admin/top-psychologists',
-  refreshToken: '/admin/refresh-token'
+  refreshToken: '/admin/refresh-token',
+  getTotals: '/admin/dashboard/totals',
+  revenueStats: '/admin/revenue-stats',
 } as const;

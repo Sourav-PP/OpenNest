@@ -20,15 +20,18 @@ import {
   type IRejectPayoutResponse,
   type IApprovePayoutResponse,
   type ITopPsychologistResponse,
+  type IGetAdminDashboardTotalsResponse,
+  type IGetRevenueStatsResponse,
 } from '../../types/api/admin';
 
 import { server } from '../server';
 import type { ConsultationStatusFilterType } from '@/constants/types/Consultation';
-import type { SortFilterType } from '@/constants/types/SortFilter';
+import { RevenueFilter, TopPsychologistFilter, type RevenueFilterType, type SortFilterType, type TopPsychologistFilterType } from '@/constants/types/SortFilter';
 import { adminRoutes } from '@/constants/apiRoutes/adminRoutes';
 
 export const adminApi = {
-  login: async (data: IAdminLoginRequest) => server.post<IAdminLoginResponse, IAdminLoginRequest>(adminRoutes.login, data),
+  login: async (data: IAdminLoginRequest) =>
+    server.post<IAdminLoginResponse, IAdminLoginRequest>(adminRoutes.login, data),
   logout: async () => server.post<void, undefined>(adminRoutes.logout, undefined),
   addService: async (data: FormData) => server.post<IAddServiceResponse, FormData>(adminRoutes.services, data),
   deleteService: async (id: string) => server.delete<BackendResponse>(adminRoutes.serviceById(id)),
@@ -40,7 +43,7 @@ export const adminApi = {
   getAllKycDetails: async (params?: IGetAllKycDetailsRequest) =>
     server.get<IGetAllKycDetailsResponse>(adminRoutes.kyc, { params }),
   getKycDetailsByPsychologistId: async (psychologistId: string) =>
-    server.get<IAdminKycDto>(adminRoutes.kycByPsychologistId(psychologistId),),
+    server.get<IAdminKycDto>(adminRoutes.kycByPsychologistId(psychologistId)),
   approveKyc: async (psychologistId: string) =>
     server.patch<BackendResponse, undefined>(adminRoutes.approveKyc(psychologistId), undefined),
   rejectKyc: async (psychologistId: string, reason: string) =>
@@ -61,6 +64,9 @@ export const adminApi = {
     server.patch<IApprovePayoutResponse, void>(adminRoutes.approvePayout(payoutRequestId), undefined),
   rejectPayout: async (payoutRequestId: string) =>
     server.patch<IRejectPayoutResponse, void>(adminRoutes.rejectPayout(payoutRequestId), undefined),
-  getTopPsychologists: async (limit: number) =>
-    server.get<ITopPsychologistResponse>(adminRoutes.topPsychologists, { params: { limit } }),
+  getTopPsychologists: async (limit: number, sortBy: TopPsychologistFilterType = TopPsychologistFilter.CONSULTATION) =>
+    server.get<ITopPsychologistResponse>(adminRoutes.topPsychologists, { params: { limit, sortBy } }),
+  getDashboardTotals: async () => server.get<IGetAdminDashboardTotalsResponse>(adminRoutes.getTotals),
+  getRevenueStats: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) =>
+    server.get<IGetRevenueStatsResponse>(adminRoutes.revenueStats, { params: { filter } }),
 };

@@ -7,4 +7,5 @@ export interface IPaymentRepository {
     findById(id: string): Promise<Payment | null>;
     findByConsultationId(id: string):  Promise<Payment | null>;
     findByConsultationIds(ids: string[]): Promise<Payment[]>;
+    sumPaidAmounts(): Promise<number>;
 }

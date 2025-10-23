@@ -1,5 +1,5 @@
 import type { PlanBillingPeriodType } from '@/constants/types/Plan';
-import type { IConsultationDtoForAdmin } from '../dtos/consultation';
+import type { IConsultationDtoForAdmin, IRevenueStatDto } from '../dtos/consultation';
 import type { IPayoutRequestDto, PayoutRequestListItemDto } from '../dtos/payoutRequest';
 import type { IGetAllPsychologistsDto, ITopPsychologistDto } from '../dtos/psychologist';
 import type { IUserDto } from '../dtos/user';
@@ -121,6 +121,13 @@ export interface IGetAllKycDetailsResponse {
   totalCount: number;
 }
 
+export interface IGetAdminDashboardTotalsResponseData {
+  users: number;
+  psychologists: number;
+  consultations: number;
+  revenue: number;
+}
+
 export type IGetAllUserResponse = BackendResponse<IGetAllUserResponseData>;
 export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>;
 export type IGetAllConsultationResponse = BackendResponse<IGetAllConsultationsResponseData>;
@@ -130,3 +137,5 @@ export type IGetPendingPayoutResponse = BackendResponse<IGetAllPendingPayoutResp
 export type IApprovePayoutResponse = BackendResponse<IPayoutRequestDto>;
 export type IRejectPayoutResponse = BackendResponse<IPayoutRequestDto>;
 export type ITopPsychologistResponse = BackendResponse<ITopPsychologistDto[]>;
+export type IGetAdminDashboardTotalsResponse = BackendResponse<IGetAdminDashboardTotalsResponseData>;
+export type IGetRevenueStatsResponse = BackendResponse<IRevenueStatDto[]>

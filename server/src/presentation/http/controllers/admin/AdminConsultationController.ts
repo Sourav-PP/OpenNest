@@ -1,5 +1,5 @@
 import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
-import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { SortFilter, TopPsychologistSortFilter } from '@/domain/enums/SortFilterEnum';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IGetAllConsultationsUseCase } from '@/useCases/interfaces/admin/management/IGetAllConsultationsUseCase';
@@ -43,7 +43,8 @@ export class AdminConsultationController {
     getTopPsychologists = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const limit = parseInt(req.query.limit as string) || 10;
-            const result = await this._getTopPsychologistsUseCase.execute(limit);
+            const sortBy = (req.query.sortBy as TopPsychologistSortFilter) || TopPsychologistSortFilter.COMBINED;
+            const result = await this._getTopPsychologistsUseCase.execute(limit, sortBy);
             
             res.status(HttpStatus.OK).json({
                 success: true,

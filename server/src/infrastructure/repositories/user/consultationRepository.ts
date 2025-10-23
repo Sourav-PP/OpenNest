@@ -13,8 +13,10 @@ import {
     ConsultationStatus,
     ConsultationStatusFilter,
 } from '@/domain/enums/ConsultationEnums';
-import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { RevenueFilter, SortFilter } from '@/domain/enums/SortFilterEnum';
 import { PaginatedPsychologistReviewsDTO, PsychologistReviewDTO } from '@/useCases/dtos/psychologist';
+import { IRevenueStatDto, ITopConsultationDto } from '@/useCases/dtos/consultation';
+import { ITopUserDto } from '@/useCases/dtos/user';
 
 export class ConsultationRepository
     extends GenericRepository<Consultation, IConsultationDocument>
@@ -1009,5 +1011,234 @@ export class ConsultationRepository
             total,
             hasMore: skip + reviews.length < total,
         };
+    }
+
+    async getRevenueStats(filter: RevenueFilter): Promise<IRevenueStatDto[]> {
+        const groupByFormat =
+            filter === RevenueFilter.DAILY
+                ? { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }
+                : filter === RevenueFilter.WEEKLY
+                    ? { $dateToString: { format: '%Y-%U', date: '$createdAt' } }
+                    : { $dateToString: { format: '%Y-%m', date: '$createdAt' } };
+
+        const revenue = await ConsultationModel.aggregate<IRevenueStatDto>([
+            {
+                $match: {
+                    status: 'completed',
+                    paymentStatus: 'paid',
+                },
+            },   
+            {
+                $lookup: {
+                    from: 'payments',
+                    localField: '_id',
+                    foreignField: 'consultationId',
+                    as: 'payment',
+                },
+            }, 
+            {
+                $unwind: {
+                    path: '$payment',
+                    preserveNullAndEmptyArrays: false,
+                },
+            },
+            {
+                $group: {
+                    _id: groupByFormat,
+                    totalAmount: { $sum: '$payment.amount' },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date: '$_id',
+                    totalAmount: 1,
+                    adminProfit: { $multiply: ['$totalAmount', 0.2] },
+                    psychologistPayout: { $multiply: ['$totalAmount', 0.8] },
+                },
+            },
+            { $sort: { date: 1 } },
+        ]);
+
+        return revenue;
+    }
+
+    async getPsychologistRevenueStats(psychologistId: string, filter: RevenueFilter): Promise<IRevenueStatDto[]> {
+        const groupByFormat =
+        filter === RevenueFilter.DAILY
+            ? { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }
+            : filter === RevenueFilter.WEEKLY
+                ? { $dateToString: { format: '%Y-%U', date: '$createdAt' } }
+                : { $dateToString: { format: '%Y-%m', date: '$createdAt' } };
+
+        const revenue = await ConsultationModel.aggregate<IRevenueStatDto>([
+            {
+                $match: {
+                    psychologistId: new mongoose.Types.ObjectId(psychologistId),
+                    status: ConsultationStatus.COMPLETED,
+                    paymentStatus: ConsultationPaymentStatus.PAID,
+                },
+            },
+            {
+                $lookup: {
+                    from: 'payments',
+                    localField: '_id',
+                    foreignField: 'consultationId',
+                    as: 'payment',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$payment',
+                    preserveNullAndEmptyArrays: false,
+                },
+            },
+            {
+                $group: {
+                    _id: groupByFormat,
+                    totalAmount: { $sum: '$payment.amount' },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date: '$_id',
+                    totalAmount: 1,
+                    psychologistEarning: { $multiply: ['$totalAmount', 0.8] },
+                    adminProfit: { $multiply: ['$totalAmount', 0.2] },
+                },
+            },
+            { $sort: { date: 1 } },
+        ]);
+
+        return revenue;
+    }
+
+    async getTopUsersForPsychologist(psychologistId: string, limit = 5): Promise<ITopUserDto[]> {
+        const topUsers = await ConsultationModel.aggregate([
+            {
+                $match: {
+                    psychologistId: new mongoose.Types.ObjectId(psychologistId),
+                    paymentStatus: ConsultationPaymentStatus.PAID,
+                    status: ConsultationStatus.COMPLETED,
+                },
+            },
+            {
+                $group: {
+                    _id: '$patientId',
+                    totalConsultations: { $sum: 1 },
+                    averageRating: { $avg: '$rating' },
+                },
+            },
+            { $sort: { totalConsultations: -1 } },
+            { $limit: limit },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            {
+                $project: {
+                    _id: 0,
+                    totalConsultations: 1,
+                    averageRating: 1,
+                    'user._id': 1,
+                    'user.name': 1,
+                    'user.email': 1,
+                    'user.phone': 1,
+                    'user.profileImage': 1,
+                    'user.isActive': 1,
+                },
+            },
+        ]);
+
+        return topUsers.map(item => ({
+            user: {
+                id: item.user._id.toString(),
+                name: item.user.name,
+                email: item.user.email,
+                phone: item.user.phone,
+                isActive: item.user.isActive,
+                profileImage: item.user.profileImage,
+            } as User,
+            totalConsultations: item.totalConsultations,
+            averageRating: item.averageRating ?? 0,
+        }));
+    }
+
+    async findMostRatedConsultations(psychologistId: string, limit: number): Promise<ITopConsultationDto[]> {
+        const topConsultations = await ConsultationModel.aggregate([
+            {
+                $match: {
+                    psychologistId: new mongoose.Types.ObjectId(psychologistId),
+                    paymentStatus: ConsultationPaymentStatus.PAID,
+                    status: ConsultationStatus.COMPLETED,
+                    rating: { $ne: null },
+                },
+            },
+            { $sort: { rating: -1 } },
+            { $limit: limit },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'patientId',
+                    foreignField: '_id',
+                    as: 'patient',
+                },
+            },
+            { $unwind: '$patient' },
+            {
+                $project: {
+                    _id: 1,
+                    startDateTime: 1,
+                    endDateTime: 1,
+                    sessionGoal: 1,
+                    rating: 1,
+                    userFeedback: 1,
+                    'patient._id': 1,
+                    'patient.name': 1,
+                    'patient.email': 1,
+                    'patient.profileImage': 1,
+                },
+            },
+        ]);
+
+        return topConsultations.map(item => ({
+            consultation: {
+                id: item._id.toString(),
+                startDateTime: item.startDateTime,
+                endDateTime: item.endDateTime,
+                sessionGoal: item.sessionGoal,
+            } as Consultation,
+            patient: {
+                id: item.patient._id.toString(),
+                name: item.patient.name,
+                email: item.patient.email,
+                profileImage: item.patient.profileImage,
+            } as User,
+            rating: item.rating,
+            userFeedback: item.userFeedback,
+        }));
+    }
+
+    async countCompletedByPsychologistId(psychologistId: string): Promise<number> {
+        return ConsultationModel.countDocuments({
+            psychologistId,
+            status: 'completed',         
+            paymentStatus: 'paid',    
+        });
+    }
+
+    async countUniquePatientsByPsychologistId(psychologistId: string): Promise<number> {
+        const result = await ConsultationModel.distinct('patientId', {
+            psychologistId,
+            status: 'completed',
+            paymentStatus: 'paid', 
+        });
+        return result.length;
     }
 }

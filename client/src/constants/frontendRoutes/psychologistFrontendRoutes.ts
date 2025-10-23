@@ -19,6 +19,8 @@ export const psychologistFrontendRoutes = {
     `/psychologist/consultation/${consultationId}/history`,
   patientHistoryPath: '/psychologist/patients/:patientId/history',
   patientHistory: (patientId: string) => `/psychologist/patients/${patientId}/history`,
-  dashboard: '/psychologist/my-earning',
-  reviews: '/psychologist/reviews'
+  myEarning: '/psychologist/my-earning',
+  reviews: '/psychologist/reviews',
+  dashboard: '/psychologist/dashboard',
+
 } as const;

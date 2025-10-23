@@ -1,0 +1,128 @@
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import AnimatedTitle from '@/components/animation/AnimatedTitle';
+import ReusableTable from '@/components/user/ReusableTable';
+import { psychologistApi } from '@/services/api/psychologist';
+import { generalMessages } from '@/messages/GeneralMessages';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import type { ITopUserDto } from '@/types/dtos/user';
+import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
+import { Star } from 'lucide-react';
+
+const TopUsersTable = () => {
+  const [users, setUsers] = useState<ITopUserDto[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchTopUsers = async () => {
+      try {
+        setLoading(true);
+        const res = await psychologistApi.getTopUsers(5);
+
+        console.log('Top Users: ', res);
+
+        if (!res.data) {
+          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
+          return;
+        }
+
+        setUsers(res.data);
+      } catch (err) {
+        handleApiError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopUsers();
+  }, []);
+
+  const columns = [
+    {
+      header: 'SI',
+      render: (_: ITopUserDto, index: number) => index + 1,
+      className: 'ps-4',
+    },
+    {
+      header: 'Image',
+      render: (u: ITopUserDto) => (
+        <div className="flex justify-start min-w-[40px]">
+          {u.user.profileImage ? (
+            <img
+              src={getCloudinaryUrl(u.user.profileImage) || undefined}
+              alt={`${u.user.name}'s profile`}
+              loading="lazy"
+              className="w-8 h-8 rounded-full object-cover border border-gray-600"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gray-800" />
+          )}
+        </div>
+      ),
+      className: 'px-6 py-4',
+    },
+    {
+      header: 'Name',
+      render: (u: ITopUserDto) => u.user.name,
+    },
+    {
+      header: 'Email',
+      render: (u: ITopUserDto) => u.user.email,
+    },
+    {
+      header: 'Total Consultations',
+      render: (u: ITopUserDto) => u.totalConsultations,
+    },
+    {
+      header: 'Average Rating',
+      render: (u: ITopUserDto) => (
+        <div className="flex items-center justify-center gap-1 font-semibold border-none">
+          <span>{u.averageRating?.toFixed(1) ?? '—'}</span>
+          <span><Star fill="#FACC15" stroke="none" size={16}/></span>
+        </div>
+      ),
+      className: 'text-center',
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
+          {[...Array(8)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute h-2 w-2 bg-gray-300 rounded-full"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+              }}
+            ></div>
+          ))}
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <AnimatedTitle>
+        <h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-6 tracking-tight text-start">
+          Top Users
+        </h2>
+      </AnimatedTitle>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        <ReusableTable
+          data={users}
+          columns={columns}
+          emptyMessage="No users found."
+          className="overflow-x-auto rounded-lg"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default TopUsersTable;

@@ -63,6 +63,8 @@ export interface ITopPsychologistDto {
   qualification: string;
   isVerified: boolean;
   defaultFee: number;
+  averageRating?: number;
+  totalReviews?: number;
   specializations: string[];
   totalConsultations: number;
 }

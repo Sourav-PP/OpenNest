@@ -98,3 +98,27 @@ export interface IPsychologistChatConsultationDto {
   lastMessageTime?: string;
   unreadCount: number;
 }
+
+export interface IRevenueStatDto {
+  date: string;
+  totalAmount: number;
+  adminProfit: number;
+  psychologistPayout: number;
+}
+
+export interface ITopConsultationDto {
+    consultation: {
+        id: string;
+        startDateTime: Date;
+        endDateTime: Date;
+        sessionGoal: string;
+    };
+    patient: {
+        id: string;
+        name: string;
+        email: string;
+        profileImage?: string;
+    };
+    rating: number;
+    userFeedback?: string;
+}

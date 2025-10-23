@@ -13,7 +13,6 @@ import { generalMessages } from '@/messages/GeneralMessages';
 
 const UserReviewsSection = () => {
   const { id } = useParams<{ id: string }>();
-
   const [reviews, setReviews] = useState<PsychologistReviewDTO[]>([]);
   const [psychologist, setPsychologist] = useState<IPsychologistProfileDto | null>(null);
   const [page, setPage] = useState(1);

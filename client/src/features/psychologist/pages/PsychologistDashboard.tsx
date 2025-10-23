@@ -1,7 +1,8 @@
 import Sidebar from '@/components/psychologist/Sidebar';
 import Header from '@/components/psychologist/Header';
-import PsychologistDashboardCards from '../components/PsychologistDashboardCards';
-import PayoutHistoryTable from '../components/PayoutHistoryTable';
+import PsychologistDashboardRevenueGraph from '../components/PsychologistDashboardRevenueGraph';
+import TopUsersTable from '../components/TopUsersTable';
+import TopRatedConsultationsTable from '../components/TopRatedConsultationsTable';
 
 const PsychologistDashboard = () => {
   return (
@@ -9,8 +10,9 @@ const PsychologistDashboard = () => {
       <Sidebar />
       <div className="flex-1 overflow-auto">
         <Header />
-        <PsychologistDashboardCards />
-        <PayoutHistoryTable />
+        <PsychologistDashboardRevenueGraph />
+        <TopUsersTable />
+        <TopRatedConsultationsTable />
       </div>
     </div>
   );

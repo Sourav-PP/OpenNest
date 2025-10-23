@@ -6,13 +6,16 @@ import ReusableTable from '@/components/admin/ReusableTable';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { generalMessages } from '@/messages/GeneralMessages';
+import Filters from '@/components/admin/Filters';
+import { TopPsychologistFilter, type TopPsychologistFilterType } from '@/constants/types/SortFilter';
 
 const TopPsychologistTable = () => {
   const [topPsychologists, setTopPsychologists] = useState<ITopPsychologistDto[]>([]);
+  const [sortBy, setSortBy] = useState<TopPsychologistFilterType>(TopPsychologistFilter.CONSULTATION);
 
   const fetchPsychologists = useCallback(async () => {
     try {
-      const res = await adminApi.getTopPsychologists(20);
+      const res = await adminApi.getTopPsychologists(20, sortBy);
 
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
@@ -23,7 +26,7 @@ const TopPsychologistTable = () => {
     } catch (error) {
       handleApiError(error);
     }
-  }, []);
+  }, [sortBy]);
 
   useEffect(() => {
     fetchPsychologists();
@@ -48,7 +51,7 @@ const TopPsychologistTable = () => {
     {
       header: '',
       render: (p: ITopPsychologistDto) => (
-        <div>
+        <div className="flex justify-start min-w-[40px]">
           {p.profileImage ? (
             <img
               src={getCloudinaryUrl(p.profileImage) || undefined}
@@ -79,7 +82,7 @@ const TopPsychologistTable = () => {
     },
     {
       header: 'Fee',
-      render: (p: ITopPsychologistDto) => `${p.defaultFee} $`,
+      render: (p: ITopPsychologistDto) => `${p.defaultFee}$`,
       className: 'px-6 py-4',
     },
     {
@@ -87,6 +90,17 @@ const TopPsychologistTable = () => {
       render: (p: ITopPsychologistDto) => `${p.totalConsultations} `,
       className: 'px-6 py-4',
     },
+    { 
+      header: 'Average Rating', 
+      render: (p: ITopPsychologistDto) => (
+        <div className="flex items-center gap-1">
+          <span>{p.averageRating ?? 0}</span>
+          <span className="text-yellow-400">⭐</span>
+        </div>
+      ), 
+      className: 'px-6 py-4' 
+    },
+    { header: 'Total Reviews', render: (p: ITopPsychologistDto) => `${p.totalReviews ?? 0}`, className: 'px-6 py-4' },
     {
       header: 'Is Verified',
       render: (p: ITopPsychologistDto) => (p.isVerified ? <Verified /> : <NotVerified />),
@@ -94,9 +108,32 @@ const TopPsychologistTable = () => {
     },
   ];
 
+  const filterConfig = [
+    {
+      type: 'select' as const,
+      key: 'sortBy',
+      placeholder: 'Sort by',
+      options: [
+        { label: 'Most Consulted', value: TopPsychologistFilter.CONSULTATION },
+        { label: 'Highest Rated', value: TopPsychologistFilter.RATING },
+        { label: 'Combined Score', value: TopPsychologistFilter.COMBINED },
+      ],
+    },
+  ];
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 mb-10">
-      <h2 className="text-2xl font-semibold text-white mb-6">Top 20 Psychologists</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+        <h2 className="text-2xl font-semibold text-white">Top 20 Psychologists</h2>
+        <div className="w-full sm:w-auto">
+          <Filters
+            config={filterConfig}
+            values={{ sortBy }}
+            onChange={(key, value) => setSortBy(value as TopPsychologistFilterType)}
+            resetPage={() => {}}
+          />
+        </div>
+      </div>
       <ReusableTable
         data={topPsychologists}
         columns={columns}

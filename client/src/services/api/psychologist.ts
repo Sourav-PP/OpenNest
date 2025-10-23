@@ -13,9 +13,11 @@ import type {
   IGetPsychologistReviewsResponse,
   IRequestPayoutResponse,
 } from '@/types/api/psychologist';
-import type { IConsultationDto } from '@/types/dtos/consultation';
+import type { ITopConsultationDto, IConsultationDto } from '@/types/dtos/consultation';
 import { psychologistRoutes } from '@/constants/apiRoutes/psychologistRoutes';
-import type { SortFilterType } from '@/constants/types/SortFilter';
+import { RevenueFilter, type RevenueFilterType, type SortFilterType } from '@/constants/types/SortFilter';
+import type { IGetRevenueStatsResponse } from '@/types/api/admin';
+import type { ITopUserDto } from '@/types/dtos/user';
 
 export const psychologistApi = {
   getProfile: async () => server.get<IPsychologistProfileDto>(psychologistRoutes.profile),
@@ -51,4 +53,11 @@ export const psychologistApi = {
     server.get<IGetPsychologistReviewsResponse>(psychologistRoutes.getReviews(psychologistId), {
       params: { page, limit },
     }),
+  getRevenueStats: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) =>
+    server.get<IGetRevenueStatsResponse>(psychologistRoutes.revenueStats, { params: { filter } }),
+  getTopUsers: async (limit: number) =>
+    server.get<BackendResponse<ITopUserDto[]>>(psychologistRoutes.getTopUsers, { params: { limit } }),
+  getTopConsultations: async (limit: number) =>
+    server.get<BackendResponse<ITopConsultationDto[]>>(psychologistRoutes.getTopConsultations, { params: { limit } }),
+  getTotals: async() => server.get<BackendResponse<{ totalConsultations: number; totalPatients: number}>>(psychologistRoutes.getTotals)
 };

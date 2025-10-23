@@ -1,6 +1,6 @@
 import { Psychologist } from '../entities/psychologist';
 import { User } from '../entities/user';
-import { SortFilter } from '../enums/SortFilterEnum';
+import { SortFilter, TopPsychologistSortFilter } from '../enums/SortFilterEnum';
 import { UserGender, UserGenderFilter } from '../enums/UserEnums';
 
 export interface IPsychologistRepository {
@@ -10,7 +10,7 @@ export interface IPsychologistRepository {
     updateById(id: string, updateData: Partial<Psychologist>): Promise<Psychologist | null>
     findByUserId(userId: string): Promise<Psychologist | null>
     getSpecializationNamesByIds(ids: string[]): Promise<string[]>
-    findAllPsychologists(params: {
+    findAllPsychologists(params?: {
         search?: string;
         sort?: SortFilter;
         gender?: UserGenderFilter;
@@ -23,9 +23,14 @@ export interface IPsychologistRepository {
         gender?: UserGender;
     }): Promise<number>
     countAllVerified():Promise<number>
-    findTopPsychologists(limit: number): Promise<{
+    findTopPsychologists(
+        limit: number,
+        sortBy: TopPsychologistSortFilter,
+    ): Promise<{
         psychologist: Psychologist;
         user: User;
         totalConsultations: number;
+        averageRating?: number;
+        totalReviews?: number;
     }[]>;
 }

@@ -12,6 +12,7 @@ import {
   DollarSign,
   UserCheck,
   History,
+  LayoutDashboardIcon,
 } from 'lucide-react';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 
@@ -19,6 +20,11 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
+    {
+      name: 'Dashboard',
+      path: psychologistFrontendRoutes.dashboard,
+      icon: <LayoutDashboardIcon width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
+    },
     {
       name: 'My Profile',
       path: psychologistFrontendRoutes.profile,
@@ -66,7 +72,7 @@ const Sidebar = () => {
     },
     {
       name: 'My Earnings',
-      path: psychologistFrontendRoutes.dashboard,
+      path: psychologistFrontendRoutes.myEarning,
       icon: <DollarSign width="20" height="20" stroke="#858585" strokeWidth="1.75" />,
     },
   ];

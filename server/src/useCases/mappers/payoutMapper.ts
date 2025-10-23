@@ -42,6 +42,8 @@ export function toTopPsychologistDto(item: {
         qualification: item.psychologist.qualification,
         isVerified: item.psychologist.isVerified,
         defaultFee: item.psychologist.defaultFee,
+        averageRating: item.psychologist.averageRating,
+        totalReviews: item.psychologist.totalReviews,
         specializations: item.psychologist.specializations,
         totalConsultations: item.totalConsultations,
     };

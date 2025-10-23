@@ -93,8 +93,8 @@ export interface IUserConsultationDetailsDto {
     startDateTime: Date;
     endDateTime: Date;
     notes?: ConsultationNotes;
-    rating?: number,
-    userFeedback?: string,
+    rating?: number;
+    userFeedback?: string;
     psychologist: {
         id: string;
         name: string;
@@ -172,4 +172,28 @@ export interface IConsultationDetailsForAdminDto {
     status: ConsultationStatus;
     paymentStatus?: PaymentStatus;
     paymentMethod?: PaymentMethod;
+}
+
+export interface IRevenueStatDto {
+    date: string;
+    totalAmount: number;
+    adminProfit: number;
+    psychologistPayout: number;
+}
+
+export interface ITopConsultationDto {
+    consultation: {
+        id: string;
+        startDateTime: Date;
+        endDateTime: Date;
+        sessionGoal: string;
+    };
+    patient: {
+        id: string;
+        name: string;
+        email: string;
+        profileImage?: string;
+    };
+    rating: number;
+    userFeedback?: string;
 }

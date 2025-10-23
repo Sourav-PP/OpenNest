@@ -11,7 +11,7 @@ export interface IUserRepository {
         skip: number;
         limit: number
     }): Promise<User[]>
-    countAll(params: {
+    countAll(params?: {
         search?: string;
         gender?: UserGenderFilter;
     }): Promise<number>

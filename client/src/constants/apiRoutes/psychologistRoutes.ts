@@ -12,5 +12,9 @@ export const psychologistRoutes = {
   requestPayout: '/psychologist/payout-requests',
   payoutHistory: '/psychologist/payout-requests',
   updateNotes: (consultationId: string) => `/psychologist/consultation/${consultationId}/notes`,
-  getReviews: (psychologistId: string) => `/psychologist/${psychologistId}/reviews`
+  getReviews: (psychologistId: string) => `/psychologist/${psychologistId}/reviews`,
+  revenueStats: '/psychologist/revenue-stats',
+  getTopUsers: '/psychologist/top-users',
+  getTopConsultations: '/psychologist/top-consultations',
+  getTotals: '/psychologist/totals',
 } as const;

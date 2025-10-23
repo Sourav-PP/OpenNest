@@ -18,7 +18,7 @@ const columns = [
   {
     header: 'Image',
     render: (p: PayoutRequestListItemDto) => (
-      <div>
+      <div className="flex justify-center min-w-[40px]">
         {p.psychologist.profileImage ? (
           <img
             src={getCloudinaryUrl(p.psychologist.profileImage) || undefined}

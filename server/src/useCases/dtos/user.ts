@@ -33,3 +33,16 @@ export interface ILoginOutputDto {
     refreshToken: string;
     hasSubmittedVerificationForm: boolean;
 }
+
+export interface ITopUserDto {
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        phone?: string;
+        isActive: boolean;
+        profileImage?: string;
+    };
+    totalConsultations: number;
+    averageRating?: number;
+}
