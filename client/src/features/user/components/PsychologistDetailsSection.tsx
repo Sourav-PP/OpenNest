@@ -21,6 +21,7 @@ const PsychologistDetailsSection = () => {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
+        console.log('res.dat: ', res.data);
         setPsychologist(res.data.psychologist);
       } catch (err) {
         console.log('its here: ', err);
@@ -62,10 +63,13 @@ const PsychologistDetailsSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10 border border-gray-100 overflow-hidden transform transition-all duration-300 hover:shadow-xl">
           <div className="relative">
-            <div className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 ring-1 ring-yellow-200 ring-opacity-50 hover:ring-2 hover:ring-yellow-300 transition-all duration-200">
-              <FiStar className="w-4 h-4" />
-              <span>4.8</span>
-            </div>
+            {/* Only show rating if it exists and is greater than 0 */}
+            {psychologist.averageRating !== null && psychologist.averageRating !== undefined && psychologist.averageRating > 0 && (
+              <div className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 ring-1 ring-yellow-200 ring-opacity-50 hover:ring-2 hover:ring-yellow-300 transition-all duration-200">
+                <FiStar className="w-4 h-4" />
+                <span>{psychologist.averageRating.toFixed(1)}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-8 text-left">

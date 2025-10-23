@@ -10,6 +10,8 @@ import { generalMessages } from '@/messages/GeneralMessages';
 import { ConsultationStatus } from '@/constants/types/Consultation';
 import { PaymentStatus } from '@/constants/types/Payment';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
+import ConsultationRatingModal from './ConsultationRatingModal';
+import { Button } from '@/components/ui/button';
 
 const UserConsultationsDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +20,7 @@ const UserConsultationsDetail = () => {
   const [loading, setLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   const [reason, setReason] = useState('');
   const [timeLeft, setTimeLeft] = useState<number>(0);
 
@@ -209,6 +212,33 @@ const UserConsultationsDetail = () => {
           </div>
         )}
 
+        {/* User Rating & Feedback */}
+        {(typeof consultation.rating === 'number' || consultation.userFeedback) && (
+          <div className="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
+            {typeof consultation.rating === 'number' && (
+              <div className="flex items-center gap-1">
+                <h4 className="text-sm font-semibold text-gray-700 mr-2">User Rating:</h4>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`text-lg ${star <= (consultation.rating ?? 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="ml-2 text-sm text-gray-600">({consultation.rating ?? 0}/5)</span>
+              </div>
+            )}
+
+            {consultation.userFeedback && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">User Feedback</h4>
+                <p className="text-gray-800 italic">"{consultation.userFeedback}"</p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Payment Details */}
         <div>
           <h4 className="text-md font-semibold text-gray-900 mb-3">Payment Details</h4>
@@ -317,6 +347,21 @@ const UserConsultationsDetail = () => {
             >
               {cancelLoading ? 'Cancelling...' : 'Cancel Consultation'}
             </button>
+          </div>
+        )}
+
+        {consultation.status === ConsultationStatus.Completed && !consultation.rating && (
+          <div className="pt-2">
+            <Button onClick={() => setShowRatingModal(true)} className="bg-indigo-700 hover:bg-indigo-800">
+              Rate Consultation
+            </Button>
+
+            <ConsultationRatingModal
+              consultationId={consultation.id}
+              isOpen={showRatingModal}
+              onClose={() => setShowRatingModal(false)}
+              onSubmitted={fetchConsultation}
+            />
           </div>
         )}
       </div>

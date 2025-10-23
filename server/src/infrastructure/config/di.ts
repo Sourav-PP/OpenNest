@@ -87,6 +87,7 @@ import { BookConsultationWithSubscriptionUseCase } from '@/useCases/implementati
 import { GetUserActiveSubscriptionUseCase } from '@/useCases/implementation/subscription/getUserActiveSubscriptionUseCase';
 import { CancelSubscriptionUseCase } from '@/useCases/implementation/subscription/cancelSubscriptionUseCase';
 import { ListPlansUseCase } from '@/useCases/implementation/subscription/listPlansUseCase';
+import { UpdateConsultationRatingUseCase } from '@/useCases/implementation/user/data/updateConsultationRatingUseCase';
 
 //--------------- psychologist ------------------
 import { VerifyPsychologistUseCase } from '../../useCases/implementation/psychologist/profile/verifyUseCase';
@@ -104,6 +105,7 @@ import { RequestPayoutUseCase } from '@/useCases/implementation/payout/requestPa
 import { ListPayoutRequestsByPsychologistUseCase } from '@/useCases/implementation/payout/listPayoutRequestsByPsychologistUseCase';
 import { GetPendingAmountUseCase } from '@/useCases/implementation/payout/getPendingAmountUseCase';
 import { UpdateConsultationNotesUseCase } from '@/useCases/implementation/psychologist/data/updateConsultaitonNotesUseCase';
+import { GetPsychologistReviewsUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistReviewsUseCase';
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -171,6 +173,7 @@ import { PsychologistConsultationController } from '@/presentation/http/controll
 import { PsychologistProfileController } from '@/presentation/http/controllers/psychologist/PsychologistProfileController';
 import { PsychologistKycController } from '@/presentation/http/controllers/psychologist/PsychologistKycController';
 import { PsychologistPayoutController } from '@/presentation/http/controllers/psychologist/PsychologistPayoutController';
+import { PsychologistReviewController } from '@/presentation/http/controllers/psychologist/PsychologistReviewController';
 
 //---------------- admin -------------------
 import { AdminKycController } from '@/presentation/http/controllers/admin/AdminKycController';
@@ -370,6 +373,7 @@ const bookConsultationWithSubscriptionUseCase = new BookConsultationWithSubscrip
 const getUserActiveSubscriptionUseCase = new GetUserActiveSubscriptionUseCase(subscriptionRepository);
 const cancelSubscriptionUseCase = new CancelSubscriptionUseCase(subscriptionRepository, paymentService);
 const listPlansUseCase = new ListPlansUseCase(planRepository);
+const updateConsultationRatingUseCase = new UpdateConsultationRatingUseCase(consultationRepository, psychologistRepository);
 
 // controllers
 export const authController = new AuthController(
@@ -385,6 +389,7 @@ export const userConsultationController = new UserConsultationController(
     cancelConsultationUseCase,
     getUserConsultationHistoryUseCase,
     getUserConsultationHistoryDetailsUseCase,
+    updateConsultationRatingUseCase,
 );
 export const userPsychologistController = new UserPsychologistController(
     getAllPsychologistUseCase,
@@ -464,6 +469,7 @@ const getPendingAmountUseCase = new GetPendingAmountUseCase(
     payoutRequestRepository,
 );
 const updateConsultationNotesUseCase = new UpdateConsultationNotesUseCase(consultationRepository, psychologistRepository);
+const getPsychologistReviewsUseCase = new GetPsychologistReviewsUseCase(consultationRepository);
 
 // controllers
 export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
@@ -484,6 +490,7 @@ export const psychologistPayoutController = new PsychologistPayoutController(
     listPayoutRequestsByPsychologistUseCase,
     getPendingAmountUseCase,
 );
+export const psychologistReviewController = new PsychologistReviewController(getPsychologistReviewsUseCase);
 
 // ---------- ADMIN ----------
 

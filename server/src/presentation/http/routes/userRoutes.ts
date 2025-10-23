@@ -43,6 +43,7 @@ router.put('/consultation/:consultationId/cancel', authenticateUser, userConsult
 router.get('/subscription/active', authenticateUser, subscriptionController.getActiveSubscription);
 router.post('/subscription/cancel', authenticateUser, subscriptionController.cancelSubscription);
 router.get('/plans', subscriptionController.listPlans);
+router.post('/consultation/:consultationId/rating', authenticateUser, userConsultationController.updateRating);
 
 router.get('/notification', authenticateAll, notificationController.getNotifications);
 router.patch('/notification/mark-all-read', authenticateAll, notificationController.markAsRead);

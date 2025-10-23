@@ -62,4 +62,6 @@ export const userApi = {
       BackendResponse<{ consultation: IConsultationDto; subscription: ISubscriptionDto }>,
       { subscriptionId: string; slotId: string; sessionGoal: string }
     >(userRoutes.bookConsultationWithSubscription, data),
+  submitConsultationRating: async (consultationId: string, data: { rating: number, userFeedback?: string; }) => 
+    server.post<BackendResponse, { rating: number, userFeedback?: string }>(userRoutes.submitRating(consultationId), data),
 };

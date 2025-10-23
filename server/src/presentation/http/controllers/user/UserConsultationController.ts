@@ -4,12 +4,14 @@ import { AppError } from '@/domain/errors/AppError';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { sessionMessages } from '@/shared/constants/messages/sessionMessages';
+import { userMessages } from '@/shared/constants/messages/userMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { ICancelConsultationUseCase } from '@/useCases/interfaces/user/data/ICancelConsultationUseCase';
 import { IGetUserConsultationByIdUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationByIdUseCase';
 import { IGetUserConsultationHistoryDetailsUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationHistoryDetailsUseCase';
 import { IGetUserConsultationHistoryUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationHistoryUseCase';
 import { IGetUserConsultationUseCase } from '@/useCases/interfaces/user/data/IGetUserConsultationsUseCase';
+import { IUpdateConsultationRatingUseCase } from '@/useCases/interfaces/user/data/IUpdateConsultationRatingUseCase';
 import { NextFunction, Request, Response } from 'express';
 
 export class UserConsultationController {
@@ -18,6 +20,7 @@ export class UserConsultationController {
     private _cancelConsultationUseCase: ICancelConsultationUseCase;
     private _getUserConsultationHistoryUseCase: IGetUserConsultationHistoryUseCase;
     private _getUserConsultationHistoryDetailsUseCase: IGetUserConsultationHistoryDetailsUseCase;
+    private _updateConsultationRatingUseCase: IUpdateConsultationRatingUseCase;
 
     constructor(
         getUserConsultationsUseCase: IGetUserConsultationUseCase,
@@ -25,12 +28,14 @@ export class UserConsultationController {
         cancelConsultationUseCase: ICancelConsultationUseCase,
         getUserConsultationHistoryUseCase: IGetUserConsultationHistoryUseCase,
         getUserConsultationHistoryDetailsUseCase: IGetUserConsultationHistoryDetailsUseCase,
+        updateConsultationRatingUseCase: IUpdateConsultationRatingUseCase,
     ) {
         this._getUserConsultationsUseCase = getUserConsultationsUseCase;
         this._getUserConsultationByIdUseCase = getUserConsultationByIdUseCase;
         this._cancelConsultationUseCase = cancelConsultationUseCase;
         this._getUserConsultationHistoryUseCase = getUserConsultationHistoryUseCase;
         this._getUserConsultationHistoryDetailsUseCase = getUserConsultationHistoryDetailsUseCase;
+        this._updateConsultationRatingUseCase = updateConsultationRatingUseCase;
     }
 
     getConsultations = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -136,6 +141,30 @@ export class UserConsultationController {
                 success: true,
                 message: adminMessages.SUCCESS.FETCHED_CONSULTATIONS,
                 data: result,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    updateRating = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+            
+            const { consultationId } = req.params;
+            const { rating, userFeedback } = req.body;
+
+            await this._updateConsultationRatingUseCase.execute({
+                userId,
+                consultationId,
+                rating,
+                userFeedback,
+            });
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: userMessages.SUCCESS.RATING_SUBMITTED,
             });
         } catch (error) {
             next(error);

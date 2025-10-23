@@ -19,6 +19,8 @@ export interface IConsultationDocument extends Document {
         feedback?: string;
         updatedAt?: Date;
     };
+    rating?: number;
+    userFeedback?: string;
     cancellationReason?: string;
     cancelledAt?: Date;
     includedInPayout: boolean;
@@ -77,6 +79,15 @@ const ConsultationSchema = new Schema<IConsultationDocument>(
             privateNotes: { type: String, default: '' },
             feedback: { type: String, default: '' },
             updatedAt: { type: Date, default: null },
+        },
+        rating: {
+            type: Number,
+            min: 1,
+            max: 5,
+        },
+        userFeedback: {
+            type: String,
+            trim: true,
         },
         cancellationReason: { 
             type: String,

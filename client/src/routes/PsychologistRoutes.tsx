@@ -17,6 +17,7 @@ import PatientHistoryPage from '@/features/psychologist/pages/PatientHistoryPage
 import PsychologistDashboard from '@/features/psychologist/pages/PsychologistDashboard';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 import { UserRole } from '@/constants/types/User';
+import PsychologistReviewsPage from '@/features/psychologist/pages/PsychologistReviewsPage';
 
 export const psychologistRoutes: RouteObject[] = [
   {
@@ -136,6 +137,14 @@ export const psychologistRoutes: RouteObject[] = [
     element: (
       <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
         <PsychologistDashboard />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: psychologistFrontendRoutes.reviews,
+    element: (
+      <PrivateRoute allowedRoles={[UserRole.PSYCHOLOGIST]}>
+        <PsychologistReviewsPage />
       </PrivateRoute>
     ),
   },

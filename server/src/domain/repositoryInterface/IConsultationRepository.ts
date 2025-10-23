@@ -7,6 +7,7 @@ import { Slot } from '../entities/slot';
 import { User } from '../entities/user';
 import { ConsultationStatusFilter } from '../enums/ConsultationEnums';
 import { SortFilter } from '../enums/SortFilterEnum';
+import { PaginatedPsychologistReviewsDTO } from '@/useCases/dtos/psychologist';
 
 export interface IConsultationRepository {
     create(data: Omit<Consultation, 'id'>): Promise<Consultation>;
@@ -75,4 +76,10 @@ export interface IConsultationRepository {
         },
     ): Promise<void>; 
     updateNotes(consultationId: string, notes: ConsultationNotes): Promise<Consultation | null>
+    findMany(filter: Partial<Consultation>): Promise<Consultation[]>;
+    findPsychologistReviews(
+        psychologistId: string,
+        page: number,
+        limit: number,
+    ): Promise<PaginatedPsychologistReviewsDTO>
 }

@@ -262,6 +262,34 @@ const PsychologistConsultationsDetail = () => {
           </div>
         )}
 
+        {/* User Rating & Feedback */}
+        {(typeof consultation.rating === 'number' || consultation.userFeedback) && (
+          <div className="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
+            {typeof consultation.rating === 'number' && (
+              <div className="flex items-center gap-1">
+                <h4 className="text-sm font-semibold text-gray-700 mr-2">User Rating:</h4>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`text-lg ${star <= (consultation.rating ?? 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="ml-2 text-sm text-gray-600">({consultation.rating ?? 0}/5)</span>
+              </div>
+            )}
+
+            {consultation.userFeedback && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">User Feedback</h4>
+                <p className="text-gray-800 italic">"{consultation.userFeedback}"</p>
+              </div>
+            )}
+          </div>
+        )}
+
+
         {/* Payment Details */}
         <div>
           <h4 className="text-md font-semibold text-gray-900 mb-3">Payment Details</h4>

@@ -163,6 +163,8 @@ export function toUserConsultationDetail(
         startDateTime: consultation.startDateTime,
         endDateTime: consultation.endDateTime,
         notes: consultation.notes,
+        rating: consultation.rating,
+        userFeedback: consultation.userFeedback,
         psychologist: {
             id: psychologist.id,
             name: psychologist.name,

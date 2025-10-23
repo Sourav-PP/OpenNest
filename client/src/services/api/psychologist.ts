@@ -10,6 +10,7 @@ import type {
   IGetPayoutHistoryResponse,
   IGetPendingPayoutResponse,
   IGetPsychologistConsultationsResponse,
+  IGetPsychologistReviewsResponse,
   IRequestPayoutResponse,
 } from '@/types/api/psychologist';
 import type { IConsultationDto } from '@/types/dtos/consultation';
@@ -33,8 +34,9 @@ export const psychologistApi = {
   getPsychologistConsultations: async (params?: IGetUserConsultationsRequest) =>
     server.get<IGetPsychologistConsultationsResponse>(psychologistRoutes.consultations, { params }),
   cancelConsultation: async (id: string, reason: string) =>
-    server.put<BackendResponse<IConsultationDto>, { reason: string }>(
-      psychologistRoutes.consultationCancel(id), { reason }),
+    server.put<BackendResponse<IConsultationDto>, { reason: string }>(psychologistRoutes.consultationCancel(id), {
+      reason,
+    }),
   getPsychologistConsultationHistory: async (params?: IGetUserConsultationHistoryRequest) =>
     server.get<IGetPsychologistConsultationsResponse>(psychologistRoutes.consultationHistory, { params }),
   getPatientHistory: async (patientId: string, params?: IGetUserConsultationHistoryRequest) =>
@@ -43,6 +45,10 @@ export const psychologistApi = {
   requestPayout: async () => server.post<IRequestPayoutResponse, void>(psychologistRoutes.requestPayout),
   getPayoutHistory: async (params?: { page?: number; limit?: number; sort?: SortFilterType }) =>
     server.get<IGetPayoutHistoryResponse>(psychologistRoutes.payoutHistory, { params }),
-  updateConsultationNotes: async (consultationId: string, data: { privateNotes?: string, feedback?: string }) => 
-    server.put<BackendResponse<IConsultationDto>, typeof data>(psychologistRoutes.updateNotes(consultationId), data), 
+  updateConsultationNotes: async (consultationId: string, data: { privateNotes?: string; feedback?: string }) =>
+    server.put<BackendResponse<IConsultationDto>, typeof data>(psychologistRoutes.updateNotes(consultationId), data),
+  getPsychologistReviews: async (psychologistId: string, page: number, limit: number) =>
+    server.get<IGetPsychologistReviewsResponse>(psychologistRoutes.getReviews(psychologistId), {
+      params: { page, limit },
+    }),
 };

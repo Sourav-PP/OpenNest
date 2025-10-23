@@ -77,6 +77,8 @@ export interface IUserConsultationDetailsResponseData {
   startDateTime: Date;
   endDateTime: Date;
   notes: ConsultationNotes;
+  rating?: number;
+  userFeedback?: string;
   psychologist: {
     id: string;
     name: string;

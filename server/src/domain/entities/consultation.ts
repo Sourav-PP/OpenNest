@@ -20,6 +20,8 @@ export interface Consultation {
     paymentMethod: ConsultationPaymentMethod
     paymentIntentId: string | null;
     notes?: ConsultationNotes;
+    rating?: number;
+    userFeedback?: string;
     cancellationReason?: string;
     cancelledAt?: Date;
     includedInPayout: boolean;

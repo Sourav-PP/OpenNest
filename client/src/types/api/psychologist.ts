@@ -28,9 +28,27 @@ export interface IGetPayoutHistoryResponseData {
   requests: IPayoutRequestDto[];
   totalCount: number;
 }
+export interface PsychologistReviewDTO {
+  id: string;
+  rating: number;
+  userFeedback: string;
+  createdAt: Date;
+  patient: {
+    id: string;
+    name: string;
+    profileImage?: string;
+  };
+}
+
+export interface IGetPsychologistReviewsResponseData {
+  reviews: PsychologistReviewDTO[];
+  total: number;
+  hasMore: boolean;
+}
 
 export type IGetPsychologistConsultationsResponse = BackendResponse<IGetUserConsultationsResponse>;
 export type IGetPatientConsultationHistoryResponse = BackendResponse<IGetPatientConsultationHistoryResponseData>;
 export type IGetPendingPayoutResponse = BackendResponse<IGetPendingPayoutData>;
 export type IRequestPayoutResponse = BackendResponse<IRequestPayoutResponseData>;
 export type IGetPayoutHistoryResponse = BackendResponse<IGetPayoutHistoryResponseData>;
+export type IGetPsychologistReviewsResponse = BackendResponse<IGetPsychologistReviewsResponseData>
