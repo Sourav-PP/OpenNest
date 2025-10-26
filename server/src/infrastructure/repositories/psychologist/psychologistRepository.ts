@@ -6,7 +6,7 @@ import {
     IPsychologistDocument,
 } from '@/infrastructure/database/models/psychologist/PsychologistModel';
 import { User } from '@/domain/entities/user';
-import { PipelineStage } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 import { GenericRepository } from '../GenericRepository';
 import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
 import { UserGender, UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
@@ -29,7 +29,7 @@ export class PsychologistRepository
             userId: mapped.userId as string,
             aboutMe: mapped.aboutMe,
             qualification: mapped.qualification,
-            specializations: (mapped.specializations as any[]).map(id =>
+            specializations: (mapped.specializations as (string | Types.ObjectId)[]).map(id =>
                 id.toString(),
             ),
             defaultFee: mapped.defaultFee,
@@ -115,7 +115,7 @@ export class PsychologistRepository
                 defaultFee: item.defaultFee,
                 isVerified: item.isVerified,
                 specializations: item.specializationData.map(
-                    (s: any) => s.name,
+                    (s: IServiceDocument) => s.name,
                 ),
                 specializationFees: item.specializationFees || [],
                 averageRating: item.averageRating,

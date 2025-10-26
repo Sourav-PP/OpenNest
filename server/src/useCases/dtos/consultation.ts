@@ -181,6 +181,8 @@ export interface IRevenueStatDto {
     psychologistPayout: number;
 }
 
+
+
 export interface ITopConsultationDto {
     consultation: {
         id: string;

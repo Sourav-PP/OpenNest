@@ -24,14 +24,14 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
             receiverId: mapped.receiverId as string,
             content: mapped.content,
             status: mapped.status,
-            deliveredTo: (mapped.deliveredTo as any[])?.map(id => id.toString()) ?? [],
+            deliveredTo: (mapped.deliveredTo as Types.ObjectId[] | undefined)?.map(id => id.toString()) ?? [],
             readAt: mapped.readAt ?? undefined,
             mediaUrl: mapped.mediaUrl ?? undefined,
             mediaType: mapped.mediaType ?? null,
             deleted: mapped.deleted,
             deletedBy: mapped.deletedBy ?? undefined,
             replyToId: mapped.replyToId as string | undefined,
-            reaction: (mapped.reaction as any[])?.map(r => ({
+            reaction: (mapped.reaction as Array<{ userId: string; emoji: string }> | undefined)?.map(r => ({
                 userId: r.userId.toString(),
                 emoji: r.emoji,
             })) ?? [],

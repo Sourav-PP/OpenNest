@@ -8,7 +8,7 @@ export interface IWalletTransactionDocument extends Document {
   type: WalletTransactionType,
   status: WalletTransactionStatus,
   reference?: string,
-  metadata?: any,
+  metadata?: Record<string, unknown>,
   createdAt: Date;
   updatedAt: Date;
 }

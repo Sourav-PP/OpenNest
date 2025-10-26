@@ -5,7 +5,7 @@ import {
     PayoutRequestModel,
 } from '@/infrastructure/database/models/admin/payoutRequestModel';
 import { IPayoutRequestRepository } from '@/domain/repositoryInterface/IPayoutRequestRepository';
-import { ClientSession } from 'mongoose';
+import { ClientSession, PipelineStage } from 'mongoose';
 import { User } from '@/domain/entities/user';
 import { PayoutRequestStatus } from '@/domain/enums/PayoutRequestEnums';
 import { SortFilter } from '@/domain/enums/SortFilterEnum';
@@ -44,7 +44,7 @@ export class PayoutRequestRepository
     }): Promise<{ payoutRequest: PayoutRequest; psychologist: User }[]> {
         const sortOrder = params.sort === SortFilter.ASC ? 1 : -1;
 
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             {
                 $lookup: {
                     from: 'users',
@@ -105,7 +105,7 @@ export class PayoutRequestRepository
     }
 
     async countAll(params: { search?: string }): Promise<number> {
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             {
                 $lookup: {
                     from: 'users', // join with user collection

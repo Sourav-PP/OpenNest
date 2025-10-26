@@ -51,8 +51,6 @@ const PsychologistConsultationsTable = () => {
           page: currentPage,
         });
 
-        console.log('table: ', res);
-
         if (!res.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;

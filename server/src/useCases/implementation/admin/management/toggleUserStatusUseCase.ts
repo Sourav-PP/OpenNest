@@ -2,7 +2,7 @@ import { NotificationType } from '@/domain/enums/NotificationEnums';
 import { AppError } from '@/domain/errors/AppError';
 import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
 import { INotificationService } from '@/domain/serviceInterface/INotificationService';
-import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlackListService';
+import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlacklistService';
 import { userMessages } from '@/shared/constants/messages/userMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { IToggleUserStatusUseCase } from '@/useCases/interfaces/admin/management/IToggleUserStatusUseCase';

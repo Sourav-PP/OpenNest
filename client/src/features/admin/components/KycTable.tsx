@@ -7,10 +7,11 @@ import CustomPagination from '@/components/admin/CustomPagination';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import Filters from '@/components/admin/Filters';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { KycStatusColors, KycStatusFilter, type KycStatusFilterType, type KycStatusType } from '@/constants/types/Kyc';
 import { adminFrontendRoutes } from '@/constants/frontendRoutes/adminFrontendRoutes';
+import { actionColumn, getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
+import type { Column } from '@/types/dtos/table';
 
 const ITEM_PER_PAGE = 10;
 
@@ -18,40 +19,15 @@ const getStatusVariant = (status: KycStatusType) => {
   return KycStatusColors[status] || 'bg-gray-600/50 text-gray-300';
 };
 
-const columns = [
-  {
-    header: 'Image',
-    render: (item: IAdminKycDto) => (
-      <div>
-        {item.profileImage ? (
-          <img
-            src={getCloudinaryUrl(item.profileImage) || undefined}
-            alt={`${item.psychologistName}'s profile`}
-            loading="lazy"
-            className="w-8 h-8 rounded-full object-cover border border-gray-600"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-800" />
-        )}
-      </div>
-    ),
-    className: 'px-6 py-4',
-  },
-  {
-    header: 'Name',
-    render: (item: IAdminKycDto) => item.psychologistName,
-    className: 'px-6 py-4',
-  },
-  {
-    header: 'Email',
-    render: (item: IAdminKycDto) => item.psychologistEmail,
-    className: 'px-6 py-4',
-  },
-  {
-    header: 'Qualification',
-    render: (item: IAdminKycDto) => item.qualification,
-    className: 'px-6 py-4',
-  },
+const kycColumns: Column<IAdminKycDto>[] = [
+  imageColumn<IAdminKycDto>('Image', item => getCloudinaryUrlSafe(item.profileImage), 'px-6 py-4'),
+
+  textColumn<IAdminKycDto>('Name', item => item.psychologistName, 'px-6 py-4'),
+
+  textColumn<IAdminKycDto>('Email', item => item.psychologistEmail, 'px-6 py-4'),
+
+  textColumn<IAdminKycDto>('Qualification', item => item.qualification, 'px-6 py-4'),
+
   {
     header: 'Status',
     render: (item: IAdminKycDto) => (
@@ -61,15 +37,17 @@ const columns = [
     ),
     className: 'px-6 py-4',
   },
-  {
-    header: 'Action',
-    render: (item: IAdminKycDto) => (
+
+  actionColumn<IAdminKycDto>(
+    'Action',
+    item => {}, 
+    item => (
       <Link to={adminFrontendRoutes.kycDetails(item.psychologistId)}>
-        <button className="bg-admin-extra-light px-4 py-1 rounded-full text-white hover:bg-gray-600">view</button>
+        <button className="bg-admin-extra-light px-4 py-1 rounded-full text-white hover:bg-gray-600">View</button>
       </Link>
     ),
-    className: 'px-6 py-4',
-  },
+    'px-6 py-4'
+  ),
 ];
 
 const kycFilterConfig = [
@@ -183,7 +161,7 @@ const KycTable = () => {
       />
       <ReusableTable
         data={kyc}
-        columns={columns}
+        columns={kycColumns}
         emptyMessage="No KYC submissions found."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />

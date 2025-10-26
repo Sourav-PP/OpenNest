@@ -1,6 +1,7 @@
 import Sidebar from '@/components/admin/Sidebar';
 import Header from '@/components/admin/Header';
 import CreatePlanForm from '../components/CreatePlanForm';
+import PlanTable from '../components/PlanTable';
 
 const PlanPage = () => {
   return (
@@ -9,6 +10,7 @@ const PlanPage = () => {
       <div className="flex-1 overflow-auto">
         <Header />
         <CreatePlanForm />
+        <PlanTable />
       </div>
     </div>
   );

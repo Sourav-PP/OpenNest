@@ -1,7 +1,6 @@
 import { useServices, type Service } from '@/hooks/useServices';
 import ReusableTable from '@/components/admin/ReusableTable';
 import CustomPagination from '@/components/admin/CustomPagination';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { handleApiError } from '@/lib/utils/handleApiError';
@@ -9,6 +8,8 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import ConfirmModal from '@/components/admin/ConfirmModal';
 import { adminApi } from '@/services/api/admin';
 import { Trash } from 'lucide-react';
+import type { Column } from '@/types/dtos/table';
+import { actionColumn, getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
 
 const ServiceTable = () => {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
@@ -29,8 +30,8 @@ const ServiceTable = () => {
     return () => clearTimeout(delay);
   }, [searchTerm, setCurrentPage]);
 
-  const openDeleteModal = async (id: string) => {
-    setSelectedServiceId(id);
+  const openDeleteModal = async (serviceId: string) => {
+    setSelectedServiceId(serviceId);
     setModalOpen(true);
   };
 
@@ -51,48 +52,19 @@ const ServiceTable = () => {
     }
   };
 
-  const columns = [
-    {
-      header: 'Image',
-      render: (s: Service) => (
-        <div>
-          {s.id ? (
-            <img
-              src={getCloudinaryUrl(s.bannerImage) || undefined}
-              alt={`${s.name}'s banner image`}
-              className="w-8 h-8 rounded-full object-cover border border-gray-600"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gray-800" />
-          )}
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Name',
-      render: (s: Service) => s.name,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Description',
-      render: (s: Service) => s.description,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Actions',
-      render: (s: Service) => (
-        <div className="flex gap-2">
-          {/* <button onClick={() => console.log('Update', s)}>
-            <PencilIcon className='text-slate-400 h-5'/>
-          </button> */}
-          <button onClick={() => openDeleteModal(s.id)}>
-            <Trash className="text-red-500 h-5" />
-          </button>
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
+  const serviceColumns: Column<Service>[] = [
+    imageColumn<Service>('Image', s => getCloudinaryUrlSafe(s.bannerImage), 'px-6 py-4'),
+
+    textColumn<Service>('Name', s => s.name, 'px-6 py-4'),
+
+    textColumn<Service>('Description', s => s.description, 'px-6 py-4'),
+
+    actionColumn<Service>(
+      'Actions',
+      s => openDeleteModal(s.id),
+      () => <Trash className="text-red-500 h-5" />,
+      'px-6 py-4 flex justify-center'
+    ),
   ];
 
   if (loading)
@@ -130,7 +102,7 @@ const ServiceTable = () => {
       </div>
       <ReusableTable
         data={services}
-        columns={columns}
+        columns={serviceColumns}
         emptyMessage="No users found."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />

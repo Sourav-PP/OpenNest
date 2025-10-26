@@ -37,7 +37,6 @@ export default function ChatSidebar({
     const fetchConsultations = async () => {
       try {
         const res = role === UserRole.USER ? await chatApi.getChatByPatient() : await chatApi.getChatByPsychologist();
-
         if (!res.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
@@ -52,7 +51,6 @@ export default function ChatSidebar({
 
         setConsultations(
           chats
-            .filter(c => c.status !== ConsultationStatus.Cancelled)
             .sort((a, b) => {
               const aTime = a.lastMessage?.createdAt ?? 0;
               const bTime = b.lastMessage?.createdAt ?? 0;
@@ -67,9 +65,10 @@ export default function ChatSidebar({
         res.data.consultations.forEach(async (c: IUserChatConsultationDto | IPsychologistChatConsultationDto) => {
           try {
             await joinConsultation(c.id);
-            console.log(`Joined room on load: ${c.id}`);
           } catch (err) {
-            console.error(`Failed to join room ${c.id}:`, err);
+            if (import.meta.env.DEV ) {
+              console.error(`Failed to join room ${c.id}:`, err);
+            }
           }
         });
 
@@ -153,7 +152,6 @@ export default function ChatSidebar({
             <div className="text-center text-gray-500 mt-4">No consultations booked yet!</div>
           ) : (
             consultations
-              .filter(c => c.status !== 'cancelled')
               .map(c => (
                 <div
                   key={c.id}

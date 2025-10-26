@@ -34,7 +34,7 @@ export const adminApi = {
     server.post<IAdminLoginResponse, IAdminLoginRequest>(adminRoutes.login, data),
   logout: async () => server.post<void, undefined>(adminRoutes.logout, undefined),
   addService: async (data: FormData) => server.post<IAddServiceResponse, FormData>(adminRoutes.services, data),
-  deleteService: async (id: string) => server.delete<BackendResponse>(adminRoutes.serviceById(id)),
+  deleteService: async (serviceId: string) => server.delete<BackendResponse>(adminRoutes.serviceById(serviceId)),
   getAllUser: async (params?: IGetAllUserRequest) => server.get<IGetAllUserResponse>(adminRoutes.users, { params }),
   getAllPsychologists: async (params?: IGetAllPsychologistsRequest) =>
     server.get<IGetAllPsychologistResponse>(adminRoutes.psychologists, { params }),
@@ -69,4 +69,5 @@ export const adminApi = {
   getDashboardTotals: async () => server.get<IGetAdminDashboardTotalsResponse>(adminRoutes.getTotals),
   getRevenueStats: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) =>
     server.get<IGetRevenueStatsResponse>(adminRoutes.revenueStats, { params: { filter } }),
+  deletePlan: async (planId: string) => server.delete<BackendResponse>(adminRoutes.deletePlan(planId)),
 };

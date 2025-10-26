@@ -7,10 +7,11 @@ import CustomPagination from '@/components/user/CustomPagination';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
+import type { Column } from '@/types/dtos/table';
+import { getCloudinaryUrlSafe, textColumn } from '@/components/user/TableColumns';
 
 const UserConsultationHistoryTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
@@ -63,19 +64,20 @@ const UserConsultationHistoryTable = () => {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const columns = [
+  const userConsultationColumns: Column<IConsultationDto>[] = [
     {
       header: 'SI',
-      render: (_: IConsultationDto, index: number) => index + 1 + (currentPage - 1) * itemsPerPage,
+      render: (_: IConsultationDto, index: number) => index + 1,
       className: 'ps-4',
     },
+
     {
       header: 'Psychologist',
-      render: (c: IConsultationDto) => (
+      render: c => (
         <div className="flex items-center gap-2">
           {c.psychologist.profileImage && (
             <img
-              src={getCloudinaryUrl(c.psychologist.profileImage) || undefined}
+              src={getCloudinaryUrlSafe(c.psychologist.profileImage)}
               alt={c.psychologist.name}
               className="w-8 h-8 rounded-full object-cover"
             />
@@ -83,22 +85,18 @@ const UserConsultationHistoryTable = () => {
           <span>{c.psychologist.name}</span>
         </div>
       ),
+      className: 'px-6 py-4',
     },
-    {
-      header: 'Session Goal',
-      render: (c: IConsultationDto) => <span className="line-clamp-1">{c.sessionGoal}</span>,
-    },
-    {
-      header: 'Start Date & Time',
-      render: (c: IConsultationDto) => new Date(c.startDateTime).toLocaleString(),
-    },
-    {
-      header: 'End Date & Time',
-      render: (c: IConsultationDto) => new Date(c.endDateTime).toLocaleString(),
-    },
+
+    textColumn<IConsultationDto>('Session Goal', c => c.sessionGoal, 'px-6 py-4'),
+
+    textColumn<IConsultationDto>('Start Date & Time', c => new Date(c.startDateTime).toLocaleString(), 'px-6 py-4'),
+
+    textColumn<IConsultationDto>('End Date & Time', c => new Date(c.endDateTime).toLocaleString(), 'px-6 py-4'),
+
     {
       header: 'View',
-      render: (c: IConsultationDto) => (
+      render: c => (
         <Link
           to={userFrontendRoutes.consultationHistoryDetail(c.id)}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
@@ -106,6 +104,7 @@ const UserConsultationHistoryTable = () => {
           View
         </Link>
       ),
+      className: 'px-6 py-4',
     },
   ];
 
@@ -160,7 +159,7 @@ const UserConsultationHistoryTable = () => {
 
         <ReusableTable
           data={consultations}
-          columns={columns}
+          columns={userConsultationColumns}
           onRowClick={(c: IConsultationDto) => navigate(userFrontendRoutes.consultationHistoryDetail(c.id))}
           emptyMessage="No consultation history found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"

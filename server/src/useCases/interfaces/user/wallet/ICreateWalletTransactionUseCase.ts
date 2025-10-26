@@ -7,6 +7,6 @@ export interface ICreateWalletTransactionUseCase {
         amount: number,
         type: WalletTransactionType,
         reference?: string,
-        metadata?: any,
+        metadata?: Record<string, unknown>,
     ): Promise<WalletTransaction>;
 }

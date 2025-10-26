@@ -11,6 +11,8 @@ import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/U
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { PayoutRequestStatus } from '@/constants/types/PayoutRequest';
+import type { Column } from '@/types/dtos/table';
+import { textColumn } from '@/components/user/TableColumns';
 
 const PendingPayoutTable = () => {
   const [payouts, setPayouts] = useState<PayoutRequestListItemDto[]>([]);
@@ -91,20 +93,17 @@ const PendingPayoutTable = () => {
     }
   };
 
-  const columns = [
-    { header: 'Psychologist', render: (p: PayoutRequestListItemDto) => p.psychologist.name, className: 'px-6 py-4' },
-    {
-      header: 'Total Amount',
-      render: (p: PayoutRequestListItemDto) => `₹${p.requestedAmount}`,
-      className: 'px-6 py-4',
-    },
-    { header: 'Commission', render: (p: PayoutRequestListItemDto) => `₹${p.commissionAmount}`, className: 'px-6 py-4' },
-    { header: 'Payout Amount', render: (p: PayoutRequestListItemDto) => `₹${p.payoutAmount}`, className: 'px-6 py-4' },
-    {
-      header: 'Consultations',
-      render: (p: PayoutRequestListItemDto) => p.consultationIds.length,
-      className: 'px-6 py-4',
-    },
+  const payoutRequestColumns: Column<PayoutRequestListItemDto>[] = [
+    textColumn<PayoutRequestListItemDto>('Psychologist', p => p.psychologist.name, 'px-6 py-4'),
+
+    textColumn<PayoutRequestListItemDto>('Total Amount', p => `₹${p.requestedAmount}`, 'px-6 py-4'),
+
+    textColumn<PayoutRequestListItemDto>('Commission', p => `₹${p.commissionAmount}`, 'px-6 py-4'),
+
+    textColumn<PayoutRequestListItemDto>('Payout Amount', p => `₹${p.payoutAmount}`, 'px-6 py-4'),
+
+    textColumn<PayoutRequestListItemDto>('Consultations', p => `${p.consultationIds.length}`, 'px-6 py-4'),
+
     {
       header: 'Action',
       render: (p: PayoutRequestListItemDto) => (
@@ -155,7 +154,7 @@ const PendingPayoutTable = () => {
       />
       <ReusableTable
         data={payouts}
-        columns={columns}
+        columns={payoutRequestColumns}
         emptyMessage="No pending payout requests."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />

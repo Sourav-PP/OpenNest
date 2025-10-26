@@ -127,6 +127,7 @@ import { RejectKycUseCase } from '../../useCases/implementation/admin/management
 import { GetAllConsultationsUseCase } from '@/useCases/implementation/admin/management/getAllConsultationUseCase';
 import { CreatePlanUseCase } from '@/useCases/implementation/admin/plan/createPlanUseCase';
 import { GetAllPlansUseCase } from '@/useCases/implementation/admin/plan/getAllPlansUseCase';
+import { DeletePlanUseCase } from '@/useCases/implementation/admin/plan/deletePlanUseCase';
 import { ApprovePayoutRequestUseCase } from '@/useCases/implementation/payout/approvePayoutRequestUseCase';
 import { RejectPayoutRequestUseCase } from '@/useCases/implementation/payout/rejectPayoutRequestUseCase';
 import { ListAllPayoutRequestsUseCase } from '@/useCases/implementation/payout/listAllPayoutRequestsUseCase';
@@ -528,6 +529,7 @@ const getAllConsultationsUseCase = new GetAllConsultationsUseCase(consultationRe
 const createPlanUseCase = new CreatePlanUseCase(planRepository, paymentService);
 const getAllPlansUseCase = new GetAllPlansUseCase(planRepository);
 const listAllPayoutRequestsUseCase = new ListAllPayoutRequestsUseCase(payoutRequestRepository);
+const deletePlanUseCase = new DeletePlanUseCase(planRepository);
 const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(
     payoutRequestRepository,
     walletRepository,
@@ -558,7 +560,7 @@ export const adminConsultationController = new AdminConsultationController(
 );
 export const adminAuthController = new AdminAuthController(adminLoginUseCase, adminLogoutUseCase);
 export const adminRefreshTokenController = new RefreshTokenController(adminRefreshTokenUseCase, 'adminRefreshToken');
-export const planController = new PlanController(getAllPlansUseCase, createPlanUseCase);
+export const planController = new PlanController(getAllPlansUseCase, createPlanUseCase, deletePlanUseCase);
 export const adminPayoutController = new AdminPayoutController(
     listAllPayoutRequestsUseCase,
     approvePayoutRequestUseCase,

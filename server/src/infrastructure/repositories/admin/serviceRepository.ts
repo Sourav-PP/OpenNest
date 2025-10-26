@@ -32,7 +32,7 @@ export class ServiceRepository extends GenericRepository<Service, IServiceDocume
         skip: number,
         search: string,
     ): Promise<{ services: Service[]; totalCount: number }> {
-        const filter: Record<string, any> = {};
+        const filter: Record<string, unknown> = {};
 
         if (search && search.trim() !== '') {
             filter.name = { $regex: search, $options: 'i' };

@@ -16,6 +16,8 @@ import {
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
+import type { Column } from '@/types/dtos/table';
+import { textColumn } from '@/components/user/TableColumns';
 
 const UserConsultationsTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
@@ -77,45 +79,43 @@ const UserConsultationsTable = () => {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const columns = [
+  const userConsultationColumns: Column<IConsultationDto>[] = [
     {
       header: 'SI',
       render: (_: IConsultationDto, index: number) => index + 1,
       className: 'ps-4',
     },
-    {
-      header: 'Psychologist',
-      render: (c: IConsultationDto) => c.psychologist.name,
-    },
-    {
-      header: 'Start Date & Time',
-      render: (c: IConsultationDto) => formatDateTime(c.startDateTime),
-    },
-    {
-      header: 'End Date & Time',
-      render: (c: IConsultationDto) => formatDateTime(c.endDateTime),
-    },
+
+    textColumn<IConsultationDto>('Psychologist', c => c.psychologist.name, 'px-6 py-4'),
+
+    textColumn<IConsultationDto>('Start Date & Time', c => formatDateTime(c.startDateTime), 'px-6 py-4'),
+
+    textColumn<IConsultationDto>('End Date & Time', c => formatDateTime(c.endDateTime), 'px-6 py-4'),
+
     {
       header: 'Status',
-      render: (c: IConsultationDto) => (
-        <span
-          className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${
-            c.status === ConsultationStatus.Booked
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-              : c.status === ConsultationStatus.Cancelled
-                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                : c.status === ConsultationStatus.Completed
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-          }`}
-        >
-          {c.status}
-        </span>
-      ),
+      render: c => {
+        const statusClasses = {
+          [ConsultationStatus.Booked]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+          [ConsultationStatus.Cancelled]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+          [ConsultationStatus.Completed]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+          [ConsultationStatus.Missed]: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+          [ConsultationStatus.Rescheduled]: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+        };
+        return (
+          <span
+            className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${statusClasses[c.status!] || ''}`}
+          >
+            {c.status}
+          </span>
+        );
+      },
+      className: 'px-6 py-4',
     },
+
     {
       header: 'View',
-      render: (c: IConsultationDto) => (
+      render: c => (
         <Link
           to={userFrontendRoutes.consultationDetail(c.id)}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
@@ -123,6 +123,7 @@ const UserConsultationsTable = () => {
           View
         </Link>
       ),
+      className: 'px-6 py-4',
     },
   ];
 
@@ -166,7 +167,7 @@ const UserConsultationsTable = () => {
         />
         <ReusableTable
           data={consultations}
-          columns={columns}
+          columns={userConsultationColumns}
           onRowClick={(consultation: IConsultationDto) => {
             navigate(userFrontendRoutes.consultationDetail(consultation.id));
           }}

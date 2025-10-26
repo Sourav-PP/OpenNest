@@ -27,7 +27,7 @@ import { authRoutes } from '@/constants/apiRoutes/authRoutes';
 export const userApi = {
   getAllPsychologists: async (params?: IGetAllPsychologistRequest) =>
     server.get<IGetAllPsychologistResponse>(userRoutes.psychologists, { params }),
-  getPsychologistById: async (id: string) => server.get<IGetPsychologistByIdResponse>(userRoutes.psychologistById(id)),
+  getPsychologistById: async (psychologistUserId: string) => server.get<IGetPsychologistByIdResponse>(userRoutes.psychologistById(psychologistUserId)),
   getProfile: async (): Promise<IGetUserProfileResponse> => server.get(userRoutes.profile),
   updateProfile: async (data: FormData): Promise<IGetUserProfileResponse> =>
     server.put(userRoutes.profile, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
@@ -39,10 +39,10 @@ export const userApi = {
     server.post<ICreateCheckoutSessionResponse, ICreateCheckoutSessionInput>(userRoutes.createCheckoutSession, input),
   getUserConsultations: async (params?: IGetUserConsultationsRequest) =>
     server.get<IGetUserConsultationsResponse>(userRoutes.consultations, { params }),
-  UserConsultationsDetail: async (id: string) =>
-    server.get<IUserConsultationDetailsResponse>(userRoutes.consultationDetail(id)),
-  cancelConsultation: async (id: string, reason: string) =>
-    server.put<BackendResponse<IConsultationDto>, { reason: string }>(userRoutes.consultationCancel(id), { reason }),
+  UserConsultationsDetail: async (consultationId: string) =>
+    server.get<IUserConsultationDetailsResponse>(userRoutes.consultationDetail(consultationId)),
+  cancelConsultation: async (consultationId: string, reason: string) =>
+    server.put<BackendResponse<IConsultationDto>, { reason: string }>(userRoutes.consultationCancel(consultationId), { reason }),
   getUserConsultationHistory: async (params?: IGetUserConsultationHistoryRequest) =>
     server.get<IGetUserConsultationsResponse>(userRoutes.consultationHistory, { params }),
   getUserConsultationHistoryDetail: async (consultationId: string) =>

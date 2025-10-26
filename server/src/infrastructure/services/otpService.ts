@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import { IOtpService } from '../../domain/serviceInterface/IOtpService';
 import { IOtpRepository } from '../../domain/repositoryInterface/IOtpRepository';
+import { otpEmailTemplate } from '@/shared/emailTemplates';
 
 export class NodemailerOtpService implements IOtpService {
     private _otpRepo: IOtpRepository;
@@ -27,7 +28,7 @@ export class NodemailerOtpService implements IOtpService {
                 from: process.env.EMAIL_USER,
                 to: email,
                 subject: 'Your OTP Code',
-                html: `<p>Your Otp is <b>${otp}</b>. It will expire in 5 minutes.</p>`,
+                html: otpEmailTemplate(otp),
             });
 
             console.log('otp send or not');

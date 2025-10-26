@@ -4,7 +4,8 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { AppError } from '@/domain/errors/AppError';
 import { UserRole } from '@/domain/enums/UserEnums';
-import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlackListService';
+import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlacklistService';
+import { generalMessages } from '@/shared/constants/messages/generalMessages';
 
 export const authMiddleware = (
     jwtService: ITokenService,
@@ -53,11 +54,15 @@ export const authMiddleware = (
         };
 
         next();
-    } catch (err) {
-        const error = err as any;
-        if (error.name === 'TokenExpiredError') {
-            return next(new AppError(authMessages.ERROR.TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED));
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            if (err.name === 'TokenExpiredError') {
+                return next(new AppError(authMessages.ERROR.TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED));
+            }
+            next(err);
+        } else {
+            // fallback for non-Error objects
+            next(new AppError(generalMessages.ERROR.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR));
         }
-        next(err);
     }
 };

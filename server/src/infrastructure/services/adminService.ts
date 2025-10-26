@@ -23,7 +23,10 @@ export class AdminService implements IAdminService {
         this._consultationRepo = consultationRepo;
         this._paymentRepo = paymentRepo;
     }
-
+    /**
+     *
+     * @returns
+     */
     async getTotals(): Promise<{ users: number; psychologists: number; consultations: number; revenue: number }> {
         const [users, psychologists, consultations, totalPaidAmount] = await Promise.all([
             this._userRepo.countAll(),

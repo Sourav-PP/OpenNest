@@ -18,7 +18,7 @@ export class CreateWalletTransactionUseCase implements ICreateWalletTransactionU
         amount: number,
         type: WalletTransactionType,
         reference?: string,
-        metadata?: any,
+        metadata?: Record<string, unknown>,
     ): Promise<WalletTransaction> {
         if (reference) {
             const existing = await this._walletRepo.findTransactionByReference(reference);

@@ -6,11 +6,12 @@ import ReusableTable from '@/components/admin/ReusableTable';
 import CustomPagination from '@/components/admin/CustomPagination';
 import ConfirmModal from '@/components/admin/ConfirmModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import Filters from '@/components/admin/Filters';
 import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/User';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { actionColumn, getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
+import type { Column } from '@/types/dtos/table';
 
 const UserTable = () => {
   const [users, setUsers] = useState<IUserDto[]>([]);
@@ -94,54 +95,18 @@ const UserTable = () => {
     }
   };
 
-  const columns = [
-    {
-      header: '',
-      render: (u: IUserDto) => (
-        <div className="flex justify-start min-w-[40px]">
-          {u.profileImage ? (
-            <img
-              src={getCloudinaryUrl(u.profileImage) || undefined}
-              alt={`${u.name}'s profile`}
-              loading="lazy"
-              className="w-8 h-8 rounded-full object-cover border border-gray-600"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gray-800" />
-          )}
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Name',
-      render: (u: IUserDto) => u.name,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Email',
-      render: (u: IUserDto) => u.email,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Phone',
-      render: (u: IUserDto) => u.phone || 'N/A',
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Action',
-      render: (u: IUserDto) => (
-        <button
-          onClick={() => handleBlockClick(u.id, u.isActive!)}
-          className={`py-1 px-3 rounded-full ${
-            u.isActive ? 'bg-red-900/50 text-red-400' : 'bg-green-900/60 text-green-400'
-          }`}
-        >
-          {u.isActive ? 'Block' : 'Unblock'}
-        </button>
-      ),
-      className: 'px-6 py-4',
-    },
+  const columns: Column<IUserDto>[] = [
+    imageColumn<IUserDto>('', u => getCloudinaryUrlSafe(u.profileImage), 'px-6 py-4'),
+    textColumn<IUserDto>('Name', u => u.name, 'px-6 py-4'),
+    textColumn<IUserDto>('Email', u => u.email, 'px-6 py-4'),
+    textColumn<IUserDto>('Phone', u => u.phone || 'N/A', 'px-6 py-4'),
+    actionColumn<IUserDto>(
+      'Action',
+      u => handleBlockClick(u.id, u.isActive!),
+      u => (u.isActive ? 'Block' : 'Unblock'),
+      'px-6 py-4',
+      u => (u.isActive ? 'bg-red-900/50 text-red-400' : 'bg-green-900/60 text-green-400')
+    ),
   ];
 
   const userFilterConfig = [

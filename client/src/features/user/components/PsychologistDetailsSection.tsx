@@ -9,14 +9,14 @@ import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { generalMessages } from '@/messages/GeneralMessages';
 
 const PsychologistDetailsSection = () => {
-  const { id } = useParams<{ id: string }>();
+  const { psychologistUserId } = useParams<{ psychologistUserId: string }>();
   const [psychologist, setPsychologist] = useState<IPsychologistProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPsychologist = async () => {
       try {
-        const res = await userApi.getPsychologistById(id!);
+        const res = await userApi.getPsychologistById(psychologistUserId!);
         if (!res.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
@@ -32,7 +32,7 @@ const PsychologistDetailsSection = () => {
     };
 
     fetchPsychologist();
-  }, [id]);
+  }, [psychologistUserId]);
 
   if (loading)
     return (

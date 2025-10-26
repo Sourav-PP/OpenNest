@@ -10,7 +10,12 @@ export class UserServiceController {
     constructor(getAllServicesUseCase: IGetAllServiceUseCase) {
         this._getAllServicesUseCase = getAllServicesUseCase;
     }
-
+    /**
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
     getAllService = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const input: IGetAllServiceInput = {

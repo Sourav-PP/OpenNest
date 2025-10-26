@@ -8,6 +8,8 @@ import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { generalMessages } from '@/messages/GeneralMessages';
 import Filters from '@/components/admin/Filters';
 import { TopPsychologistFilter, type TopPsychologistFilterType } from '@/constants/types/SortFilter';
+import type { Column } from '@/types/dtos/table';
+import { getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
 
 const TopPsychologistTable = () => {
   const [topPsychologists, setTopPsychologists] = useState<ITopPsychologistDto[]>([]);
@@ -47,60 +49,32 @@ const TopPsychologistTable = () => {
   );
 
   // table columns
-  const columns = [
+  const topPsychologistColumns: Column<ITopPsychologistDto>[] = [
+    imageColumn<ITopPsychologistDto>('', p => getCloudinaryUrlSafe(p.profileImage), 'px-6 py-4'),
+
+    textColumn<ITopPsychologistDto>('Name', p => p.name, 'px-6 py-4'),
+
+    textColumn<ITopPsychologistDto>('Email', p => p.email, 'px-6 py-4'),
+
+    textColumn<ITopPsychologistDto>('Qualification', p => p.qualification, 'px-6 py-4'),
+
+    textColumn<ITopPsychologistDto>('Fee', p => `${p.defaultFee}$`, 'px-6 py-4'),
+
+    textColumn<ITopPsychologistDto>('Total Consultations', p => `${p.totalConsultations}`, 'px-6 py-4'),
+
     {
-      header: '',
-      render: (p: ITopPsychologistDto) => (
-        <div className="flex justify-start min-w-[40px]">
-          {p.profileImage ? (
-            <img
-              src={getCloudinaryUrl(p.profileImage) || undefined}
-              alt={`${p.name}'s profile`}
-              className="w-8 h-8 rounded-full object-cover border border-gray-600"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gray-800" />
-          )}
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Name',
-      render: (p: ITopPsychologistDto) => p.name,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Email',
-      render: (p: ITopPsychologistDto) => p.email,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Qualification',
-      render: (p: ITopPsychologistDto) => `${p.qualification}`,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Fee',
-      render: (p: ITopPsychologistDto) => `${p.defaultFee}$`,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Total Consultations',
-      render: (p: ITopPsychologistDto) => `${p.totalConsultations} `,
-      className: 'px-6 py-4',
-    },
-    { 
-      header: 'Average Rating', 
+      header: 'Average Rating',
       render: (p: ITopPsychologistDto) => (
         <div className="flex items-center gap-1">
           <span>{p.averageRating ?? 0}</span>
           <span className="text-yellow-400">⭐</span>
         </div>
-      ), 
-      className: 'px-6 py-4' 
+      ),
+      className: 'px-6 py-4',
     },
-    { header: 'Total Reviews', render: (p: ITopPsychologistDto) => `${p.totalReviews ?? 0}`, className: 'px-6 py-4' },
+
+    textColumn<ITopPsychologistDto>('Total Reviews', p => `${p.totalReviews ?? 0}`, 'px-6 py-4'),
+
     {
       header: 'Is Verified',
       render: (p: ITopPsychologistDto) => (p.isVerified ? <Verified /> : <NotVerified />),
@@ -136,7 +110,7 @@ const TopPsychologistTable = () => {
       </div>
       <ReusableTable
         data={topPsychologists}
-        columns={columns}
+        columns={topPsychologistColumns}
         emptyMessage="No users found."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />

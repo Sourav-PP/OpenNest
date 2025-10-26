@@ -12,6 +12,8 @@ import { generalMessages } from '@/messages/GeneralMessages';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { ConsultationStatus } from '@/constants/types/Consultation';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import type { Column } from '@/types/dtos/table';
+import { textColumn } from '@/components/user/TableColumns';
 
 const PatientHistoryTable = () => {
   const { patientId } = useParams<{ patientId: string }>();
@@ -55,17 +57,34 @@ const PatientHistoryTable = () => {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const columns = [
-    { header: 'SI', render: (_: IPatientConsultationHistoryDto, i: number) => i + 1, className: 'ps-4' },
-    { header: 'Date', render: (c: IPatientConsultationHistoryDto) => formatDateOnly(c.startDateTime) },
+  const patientConsultationHistoryColumns: Column<IPatientConsultationHistoryDto>[] = [
     {
-      header: 'Time',
-      render: (c: IPatientConsultationHistoryDto) => formatTimeRange(c.startDateTime, c.endDateTime).toLocaleString(),
+      header: 'SI',
+      render: (_: IPatientConsultationHistoryDto, i: number) => i + 1,
+      className: 'ps-4',
     },
-    { header: 'Goal', render: (c: IPatientConsultationHistoryDto) => c.sessionGoal },
+
+    textColumn<IPatientConsultationHistoryDto>(
+      'Date',
+      c => formatDateOnly(c.startDateTime),
+      'px-6 py-4'
+    ),
+
+    textColumn<IPatientConsultationHistoryDto>(
+      'Time',
+      c => formatTimeRange(c.startDateTime, c.endDateTime).toLocaleString(),
+      'px-6 py-4'
+    ),
+
+    textColumn<IPatientConsultationHistoryDto>(
+      'Goal',
+      c => c.sessionGoal,
+      'px-6 py-4'
+    ),
+
     {
       header: 'Status',
-      render: (c: IPatientConsultationHistoryDto) => (
+      render: c => (
         <span
           className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${
             c.status === ConsultationStatus.Completed
@@ -78,10 +97,12 @@ const PatientHistoryTable = () => {
           {c.status}
         </span>
       ),
+      className: 'px-6 py-4',
     },
+
     {
       header: 'View',
-      render: (c: IPatientConsultationHistoryDto) => (
+      render: c => (
         <Link
           to={psychologistFrontendRoutes.consultationHistoryDetail(c.id)}
           state={{ from: 'patient-history', patientName: c.patient.name }}
@@ -90,6 +111,7 @@ const PatientHistoryTable = () => {
           View
         </Link>
       ),
+      className: 'px-6 py-4',
     },
   ];
 
@@ -112,7 +134,7 @@ const PatientHistoryTable = () => {
           <option value={SortFilter.Asc}>Oldest First</option>
         </select>
       </div>
-      <ReusableTable data={consultations} columns={columns} emptyMessage="No past consultations found." />
+      <ReusableTable data={consultations} columns={patientConsultationHistoryColumns} emptyMessage="No past consultations found." />
       <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   );

@@ -6,4 +6,6 @@ export interface IPlanRepository {
     findById(id: string): Promise<Plan | null>;
     findByStripePriceId(priceId: string): Promise<Plan | null>;
     list(): Promise<Plan[]>;
+    deleteById(planId: string): Promise<boolean>
+    findByName(name: string): Promise<Plan | null>;
 }

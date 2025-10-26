@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Home, Stethoscope, MessageSquare, Wallet, Lock, History } from 'lucide-react';
 import { assets } from '../../assets/assets';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +46,7 @@ const Sidebar = () => {
         } lg:translate-x-0 w-64 p-6 flex flex-col gap-6 shadow-md border-r-2 border-slate-200 z-50`}
       >
         {/* Logo */}
-        <NavLink to={'/admin/dashboard'} className="mb-8">
+        <NavLink to={publicFrontendRoutes.landing} className="mb-8">
           <div className="flex items-center gap-3 cursor-pointer">
             <img
               src={assets.logo}

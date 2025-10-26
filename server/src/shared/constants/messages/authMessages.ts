@@ -38,6 +38,7 @@ export const authMessages = {
         REFRESH_TOKEN_FAILED: 'Failed to refresh token',
         REFRESH_TOKEN_REQUIRED: 'You need to log in again to continue',
         BLOCKED_USER: 'Your account has been blocked by the administrator',
+        EMAIL_REQUIRED: 'Email is required',
     },
     INFO: {
         LOGIN_ATTEMPT_LIMIT: 'You have exceeded the maximum login attempts, try again later',

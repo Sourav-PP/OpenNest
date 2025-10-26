@@ -35,8 +35,8 @@ export const psychologistApi = {
   getKycDetails: async () => server.get<IKycDto>(psychologistRoutes.kyc),
   getPsychologistConsultations: async (params?: IGetUserConsultationsRequest) =>
     server.get<IGetPsychologistConsultationsResponse>(psychologistRoutes.consultations, { params }),
-  cancelConsultation: async (id: string, reason: string) =>
-    server.put<BackendResponse<IConsultationDto>, { reason: string }>(psychologistRoutes.consultationCancel(id), {
+  cancelConsultation: async (consultationId: string, reason: string) =>
+    server.put<BackendResponse<IConsultationDto>, { reason: string }>(psychologistRoutes.consultationCancel(consultationId), {
       reason,
     }),
   getPsychologistConsultationHistory: async (params?: IGetUserConsultationHistoryRequest) =>

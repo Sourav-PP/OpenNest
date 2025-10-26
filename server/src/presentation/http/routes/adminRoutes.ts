@@ -34,6 +34,7 @@ router.patch('/users/:userId/status', authenticateAdmin, adminUserManagementCont
 router.get('/consultations', authenticateAdmin, adminConsultationController.getAllConsultations);
 router.post('/plans', authenticateAdmin, planController.createPlan);
 router.get('/plans', authenticateAdmin, planController.getAllPlans);
+router.delete('/plans/:planId', authenticateAdmin, planController.deletePlan);
 router.get('/payout-requests', authenticateAdmin, adminPayoutController.listPayoutRequests);
 router.patch('/payout-requests/:payoutRequestId/approve', authenticateAdmin, adminPayoutController.approvePayout);
 router.patch('/payout-requests/:payoutRequestId/reject', authenticateAdmin, adminPayoutController.rejectPayout);

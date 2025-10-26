@@ -5,7 +5,7 @@ export const psychologistRoutes = {
   slotById: (slotId: string) => `/psychologist/slot/${slotId}`,
   kyc: '/psychologist/kyc',
   consultations: '/psychologist/consultations',
-  consultationCancel: (id: string) => `/psychologist/consultation/${id}/cancel`,
+  consultationCancel: (consultationId: string) => `/psychologist/consultation/${consultationId}/cancel`,
   consultationHistory: '/psychologist/consultation/history',
   patientHistory: (patientId: string) => `/psychologist/patients/${patientId}/history`,
   pendingPayout: '/psychologist/payout/pending',

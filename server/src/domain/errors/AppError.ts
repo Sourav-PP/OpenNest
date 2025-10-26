@@ -1,13 +1,13 @@
-export class AppError extends Error {
+export class AppError<T = unknown> extends Error {
     public readonly statusCode: number;
     public readonly isOperational: boolean;
-    public readonly errors?: any;
+    public readonly errors?: T;
 
     constructor(
         message: string,
         statusCode = 500,
         isOperational = true,
-        errors?: any,
+        errors?: T,
     ) {
         super(message);
         this.statusCode = statusCode;

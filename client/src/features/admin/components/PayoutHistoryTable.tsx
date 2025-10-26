@@ -6,51 +6,34 @@ import CustomPagination from '@/components/admin/CustomPagination';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import Filters from '@/components/admin/Filters';
 import type { PayoutRequestListItemDto } from '@/types/dtos/payoutRequest';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/User';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { PayoutRequestStatus, PayoutRequestStatusColors } from '@/constants/types/PayoutRequest';
+import type { Column } from '@/types/dtos/table';
+import { getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
 
 const ITEM_PER_PAGE = 10;
 
-const columns = [
-  {
-    header: 'Image',
-    render: (p: PayoutRequestListItemDto) => (
-      <div className="flex justify-center min-w-[40px]">
-        {p.psychologist.profileImage ? (
-          <img
-            src={getCloudinaryUrl(p.psychologist.profileImage) || undefined}
-            alt={`${p.psychologist.name}'s profile`}
-            loading="lazy"
-            className="w-8 h-8 rounded-full object-cover border border-gray-600"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-800" />
-        )}
-      </div>
-    ),
-    className: 'px-6 py-4',
-  },
-  { header: 'Psychologist', render: (p: PayoutRequestListItemDto) => p.psychologist.name, className: 'px-6 py-4' },
-  {
-    header: 'Total Amount',
-    render: (p: PayoutRequestListItemDto) => `₹${p.requestedAmount}`,
-    className: 'px-6 py-4',
-  },
-  { header: 'Commission', render: (p: PayoutRequestListItemDto) => `₹${p.commissionAmount}`, className: 'px-6 py-4' },
-  { header: 'Payout Amount', render: (p: PayoutRequestListItemDto) => `₹${p.payoutAmount}`, className: 'px-6 py-4' },
-  {
-    header: 'Consultations',
-    render: (p: PayoutRequestListItemDto) => p.consultationIds.length,
-    className: 'px-6 py-4',
-  },
+const payoutRequestListColumns: Column<PayoutRequestListItemDto>[] = [
+  imageColumn<PayoutRequestListItemDto>('Image', p => getCloudinaryUrlSafe(p.psychologist.profileImage), 'px-6 py-4'),
+
+  textColumn<PayoutRequestListItemDto>('Psychologist', p => p.psychologist.name, 'px-6 py-4'),
+
+  textColumn<PayoutRequestListItemDto>('Total Amount', p => `₹${p.requestedAmount}`, 'px-6 py-4'),
+
+  textColumn<PayoutRequestListItemDto>('Commission', p => `₹${p.commissionAmount}`, 'px-6 py-4'),
+
+  textColumn<PayoutRequestListItemDto>('Payout Amount', p => `₹${p.payoutAmount}`, 'px-6 py-4'),
+
+  textColumn<PayoutRequestListItemDto>('Consultations', p => `${p.consultationIds.length}`, 'px-6 py-4'),
+
   {
     header: 'Status',
     render: (p: PayoutRequestListItemDto) => (
       <span className={`px-2 py-1 rounded-full text-xs ${PayoutRequestStatusColors[p.status]}`}>{p.status}</span>
     ),
+    className: 'px-6 py-4',
   },
 ];
 
@@ -134,7 +117,7 @@ const PayoutHistoryTable = () => {
       />
       <ReusableTable
         data={payouts}
-        columns={columns}
+        columns={payoutRequestListColumns}
         emptyMessage="No payout history."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />

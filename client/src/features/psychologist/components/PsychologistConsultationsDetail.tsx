@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import ConsultationNotesModal from './ConsultationNotesModal';
 
 const PsychologistConsultationsDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { consultationId } = useParams<{ consultationId: string }>();
   const navigate = useNavigate();
   const [consultation, setConsultation] = useState<IUserConsultationDetailsResponseData>();
   const [loading, setLoading] = useState(false);
@@ -57,12 +57,11 @@ const PsychologistConsultationsDetail = () => {
   };
 
   const fetchConsultation = useCallback(async () => {
-    if (!id) return;
+    if (!consultationId) return;
     try {
       setLoading(true);
-      const res = await userApi.UserConsultationsDetail(id);
+      const res = await userApi.UserConsultationsDetail(consultationId);
 
-      console.log('reere: ', res);
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
@@ -88,21 +87,21 @@ const PsychologistConsultationsDetail = () => {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [consultationId]);
 
   useEffect(() => {
     fetchConsultation();
   }, [fetchConsultation]);
 
   const handleCancelConsultation = async () => {
-    if (!id || !reason.trim()) {
+    if (!consultationId || !reason.trim()) {
       toast.error('Please provide a reason for cancellation');
       return;
     }
 
     try {
       setCancelLoading(true);
-      const res = await psychologistApi.cancelConsultation(id, reason);
+      const res = await psychologistApi.cancelConsultation(consultationId, reason);
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;

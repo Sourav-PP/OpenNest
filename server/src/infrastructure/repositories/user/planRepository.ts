@@ -24,4 +24,10 @@ export class PlanRepository
         const plans = await PlanModel.find().exec();
         return plans.map(p => this.map(p));
     }
+
+    async findByName(name: string): Promise<Plan | null> {
+        const plan = await PlanModel.findOne({ name: { $regex: `^${name}$`, $options: 'i' } }).exec();
+        if (!plan) return null;
+        return this.map(plan);
+    }
 }

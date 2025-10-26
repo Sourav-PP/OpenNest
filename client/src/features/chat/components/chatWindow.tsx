@@ -41,8 +41,6 @@ export default function ChatWindow({
     }
   };
 
-  console.log('isReady:', isReady, 'messages:', messages);
-
   const confirmDeleteMessage = (id: string, consultationId: string) => {
     setMessageToDelete({ messageId: id, consultationId });
     setDeleteModalOpen(true);
@@ -58,7 +56,8 @@ export default function ChatWindow({
       setMessageToDelete(null);
     } catch (error) {
       toast.error('Failed to delete message');
-      console.log('delete message error: ', error);
+      if (import.meta.env.DEV)
+        console.log('delete message error: ', error);
     } finally {
       setConfirmLoading(false);
     }
@@ -96,7 +95,6 @@ export default function ChatWindow({
       mediaUrl,
       mediaType,
     });
-    console.log('send message', sendMessage);
     setText('');
     setFile(null);
     handleStopTyping();

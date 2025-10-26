@@ -15,42 +15,41 @@ import {
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { generalMessages } from '@/messages/GeneralMessages';
+import type { Column } from '@/types/dtos/table';
+import { textColumn } from '@/components/user/TableColumns';
 
 const ITEMS_PER_PAGE = 10;
 
-const columns = [
-  {
-    header: 'Patient',
-    render: (c: IConsultationDtoForAdmin) => <span>{c.patientName}</span>,
-  },
-  {
-    header: 'Psychologist',
-    render: (c: IConsultationDtoForAdmin) => <span>{c.psychologistName}</span>,
-  },
-  {
-    header: 'Start Time',
-    render: (c: IConsultationDtoForAdmin) => format(new Date(c.startDateTime), 'dd MMM yyyy, hh:mm a'),
-  },
-  {
-    header: 'End Time',
-    render: (c: IConsultationDtoForAdmin) => format(new Date(c.endDateTime), 'dd MMM yyyy, hh:mm a'),
-  },
-  {
-    header: 'Session Goal',
-    render: (c: IConsultationDtoForAdmin) => c.sessionGoal,
-  },
+const consultationColumns: Column<IConsultationDtoForAdmin>[] = [
+  textColumn<IConsultationDtoForAdmin>('Patient', c => c.patientName, 'px-6 py-4'),
+
+  textColumn<IConsultationDtoForAdmin>('Psychologist', c => c.psychologistName, 'px-6 py-4'),
+
+  textColumn<IConsultationDtoForAdmin>(
+    'Start Time',
+    c => format(new Date(c.startDateTime), 'dd MMM yyyy, hh:mm a'),
+    'px-6 py-4'
+  ),
+
+  textColumn<IConsultationDtoForAdmin>(
+    'End Time',
+    c => format(new Date(c.endDateTime), 'dd MMM yyyy, hh:mm a'),
+    'px-6 py-4'
+  ),
+
+  textColumn<IConsultationDtoForAdmin>('Session Goal', c => c.sessionGoal, 'px-6 py-4'),
+
   {
     header: 'Status',
-    render: (c: IConsultationDtoForAdmin) => {
+    render: c => {
       const status = c.status as ConsultationStatusType;
       const statusClass = ConsultationStatusColors[status] || 'bg-gray-500';
       return <span className={`px-2 py-1 rounded-full text-xs ${statusClass}`}>{c.status}</span>;
     },
+    className: 'px-6 py-4',
   },
-  {
-    header: 'Payment',
-    render: (c: IConsultationDtoForAdmin) => c.paymentStatus,
-  },
+
+  textColumn<IConsultationDtoForAdmin>('Payment', c => c.paymentStatus ?? 'subscription', 'px-6 py-4'),
 ];
 
 const filterConfig = [
@@ -137,7 +136,7 @@ const ConsultationTable = () => {
 
       <ReusableTable
         data={consultations}
-        columns={columns}
+        columns={consultationColumns}
         emptyMessage="No consultations found."
         className="bg-admin-bg-secondary rounded-xl shadow-lg overflow-hidden"
       />

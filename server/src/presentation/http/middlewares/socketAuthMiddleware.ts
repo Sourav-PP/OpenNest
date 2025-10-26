@@ -4,9 +4,10 @@ import { AppError } from '@/domain/errors/AppError';
 import { UserRole } from '@/domain/enums/UserEnums';
 import { generalMessages } from '@/shared/constants/messages/generalMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
 
 export const socketAuthMiddleware = (jwtService: ITokenService, allowedRoles: Array<'user' | 'psychologist' | 'admin'>) =>
-    (socket: Socket, next: (err?: any) => void) => {
+    (socket: Socket, next: (err?: Error) => void) => {
         try {
             const token = socket.handshake.auth?.token;
             if (!token) throw new AppError(generalMessages.ERROR.NO_TOKEN);
@@ -28,7 +29,11 @@ export const socketAuthMiddleware = (jwtService: ITokenService, allowedRoles: Ar
             socket.data.email = payload.email;
 
             next();
-        } catch (err) {
-            next(err); 
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                next(err);
+            } else {
+                next(new AppError(generalMessages.ERROR.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR));
+            }
         }
     };

@@ -14,7 +14,7 @@ import ConsultationRatingModal from './ConsultationRatingModal';
 import { Button } from '@/components/ui/button';
 
 const UserConsultationsDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { consultationId } = useParams<{ consultationId: string }>();
   const navigate = useNavigate();
   const [consultation, setConsultation] = useState<IUserConsultationDetailsResponseData>();
   const [loading, setLoading] = useState(false);
@@ -55,10 +55,10 @@ const UserConsultationsDetail = () => {
 
   // Fetch consultation details
   const fetchConsultation = useCallback(async () => {
-    if (!id) return;
+    if (!consultationId) return;
     try {
       setLoading(true);
-      const res = await userApi.UserConsultationsDetail(id);
+      const res = await userApi.UserConsultationsDetail(consultationId);
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
@@ -70,21 +70,21 @@ const UserConsultationsDetail = () => {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [consultationId]);
 
   useEffect(() => {
     fetchConsultation();
   }, [fetchConsultation]);
 
   const handleCancelConsultation = async () => {
-    if (!id || !reason.trim()) {
+    if (!consultationId || !reason.trim()) {
       toast.error('Please provide a reason for cancellation');
       return;
     }
 
     try {
       setCancelLoading(true);
-      const res = await userApi.cancelConsultation(id, reason);
+      const res = await userApi.cancelConsultation(consultationId, reason);
       toast.success(res.message);
       setShowCancelModal(false);
       await fetchConsultation();
@@ -218,7 +218,7 @@ const UserConsultationsDetail = () => {
             {typeof consultation.rating === 'number' && (
               <div className="flex items-center gap-1">
                 <h4 className="text-sm font-semibold text-gray-700 mr-2">User Rating:</h4>
-                {[1, 2, 3, 4, 5].map((star) => (
+                {[1, 2, 3, 4, 5].map(star => (
                   <span
                     key={star}
                     className={`text-lg ${star <= (consultation.rating ?? 0) ? 'text-yellow-500' : 'text-gray-300'}`}

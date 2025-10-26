@@ -33,6 +33,7 @@ export class AuthController {
 
     sendOtp = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
+            if (!req.body?.email) throw new AppError(authMessages.ERROR.EMAIL_REQUIRED, HttpStatus.BAD_REQUEST);
             await this._sendOtpUseCase.execute(req.body.email);
 
             res.status(HttpStatus.OK).json({

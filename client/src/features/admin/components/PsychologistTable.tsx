@@ -6,11 +6,12 @@ import ReusableTable from '@/components/admin/ReusableTable';
 import CustomPagination from '@/components/admin/CustomPagination';
 import ConfirmModal from '@/components/admin/ConfirmModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import Filters from '@/components/admin/Filters';
 import { UserGenderFilter, type UserGenderFilterType } from '@/constants/types/User';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { actionColumn, getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
+import type { Column } from '@/types/dtos/table';
 
 const PsychologistTable = () => {
   const [psychologists, setPsychologists] = useState<IGetAllPsychologistsDto[]>([]);
@@ -97,53 +98,22 @@ const PsychologistTable = () => {
   };
 
   // table columns
-  const columns = [
-    {
-      header: '',
-      render: (p: IGetAllPsychologistsDto) => (
-        <div className="flex justify-start min-w-[40px]">
-          {p.user.profileImage ? (
-            <img
-              src={getCloudinaryUrl(p.user.profileImage) || undefined}
-              alt={`${p.user.name}'s profile`}
-              className="w-8 h-8 rounded-full object-cover border border-gray-600"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gray-800" />
-          )}
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Name',
-      render: (p: IGetAllPsychologistsDto) => p.user.name,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Email',
-      render: (p: IGetAllPsychologistsDto) => p.user.email,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Fee',
-      render: (p: IGetAllPsychologistsDto) => `${p.defaultFee} $`,
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Action',
-      render: (p: IGetAllPsychologistsDto) => (
-        <button
-          onClick={() => handleBlockClick(p.user.id, p.user.isActive!)}
-          className={`py-1 px-3 rounded-full ${
-            p.user.isActive ? 'bg-red-900/50 text-red-400' : 'bg-green-900/60 text-green-400'
-          }`}
-        >
-          {p.user.isActive ? 'Block' : 'Unblock'}
-        </button>
-      ),
-      className: 'px-6 py-4',
-    },
+  const columns: Column<IGetAllPsychologistsDto>[] = [
+    imageColumn<IGetAllPsychologistsDto>('', p => getCloudinaryUrlSafe(p.user.profileImage), 'px-6 py-4'),
+
+    textColumn<IGetAllPsychologistsDto>('Name', p => p.user.name, 'px-6 py-4'),
+
+    textColumn<IGetAllPsychologistsDto>('Email', p => p.user.email, 'px-6 py-4'),
+
+    textColumn<IGetAllPsychologistsDto>('Fee', p => `${p.defaultFee} $`, 'px-6 py-4'),
+
+    actionColumn<IGetAllPsychologistsDto>(
+      'Action',
+      p => handleBlockClick(p.user.id, p.user.isActive!),
+      p => (p.user.isActive ? 'Block' : 'Unblock'),
+      'px-6 py-4',
+      p => (p.user.isActive ? 'bg-red-900/50 text-red-400' : 'bg-green-900/60 text-green-400')
+    ),
   ];
 
   // search fields

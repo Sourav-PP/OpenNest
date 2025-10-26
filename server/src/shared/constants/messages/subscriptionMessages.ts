@@ -10,11 +10,13 @@ export const SubscriptionMessages = {
         CREDITS_DECREMENTED: 'Subscription credits decremented successfully',
         SUBSCRIPTION_FOUND: 'Subscription found successfully',
         SUBSCRIPTIONS_FOUND: 'Subscriptions found successfully',
+        PLAN_DELETED: 'Plan deleted successfully',
     },
     ERROR: {
         PLAN_ID_REQUIRED: 'Plan ID is required',
         SUBSCRIPTION_CREATION_FAILED: 'Failed to create subscription',
         SUBSCRIPTION_ID_REQUIRED: 'Subscription ID is required',
+        NAME_ALREADY_EXISTS: (name: string) => `Plan with name ${name} already exists`,
         PLAN_NOT_FOUND: 'Plan not found',
         SUBSCRIPTION_NOT_FOUND: 'Subscription not found',
         INSUFFICIENT_CREDITS: 'Insufficient credits in subscription',

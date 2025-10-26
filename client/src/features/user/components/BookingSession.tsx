@@ -18,7 +18,7 @@ import { generalMessages } from '@/messages/GeneralMessages';
 
 const BookingSession = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { id } = useParams<{ id: string }>();
+  const { psychologistUserId } = useParams<{ psychologistUserId: string }>();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [allSlots, setAllSlots] = useState<ISlotDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,12 +38,13 @@ const BookingSession = () => {
 
   // fetching psychologist details
   useEffect(() => {
-    if (!id) return;
+    if (!psychologistUserId) return;
 
+    console.log('puserId: ', psychologistUserId);
     const fetchPsychologist = async () => {
       setLoading(true);
       try {
-        const res = await userApi.getPsychologistById(id!);
+        const res = await userApi.getPsychologistById(psychologistUserId!);
 
         if (!res.data) return;
         setPsychologist(res.data?.psychologist);
@@ -55,16 +56,16 @@ const BookingSession = () => {
     };
 
     fetchPsychologist();
-  }, [id]);
+  }, [psychologistUserId]);
 
   // fetching slots for the selected date
   const fetchSlots = useCallback(async () => {
-    if (!id || !selectedDate) return;
+    if (!psychologistUserId || !selectedDate) return;
 
     setLoading(true);
     try {
       const dateISO = getLocalMidnight(selectedDate).toISOString();
-      const res = await userApi.getSlotsByPsychologist(id, dateISO);
+      const res = await userApi.getSlotsByPsychologist(psychologistUserId, dateISO);
 
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
@@ -76,7 +77,7 @@ const BookingSession = () => {
     } finally {
       setLoading(false);
     }
-  }, [id, selectedDate]);
+  }, [psychologistUserId, selectedDate]);
 
   useEffect(() => {
     fetchSlots();
@@ -134,11 +135,11 @@ const BookingSession = () => {
   // buy plan
   const handleBuyPlan = async (planId: string) => {
     try {
-      if (!id) {
+      if (!psychologistUserId) {
         toast.error('Psychologist details not found');
         return;
       }
-      const res = await userApi.createSubscriptionCheckoutSession(planId, id);
+      const res = await userApi.createSubscriptionCheckoutSession(planId, psychologistUserId);
       if (!res.data || !res.data.url) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
@@ -314,8 +315,8 @@ const BookingSession = () => {
                     slotId={slotId}
                     amount={psychologist.defaultFee}
                     onSuccess={async () => {
-                      if (id && selectedDate) {
-                        const res = await userApi.getSlotsByPsychologist(id, selectedDate.toISOString());
+                      if (psychologistUserId && selectedDate) {
+                        const res = await userApi.getSlotsByPsychologist(psychologistUserId, selectedDate.toISOString());
                         if (!res.data) return;
                         setAllSlots(res.data);
                       }
