@@ -3,6 +3,8 @@ import Header from '@/components/psychologist/Header';
 import PsychologistDashboardRevenueGraph from '../components/PsychologistDashboardRevenueGraph';
 import TopUsersTable from '../components/TopUsersTable';
 import TopRatedConsultationsTable from '../components/TopRatedConsultationsTable';
+import PsychologistDashboardBookingTrendGraph from '../components/PsychologistDashboardBookingTrendGraph';
+import PsychologistDashboardClientTrendGraph from '../components/PsychologistDashboardClientTrendGraph';
 
 const PsychologistDashboard = () => {
   return (
@@ -11,6 +13,8 @@ const PsychologistDashboard = () => {
       <div className="flex-1 overflow-auto">
         <Header />
         <PsychologistDashboardRevenueGraph />
+        <PsychologistDashboardBookingTrendGraph />
+        <PsychologistDashboardClientTrendGraph />
         <TopUsersTable />
         <TopRatedConsultationsTable />
       </div>

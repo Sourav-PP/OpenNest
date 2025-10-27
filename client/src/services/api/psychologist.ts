@@ -16,7 +16,7 @@ import type {
 import type { ITopConsultationDto, IConsultationDto } from '@/types/dtos/consultation';
 import { psychologistRoutes } from '@/constants/apiRoutes/psychologistRoutes';
 import { RevenueFilter, type RevenueFilterType, type SortFilterType } from '@/constants/types/SortFilter';
-import type { IGetRevenueStatsResponse } from '@/types/api/admin';
+import type { IGetClientTrendResponse, IGetPsychologistBookingTrendResponse, IGetRevenueStatsResponse } from '@/types/api/admin';
 import type { ITopUserDto } from '@/types/dtos/user';
 
 export const psychologistApi = {
@@ -55,6 +55,10 @@ export const psychologistApi = {
     }),
   getRevenueStats: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) =>
     server.get<IGetRevenueStatsResponse>(psychologistRoutes.revenueStats, { params: { filter } }),
+  getBookingTrend: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) => 
+    server.get<IGetPsychologistBookingTrendResponse>(psychologistRoutes.getBookingTrend, { params: { filter } }),
+  getClientTrend: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) => 
+    server.get<IGetClientTrendResponse>(psychologistRoutes.getClientTrend, { params: { filter } }),
   getTopUsers: async (limit: number) =>
     server.get<BackendResponse<ITopUserDto[]>>(psychologistRoutes.getTopUsers, { params: { limit } }),
   getTopConsultations: async (limit: number) =>

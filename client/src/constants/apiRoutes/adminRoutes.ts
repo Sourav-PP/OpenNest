@@ -20,4 +20,6 @@ export const adminRoutes = {
   refreshToken: '/admin/refresh-token',
   getTotals: '/admin/dashboard/totals',
   revenueStats: '/admin/revenue-stats',
+  userTrend: '/admin/user-trend',
+  bookingTrend: '/admin/booking-trend',
 } as const;

@@ -5,14 +5,14 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { RevenueFilter, type RevenueFilterType } from '@/constants/types/SortFilter';
-import type { IRevenueStatDto } from '@/types/dtos/consultation';
+import type { IPsychologistBookingTrend } from '@/types/dtos/consultation';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { psychologistApi } from '@/services/api/psychologist';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
 
-const PsychologistDashboardRevenueGraph = () => {
+const PsychologistDashboardBookingTrendGraph = () => {
   const [filter, setFilter] = useState<RevenueFilterType>(RevenueFilter.DAILY);
-  const [data, setData] = useState<IRevenueStatDto[]>([]);
+  const [data, setData] = useState<IPsychologistBookingTrend[]>([]);
 
   const formatWeekRange = (value: string) => {
     const [year, week] = value.split('-').map(Number);
@@ -23,8 +23,8 @@ const PsychologistDashboardRevenueGraph = () => {
 
   const fetchRevenueStats = async (filterValue: RevenueFilterType) => {
     try {
-      const res = await psychologistApi.getRevenueStats(filterValue);
-      console.log('res', res);
+      const res = await psychologistApi.getBookingTrend(filterValue);
+    
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;
@@ -44,7 +44,7 @@ const PsychologistDashboardRevenueGraph = () => {
       <Card className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 p-0 space-y-4 sm:space-y-0">
           {/* Title */}
-          <h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">Earning Overview</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4 text-start">Booking trend</h2>
 
           {/* Filter */}
           <Select value={filter} onValueChange={(val: any) => setFilter(val)}>
@@ -63,15 +63,15 @@ const PsychologistDashboardRevenueGraph = () => {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div className="space-y-2">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Earning</p>
+                <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Completed consultations</p>
                 <p className="text-lg sm:text-2xl font-bold text-gray-900">
-                  ${data.reduce((sum: number, item: any) => sum + (item.psychologistEarning || 0), 0).toLocaleString()}
+                  {data.reduce((sum: number, item: any) => sum + (item.completed || 0), 0).toLocaleString()}
                 </p>
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Admin Profit</p>
+                <p className="text-xs sm:text-sm text-gray-500 mb-1">Total cancelled consultations</p>
                 <p className="text-lg sm:text-2xl font-bold text-gray-900">
-                  ${data.reduce((sum: number, item: any) => sum + (item.adminProfit || 0), 0).toLocaleString()}
+                  {data.reduce((sum: number, item: any) => sum + (item.cancelled || 0), 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -104,7 +104,7 @@ const PsychologistDashboardRevenueGraph = () => {
               <YAxis
                 stroke="#6b7280"
                 tick={{ fill: '#6b7280', fontSize: 'clamp(10px, 1.5vw, 12px)' }}
-                tickFormatter={value => `$${value}`}
+                tickFormatter={value => `${value}`}
                 width={40}
               />
               <Tooltip
@@ -116,7 +116,7 @@ const PsychologistDashboardRevenueGraph = () => {
                   fontSize: 'clamp(12px, 1.5vw, 14px)',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                 }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+                formatter={(value: number) => [`${value.toLocaleString()} consultations`, '']}
               />
               <Legend
                 verticalAlign="top"
@@ -124,26 +124,26 @@ const PsychologistDashboardRevenueGraph = () => {
                 wrapperStyle={{ color: '#374151', fontSize: 'clamp(12px, 1.5vw, 14px)' }}
               />
 
-              {/* Admin Profit */}
+              {/* completed */}
               <Line
                 type="monotone"
-                dataKey="adminProfit"
+                dataKey="completed"
                 stroke="#10b981"
                 strokeWidth={2}
                 dot={{ fill: '#10b981', strokeWidth: 1, r: 3 }}
-                name="Admin Profit"
+                name="completed"
                 activeDot={{ r: 5, stroke: '#10b981', strokeWidth: 1 }}
               />
 
-              {/* Psychologist Payout */}
+              {/* cancelled */}
               <Line
                 type="monotone"
-                dataKey="psychologistEarning"
-                stroke="#3b82f6"
+                dataKey="cancelled"
+                stroke="#ef4444"
                 strokeWidth={2}
-                dot={{ fill: '#3b82f6', strokeWidth: 1, r: 3 }}
-                name="Psychologist Earning"
-                activeDot={{ r: 5, stroke: '#3b82f6', strokeWidth: 1 }}
+                dot={{ fill: '#ef4444', strokeWidth: 1, r: 3 }}
+                name="cancelled"
+                activeDot={{ r: 5, stroke: '#ef4444', strokeWidth: 1 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -153,4 +153,4 @@ const PsychologistDashboardRevenueGraph = () => {
   );
 };
 
-export default PsychologistDashboardRevenueGraph;
+export default PsychologistDashboardBookingTrendGraph;

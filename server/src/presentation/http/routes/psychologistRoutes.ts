@@ -42,6 +42,7 @@ router.get('/revenue-stats', authenticatePsychologist, psychologistDashboardCont
 router.get('/top-users', authenticatePsychologist, psychologistDashboardController.getTopUsers);
 router.get('/top-consultations', authenticatePsychologist, psychologistDashboardController.getTopRatedConsultations);
 router.get('/totals', authenticatePsychologist, psychologistDashboardController.getTotals);
-
+router.get('/booking-trend', authenticatePsychologist, psychologistConsultationController.getBookingTrend);
+router.get('/client-trend', authenticatePsychologist, psychologistConsultationController.getClientTrend);
 
 export default router;

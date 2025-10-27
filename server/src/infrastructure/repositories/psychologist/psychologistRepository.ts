@@ -6,12 +6,13 @@ import {
     IPsychologistDocument,
 } from '@/infrastructure/database/models/psychologist/PsychologistModel';
 import { User } from '@/domain/entities/user';
-import { PipelineStage, Types } from 'mongoose';
+import mongoose, { PipelineStage, Types } from 'mongoose';
 import { GenericRepository } from '../GenericRepository';
 import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
 import { UserGender, UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
 import { ConsultationPaymentStatus, ConsultationStatus } from '@/domain/enums/ConsultationEnums';
-import { SortFilter, TopPsychologistSortFilter } from '@/domain/enums/SortFilterEnum';
+import { RevenueFilter, SortFilter, TopPsychologistSortFilter } from '@/domain/enums/SortFilterEnum';
+import { IPsychologistBookingTrend, IUniqueClientTrend } from '@/useCases/dtos/user';
 
 export class PsychologistRepository
     extends GenericRepository<Psychologist, IPsychologistDocument>
@@ -29,9 +30,7 @@ export class PsychologistRepository
             userId: mapped.userId as string,
             aboutMe: mapped.aboutMe,
             qualification: mapped.qualification,
-            specializations: (mapped.specializations as (string | Types.ObjectId)[]).map(id =>
-                id.toString(),
-            ),
+            specializations: (mapped.specializations as (string | Types.ObjectId)[]).map(id => id.toString()),
             defaultFee: mapped.defaultFee,
             isVerified: mapped.isVerified,
             specializationFees: mapped.specializationFees.map(fee => ({
@@ -98,11 +97,7 @@ export class PsychologistRepository
             });
         }
 
-        pipeline.push(
-            { $sort: { createdAt: sortOrder } },
-            { $skip: params.skip },
-            { $limit: params.limit },
-        );
+        pipeline.push({ $sort: { createdAt: sortOrder } }, { $skip: params.skip }, { $limit: params.limit });
 
         const results = await PsychologistModel.aggregate(pipeline);
 
@@ -114,9 +109,7 @@ export class PsychologistRepository
                 qualification: item.qualification,
                 defaultFee: item.defaultFee,
                 isVerified: item.isVerified,
-                specializations: item.specializationData.map(
-                    (s: IServiceDocument) => s.name,
-                ),
+                specializations: item.specializationData.map((s: IServiceDocument) => s.name),
                 specializationFees: item.specializationFees || [],
                 averageRating: item.averageRating,
                 totalReviews: item.totalReviews,
@@ -132,10 +125,7 @@ export class PsychologistRepository
         }));
     }
 
-    async countAllPsychologist(params?: {
-        search?: string;
-        gender?: UserGender;
-    }): Promise<number> {
+    async countAllPsychologist(params?: { search?: string; gender?: UserGender }): Promise<number> {
         const matchStage: Record<string, unknown> = {
             'user.role': UserRole.PSYCHOLOGIST,
         };
@@ -169,15 +159,8 @@ export class PsychologistRepository
         return await PsychologistModel.countDocuments({ isVerified: true });
     }
 
-    async updateByUserId(
-        userId: string,
-        updateData: Partial<Psychologist>,
-    ): Promise<Psychologist | null> {
-        const doc = await PsychologistModel.findOneAndUpdate(
-            { userId },
-            { $set: updateData },
-            { new: true },
-        );
+    async updateByUserId(userId: string, updateData: Partial<Psychologist>): Promise<Psychologist | null> {
+        const doc = await PsychologistModel.findOneAndUpdate({ userId }, { $set: updateData }, { new: true });
         if (!doc) return null;
         return this.map(doc);
     }
@@ -199,13 +182,15 @@ export class PsychologistRepository
     async findTopPsychologists(
         limit: number,
         sortBy: TopPsychologistSortFilter = TopPsychologistSortFilter.COMBINED,
-    ): Promise<{
-        psychologist: Psychologist;
-        user: User;
-        totalConsultations: number;
-        averageRating?: number;
-        totalReviews?: number;
-    }[]> {
+    ): Promise<
+        {
+            psychologist: Psychologist;
+            user: User;
+            totalConsultations: number;
+            averageRating?: number;
+            totalReviews?: number;
+        }[]
+    > {
         const topPsychologists = await ConsultationModel.aggregate([
             { $match: { paymentStatus: ConsultationPaymentStatus.PAID, status: ConsultationStatus.COMPLETED } },
 
@@ -295,9 +280,7 @@ export class PsychologistRepository
                 isVerified: item.psychologist.isVerified,
                 averageRating: item.psychologist.averageRating ?? 0,
                 totalReviews: item.psychologist.totalReviews ?? 0,
-                specializations: item.specializationData.map(
-                    (s: IServiceDocument) => s.name,
-                ),    
+                specializations: item.specializationData.map((s: IServiceDocument) => s.name),
             } as Psychologist,
             user: {
                 name: item.user.name,
@@ -310,5 +293,121 @@ export class PsychologistRepository
             averageRating: item.psychologist.averageRating ?? 0,
             totalReviews: item.psychologist.totalReviews ?? 0,
         }));
+    }
+
+    async getConsultationTrend(psychologistId: string, filter: RevenueFilter): Promise<IPsychologistBookingTrend[]> {
+        const groupByFormat =
+            filter === RevenueFilter.DAILY
+                ? { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }
+                : filter === RevenueFilter.WEEKLY
+                    ? { $dateToString: { format: '%Y-%U', date: '$createdAt' } }
+                    : { $dateToString: { format: '%Y-%m', date: '$createdAt' } };
+
+        const consultations = await ConsultationModel.aggregate([
+            { $match: { psychologistId: new Types.ObjectId(psychologistId) } },
+            {
+                $group: {
+                    _id: { date: groupByFormat, status: '$status' },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $group: {
+                    _id: '$_id.date',
+                    data: {
+                        $push: { status: '$_id.status', count: '$count' },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date: '$_id',
+                    completed: {
+                        $ifNull: [
+                            {
+                                $first: {
+                                    $filter: { input: '$data', as: 'd', cond: { $eq: ['$$d.status', 'completed'] } },
+                                },
+                            },
+                            { count: 0 },
+                        ],
+                    },
+                    cancelled: {
+                        $ifNull: [
+                            {
+                                $first: {
+                                    $filter: { input: '$data', as: 'd', cond: { $eq: ['$$d.status', 'cancelled'] } },
+                                },
+                            },
+                            { count: 0 },
+                        ],
+                    },
+                    booked: {
+                        $ifNull: [
+                            {
+                                $first: {
+                                    $filter: { input: '$data', as: 'd', cond: { $eq: ['$$d.status', 'booked'] } },
+                                },
+                            },
+                            { count: 0 },
+                        ],
+                    },
+                },
+            },
+            {
+                $project: {
+                    date: 1,
+                    completed: '$completed.count',
+                    cancelled: '$cancelled.count',
+                    booked: '$booked.count',
+                },
+            },
+            { $sort: { date: 1 } },
+        ]);
+
+        return consultations;
+    }
+
+    async getUniqueClientTrend(psychologistId: string, filter: RevenueFilter): Promise<IUniqueClientTrend[]> {
+        const groupByFormat =
+            filter === RevenueFilter.DAILY
+                ? { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }
+                : filter === RevenueFilter.WEEKLY
+                    ? { $dateToString: { format: '%Y-%U', date: '$createdAt' } }
+                    : { $dateToString: { format: '%Y-%m', date: '$createdAt' } };
+
+        const trend = await ConsultationModel.aggregate([
+            { 
+                $match: {
+                    psychologistId: new mongoose.Types.ObjectId(psychologistId),
+                    status: { $in: [ConsultationStatus.COMPLETED, ConsultationStatus.BOOKED] },
+                },
+            },
+            {
+                $group: {
+                    _id: {
+                        date: groupByFormat,
+                        userId: '$userId',
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: '$_id.date',
+                    uniqueUsers: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date: '$_id',
+                    uniqueUsers: 1,
+                },
+            },
+            { $sort: { date: 1 } },
+        ]);
+
+        return trend;
     }
 }

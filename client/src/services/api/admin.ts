@@ -22,6 +22,8 @@ import {
   type ITopPsychologistResponse,
   type IGetAdminDashboardTotalsResponse,
   type IGetRevenueStatsResponse,
+  type IGetUserTrendResponse,
+  type IGetBookingTrendResponse,
 } from '../../types/api/admin';
 
 import { server } from '../server';
@@ -69,5 +71,9 @@ export const adminApi = {
   getDashboardTotals: async () => server.get<IGetAdminDashboardTotalsResponse>(adminRoutes.getTotals),
   getRevenueStats: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) =>
     server.get<IGetRevenueStatsResponse>(adminRoutes.revenueStats, { params: { filter } }),
+  getUserTrend: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) =>
+    server.get<IGetUserTrendResponse>(adminRoutes.userTrend, { params : { filter } }),
+  getBookingTrend: async (filter: RevenueFilterType = RevenueFilter.MONTHLY) => 
+    server.get<IGetBookingTrendResponse>(adminRoutes.bookingTrend, { params: { filter } }),
   deletePlan: async (planId: string) => server.delete<BackendResponse>(adminRoutes.deletePlan(planId)),
 };

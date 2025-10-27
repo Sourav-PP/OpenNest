@@ -14,6 +14,8 @@ export const psychologistRoutes = {
   updateNotes: (consultationId: string) => `/psychologist/consultation/${consultationId}/notes`,
   getReviews: (psychologistId: string) => `/psychologist/${psychologistId}/reviews`,
   revenueStats: '/psychologist/revenue-stats',
+  getBookingTrend: '/psychologist/booking-trend',
+  getClientTrend: '/psychologist/client-trend',
   getTopUsers: '/psychologist/top-users',
   getTopConsultations: '/psychologist/top-consultations',
   getTotals: '/psychologist/totals',

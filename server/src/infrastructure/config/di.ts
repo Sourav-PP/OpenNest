@@ -111,6 +111,8 @@ import { GetPsychologistRevenueStatsUseCase } from '@/useCases/implementation/ps
 import { GetTopUsersUseCase } from '@/useCases/implementation/psychologist/data/getTopUsersUseCase';
 import { GetTopRatedConsultationsUseCase } from '@/useCases/implementation/psychologist/data/getTopRatedConsultaitonsUseCase';
 import { GetPsychologistTotalsUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistTotalsUseCase';
+import { GetPsychologistBookingTrendUseCase } from '@/useCases/implementation/psychologist/data/getPsychologistBookingTrendUseCase';
+import { GetClientTrendUseCase } from '@/useCases/implementation/psychologist/data/getClientTrendUseCase';
 
 //--------------- admin -----------------
 import { AdminLoginUseCase } from '../../useCases/implementation/admin/auth/loginUseCase';
@@ -134,6 +136,8 @@ import { ListAllPayoutRequestsUseCase } from '@/useCases/implementation/payout/l
 import { UpdateMissedConsultationUseCase } from '@/useCases/implementation/admin/management/updateMissedConsultationsUseCase';
 import { GetTopPsychologistUseCase } from '@/useCases/implementation/admin/management/getTopPsychologistUseCase';
 import { GetRevenueStatsUseCase } from '@/useCases/implementation/admin/management/getRevenueStatsUseCase';
+import { GetUserTrendUseCase } from '@/useCases/implementation/admin/management/getUserTrendUseCase';
+import { GetBookingTrendUseCase } from '@/useCases/implementation/admin/management/getBookingTrendUseCase';
 
 //--------------- chat -------------------
 import { GetUserChatConsultationsUseCase } from '@/useCases/implementation/chat/getUserChatConsultationsUseCase';
@@ -483,6 +487,8 @@ const getPsychologistRevenueStatsUseCase = new GetPsychologistRevenueStatsUseCas
 const getTopUsersUseCase = new GetTopUsersUseCase(psychologistRepository, consultationRepository);
 const getTopRatedConsultationsUseCase = new GetTopRatedConsultationsUseCase(psychologistRepository, consultationRepository);
 const getPsychologistTotalsUseCase = new GetPsychologistTotalsUseCase(psychologistRepository, consultationRepository);
+const getPsychologistBookingTrend = new GetPsychologistBookingTrendUseCase(psychologistRepository);
+const getClientTrendUseCase = new GetClientTrendUseCase(psychologistRepository);
 
 // controllers
 export const slotController = new SlotController(createSlotUseCase, deleteSlotUseCase, getSlotByPsychologistUseCase);
@@ -492,6 +498,8 @@ export const psychologistConsultationController = new PsychologistConsultationCo
     getPsychologistConsultationHistoryUseCase,
     getPatientConsultationHistoryUseCase,
     updateConsultationNotesUseCase,
+    getPsychologistBookingTrend,
+    getClientTrendUseCase,
 );
 export const psychologistProfileController = new PsychologistProfileController(
     getProfileUseCase,
@@ -540,6 +548,8 @@ const rejectPayoutRequestUseCase = new RejectPayoutRequestUseCase(payoutRequestR
 export const updateMissedConsultationsUseCase = new UpdateMissedConsultationUseCase(consultationRepository);
 const getTopPsychologistsUseCase = new GetTopPsychologistUseCase(psychologistRepository);
 const getRevenueStatsUseCase = new GetRevenueStatsUseCase(consultationRepository);
+const getUserTrendUseCase = new GetUserTrendUseCase(adminRepository);
+const getBookingTrendUseCase = new GetBookingTrendUseCase(adminRepository);
 
 // controllers
 export const adminKycController = new AdminKycController(
@@ -566,7 +576,7 @@ export const adminPayoutController = new AdminPayoutController(
     approvePayoutRequestUseCase,
     rejectPayoutRequestUseCase,
 );
-export const adminDashboardController = new AdminDashboardController(adminService, getRevenueStatsUseCase);
+export const adminDashboardController = new AdminDashboardController(adminService, getRevenueStatsUseCase, getUserTrendUseCase, getBookingTrendUseCase);
 
 //--------------- chat -----------------------
 

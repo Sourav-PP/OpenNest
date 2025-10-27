@@ -41,5 +41,7 @@ router.patch('/payout-requests/:payoutRequestId/reject', authenticateAdmin, admi
 router.get('/top-psychologists', adminConsultationController.getTopPsychologists);
 router.get('/dashboard/totals', adminDashboardController.getDashboardTotals);
 router.get('/revenue-stats', adminDashboardController.getRevenueStats);
+router.get('/user-trend', adminDashboardController.getUserTrend);
+router.get('/booking-trend', adminDashboardController.getBookingTrend);
 
 export default router;
