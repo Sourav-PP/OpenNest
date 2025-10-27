@@ -3,6 +3,8 @@ import Header from '@/components/admin/Header';
 import TopPsychologistTable from '../components/TopPsychologistTable';
 import AdminDashboardTotals from '../components/AdminDashboardTotals';
 import AdminDashboardRevenueGraph from '../components/AdminDashboardRevenueGraph';
+import AdminDashboardUserTrendGraph from '../components/AdminDashboardUserTrendGraph';
+import AdminDashboardBookingTrendGraph from '../components/AdminDashboardBookingTrendGraph';
 
 const AdminDashboard = () => {
   return (
@@ -12,6 +14,8 @@ const AdminDashboard = () => {
         <Header />
         <AdminDashboardTotals />
         <AdminDashboardRevenueGraph />
+        <AdminDashboardUserTrendGraph />
+        <AdminDashboardBookingTrendGraph /> 
         <TopPsychologistTable />
       </div>
     </div>

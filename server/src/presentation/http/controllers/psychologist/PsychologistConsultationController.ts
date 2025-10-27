@@ -1,12 +1,14 @@
 import { ConsultationStatusFilter } from '@/domain/enums/ConsultationEnums';
-import { SortFilter } from '@/domain/enums/SortFilterEnum';
+import { RevenueFilter, SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
 import { sessionMessages } from '@/shared/constants/messages/sessionMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IGetClientTrendUseCase } from '@/useCases/interfaces/psychologist/data/IGetClientTrendUseCase';
 import { IGetPatientConsultationHistoryUseCase } from '@/useCases/interfaces/psychologist/data/IGetPatientConsultationHistoryUseCase';
+import { IGetPsychologistBookingTrendUseCase } from '@/useCases/interfaces/psychologist/data/IGetPsychologistBookingTrendUseCase';
 import { IGetPsychologistConsultationHistoryUseCase } from '@/useCases/interfaces/psychologist/data/IGetPsychologistConsultationHistoryUseCase';
 import { IGetPsychologistConsultationUseCase } from '@/useCases/interfaces/psychologist/data/IGetPsychologistConsultationsUseCase';
 import { IPsychologistCancelConsultationUseCase } from '@/useCases/interfaces/psychologist/data/IPsychologistCancelConsultationUseCase';
@@ -19,6 +21,8 @@ export class PsychologistConsultationController {
     private _getPsychologistConsultationHistoryUseCase: IGetPsychologistConsultationHistoryUseCase;
     private _getPatientConsultationHistoryUseCase: IGetPatientConsultationHistoryUseCase;
     private _updateConsultationNotesUseCase: IUpdateConsultationNotesUseCase;
+    private _getPsychologistBookingTrend: IGetPsychologistBookingTrendUseCase;
+    private _getClientTrendUseCase: IGetClientTrendUseCase;
 
     constructor(
         getPsychologistConsultationUseCase: IGetPsychologistConsultationUseCase,
@@ -26,12 +30,16 @@ export class PsychologistConsultationController {
         getPsychologistConsultationHistoryUseCase: IGetPsychologistConsultationHistoryUseCase,
         getPatientConsultationHistoryUseCase: IGetPatientConsultationHistoryUseCase,
         updateConsultationNotesUseCase: IUpdateConsultationNotesUseCase,
+        getPsychologistBookingTrend: IGetPsychologistBookingTrendUseCase,
+        getClientTrendUseCase: IGetClientTrendUseCase,
     ) {
         this._getPsychologistConsultationUseCase = getPsychologistConsultationUseCase;
         this._psychologistCancelConsultationUseCase = psychologistCancelConsultationUseCase;
         this._getPsychologistConsultationHistoryUseCase = getPsychologistConsultationHistoryUseCase;
         this._getPatientConsultationHistoryUseCase = getPatientConsultationHistoryUseCase;
         this._updateConsultationNotesUseCase = updateConsultationNotesUseCase;
+        this._getPsychologistBookingTrend = getPsychologistBookingTrend;
+        this._getClientTrendUseCase = getClientTrendUseCase;
     }
 
     getConsultations = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -167,6 +175,44 @@ export class PsychologistConsultationController {
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: psychologistMessages.SUCCESS.NOTES_SENT,
+                data: result,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    getBookingTrend = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+
+            const filter = (req.query.filter as RevenueFilter) || RevenueFilter.MONTHLY;
+
+            const result = await this._getPsychologistBookingTrend.execute(userId, filter);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.BOOKING_TREND_FETCHED,
+                data: result,
+            });
+        } catch (error) {
+            next(error);      
+        }
+    };
+
+    getClientTrend = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+
+            const filter = (req.query.filter as RevenueFilter) || RevenueFilter.MONTHLY;
+
+            const result = await this._getClientTrendUseCase.execute(userId, filter);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: adminMessages.SUCCESS.USER_TREND_FETCHED,
                 data: result,
             });
         } catch (error) {

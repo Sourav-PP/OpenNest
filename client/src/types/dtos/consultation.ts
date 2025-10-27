@@ -106,6 +106,30 @@ export interface IRevenueStatDto {
   psychologistPayout: number;
 }
 
+export interface IPsychologistBookingTrend {
+    date: string;
+    completed: number;
+    cancelled: number;
+    booked: number;
+}
+
+export interface IClientTrend {
+    date: string;
+    uniqueUsers: number;
+}
+
+export interface IUserTrendDto {
+  date: string;
+  userCount: number;
+  psychologistCount: number;
+}
+
+export interface IBookingTrendDto {
+  date: string;
+  completedOrBooked: number;
+  cancelled: number;
+}
+
 export interface ITopConsultationDto {
     consultation: {
         id: string;

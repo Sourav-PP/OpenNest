@@ -1,5 +1,5 @@
 import type { PlanBillingPeriodType } from '@/constants/types/Plan';
-import type { IConsultationDtoForAdmin, IRevenueStatDto } from '../dtos/consultation';
+import type { IBookingTrendDto, IClientTrend, IConsultationDtoForAdmin, IPsychologistBookingTrend, IRevenueStatDto, IUserTrendDto } from '../dtos/consultation';
 import type { IPayoutRequestDto, PayoutRequestListItemDto } from '../dtos/payoutRequest';
 import type { IGetAllPsychologistsDto, ITopPsychologistDto } from '../dtos/psychologist';
 import type { IUserDto } from '../dtos/user';
@@ -138,4 +138,8 @@ export type IApprovePayoutResponse = BackendResponse<IPayoutRequestDto>;
 export type IRejectPayoutResponse = BackendResponse<IPayoutRequestDto>;
 export type ITopPsychologistResponse = BackendResponse<ITopPsychologistDto[]>;
 export type IGetAdminDashboardTotalsResponse = BackendResponse<IGetAdminDashboardTotalsResponseData>;
-export type IGetRevenueStatsResponse = BackendResponse<IRevenueStatDto[]>
+export type IGetRevenueStatsResponse = BackendResponse<IRevenueStatDto[]>;
+export type IGetPsychologistBookingTrendResponse = BackendResponse<IPsychologistBookingTrend[]>;
+export type IGetClientTrendResponse = BackendResponse<IClientTrend[]>;
+export type IGetUserTrendResponse = BackendResponse<IUserTrendDto[]>;
+export type IGetBookingTrendResponse = BackendResponse<IBookingTrendDto[]>;

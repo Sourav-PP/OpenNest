@@ -1,6 +1,7 @@
+import { IPsychologistBookingTrend, IUniqueClientTrend } from '@/useCases/dtos/user';
 import { Psychologist } from '../entities/psychologist';
 import { User } from '../entities/user';
-import { SortFilter, TopPsychologistSortFilter } from '../enums/SortFilterEnum';
+import { RevenueFilter, SortFilter, TopPsychologistSortFilter } from '../enums/SortFilterEnum';
 import { UserGender, UserGenderFilter } from '../enums/UserEnums';
 
 export interface IPsychologistRepository {
@@ -33,4 +34,6 @@ export interface IPsychologistRepository {
         averageRating?: number;
         totalReviews?: number;
     }[]>;
+    getConsultationTrend(psychologistId: string, filter: RevenueFilter): Promise<IPsychologistBookingTrend[]>;
+    getUniqueClientTrend(psychologistId: string, filter: RevenueFilter): Promise<IUniqueClientTrend[]>;
 }

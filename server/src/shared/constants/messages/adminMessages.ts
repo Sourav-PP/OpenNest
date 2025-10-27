@@ -13,8 +13,10 @@ export const adminMessages = {
         FETCHED_USER_PROFILE: 'User profile fetched successfully',
         FETCHED_DASHBOARD_TOTALS: 'Dashboard totals fetched successfully',
         STATS_FETCHED: 'Revenue stats fetched successfully',
+        USER_TREND_FETCHED: 'User trends stats fetched successfully',
+        BOOKING_TREND_FETCHED: 'Booking trend fetched successfully',
     },
-    ERROR: {
+    ERROR: {    
         PSYCHOLOGIST_ID_REQUIRED: 'Psychologist ID is required',
         USER_ID_REQUIRED: 'User ID is required',
         PSYCHOLOGIST_NOT_FOUND: 'Psychologist not found',

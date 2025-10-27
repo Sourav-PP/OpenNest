@@ -46,3 +46,27 @@ export interface ITopUserDto {
     totalConsultations: number;
     averageRating?: number;
 }
+
+export interface IUserTrendDto {
+    date: string;
+    userCount: number;
+    psychologistCount: number;
+}
+
+export interface IBookingTrend {
+    date: string;
+    completedOrBooked: number;
+    cancelled: number;
+}
+
+export interface IPsychologistBookingTrend {
+    date: string;
+    completed: number;
+    cancelled: number;
+    booked: number;
+}
+
+export interface IUniqueClientTrend {
+    date: string;
+    uniqueUsers: number;
+}
