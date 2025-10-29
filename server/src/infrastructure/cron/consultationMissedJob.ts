@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { IUpdateMissedConsultationUseCase } from '@/useCases/interfaces/admin/management/IUpdateMissedConsultationsUseCase';
+import logger from '@/utils/logger';
 
 export class ConsultationMissedJob {
     private _updateMissedConsultationsUseCase: IUpdateMissedConsultationUseCase;
@@ -14,9 +15,8 @@ export class ConsultationMissedJob {
         cron.schedule('0 0 * * * *', async() => {
             try {
                 await this._updateMissedConsultationsUseCase.execute();
-                console.log('ConsultationMissedJob Checked and updated missed consultations');
             } catch (error) {
-                console.error('ConsultationMissedJob Error updating missed consultations:', error);
+                logger.error('ConsultationMissedJob failed to update missed consultations', { error });
             }
         });
     }

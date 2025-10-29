@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { toast } from 'react-toastify';
 import { io, Socket } from 'socket.io-client';
 
@@ -11,12 +12,12 @@ export function connectVideoSocket(token: string) {
     auth: { token },
   });
 
-  socket.on('connect', () => console.log('Video socket connected', socket?.id));
+  socket.on('connect', () => logger.info('Video socket connected', socket?.id));
   socket.on('error', (data: { message: string }) => {
-    console.error('Socket error:', data.message);
+    logger.error('Video socket error:', data.message);
     toast.error(data.message); // optional: show to user
   });
-  socket.on('disconnect', reason => console.log('Video socket disconnected', reason));
+  socket.on('disconnect', reason => logger.info('Video socket disconnected', reason));
 
   return socket;
 }

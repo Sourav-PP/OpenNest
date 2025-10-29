@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ILogoutUseCase } from '@/useCases/interfaces/auth/ILogoutUseCase';
 import { appConfig } from '@/infrastructure/config/config';
-import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlackListService';
+import { ITokenBlacklistService } from '@/domain/serviceInterface/ITokenBlacklistService';
 import { ITokenService } from '@/domain/serviceInterface/ITokenService';
 import { AppError } from '@/domain/errors/AppError';
 import { HttpStatus } from '@/shared/enums/httpStatus';
@@ -30,7 +30,6 @@ export class LogoutUseCase implements ILogoutUseCase {
         }
         const exp = payload.exp;
         const ttl = exp - Math.floor(Date.now() / 1000);
-        console.log('exp in logout: ', exp, 'ttl in logout: ', ttl);
 
         if (ttl > 0) {
             await this._tokenBlacklistService.blacklistToken(token, ttl);

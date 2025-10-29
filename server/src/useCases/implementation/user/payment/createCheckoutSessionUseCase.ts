@@ -12,6 +12,7 @@ import { bookingMessages } from '@/shared/constants/messages/bookingMessages';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
 import { PaymentMethod, PaymentPurpose, PaymentStatus } from '@/domain/enums/PaymentEnums';
+import logger from '@/utils/logger';
 
 export type IStripeMetaData = {
     patientId: string;
@@ -119,7 +120,7 @@ export class CreateCheckoutSessionUseCase implements ICreateCheckoutSessionUseCa
             if (error.code === 11000 && input.purpose === PaymentPurpose.CONSULTATION) {
                 throw new AppError(bookingMessages.ERROR.SLOT_JUST_BOOKED, HttpStatus.CONFLICT);
             } else {
-                console.log('err: ', error);
+                logger.error('Error creating payment record', { error, input });
                 throw error;
             }
         }

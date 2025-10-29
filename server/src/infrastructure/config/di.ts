@@ -216,7 +216,7 @@ const authService = new BcryptAuthService();
 export const tokenService = new JwtTokenService();
 const otpRepository = new OtpRepository();
 const otpService = new NodemailerOtpService(otpRepository);
-const userRepository = new UserRepository();
+export const userRepository = new UserRepository();
 const transactionManager = new TransactionManager();
 const redisTokenBlacklistService = new RedisTokenBlacklistService();
 
@@ -245,7 +245,6 @@ export function buildNotificationService(): NotificationService {
 export function initNotificationService() {
     if (!notificationServiceInstance) {
         notificationServiceInstance = buildNotificationService();
-        console.log('NotificationService initialized');
     }
 }
 
@@ -263,7 +262,6 @@ export function provideNotificationService(): NotificationService {
     try {
         return getNotificationService();
     } catch (e) {
-        console.log(e);
         initNotificationService();
         return getNotificationService();
     }

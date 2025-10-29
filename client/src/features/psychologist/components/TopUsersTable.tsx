@@ -19,8 +19,6 @@ const TopUsersTable = () => {
         setLoading(true);
         const res = await psychologistApi.getTopUsers(5);
 
-        console.log('Top Users: ', res);
-
         if (!res.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;

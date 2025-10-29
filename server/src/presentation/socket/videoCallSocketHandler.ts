@@ -44,27 +44,24 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
                 return;
             }
 
-            console.log('consultations in v: ', consultation);
-
             const now = new Date(consultation.startDateTime);
             const start = new Date(consultation.endDateTime);
             const end = new Date(consultation.endDateTime);
 
-            // if (now.getTime() < start.getTime() - 5 * 60 * 1000) {
-            //     socket.emit('error', { message: videoCallMessages.ERROR.SESSION_NOT_STARTED });
-            //     return;
-            // }
+            if (now.getTime() < start.getTime() - 5 * 60 * 1000) {
+                socket.emit('error', { message: videoCallMessages.ERROR.SESSION_NOT_STARTED });
+                return;
+            }
 
-            // if (now.getTime() > end.getTime() + 10 * 60 * 1000) {
-            //     socket.emit('error', { message: videoCallMessages.ERROR.SESSION_ENDED });
-            //     return;
-            // }
+            if (now.getTime() > end.getTime() + 10 * 60 * 1000) {
+                socket.emit('error', { message: videoCallMessages.ERROR.SESSION_ENDED });
+                return;
+            }
 
             let isAuthorized = consultation.patientId === userId;
 
             if (!isAuthorized) {
                 const psychologist = await this._psychologistRepo.findByUserId(userId);
-                console.log('psychologistId: ', psychologist?.id);
                 if (psychologist && consultation.psychologistId === psychologist.id) {
                     isAuthorized = true;
                 }
@@ -83,13 +80,18 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
 
             const otherSockets = Array.from(await io.in(room).allSockets()).filter(id => id !== socket.id);
 
-            socket.emit('current_participants', otherSockets);
+            const participants = [];
+            for (const id of otherSockets) {
+                const s = io.sockets.sockets.get(id);
+                if (s) participants.push({ socketId: id, name: s.data?.name || 'participant' } );
+            }
+
+            socket.emit('current_participants', participants);
 
             socket.to(room).emit('user_joined', { userId, socketId: socket.id, name: user?.name });
 
             const call = await this._videoCallRepo.findByConsultationId(consultationId);
 
-            console.log('the call is: ', call);
             if (call?.status === 'scheduled') {
                 await this._startVideoCallUseCase.execute(consultationId);
             }

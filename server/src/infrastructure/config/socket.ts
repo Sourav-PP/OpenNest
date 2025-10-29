@@ -5,6 +5,7 @@ import logger from '@/utils/logger';
 import { IChatSocketHandler } from '@/useCases/interfaces/chat/IChatSocketHandler';
 import { IVideoCallSocketHandler } from '@/useCases/interfaces/videoCall/IVideoCallSocketHandler';
 import { INotificationSocketHandler } from '@/useCases/interfaces/notification/INotificationSocketHandler';
+import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
 
 const onlineUsers: Map<string, Set<string>> = new Map();
 
@@ -14,9 +15,10 @@ export function configureSocket(
     videoCallSocketHandler: IVideoCallSocketHandler,
     notificationSocketHandler: INotificationSocketHandler,
     tokenService: ITokenService,
+    userRepo: IUserRepository,
 ) {
     // apply the middleware
-    io.use(socketAuthMiddleware(tokenService, ['user', 'psychologist']));
+    io.use(socketAuthMiddleware(tokenService, ['user', 'psychologist'], userRepo));
 
     // register the handler
     io.on('connection', socket => {

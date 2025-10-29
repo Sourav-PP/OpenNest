@@ -13,6 +13,7 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { adminMessages } from '@/shared/constants/messages/adminMessages';
 import { IFileStorage } from '@/useCases/interfaces/IFileStorage';
 import { UserRole } from '@/domain/enums/UserEnums';
+import logger from '@/utils/logger';
 
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
     private _tokenService: ITokenService;
@@ -55,7 +56,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
                 try {
                     profileImageUrl = await this._fileStorage.uploadFromUrl(picture, googleId, 'profile_images');
                 } catch (err) {
-                    console.error('Cloudinary upload failed, fallback to google picture', err);
+                    logger.error(`Error occurred while uploading Google profile image for ${email}`, err);
                     profileImageUrl = picture; // fallback
                 }
             }

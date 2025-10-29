@@ -10,6 +10,7 @@ import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendR
 import { generalMessages } from '@/messages/GeneralMessages';
 import { authRoutes } from '@/constants/apiRoutes/authRoutes';
 import { adminRoutes } from '@/constants/apiRoutes/adminRoutes';
+import { logger } from './utils/logger';
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
@@ -29,8 +30,6 @@ const instance = axios.create({
 // attach access token if available
 instance.interceptors.request.use(config => {
   const token = store.getState().auth.accessToken;
-
-  console.log('token: ', token);
 
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
@@ -123,6 +122,7 @@ instance.interceptors.response.use(
     if (error.response?.status === HttpStatus.NOT_FOUND) {
       const message = (error.response.data as any)?.message;
       if (message === 'Route not found') {
+        logger.error('[API] 404 Route not found', error.response);
         navigateTo('/system-error');    
         return Promise.reject(error); 
       }

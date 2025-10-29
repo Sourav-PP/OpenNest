@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import type { IChatError } from '@/types/api/chat';
 import type { IMessageDto } from '@/types/dtos/message';
 import { io, Socket } from 'socket.io-client';
@@ -20,14 +21,13 @@ const onlineUsers: Set<string> = new Set();
 export function connectSocket(token: string) {
   if (socket) {
     if (socket.connected) {
-      console.log('Reusing existing connected socket:', socket.id);
+      logger.info(`Reusing existing connected socket: ${socket.id}`);
     } else {
-      console.log('Reusing existing socket (not connected), will auto-reconnect:', socket.id);
+      logger.debug(`Reusing existing socket (not connected), will auto-reconnect: ${socket.id}`);
     }
     return socket;
   }
 
-  console.log('Creating new socket instance with token:', token);
   socket = io(import.meta.env.VITE_BACKEND_URL, {
     transports: ['websocket'],
     withCredentials: true,
@@ -38,8 +38,7 @@ export function connectSocket(token: string) {
   });
 
   socket.on('connect', () => {
-    console.log('Connected to socket server:', socket!.id);
-
+    logger.info(`Connected to socket: ${socket!.id}`);
     // Fetch initial online users
     socket!.emit('get_online_users', (users: string[]) => {
       users.forEach(u => onlineUsers.add(u));
@@ -48,11 +47,11 @@ export function connectSocket(token: string) {
   });
 
   socket.on('disconnect', reason => {
-    console.log('Disconnected from socket server:', reason);
+    logger.warn('Socket disconnected, reason =', reason);
   });
 
   socket.on('connect_error', err => {
-    console.error('Connection failed:', err.message);
+    logger.error('Socket connection error', err);
   });
 
   socket.on('new_message', msg => {
@@ -62,7 +61,6 @@ export function connectSocket(token: string) {
   socket.on(
     'message_deleted',
     (data: { messageId: string; consultationId: string; deletedBy: string; isDeleted: boolean }) => {
-      console.log('message deleted event received: ', data);
       deleteHandler.slice().forEach(cb => cb(data));
     }
   );
@@ -90,7 +88,6 @@ export function connectSocket(token: string) {
 // Disconnect the socket and clean up listeners
 export function disconnectSocket() {
   if (socket) {
-    console.log('Disconnecting socket:', socket.id);
     socket.off();
     socket.disconnect();
     socket = null;
@@ -179,7 +176,6 @@ export const joinConsultation = (consultationId: string) => {
 export const deleteMessage = (data: { messageId: string; consultationId: string }) => {
   const socket = getSocket();
   if (!socket || !socket.connected) {
-    console.warn('Socket not connected yet, cannot send message');
     return;
   }
   socket.emit('delete', data);
@@ -208,7 +204,6 @@ export const sendMessage = (data: {
 }) => {
   const socket = getSocket();
   if (!socket || !socket.connected) {
-    console.warn('Socket not connected yet, cannot send message');
     return;
   }
   socket.emit('send_message', data);

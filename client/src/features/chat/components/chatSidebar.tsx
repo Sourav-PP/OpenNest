@@ -11,7 +11,7 @@ import type { IMessageDto } from '@/types/dtos/message';
 import { uniqBy } from 'lodash';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { UserRole, type UserRoleType } from '@/constants/types/User';
-import { ConsultationStatus } from '@/constants/types/Consultation';
+import { logger } from '@/lib/utils/logger';
 
 export default function ChatSidebar({
   userId,
@@ -66,9 +66,7 @@ export default function ChatSidebar({
           try {
             await joinConsultation(c.id);
           } catch (err) {
-            if (import.meta.env.DEV ) {
-              console.error(`Failed to join room ${c.id}:`, err);
-            }
+            logger.debug(`Failed to join room ${c.id}:`, err);
           }
         });
 

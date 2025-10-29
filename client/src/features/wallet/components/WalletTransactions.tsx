@@ -21,7 +21,6 @@ const WalletTransactions: React.FC<Props> = ({
   totalCount,
   loading,
 }) => {
-  console.log('transactions', transactions);
   const totalPage = Math.ceil(totalCount / itemsPerPage);
 
   const formatDate = (dateStr?: string) => {

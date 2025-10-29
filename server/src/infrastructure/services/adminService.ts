@@ -36,7 +36,7 @@ export class AdminService implements IAdminService {
         ]);
 
         const revenue = +(totalPaidAmount * (appConfig.stripe.commissionPercentage / 100)).toFixed(2);
-        console.log('totalAmount: ', totalPaidAmount);
+      
         return {
             users,
             psychologists,

@@ -1,5 +1,6 @@
 import { AdminModel } from '../infrastructure/database/models/admin/adminModel';
 import bcrypt from 'bcrypt';
+import logger from './logger';
 
 export const createAdmin = async() => {
     const existing = await AdminModel.findOne({ email: 'admin@example.com' });
@@ -12,5 +13,5 @@ export const createAdmin = async() => {
         password: hashPassword,
     });
 
-    console.log('admin user created');
+    logger.info('admin user created');
 };

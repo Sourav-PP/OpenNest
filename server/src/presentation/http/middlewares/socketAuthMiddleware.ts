@@ -5,9 +5,14 @@ import { UserRole } from '@/domain/enums/UserEnums';
 import { generalMessages } from '@/shared/constants/messages/generalMessages';
 import { authMessages } from '@/shared/constants/messages/authMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
+import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
 
-export const socketAuthMiddleware = (jwtService: ITokenService, allowedRoles: Array<'user' | 'psychologist' | 'admin'>) =>
-    (socket: Socket, next: (err?: Error) => void) => {
+export const socketAuthMiddleware = (
+    jwtService: ITokenService,
+    allowedRoles: Array<'user' | 'psychologist' | 'admin'>,
+    userRepo: IUserRepository,
+) =>
+    async(socket: Socket, next: (err?: Error) => void) => {
         try {
             const token = socket.handshake.auth?.token;
             if (!token) throw new AppError(generalMessages.ERROR.NO_TOKEN);
@@ -23,10 +28,12 @@ export const socketAuthMiddleware = (jwtService: ITokenService, allowedRoles: Ar
                 throw new Error(authMessages.ERROR.FORBIDDEN);
             }
 
+            const user = await userRepo.findById(payload.userId);
             // attach trusted info to socket.data
             socket.data.userId = payload.userId;
             socket.data.role = userRole;
             socket.data.email = payload.email;
+            socket.data.name = user?.name || 'participant';
 
             next();
         } catch (err: unknown) {

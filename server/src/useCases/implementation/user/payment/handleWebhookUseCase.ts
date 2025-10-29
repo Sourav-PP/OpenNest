@@ -30,6 +30,7 @@ import { PlanBillingPeriod, SubscriptionStatus } from '@/domain/enums/PlanEnums'
 import { INotificationService } from '@/domain/serviceInterface/INotificationService';
 import { IUserRepository } from '@/domain/repositoryInterface/IUserRepository';
 import { userMessages } from '@/shared/constants/messages/userMessages';
+import logger from '@/utils/logger';
 
 export class HandleWebhookUseCase implements IHandleWebhookUseCase {
     private _paymentRepo: IPaymentRepository;
@@ -77,7 +78,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
     }
 
     async execute(payload: Buffer, signature: string, endpointSecret: string): Promise<void> {
-        console.log('webhook triggered!');
+        logger.info('webhook useCase triggered');
         const event = await this._paymentService.verifyWebhookSignature(payload, signature, endpointSecret);
 
         switch (event.type) {
@@ -183,7 +184,6 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                     sent: false,
                 });
                 const notificationService = this._getNotificationService();
-                console.log('service: ', notificationService);
 
                 // event based notification for user
                 await notificationService.send({
@@ -200,8 +200,6 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                     type: NotificationType.CONSULTATION_BOOKED,
                     message: `New consultation booked by ${patient.name} for ${consultation.startDateTime.toLocaleDateString()}`,
                 });
-
-                console.log(`Consultation ${consultation.id} created for session ${sessionId}`);
             }
 
             // handle wallet top-up
@@ -227,19 +225,17 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 await this._paymentRepo.updateBySessionId(sessionId, payment);
 
                 const notificationService = this._getNotificationService();
-                console.log('service: ', notificationService);
+    
                 // event based notification for wallet credit
                 await notificationService.send({
                     recipientId: wallet.userId,
                     type: NotificationType.WALLET_CREDITED,
                     message: `Your wallet has been credit with ${payment.amount}$`,
                 });
-                console.log(`Wallet credited for user ${payment.userId} for session ${sessionId}`);
             }
 
             // handle subscription purchase
             if (meta.purpose === PaymentPurpose.SUBSCRIPTION) {
-                console.log('handling subscription purchase in webhook');
                 // For future subscription
                 const stripeSubscriptionId = session.subscription as string;
 
@@ -252,7 +248,6 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                     throw new AppError(bookingMessages.ERROR.MISSING_METADATA, HttpStatus.BAD_REQUEST);
                 }
                 const planId = meta.planId;
-                console.log('planId in webhook: ', planId);
                 if (!planId) {
                     throw new AppError(bookingMessages.ERROR.MISSING_METADATA, HttpStatus.BAD_REQUEST);
                 }
@@ -315,7 +310,6 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                     type: NotificationType.SUBSCRIPTION_PURCHASED,
                     message: `Your subscription to ${plan.name} has been activated successfully`,
                 });
-                console.log(`Subscription created/updated for user ${payment.userId} for session ${sessionId}`);
             }
             break;
         }
@@ -336,7 +330,6 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                     sub.currentPeriodEnd = new Date(invoice.period_end * 1000);
                     sub.status = SubscriptionStatus.ACTIVE;
                     await this._subscriptionRepo.updateById(sub.id, sub);
-                    console.log(`Subscription renewed and credits reset for user ${sub.userId}`);
                 }
             }
 
@@ -365,7 +358,6 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 sub.status = SubscriptionStatus.CANCELED;
                 sub.canceledAt = new Date();
                 await this._subscriptionRepo.updateById(sub.id, sub);
-                console.log(`Subscription canceled for user ${sub.userId}`);
             }
             break;
         }
@@ -384,7 +376,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
             break;
         }
         default:
-            console.log(`Unhandled event type: ${event.type}`);
+            logger.info(`Unhandled event type: ${event.type}`);
             break;
         }
     }

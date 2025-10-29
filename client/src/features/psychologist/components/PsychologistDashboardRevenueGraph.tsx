@@ -24,7 +24,6 @@ const PsychologistDashboardRevenueGraph = () => {
   const fetchRevenueStats = async (filterValue: RevenueFilterType) => {
     try {
       const res = await psychologistApi.getRevenueStats(filterValue);
-      console.log('res', res);
       if (!res.data) {
         toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
         return;

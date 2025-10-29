@@ -6,6 +6,7 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { addPlanSchema, type addPlanData } from '@/lib/validations/admin/addPlanValidation';
 import { useEffect } from 'react';
 import { PlanBillingPeriod } from '@/constants/types/Plan';
+import { logger } from '@/lib/utils/logger';
 
 const CreatePlanForm = () => {
   const {
@@ -36,7 +37,7 @@ const CreatePlanForm = () => {
   };
 
   useEffect(() => {
-    console.log('Form errors:', errors);
+    logger.debug('Form errors:', errors);
   }, [errors]);
 
   return (

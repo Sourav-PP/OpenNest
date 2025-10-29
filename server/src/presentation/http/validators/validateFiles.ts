@@ -10,8 +10,6 @@ export const validateFiles = (req: Request, res: Response, next: NextFunction): 
     experienceCertificate?: Express.Multer.File[]
   };
 
-    console.log('files: ', files);
-
     if (
         !files?.identificationDoc?.[0] ||
         !files?.educationalCertification?.[0] ||

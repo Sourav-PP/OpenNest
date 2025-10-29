@@ -39,8 +39,6 @@ const BookingSession = () => {
   // fetching psychologist details
   useEffect(() => {
     if (!psychologistUserId) return;
-
-    console.log('puserId: ', psychologistUserId);
     const fetchPsychologist = async () => {
       setLoading(true);
       try {

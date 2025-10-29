@@ -948,8 +948,6 @@ export class ConsultationRepository
         limit: number,
     ): Promise<PaginatedPsychologistReviewsDTO> {
         const skip = (page - 1) * limit;
-        console.log('skip: ', skip, 'limit: ', limit);
-        console.log('psy: ', psychologistId);
 
         const result = await ConsultationModel.aggregate([
             {
@@ -1003,8 +1001,6 @@ export class ConsultationRepository
                 profileImage: item.patient.profileImage,
             },
         }));
-
-        console.log('reviews: ', reviews);
 
         return {
             reviews,

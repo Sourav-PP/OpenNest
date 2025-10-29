@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import { IOtpService } from '../../domain/serviceInterface/IOtpService';
 import { IOtpRepository } from '../../domain/repositoryInterface/IOtpRepository';
 import { otpEmailTemplate } from '@/shared/emailTemplates';
+import logger from '@/utils/logger';
 
 export class NodemailerOtpService implements IOtpService {
     private _otpRepo: IOtpRepository;
@@ -31,15 +32,13 @@ export class NodemailerOtpService implements IOtpService {
                 html: otpEmailTemplate(otp),
             });
 
-            console.log('otp send or not');
         } catch (error) {
-            console.log('error otp: ', error);
+            logger.error(`Error occurred while sending OTP to ${email}`, error);
+
         }
     }
 
     async verifyOtp(email: string, otp: string): Promise<boolean> {
-        console.log('otp in serviedjfldkfjd: ', otp);
-        console.log('emai l in serfvd: ', email);
         return await this._otpRepo.verifyOtp(email, otp);
     }
 

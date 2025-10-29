@@ -21,7 +21,7 @@ const PsychologistConsultationsTable = () => {
   const [consultations, setConsultations] = useState<IPsychologistConsultationDto[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<SortFilterType>(SortFilter.Asc);
+  const [sort, setSort] = useState<SortFilterType>(SortFilter.Desc);
   const [status, setStatus] = useState<ConsultationStatusFilterType>(ConsultationStatusFilter.All);
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);

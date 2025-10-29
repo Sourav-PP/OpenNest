@@ -20,8 +20,6 @@ const TopRatedConsultationsTable = () => {
         setLoading(true);
         const res = await psychologistApi.getTopConsultations(5);
 
-        console.log('Top Users: ', res);
-
         if (!res.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;

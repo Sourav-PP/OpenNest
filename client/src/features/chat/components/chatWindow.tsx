@@ -11,6 +11,7 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { onOnlineUsers } from '@/services/api/socket';
 import ConfirmationModal from '@/components/user/ConfirmationModal';
 import { generalMessages } from '@/messages/GeneralMessages';
+import { logger } from '@/lib/utils/logger';
 
 export default function ChatWindow({
   consultationId,
@@ -56,8 +57,7 @@ export default function ChatWindow({
       setMessageToDelete(null);
     } catch (error) {
       toast.error('Failed to delete message');
-      if (import.meta.env.DEV)
-        console.log('delete message error: ', error);
+      logger.error('Delete message error:', error);
     } finally {
       setConfirmLoading(false);
     }

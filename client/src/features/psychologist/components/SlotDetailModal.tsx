@@ -12,7 +12,6 @@ interface SlotDetailModalProps {
 }
 
 const SlotDetailModal: React.FC<SlotDetailModalProps> = ({ open, onClose, slot, onDelete }) => {
-  console.log('slot: ', slot);
   if (!slot) return null;
 
   const start = new Date(slot.startDateTime);

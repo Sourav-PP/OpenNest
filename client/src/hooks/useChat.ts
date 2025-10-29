@@ -17,6 +17,8 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import type { IChatError } from '@/types/api/chat';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/redux/store';
+import { logger } from '@/lib/utils/logger';
+import { generalMessages } from '@/messages/GeneralMessages';
 
 export function useChat(consultationId: string) {
   const [messages, setMessages] = useState<IMessageDto[]>([]);
@@ -51,20 +53,20 @@ export function useChat(consultationId: string) {
         }
 
         await joinConsultation(consultationId);
-        console.log(`useChat joined consultation: ${consultationId}`);
+        logger.info(`Joined chat consultation: ${consultationId}`);
       } catch (error) {
         handleApiError(error);
+        logger.error(`Failed to fetch or join chat: ${consultationId}`, error);
         if (isMounted) setIsReady(true);
       }
     };
     fetchHistory();
 
     const handleMessage = (msg: IMessageDto) => {
-      console.log('useChat received new_message:', msg);
       if (msg.consultationId === consultationId) {
         setMessages(prev => {
           if (prev.some(m => m.id === msg.id)) {
-            console.log('Duplicate message ignored:', msg.id);
+            logger.debug(`Duplicate message ignored: ${msg.id}`);
             return prev;
           }
           return [...prev, msg];
@@ -96,7 +98,8 @@ export function useChat(consultationId: string) {
     };
 
     const handleError = (err: IChatError) => {
-      toast.error(err.message || 'Something went wrong');
+      toast.error(err.message || generalMessages.ERROR.INTERNAL_SERVER_ERROR);
+      logger.error('Socket error in chat:', err);
     };
 
     const cleanupTyping = onTyping(({ consultationId: cId, senderId }) => {
@@ -118,7 +121,6 @@ export function useChat(consultationId: string) {
       cleanupError();
       cleanupTyping();
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-      console.log('Cleaning up useChat listeners');
     };
   }, [consultationId, userId]);
 
@@ -135,7 +137,6 @@ export function useChat(consultationId: string) {
     mediaType?: string;
   }) => {
     if (!isReady) {
-      console.warn('Chat not ready yet, cannot send message');
       return;
     }
     sendMessage(data);

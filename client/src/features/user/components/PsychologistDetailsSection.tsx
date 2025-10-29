@@ -21,10 +21,8 @@ const PsychologistDetailsSection = () => {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
         }
-        console.log('res.dat: ', res.data);
         setPsychologist(res.data.psychologist);
       } catch (err) {
-        console.log('its here: ', err);
         handleApiError(err);
       } finally {
         setLoading(false);

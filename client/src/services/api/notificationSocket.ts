@@ -1,4 +1,5 @@
 import type { NotificationTypeValue } from '@/constants/types/Notification';
+import { logger } from '@/lib/utils/logger';
 import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
@@ -22,11 +23,11 @@ export function connectNotificationSocket(token: string) {
   });
 
   socket.on('connect', () => {
-    console.log('Notification socket connected:', socket?.id);
+    logger.info('Notification socket connected:', socket?.id);
   });
 
   socket.on('disconnect', reason => {
-    console.log('Notification socket disconnected:', reason);
+    logger.info('Notification socket disconnected:', reason);
   });
 
   // listen for notifications

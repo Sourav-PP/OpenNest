@@ -37,7 +37,6 @@ export class SlotController {
                     endDateTime: new Date(req.body.endDateTime),
                 });
             } else {
-                // console.log('body: ',JSON.stringify(req.body, null, 2));
                 const { fromDate, toDate, weekDays, startTime, endTime, duration, timeZone } = req.body;
 
                 await this._createSlotUseCase.executeRecurring({

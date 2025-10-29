@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 export default function VideoCallPage() {
   const { accessToken, userId, role } = useSelector((state: RootState) => state.auth);
-  const { id } = useParams<{ id: string }>();
+  const { consultationId } = useParams<{ consultationId: string }>();
 
   if (!role) {
     toast.error('User not authenticated');
@@ -15,5 +15,5 @@ export default function VideoCallPage() {
 
   if (!accessToken || !userId) return <p>Unauthorized</p>;
 
-  return <VideoCall token={accessToken} consultationId={id!} role={role} />;
+  return <VideoCall token={accessToken} consultationId={consultationId!} role={role} />;
 }

@@ -61,9 +61,15 @@ const AdminDashboardBookingTrendGraph = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="space-y-2">
             <div>
-              <p className="text-xs sm:text-sm text-gray-400 mb-1">Total Bookings</p>
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Total Completed</p>
               <p className="text-lg sm:text-2xl font-bold text-white">
-                {data.reduce((sum: number, item: any) => sum + (item.totalBookings || 0), 0).toLocaleString()}
+                {data.reduce((sum: number, item: any) => sum + (item.completedOrBooked || 0), 0).toLocaleString()}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Total Cancelled</p>
+              <p className="text-lg sm:text-2xl font-bold text-white">
+                {data.reduce((sum: number, item: any) => sum + (item.cancelled || 0), 0).toLocaleString()}
               </p>
             </div>
           </div>

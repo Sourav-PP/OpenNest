@@ -11,7 +11,7 @@ export const psychologistFrontendRoutes = {
   chat: '/psychologist/chat',
   chatWithConsultationPath: '/psychologist/chat/:consultationId',
   chatWithConsultation: (consultationId: string) => `/psychologist/chat/${consultationId}`,
-  videoCallPath: '/psychologist/consultations/:id/video',
+  videoCallPath: '/psychologist/consultations/:consultationId/video',
   videoCall: (consultationId: string) => `/psychologist/consultations/${consultationId}/video`,
   consultationHistory: '/psychologist/consultation/history',
   consultationHistoryDetailPath: '/psychologist/consultation/:consultationId/history',

@@ -7,6 +7,7 @@ import { chatMessages } from '@/shared/constants/messages/chatMessages';
 import { IMarkReadUseCase } from '@/useCases/interfaces/chat/IMarkReadUseCase';
 import { IDeleteMessageUseCase } from '@/useCases/interfaces/chat/IDeleteMessageUseCase';
 import { generalMessages } from '@/shared/constants/messages/generalMessages';
+import logger from '@/utils/logger';
 
 export class ChatSocketHandler implements IChatSocketHandler {
     private _sendMessageUseCase: ISendMessageUseCase;
@@ -34,11 +35,11 @@ export class ChatSocketHandler implements IChatSocketHandler {
                 }
 
                 await socket.join(consultationId);
-                console.log(`Socket ${socket.id} joined consultation: ${consultationId}`);
+                logger.info(`Socket ${socket.id} joined consultation: ${consultationId}`);
 
                 return ack?.({ success: true, roomId: consultationId });
             } catch (err) {
-                console.error('join_consultation error:', err);
+                logger.error(`Error occurred in join_consultation for socket ${socket.id}`, err);
                 return ack?.({
                     success: false,
                     error: 'Internal server error',

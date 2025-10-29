@@ -43,8 +43,6 @@ export class UpdateConsultationNotesUseCase implements IUpdateConsultationNotesU
             throw new AppError(generalMessages.ERROR.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        console.log('updated: ', updated);
-
         return updated;
     }
 }

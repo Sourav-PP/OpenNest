@@ -12,6 +12,7 @@ import {
     updateMissedConsultationsUseCase,
     setNotificationSocketHandler,
     initNotificationService,
+    userRepository,
 } from './infrastructure/config/di';
 import { configureSocket } from './infrastructure/config/socket';
 import { NotificationSocketHandler } from './presentation/socket/notificationSocketHandler';
@@ -36,7 +37,7 @@ async function startServer() {
     const notificationSocketHandler = new NotificationSocketHandler(io);
     setNotificationSocketHandler(notificationSocketHandler);
     initNotificationService();
-    configureSocket(io, chatSocketHandler, videoCallSocketHandler, notificationSocketHandler, tokenService);
+    configureSocket(io, chatSocketHandler, videoCallSocketHandler, notificationSocketHandler, tokenService, userRepository);
     const notificationJob = new NotificationJob(notificationRepository, notificationSocketHandler);
     const consultationMissedJob = new ConsultationMissedJob(updateMissedConsultationsUseCase);
     notificationJob.start();

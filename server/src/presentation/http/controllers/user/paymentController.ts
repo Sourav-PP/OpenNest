@@ -9,6 +9,7 @@ import { appConfig } from '@/infrastructure/config/config';
 import { ICreateSubscriptionCheckoutSessionUseCase } from '@/useCases/interfaces/subscription/ICreateSubscriptionCheckoutSessionUseCase';
 import { IBookConsultationWithSubscriptionUseCase } from '@/useCases/interfaces/subscription/IBookConsultationWithSubscriptionUseCase';
 import { PaymentPurpose } from '@/domain/enums/PaymentEnums';
+import logger from '@/utils/logger';
 
 export class PaymentController {
     private _createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase;
@@ -129,7 +130,7 @@ export class PaymentController {
 
     handleWebhook = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('webhook controller triggered');
+            logger.info('webhook controller triggered');
             const payload = req.body;
             const signature = req.headers['stripe-signature'] as string;
             const endpointSecret = appConfig.stripe.webhookSecret;

@@ -23,8 +23,6 @@ const UserConsultationHistoryDetail = () => {
       try {
         setLoading(true);
         const res = await userApi.getUserConsultationHistoryDetail(consultationId!);
-
-        console.log('res: ', res);
         if (!res.data) {
           toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
           return;
