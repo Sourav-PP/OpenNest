@@ -585,7 +585,7 @@ const getPsychologistChatConsultationsUseCase = new GetPsychologistChatConsultat
     consultationRepository,
     psychologistRepository,
 );
-const ensureMembershipUseCase = new EnsureMembershipUseCase(consultationRepository, psychologistRepository);
+const ensureMembershipUseCase = new EnsureMembershipUseCase();
 const sendMessageUseCase = new SendMessageUseCase(messageRepository, ensureMembershipUseCase);
 const getHistoryUseCase = new GetHistoryUseCase(messageRepository);
 const getUnreadCountUseCase = new GetUnreadCountUseCase(messageRepository, userRepository, psychologistRepository);
