@@ -17,6 +17,8 @@ import { RevenueFilter, SortFilter } from '@/domain/enums/SortFilterEnum';
 import { PaginatedPsychologistReviewsDTO, PsychologistReviewDTO } from '@/useCases/dtos/psychologist';
 import { IRevenueStatDto, ITopConsultationDto } from '@/useCases/dtos/consultation';
 import { ITopUserDto } from '@/useCases/dtos/user';
+import { MessageModel } from '@/infrastructure/database/models/user/Message';
+import { getRoomId } from '@/utils/getRoomId';
 
 export class ConsultationRepository
     extends GenericRepository<Consultation, IConsultationDocument>
@@ -446,6 +448,193 @@ export class ConsultationRepository
             unreadCount: item.unreadCount ?? 0,
         }));
     }
+
+    async findChatRoomsByPatientId(
+        patientId: string,
+        params: { search?: string },
+    ): Promise<
+        {
+        roomId: string;
+        psychologist: Psychologist;
+        user: User;
+        lastMessage?: Message;
+        lastMessageTime?: Date;
+        unreadCount: number;
+        }[]
+    > {
+        const pipeline: PipelineStage[] = [
+            { $match: { patientId: new mongoose.Types.ObjectId(patientId) } },
+            {
+                $group: {
+                    _id: '$psychologistId', // one per psychologist
+                    latestConsultation: { $last: '$$ROOT' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'psychologists',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'psychologist',
+                },
+            },
+            { $unwind: '$psychologist' },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'psychologist.userId',
+                    foreignField: '_id',
+                    as: 'psychologist.user',
+                },
+            },
+            { $unwind: '$psychologist.user' },
+        ];
+
+        if (params.search) {
+            pipeline.push({
+                $match: {
+                    'psychologist.user.name': { $regex: params.search, $options: 'i' },
+                },
+            });
+        }
+
+        const results = await ConsultationModel.aggregate(pipeline);
+
+        const chatRooms = await Promise.all(
+            results.map(async(item) => {
+                const roomId = getRoomId(patientId, item.psychologist.userId.toString());
+
+                const lastMessageDoc = await MessageModel.findOne({ roomId })
+                    .sort({ createdAt: -1 })
+                    .lean();
+
+                const unreadCount = await MessageModel.countDocuments({
+                    roomId,
+                    receiverId: new mongoose.Types.ObjectId(patientId),
+                    status: { $in: ['sent', 'delivered'] },
+                });
+
+                const lastMessage: Message | undefined = lastMessageDoc
+                    ? ({
+                        id: lastMessageDoc._id.toString(),
+                        roomId: lastMessageDoc.roomId,
+                        senderId: lastMessageDoc.senderId.toString(),
+                        receiverId: lastMessageDoc.receiverId.toString(),
+                        content: lastMessageDoc.content,
+                        status: lastMessageDoc.status,
+                        createdAt: lastMessageDoc.createdAt,
+                        updatedAt: lastMessageDoc.updatedAt,
+                    } as Message)
+                    : undefined;
+
+                return {
+                    roomId,
+                    psychologist: {
+                        id: item.psychologist._id.toString(),
+                        userId: item.psychologist.userId.toString(),
+                    } as Psychologist,
+                    user: {
+                        id: item.psychologist.user._id.toString(),
+                        name: item.psychologist.user.name,
+                        profileImage: item.psychologist.user.profileImage,
+                    } as User,
+                    lastMessage,
+                    lastMessageTime: lastMessage?.createdAt,
+                    unreadCount,
+                };
+            }),
+        );
+
+        return chatRooms;
+    }
+
+    async findChatRoomsByPsychologistId(
+        psychologistId: string,
+        params: { search?: string },
+    ): Promise<
+    {
+        roomId: string;
+        psychologistId: string;
+        patient: User;
+        lastMessage?: Message;
+        lastMessageTime?: Date;
+        unreadCount: number;
+    }[]
+    > {
+        const pipeline: PipelineStage[] = [
+            { $match: { psychologistId: new mongoose.Types.ObjectId(psychologistId) } },
+            {
+                $group: {
+                    _id: '$patientId',
+                    latestConsultation: { $last: '$$ROOT' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'patient',
+                },
+            },
+            { $unwind: '$patient' },
+        ];
+
+        if (params.search) {
+            pipeline.push({
+                $match: {
+                    'patient.name': { $regex: params.search, $options: 'i' },
+                },
+            });
+        }
+
+        const results = await ConsultationModel.aggregate(pipeline);
+
+        const chatRooms = await Promise.all(
+            results.map(async(item) => {
+                const roomId = getRoomId(item._id.toString(), psychologistId);
+
+                const lastMessageDoc = await MessageModel.findOne({ roomId })
+                    .sort({ createdAt: -1 })
+                    .lean();
+
+                const unreadCount = await MessageModel.countDocuments({
+                    roomId,
+                    receiverId: new mongoose.Types.ObjectId(psychologistId),
+                    status: { $in: ['sent', 'delivered'] },
+                });
+
+                const lastMessage: Message | undefined = lastMessageDoc
+                    ? ({
+                        id: lastMessageDoc._id.toString(),
+                        roomId: lastMessageDoc.roomId,
+                        senderId: lastMessageDoc.senderId.toString(),
+                        receiverId: lastMessageDoc.receiverId.toString(),
+                        content: lastMessageDoc.content,
+                        status: lastMessageDoc.status,
+                        createdAt: lastMessageDoc.createdAt,
+                        updatedAt: lastMessageDoc.updatedAt,
+                    } as Message)
+                    : undefined;
+
+                return {
+                    roomId,
+                    psychologistId,
+                    patient: {
+                        id: item.patient._id.toString(),
+                        name: item.patient.name,
+                        profileImage: item.patient.profileImage,
+                    } as User,
+                    lastMessage,
+                    lastMessageTime: lastMessage?.createdAt,
+                    unreadCount,
+                };
+            }),
+        );
+
+        return chatRooms;
+    }
+
 
     async findByPatientAndPsychologistId(patientId: string, psychologistId: string): Promise<Consultation[]> {
         const consultations = await ConsultationModel.find({

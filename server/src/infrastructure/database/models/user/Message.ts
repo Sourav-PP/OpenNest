@@ -3,7 +3,7 @@ import { Schema, model, Document, Model, Types } from 'mongoose';
 
 export interface IMessageDocument extends Document {
     _id: Types.ObjectId;
-    consultationId: Types.ObjectId;
+    roomId: string;
     clientId?: string;
     senderId: Types.ObjectId;
     receiverId: Types.ObjectId;
@@ -23,9 +23,8 @@ export interface IMessageDocument extends Document {
 
 const messageSchema = new Schema<IMessageDocument>(
     {
-        consultationId: {
-            type: Schema.Types.ObjectId,
-            ref: 'Consultation',
+        roomId: {
+            type: String,
             required: true,
         },
         clientId: {

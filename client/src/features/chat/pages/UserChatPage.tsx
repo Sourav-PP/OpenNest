@@ -9,6 +9,7 @@ import type { IPsychologistChatConsultationDto, IUserChatConsultationDto } from 
 import Sidebar from '@/components/user/Sidebar';
 import Header from '@/components/user/Header';
 import { UserRole } from '@/constants/types/User';
+import { getRoomId } from '@/lib/utils/getRoomId';
 
 export default function PsychologistChatPage() {
   const { role, userId } = useSelector((state: RootState) => state.auth);
@@ -21,6 +22,13 @@ export default function PsychologistChatPage() {
     setIsChatSidebarOpen(!isChatSidebarOpen);
   };
 
+  const peerId = 
+    selectedConsultation &&
+    (role === UserRole.USER
+      ? (selectedConsultation as IUserChatConsultationDto).psychologist.userId
+      : (selectedConsultation as IPsychologistChatConsultationDto).patient.id);
+
+  const roomId = peerId && userId ? getRoomId(userId, peerId) : '';
   return (
     <div className="flex h-screen w-full bg-[#ECF1F3] text-primaryText overflow-hidden">
       {/* Main Navigation Sidebar */}
@@ -63,7 +71,7 @@ export default function PsychologistChatPage() {
             {/* Chat Window or Placeholder */}
             {selectedConsultation ? (
               <ChatWindow
-                consultationId={selectedConsultation.id}
+                roomId={roomId}
                 userId={userId!}
                 peerId={
                   role === UserRole.USER

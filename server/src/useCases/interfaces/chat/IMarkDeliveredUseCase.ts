@@ -1,3 +1,3 @@
 export interface IMarkDeliveredUseCase {
-    execute(consultationId: string, messageIds: string[], userId: string): Promise<void>
+    execute(roomId: string, messageIds: string[], userId: string): Promise<void>
 }

@@ -11,11 +11,14 @@ import { generalMessages } from '@/messages/GeneralMessages';
 import { ConsultationStatus } from '@/constants/types/Consultation';
 import { PaymentStatus } from '@/constants/types/Payment';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { Button } from '@/components/ui/button';
+import ConsultationNotesModal from './ConsultationNotesModal';
 
 const PsychologistConsultationHistoryDetail = () => {
   const { consultationId } = useParams<{ consultationId: string }>();
   const [consultation, setConsultation] = useState<IUserConsultationHistoryDetailsResponseData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -149,6 +152,44 @@ const PsychologistConsultationHistoryDetail = () => {
           </div>
         )}
 
+        { consultation.status === ConsultationStatus.Completed && (
+          <div>
+            <Button
+              onClick={() => setIsNotesModalOpen(true)}
+              className="mt-4 bg-indigo-700 hover:bg-indigo-800 text-white"
+            >
+              Add / Edit Notes & Feedback
+            </Button>
+          </div>
+        )}
+
+        {/* User Rating & Feedback */}
+        {(typeof consultation.rating === 'number' || consultation.userFeedback) && (
+          <div className="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
+            {typeof consultation.rating === 'number' && (
+              <div className="flex items-center gap-1">
+                <h4 className="text-sm font-semibold text-gray-700 mr-2">User Rating:</h4>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`text-lg ${star <= (consultation.rating ?? 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="ml-2 text-sm text-gray-600">({consultation.rating ?? 0}/5)</span>
+              </div>
+            )}
+
+            {consultation.userFeedback && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">User Feedback</h4>
+                <p className="text-gray-800 italic">"{consultation.userFeedback}"</p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Schedule */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Schedule</h3>
@@ -275,6 +316,13 @@ const PsychologistConsultationHistoryDetail = () => {
           </button>
         </div>
       </div>
+      <ConsultationNotesModal
+        consultationId={consultation.id}
+        isOpen={isNotesModalOpen}
+        onClose={() => setIsNotesModalOpen(false)}
+        initialNotes={consultation.notes}
+        onSaved={(notes) => setConsultation({ ...consultation, notes })}
+      />
     </div>
   );
 };

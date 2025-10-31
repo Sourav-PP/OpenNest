@@ -89,7 +89,7 @@ export function toPatientConsultationHistoryDto(
 
 // chat consultation mappers
 export function toUserChatConsultationDto(
-    consultation: Consultation,
+    roomId: string,
     psychologist: Psychologist,
     user: User,
     lastMessage?: Message,
@@ -97,9 +97,8 @@ export function toUserChatConsultationDto(
     unreadCount: number = 0,
 ): IUserChatConsultationDto {
     return {
-        id: consultation.id,
-        status: consultation.status,
-        patientId: consultation.patientId,
+        roomId: roomId,
+        patientId: user.id,
         psychologist: {
             id: psychologist.id,
             userId: user.id,
@@ -120,16 +119,16 @@ export function toUserChatConsultationDto(
 }
 
 export function toPsychologistChatConsultationDto(
-    consultation: Consultation,
+    roomId: string,
+    psychologistId: string,
     patient: User,
     lastMessage?: Message,
     lastMessageTime?: Date,
     unreadCount: number = 0,
 ): IPsychologistChatConsultationDto {
     return {
-        id: consultation.id,
-        status: consultation.status,
-        psychologistId: consultation.psychologistId,
+        roomId: roomId,
+        psychologistId: psychologistId,
         patient: {
             id: patient.id,
             name: patient.name,
@@ -210,6 +209,8 @@ export function toConsultationHistoryDetails(
         startDateTime: consultation.startDateTime,
         endDateTime: consultation.endDateTime,
         notes: consultation.notes,
+        rating: consultation.rating,
+        userFeedback: consultation.userFeedback,
         psychologist: {
             id: psychologist.id,
             name: psychologist.name,

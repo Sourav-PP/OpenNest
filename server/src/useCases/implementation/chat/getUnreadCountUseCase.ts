@@ -19,7 +19,7 @@ export class GetUnreadCountUseCase implements IGetUnreadCountUseCase {
         this._psychologistRepo = psychologistRepo;
     }
 
-    async execute(consultationId: string, userId: string): Promise<number> {
+    async execute(roomId: string, userId: string): Promise<number> {
         const user = await this._userRepo.findById(userId);
 
         if (!user) {
@@ -42,6 +42,6 @@ export class GetUnreadCountUseCase implements IGetUnreadCountUseCase {
             throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        return await this._messageRepo.countUnread(consultationId, receiverId);
+        return await this._messageRepo.countUnread(roomId, receiverId);
     }
 }

@@ -20,7 +20,7 @@ import type { RootState } from '@/redux/store';
 import { logger } from '@/lib/utils/logger';
 import { generalMessages } from '@/messages/GeneralMessages';
 
-export function useChat(consultationId: string) {
+export function useChat(roomId: string) {
   const [messages, setMessages] = useState<IMessageDto[]>([]);
   const [isReady, setIsReady] = useState(false);
   const { userId } = useSelector((state: RootState) => state.auth);
@@ -30,13 +30,13 @@ export function useChat(consultationId: string) {
 
   // fetching the chat history
   useEffect(() => {
-    if (!consultationId) return;
+    if (!roomId) return;
 
     let isMounted = true;
 
     const fetchHistory = async () => {
       try {
-        const res = await chatApi.getChatHistory(consultationId);
+        const res = await chatApi.getChatHistory(roomId);
 
         if (isMounted && res.data) {
           const transformedMessage = res.data.messages.map(msg => {
@@ -51,19 +51,19 @@ export function useChat(consultationId: string) {
           setMessages(transformedMessage);
           setIsReady(true); // mark ready right here
         }
-
-        await joinConsultation(consultationId);
-        logger.info(`Joined chat consultation: ${consultationId}`);
+      
+        await joinConsultation(roomId);
+        logger.info(`Joined chat room: ${roomId}`);
       } catch (error) {
         handleApiError(error);
-        logger.error(`Failed to fetch or join chat: ${consultationId}`, error);
+        logger.error(`Failed to fetch or join chat: ${roomId}`, error);
         if (isMounted) setIsReady(true);
       }
     };
     fetchHistory();
 
     const handleMessage = (msg: IMessageDto) => {
-      if (msg.consultationId === consultationId) {
+      if (msg.roomId === roomId) {
         setMessages(prev => {
           if (prev.some(m => m.id === msg.id)) {
             logger.debug(`Duplicate message ignored: ${msg.id}`);
@@ -76,11 +76,11 @@ export function useChat(consultationId: string) {
 
     const handleMessageDeleted = (data: {
       messageId: string;
-      consultationId: string;
+      roomId: string;
       deletedBy: string;
       isDeleted: boolean;
     }) => {
-      if (data.consultationId === consultationId) {
+      if (data.roomId === roomId) {
         setMessages(prev =>
           prev.map(m => {
             if (m.id === data.messageId) {
@@ -102,8 +102,8 @@ export function useChat(consultationId: string) {
       logger.error('Socket error in chat:', err);
     };
 
-    const cleanupTyping = onTyping(({ consultationId: cId, senderId }) => {
-      if (cId === consultationId && senderId !== userId) {
+    const cleanupTyping = onTyping(({ roomId: cId, senderId }) => {
+      if (cId === roomId && senderId !== userId) {
         setPeerTyping(true);
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => setPeerTyping(false), 2000);
@@ -122,14 +122,14 @@ export function useChat(consultationId: string) {
       cleanupTyping();
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [consultationId, userId]);
+  }, [roomId, userId]);
 
-  const handleDelete = (data: { messageId: string; consultationId: string }) => {
+  const handleDelete = (data: { messageId: string; roomId: string }) => {
     deleteMessage(data);
   };
 
   const handleSend = (data: {
-    consultationId: string;
+    roomId: string;
     senderId: string;
     receiverId: string;
     content?: string;
@@ -142,8 +142,8 @@ export function useChat(consultationId: string) {
     sendMessage(data);
   };
 
-  const handleTyping = () => emitTyping(consultationId);
-  const handleStopTyping = () => emitStopTyping(consultationId);
+  const handleTyping = () => emitTyping(roomId);
+  const handleStopTyping = () => emitStopTyping(roomId);
 
   return { messages, sendMessage: handleSend, isReady, handleDelete, peerTyping, handleTyping, handleStopTyping };
 }

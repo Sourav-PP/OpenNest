@@ -71,8 +71,7 @@ export interface IPatientConsultationHistoryDto {
 
 //chat consultations
 export interface IUserChatConsultationDto {
-  id: string;
-  status: ConsultationStatusType;
+  roomId: string;
   patientId: string;
   psychologist: {
     id: string;
@@ -86,8 +85,7 @@ export interface IUserChatConsultationDto {
 }
 
 export interface IPsychologistChatConsultationDto {
-  id: string;
-  status: ConsultationStatusType;
+  roomId: string;
   psychologistId: string;
   patient: {
     id: string;

@@ -1,3 +1,4 @@
+import 'tsconfig-paths/register';
 import { createServer } from 'http';
 import { appConfig } from './infrastructure/config/config';
 import { connectDB } from './infrastructure/database/mongoose';

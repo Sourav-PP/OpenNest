@@ -7,12 +7,12 @@ let socket: Socket | null = null;
 const messageHandlers: ((msg: IMessageDto) => void)[] = [];
 const deleteHandler: ((data: {
   messageId: string;
-  consultationId: string;
+  roomId: string;
   deletedBy: string;
   isDeleted: boolean;
 }) => void)[] = [];
 const errorListeners: ((err: IChatError) => void)[] = [];
-const typingHandlers: ((data: { consultationId: string; senderId: string }) => void)[] = [];
+const typingHandlers: ((data: { roomId: string; senderId: string }) => void)[] = [];
 
 const onlineListeners: ((users: Set<string>) => void)[] = [];
 const onlineUsers: Set<string> = new Set();
@@ -60,7 +60,7 @@ export function connectSocket(token: string) {
 
   socket.on(
     'message_deleted',
-    (data: { messageId: string; consultationId: string; deletedBy: string; isDeleted: boolean }) => {
+    (data: { messageId: string; roomId: string; deletedBy: string; isDeleted: boolean }) => {
       deleteHandler.slice().forEach(cb => cb(data));
     }
   );
@@ -112,7 +112,7 @@ export function onMessage(cb: (msg: IMessageDto) => void) {
   };
 }
 
-export function onTyping(cb: (data: { consultationId: string; senderId: string }) => void) {
+export function onTyping(cb: (data: { roomId: string; senderId: string }) => void) {
   if (!typingHandlers.includes(cb)) typingHandlers.push(cb);
   return () => {
     const index = typingHandlers.indexOf(cb);
@@ -121,7 +121,7 @@ export function onTyping(cb: (data: { consultationId: string; senderId: string }
 }
 
 export function onMessageDelete(
-  cb: (data: { messageId: string; consultationId: string; deletedBy: string; isDeleted: boolean }) => void
+  cb: (data: { messageId: string; roomId: string; deletedBy: string; isDeleted: boolean }) => void
 ) {
   if (!deleteHandler.includes(cb)) {
     deleteHandler.push(cb);
@@ -154,13 +154,13 @@ export function onOnlineUsers(cb: (users: Set<string>) => void) {
   };
 }
 
-export const joinConsultation = (consultationId: string) => {
+export const joinConsultation = (roomId: string) => {
   const socket = getSocket();
   if (!socket) throw new Error('Socket not connected');
 
   return new Promise<void>((resolve, reject) => {
     const join = () =>
-      socket.emit('join_consultation', consultationId, (res: { success: boolean; roomId?: string; error?: string }) => {
+      socket.emit('join_consultation', roomId, (res: { success: boolean; roomId?: string; error?: string }) => {
         if (res.success) resolve();
         else reject(new Error(res.error || 'Failed to join'));
       });
@@ -173,7 +173,7 @@ export const joinConsultation = (consultationId: string) => {
   });
 };
 
-export const deleteMessage = (data: { messageId: string; consultationId: string }) => {
+export const deleteMessage = (data: { messageId: string; roomId: string }) => {
   const socket = getSocket();
   if (!socket || !socket.connected) {
     return;
@@ -182,21 +182,21 @@ export const deleteMessage = (data: { messageId: string; consultationId: string 
 };
 
 // Typing events
-export const emitTyping = (consultationId: string) => {
+export const emitTyping = (roomId: string) => {
   const socket = getSocket();
   if (!socket || !socket.connected) return;
-  socket.emit('typing', { consultationId });
+  socket.emit('typing', { roomId });
 };
 
-export const emitStopTyping = (consultationId: string) => {
+export const emitStopTyping = (roomId: string) => {
   const socket = getSocket();
   if (!socket || !socket.connected) return;
-  socket.emit('stop_typing', { consultationId });
+  socket.emit('stop_typing', { roomId });
 };
 
 //sending message
 export const sendMessage = (data: {
-  consultationId: string;
+  roomId: string;
   senderId: string;
   receiverId: string;
   content?: string;

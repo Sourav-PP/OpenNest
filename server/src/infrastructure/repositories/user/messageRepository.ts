@@ -18,7 +18,7 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
         
         return {
             id: mapped.id,
-            consultationId: mapped.consultationId as string,
+            roomId: mapped.roomId,
             clientId: mapped.clientId,
             senderId: mapped.senderId as string,
             receiverId: mapped.receiverId as string,
@@ -40,8 +40,8 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
         };
     }
 
-    async findByConsultationId(consultationId: string): Promise<Message[]> {
-        const docs = await MessageModel.find({ consultationId })
+    async findByRoomId(roomId: string): Promise<Message[]> {
+        const docs = await MessageModel.find({ roomId })
             .sort({ createdAt: 1 })
             .exec();
 
@@ -49,11 +49,11 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
     }
 
     async findByClientId(
-        consultationId: string,
+        roomId: string,
         clientId: string,
     ): Promise<Message | null> {
         const message = await MessageModel.findOne({
-            consultationId,
+            roomId,
             clientId,
         }).exec();
         if (!message) return null;
@@ -62,11 +62,11 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
     }
 
     async findHistory(
-        consultationId: string,
+        roomId: string,
         limit: number,
         before?: string,
     ): Promise<Message[]> {
-        const query: FilterQuery<IMessageDocument> = { consultationId };
+        const query: FilterQuery<IMessageDocument> = { roomId };
 
         if (before) {
             query.createdAt = { $lt: new Date(before) };
@@ -80,14 +80,14 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
     }
 
     async markRead(
-        consultationId: string,
+        roomId: string,
         messageIds: string[],
         userId: string,
     ): Promise<void> {
         await MessageModel.updateMany(
             {
                 _id: { $in: messageIds.map(id => new Types.ObjectId(id)) },
-                consultationId,
+                roomId,
             },
             {
                 $set: { status: MessageStatus.READ, readAt: new Date() },
@@ -97,14 +97,14 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
     }
 
     async markDelivered(
-        consultationId: string,
+        roomId: string,
         messageIds: string[],
         userId: string,
     ): Promise<void> {
         await MessageModel.updateMany(
             {
                 _id: { $in: messageIds.map(id => new Types.ObjectId(id)) },
-                consultationId,
+                roomId,
             },
             {
                 $addToSet: { deliveredTo: new Types.ObjectId(userId) },
@@ -113,17 +113,17 @@ export class MessageRepository extends GenericRepository<Message, IMessageDocume
         ).exec();
     }
 
-    async countUnread(consultationId: string, userId: string): Promise<number> {
+    async countUnread(roomId: string, userId: string): Promise<number> {
         return MessageModel.countDocuments({
-            consultationId,
+            roomId,
             receiverId: userId,
             status: { $ne: MessageStatus.READ },
         });
     }
 
-    async markAllAsRead(consultationId: string, userId: string): Promise<void> {
+    async markAllAsRead(roomId: string, userId: string): Promise<void> {
         await MessageModel.updateMany(
-            { consultationId, receiverId: userId, status: { $ne: MessageStatus.READ } },
+            { roomId, receiverId: userId, status: { $ne: MessageStatus.READ } },
             { $set: { status: MessageStatus.READ, readAt: new Date() } },
         );
     }

@@ -9,6 +9,8 @@ import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { Star } from 'lucide-react';
 import type { ITopConsultationDto } from '@/types/dtos/consultation';
 import { formatDateOnly } from '@/lib/utils/dateTimeFormatter';
+import { getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
+import type { Column } from '@/types/dtos/table';
 
 const TopRatedConsultationsTable = () => {
   const [consultation, setConsultation] = useState<ITopConsultationDto[]>([]);
@@ -36,48 +38,39 @@ const TopRatedConsultationsTable = () => {
     fetchTopUsers();
   }, []);
 
-  const columns = [
+  const topConsultationColumns: Column<ITopConsultationDto>[] = [
     {
       header: 'SI',
       render: (_: ITopConsultationDto, index: number) => index + 1,
       className: 'ps-4',
     },
-    {
-      header: 'Image',
-      render: (c: ITopConsultationDto) => (
-        <div className="flex justify-start min-w-[40px]">
-          {c.patient.profileImage ? (
-            <img
-              src={getCloudinaryUrl(c.patient.profileImage) || undefined}
-              alt={`${c.patient.name}'s profile`}
-              loading="lazy"
-              className="w-8 h-8 rounded-full object-cover border border-gray-600"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gray-800" />
-          )}
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Name',
-      render: (c: ITopConsultationDto) => c.patient.name,
-    },
-    {
-      header: 'Email',
-      render: (c: ITopConsultationDto) => formatDateOnly(c.consultation.startDateTime),
-    },
-    {
-      header: 'Total Consultations',
-      render: (c: ITopConsultationDto) => formatDateOnly(c.consultation.endDateTime),
-    },
+
+    imageColumn<ITopConsultationDto>(
+      'Image',
+      c => getCloudinaryUrlSafe(c.patient.profileImage),
+      'px-6 py-4'
+    ),
+
+    textColumn<ITopConsultationDto>('Name', c => c.patient.name, 'px-6 py-4'),
+
+    textColumn<ITopConsultationDto>(
+      'Email',
+      c => formatDateOnly(c.consultation.startDateTime),
+      'px-6 py-4'
+    ),
+
+    textColumn<ITopConsultationDto>(
+      'Total Consultations',
+      c => formatDateOnly(c.consultation.endDateTime),
+      'px-6 py-4'
+    ),
+
     {
       header: 'Rating',
-      render: (c: ITopConsultationDto) => (
+      render: c => (
         <div className="flex items-center justify-center gap-1 font-semibold border-none">
           <span>{c.rating?.toFixed(1) ?? '—'}</span>
-          <span><Star fill="#FACC15" stroke="none" size={16}/></span>
+          <Star fill="#FACC15" stroke="none" size={16} />
         </div>
       ),
       className: 'text-center',
@@ -115,7 +108,7 @@ const TopRatedConsultationsTable = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
         <ReusableTable
           data={consultation}
-          columns={columns}
+          columns={topConsultationColumns}
           emptyMessage="No users found."
           className="overflow-x-auto rounded-lg"
         />

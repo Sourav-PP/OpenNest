@@ -6,9 +6,10 @@
     "lint:exports": "ts-prune",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "start": "node -r tsconfig-paths/register dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/main.ts",
-    "build": "tsc"
+    "build": "tsc && tsc-alias"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +36,7 @@
     "rrule": "^2.8.1",
     "socket.io": "^4.8.1",
     "stripe": "^19.1.0",
+    "tsconfig-paths": "^4.2.0",
     "winston": "^3.17.0",
     "winston-mongodb": "^7.0.1"
   },
@@ -61,8 +63,9 @@
     "prettier": "^3.6.2",
     "ts-node-dev": "^2.0.0",
     "ts-prune": "^0.10.3",
-    "tsconfig-paths": "^4.2.0",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.39.1"
+    "typescript-eslint": "^8.39.1",
+    "typescript-transform-paths": "^3.5.5"
   }
 }

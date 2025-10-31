@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  backend:
+    build: .
+    container_name: opennest-backend
+    ports:
+      - "5006:5006"
+    env_file:
+      - .env
+    restart: always

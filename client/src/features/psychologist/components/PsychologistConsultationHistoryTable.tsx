@@ -11,6 +11,9 @@ import { psychologistApi } from '@/services/api/psychologist';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import type { Column } from '@/types/dtos/table';
+import { getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
+import { formatDateTime } from '@/lib/utils/dateTimeFormatter';
 
 const PsychologistConsultationHistoryTable = () => {
   const [consultations, setConsultations] = useState<IPsychologistConsultationDto[]>([]);
@@ -62,42 +65,41 @@ const PsychologistConsultationHistoryTable = () => {
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const columns = [
-    {
-      header: 'SI',
-      render: (_: IPsychologistConsultationDto, index: number) => index + 1 + (currentPage - 1) * itemsPerPage,
-      className: 'ps-4',
-    },
-    {
-      header: 'Patient',
-      render: (c: IPsychologistConsultationDto) => (
-        <div className="flex items-center gap-2">
-          {c.patient.profileImage && (
-            <img
-              src={getCloudinaryUrl(c.patient.profileImage) || undefined}
-              alt={c.patient.name}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          )}
-          <span>{c.patient.name}</span>
-        </div>
-      ),
-    },
-    {
-      header: 'Session Goal',
-      render: (c: IPsychologistConsultationDto) => <span className="line-clamp-1">{c.sessionGoal}</span>,
-    },
-    {
-      header: 'Start Date & Time',
-      render: (c: IPsychologistConsultationDto) => new Date(c.startDateTime).toLocaleString(),
-    },
-    {
-      header: 'End Date & Time',
-      render: (c: IPsychologistConsultationDto) => new Date(c.endDateTime).toLocaleString(),
-    },
+  const psychologistConsultationColumns: Column<IPsychologistConsultationDto>[] = [
+
+    imageColumn<IPsychologistConsultationDto>(
+      'Image',
+      c => getCloudinaryUrlSafe(c.patient.profileImage),
+      'px-6 py-4'
+    ),
+
+    textColumn<IPsychologistConsultationDto>(
+      'Name',
+      c => c.patient.name.split(' ')[0],
+      'px-6 py-4'
+    ),
+
+    textColumn<IPsychologistConsultationDto>(
+      'Session Goal',
+      c => c.sessionGoal,
+      'px-6 py-4'
+    ),
+
+    textColumn<IPsychologistConsultationDto>(
+      'Start Date & Time',
+      c => formatDateTime(c.startDateTime),
+      'px-6 py-4'
+    ),
+
+    textColumn<IPsychologistConsultationDto>(
+      'End Date & Time',
+      c => formatDateTime(c.endDateTime),
+      'px-6 py-4'
+    ),
+
     {
       header: 'View',
-      render: (c: IPsychologistConsultationDto) => (
+      render: c => (
         <Link
           to={psychologistFrontendRoutes.consultationHistoryDetail(c.id)}
           state={{ from: 'consultation-history', patientName: c.patient.name }}
@@ -106,6 +108,7 @@ const PsychologistConsultationHistoryTable = () => {
           View
         </Link>
       ),
+      className: 'px-6 py-4',
     },
   ];
 
@@ -160,7 +163,7 @@ const PsychologistConsultationHistoryTable = () => {
 
         <ReusableTable
           data={consultations}
-          columns={columns}
+          columns={psychologistConsultationColumns}
           emptyMessage="No consultation history found."
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />

@@ -62,6 +62,32 @@ export interface IConsultationRepository {
             unreadCount: number;
         }[]
     >;
+    findChatRoomsByPatientId(
+        patientId: string,
+        params: { search?: string }
+    ): Promise<
+        {
+            roomId: string;
+            psychologist: Psychologist;
+            user: User;
+            lastMessage?: Message;
+            lastMessageTime?: Date;
+            unreadCount: number;
+        }[]
+    >;
+    findChatRoomsByPsychologistId(
+        psychologistId: string,
+        params: { search?: string }
+    ): Promise<
+    {
+        roomId: string;
+        psychologistId: string;
+        patient: User;
+        lastMessage?: Message;
+        lastMessageTime?: Date;
+        unreadCount: number;
+    }[]
+    >;
     findById(id: string): Promise<Consultation | null>;
     findByIds(ids: string[]): Promise<Consultation[]>;
     findByIdWithDetails(

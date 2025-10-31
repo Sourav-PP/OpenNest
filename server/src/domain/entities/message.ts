@@ -2,7 +2,7 @@ import { MessageStatus } from '../enums/MessageEnums';
 
 export interface Message {
     id: string;
-    consultationId: string;
+    roomId: string;
     clientId?: string;
     senderId: string;
     receiverId: string;

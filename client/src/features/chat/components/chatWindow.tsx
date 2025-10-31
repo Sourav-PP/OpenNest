@@ -14,22 +14,22 @@ import { generalMessages } from '@/messages/GeneralMessages';
 import { logger } from '@/lib/utils/logger';
 
 export default function ChatWindow({
-  consultationId,
+  roomId,
   userId,
   peerId,
 }: {
-  consultationId: string;
+  roomId: string;
   userId: string;
   peerId: string;
 }) {
   const { messages, sendMessage, isReady, handleDelete, peerTyping, handleTyping, handleStopTyping } =
-    useChat(consultationId);
+    useChat(roomId);
   const [text, setText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [messageToDelete, setMessageToDelete] = useState<{ messageId: string; consultationId: string } | null>(null);
+  const [messageToDelete, setMessageToDelete] = useState<{ messageId: string; roomId: string } | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => {
@@ -42,8 +42,8 @@ export default function ChatWindow({
     }
   };
 
-  const confirmDeleteMessage = (id: string, consultationId: string) => {
-    setMessageToDelete({ messageId: id, consultationId });
+  const confirmDeleteMessage = (id: string, roomId: string) => {
+    setMessageToDelete({ messageId: id, roomId });
     setDeleteModalOpen(true);
   };
 
@@ -88,7 +88,7 @@ export default function ChatWindow({
     }
 
     sendMessage({
-      consultationId,
+      roomId,
       senderId: userId,
       receiverId: peerId,
       content: text || '',
@@ -203,7 +203,7 @@ export default function ChatWindow({
                     >
                       {!m.deleted && m.senderId === userId && (
                         <DeleteIcon
-                          onClick={() => confirmDeleteMessage(m.id, m.consultationId)}
+                          onClick={() => confirmDeleteMessage(m.id, m.roomId)}
                           className="w-4 h-4 absolute top-1 right-1 text-red-400 hover:text-red-600 cursor-pointer"
                         />
                       )}

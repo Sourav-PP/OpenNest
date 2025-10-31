@@ -1,3 +1,3 @@
 export interface IMarkReadUseCase {
-    execute(consultationId: string, userId: string): Promise<void>;
+    execute(roomId: string, userId: string): Promise<void>;
 }

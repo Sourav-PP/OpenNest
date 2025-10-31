@@ -26,7 +26,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
         }
 
         // Ensuring weather sender is part of the consultation or not
-        await this._ensureMembershipUseCase.execute(data.senderId, data.consultationId);
+        await this._ensureMembershipUseCase.execute(data.senderId, data.roomId);
         return await this._messageRepo.create(data);
     }
 }

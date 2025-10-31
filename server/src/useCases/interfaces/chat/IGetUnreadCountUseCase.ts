@@ -1,3 +1,3 @@
 export interface IGetUnreadCountUseCase {
-  execute(consultationId: string, userId: string): Promise<number>;
+  execute(roomId: string, userId: string): Promise<number>;
 }

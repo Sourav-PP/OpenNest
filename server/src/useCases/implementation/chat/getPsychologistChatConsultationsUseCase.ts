@@ -1,4 +1,3 @@
-import { SortFilter } from '@/domain/enums/SortFilterEnum';
 import { AppError } from '@/domain/errors/AppError';
 import { IConsultationRepository } from '@/domain/repositoryInterface/IConsultationRepository';
 import { IPsychologistRepository } from '@/domain/repositoryInterface/IPsychologistRepository';
@@ -19,7 +18,7 @@ export class GetPsychologistChatConsultationsUseCase implements IGetPsychologist
     }
 
     async execute(input: IGetConsultationsRequest): Promise<IGetPsychologistChatConsultationsResponse> {
-        const { search, sort, status, page = 1, limit = 10, psychologistId } = input;
+        const { search, psychologistId } = input;
 
         const psychologist = await this._psychologistRepo.findByUserId(psychologistId);
 
@@ -27,32 +26,27 @@ export class GetPsychologistChatConsultationsUseCase implements IGetPsychologist
             throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        const finalSort = sort === SortFilter.ASC || sort === SortFilter.DESC ? sort : SortFilter.DESC;
-        const skip = (page - 1) * limit;
         const id = psychologist.id;
 
-        const consultations = await this._consultationRepo.findByPsychologistId(id, {
+        const rooms = await this._consultationRepo.findChatRoomsByPsychologistId(id, {
             search,
-            sort: finalSort,
-            limit,
-            status,
-            skip,
         });
 
-        const mappedConsultations = consultations.map(c =>
+        const mappedRooms = rooms.map(r =>
             toPsychologistChatConsultationDto(
-                c.consultation,
-                c.patient,
-                c.lastMessage,
-                c.lastMessageTime,
-                c.unreadCount,
+                r.roomId,
+                r.psychologistId,
+                r.patient,
+                r.lastMessage,
+                r.lastMessageTime,
+                r.unreadCount,
             ),
         );
 
         const totalCount = await this._consultationRepo.countAllByPatientId(id);
 
         return {
-            consultations: mappedConsultations,
+            rooms: mappedRooms,
             totalCount,
         };
     }

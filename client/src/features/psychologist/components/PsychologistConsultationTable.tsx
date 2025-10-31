@@ -16,6 +16,8 @@ import { generalMessages } from '@/messages/GeneralMessages';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
+import { textColumn } from '@/components/user/TableColumns';
+import type { Column } from '@/types/dtos/table';
 
 const PsychologistConsultationsTable = () => {
   const [consultations, setConsultations] = useState<IPsychologistConsultationDto[]>([]);
@@ -77,27 +79,30 @@ const PsychologistConsultationsTable = () => {
     }).format(new Date(date));
   };
 
-  const columns = [
+  const psychologistConsultationColumns: Column<IPsychologistConsultationDto>[] = [
     {
       header: 'SI',
       render: (_: IPsychologistConsultationDto, index: number) => index + 1,
       className: 'ps-4',
     },
-    {
-      header: 'patient',
-      render: (c: IPsychologistConsultationDto) => c.patient.name,
-    },
-    {
-      header: 'Start Date & Time',
-      render: (c: IPsychologistConsultationDto) => formatDateTime(c.startDateTime),
-    },
-    {
-      header: 'End Date & Time',
-      render: (c: IPsychologistConsultationDto) => formatDateTime(c.endDateTime),
-    },
+
+    textColumn<IPsychologistConsultationDto>('Patient', c => c.patient.name, 'px-6 py-4'),
+
+    textColumn<IPsychologistConsultationDto>(
+      'Start Date & Time',
+      c => formatDateTime(c.startDateTime),
+      'px-6 py-4'
+    ),
+
+    textColumn<IPsychologistConsultationDto>(
+      'End Date & Time',
+      c => formatDateTime(c.endDateTime),
+      'px-6 py-4'
+    ),
+
     {
       header: 'Status',
-      render: (c: IPsychologistConsultationDto) => (
+      render: c => (
         <span
           className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${
             c.status === ConsultationStatus.Booked
@@ -112,10 +117,12 @@ const PsychologistConsultationsTable = () => {
           {c.status}
         </span>
       ),
+      className: 'px-6 py-4 text-center',
     },
+
     {
       header: 'View',
-      render: (c: IPsychologistConsultationDto) => (
+      render: c => (
         <Link
           to={psychologistFrontendRoutes.consultationDetail(c.id)}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
@@ -123,6 +130,7 @@ const PsychologistConsultationsTable = () => {
           View
         </Link>
       ),
+      className: 'px-6 py-4',
     },
   ];
 
@@ -166,7 +174,7 @@ const PsychologistConsultationsTable = () => {
         />
         <ReusableTable
           data={consultations}
-          columns={columns}
+          columns={psychologistConsultationColumns}
           onRowClick={(consultation: IPsychologistConsultationDto) => {
             navigate(psychologistFrontendRoutes.consultationDetail(consultation.id));
           }}

@@ -22,7 +22,7 @@ export default function ChatSidebar({
   role: UserRoleType;
   onSelect: (c: IUserChatConsultationDto | IPsychologistChatConsultationDto) => void;
 }) {
-  const [consultations, setConsultations] = useState<(IUserChatConsultationDto | IPsychologistChatConsultationDto)[]>(
+  const [chats, setChats] = useState<(IUserChatConsultationDto | IPsychologistChatConsultationDto)[]>(
     []
   );
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export default function ChatSidebar({
 
   // fetch consultations
   useEffect(() => {
-    const fetchConsultations = async () => {
+    const fetchChats = async () => {
       try {
         const res = role === UserRole.USER ? await chatApi.getChatByPatient() : await chatApi.getChatByPsychologist();
         if (!res.data) {
@@ -42,31 +42,30 @@ export default function ChatSidebar({
           return;
         }
 
-        let chats;
+        let rooms = res.data.rooms;
         if (role === UserRole.PSYCHOLOGIST) {
-          chats = uniqBy(res.data.consultations as IPsychologistChatConsultationDto[], c => c.patient.id);
+          rooms = uniqBy(rooms as IPsychologistChatConsultationDto[], c => c.patient.id);
         } else {
-          chats = uniqBy(res.data.consultations as IUserChatConsultationDto[], c => c.psychologist.id);
+          rooms = uniqBy(rooms as IUserChatConsultationDto[], c => c.psychologist.id);
         }
 
-        setConsultations(
-          chats
-            .sort((a, b) => {
-              const aTime = a.lastMessage?.createdAt ?? 0;
-              const bTime = b.lastMessage?.createdAt ?? 0;
-              return new Date(bTime).getTime() - new Date(aTime).getTime();
-            })
-        );
+        const sorted = [...rooms].sort((a, b) => {
+          const aTime = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
+          const bTime = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
+          return bTime - aTime;
+        });
+
+        setChats(sorted);
 
         // join all rooms immediately for real-time updates
         const socket = getSocket();
         if (!socket) return;
 
-        res.data.consultations.forEach(async (c: IUserChatConsultationDto | IPsychologistChatConsultationDto) => {
+        rooms.forEach(async (r: IUserChatConsultationDto | IPsychologistChatConsultationDto) => {
           try {
-            await joinConsultation(c.id);
+            await joinConsultation(r.roomId);
           } catch (err) {
-            logger.debug(`Failed to join room ${c.id}:`, err);
+            logger.debug(`Failed to join room ${r.roomId}:`, err);
           }
         });
 
@@ -74,7 +73,7 @@ export default function ChatSidebar({
         handleApiError(error);
       }
     };
-    fetchConsultations();
+    fetchChats();
   }, [role]);
 
   // handle incoming messages globally
@@ -83,24 +82,24 @@ export default function ChatSidebar({
     if (!socket) return;
 
     const handleMessage = (message: IMessageDto) => {
-      setConsultations(prev => {
-        const updated = prev.map(c =>
-          c.id === message.consultationId
+      setChats(prev => {
+        const updated = prev.map(r =>
+          r.roomId === message.roomId
             ? {
-              ...c,
+              ...r,
               lastMessage: {
                 id: message.id,
                 content: message.content,
                 createdAt: message.createdAt,
               },
               unreadCount:
-                c.id === selectedChatId
+                r.roomId === selectedChatId
                   ? 0
                   : message.senderId === userId
-                    ? c.unreadCount || 0
-                    : (c.unreadCount || 0) + 1,
+                    ? r.unreadCount || 0
+                    : (r.unreadCount || 0) + 1,
             }
-            : c
+            : r
         );
 
         return [...updated].sort((a, b) => {
@@ -111,8 +110,8 @@ export default function ChatSidebar({
       });
     };
 
-    socket.on('message_read', ({ consultationId, userId }: { consultationId: string; userId: string }) => {
-      setConsultations(prev => prev.map(c => (c.id === consultationId ? { ...c, unreadCount: 0 } : c)));
+    socket.on('message_read', ({ roomId, userId }: { roomId: string; userId: string }) => {
+      setChats(prev => prev.map(r => (r.roomId === roomId ? { ...r, unreadCount: 0 } : r)));
     });
 
     const cleanupMessage = onMessage(handleMessage);
@@ -123,17 +122,17 @@ export default function ChatSidebar({
     };
   }, [selectedChatId, userId]);
 
-  const handleSelect = (consultation: IUserChatConsultationDto | IPsychologistChatConsultationDto) => {
-    setSelectedChatId(consultation.id);
-    onSelect(consultation);
+  const handleSelect = (chat: IUserChatConsultationDto | IPsychologistChatConsultationDto) => {
+    setSelectedChatId(chat.roomId);
+    onSelect(chat);
 
     const socket = getSocket();
     if (!socket) return;
 
     // mark messages as read
-    socket.emit('mark_as_read', consultation.id, userId);
+    socket.emit('mark_as_read', chat.roomId, userId);
 
-    setConsultations(prev => prev.map(c => (c.id === consultation.id ? { ...c, unreadCount: 0 } : c)));
+    setChats(prev => prev.map(c => (c.roomId === chat.roomId ? { ...c, unreadCount: 0 } : c)));
   };
 
   return (
@@ -146,16 +145,16 @@ export default function ChatSidebar({
       {/* Chat List */}
       <ScrollArea className="flex-1">
         <div className="space-y-1 p-2">
-          {consultations.length === 0 ? (
+          {chats.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">No consultations booked yet!</div>
           ) : (
-            consultations
+            chats
               .map(c => (
                 <div
-                  key={c.id}
+                  key={c.roomId}
                   onClick={() => handleSelect(c)}
                   className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
-                    selectedChatId === c.id ? 'bg-green-100 text-green-900' : 'hover:bg-gray-100 text-gray-900'
+                    selectedChatId === c.roomId ? 'bg-green-100 text-green-900' : 'hover:bg-gray-100 text-gray-900'
                   }`}
                 >
                   <div className="relative">

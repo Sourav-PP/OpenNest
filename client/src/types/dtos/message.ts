@@ -2,7 +2,7 @@ import type { MessageStatusType } from '@/constants/types/Message';
 
 export interface IMessageDto {
   id: string;
-  consultationId: string;
+  roomId: string;
   clientId?: string;
   senderId: string;
   receiverId: string;

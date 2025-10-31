@@ -57,8 +57,7 @@ export interface IPatientConsultationHistoryDto {
 
 // chat consultations
 export interface IUserChatConsultationDto {
-    id?: string;
-    status: ConsultationStatus;
+    roomId: string;
     patientId: string;
     psychologist: {
         id: string;
@@ -72,8 +71,7 @@ export interface IUserChatConsultationDto {
 }
 
 export interface IPsychologistChatConsultationDto {
-    id?: string;
-    status: ConsultationStatus;
+    roomId: string;
     psychologistId: string;
     patient: {
         id: string;
@@ -129,6 +127,8 @@ export interface IConsultationHistoryDetailsDto {
     startDateTime: Date;
     endDateTime: Date;
     notes?: ConsultationNotes;
+    rating?: number;
+    userFeedback?: string;
     psychologist: {
         id: string;
         name: string;

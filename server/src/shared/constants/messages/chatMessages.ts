@@ -10,6 +10,7 @@ export const chatMessages = {
     ERROR: {
         NOT_FOUND: 'Message not found',
         ALREADY_DELETED: 'Message is already deleted',
+        INVALID_ROOM_ID: 'Invalid roomId',
         INVALID_CONSULTATION_ID: 'Invalid consultation Id',
         INVALID_MESSAGEID_OR_CONSULTATION_ID: 'Invalid message id or consultation id',
         NO_FILE_PROVIDED: 'No file provided',

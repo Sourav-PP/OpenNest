@@ -11,7 +11,7 @@
     "emitDecoratorMetadata": true,             // required for some decorators
     "strict": true,                            // enable all strict type-checking
     "forceConsistentCasingInFileNames": true, // enforce consistent file naming
-    "skipLibCheck": true                       // skip type checking of declaration files
+    "skipLibCheck": true,                       // skip type checking of declaration files
   },
   "include": ["src/**/*.ts"],                  // include all source TS files
   "exclude": ["node_modules", "dist", "eslint.config.mjs"] // ignore build & config files

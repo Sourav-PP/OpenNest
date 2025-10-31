@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { userApi } from '@/services/api/user';
 import { toast } from 'react-toastify';
@@ -11,33 +11,39 @@ import { generalMessages } from '@/messages/GeneralMessages';
 import { ConsultationStatus } from '@/constants/types/Consultation';
 import { PaymentStatus } from '@/constants/types/Payment';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
+import { Button } from '@/components/ui/button';
+import ConsultationRatingModal from './ConsultationRatingModal';
 
 const UserConsultationHistoryDetail = () => {
   const { consultationId } = useParams<{ consultationId: string }>();
   const [consultation, setConsultation] = useState<IUserConsultationHistoryDetailsResponseData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchConsultationDetail = async () => {
-      try {
-        setLoading(true);
-        const res = await userApi.getUserConsultationHistoryDetail(consultationId!);
-        if (!res.data) {
-          toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
-          return;
-        }
-        setConsultation(res.data);
-      } catch (err) {
-        handleApiError(err);
-        navigate(userFrontendRoutes.consultationHistory);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchConsultationDetail = useCallback(async () => {
+    if (!consultationId) return;
 
-    if (consultationId) fetchConsultationDetail();
+    try {
+      setLoading(true);
+      const res = await userApi.getUserConsultationHistoryDetail(consultationId);
+      if (!res.data) {
+        toast.error(generalMessages.ERROR.INTERNAL_SERVER_ERROR);
+        return;
+      }
+      setConsultation(res.data);
+    } catch (err) {
+      handleApiError(err);
+      navigate(userFrontendRoutes.consultationHistory);
+    } finally {
+      setLoading(false);
+    }
   }, [consultationId, navigate]);
+
+  useEffect(() => {
+    fetchConsultationDetail();
+  }, [fetchConsultationDetail]);
+
 
   if (loading) {
     return (
@@ -139,6 +145,33 @@ const UserConsultationHistoryDetail = () => {
               </div>
             ) : (
               <p className="text-gray-500 italic">Feedback not provided yet.</p>
+            )}
+          </div>
+        )}
+
+        {/* User Rating & Feedback */}
+        {(typeof consultation.rating === 'number' || consultation.userFeedback) && (
+          <div className="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
+            {typeof consultation.rating === 'number' && (
+              <div className="flex items-center gap-1">
+                <h4 className="text-sm font-semibold text-gray-700 mr-2">User Rating:</h4>
+                {[1, 2, 3, 4, 5].map(star => (
+                  <span
+                    key={star}
+                    className={`text-lg ${star <= (consultation.rating ?? 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="ml-2 text-sm text-gray-600">({consultation.rating ?? 0}/5)</span>
+              </div>
+            )}
+
+            {consultation.userFeedback && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">User Feedback</h4>
+                <p className="text-gray-800 italic">"{consultation.userFeedback}"</p>
+              </div>
             )}
           </div>
         )}
@@ -255,6 +288,21 @@ const UserConsultationHistoryDetail = () => {
                       : 'Join Meeting'}
               </a>
             </div>
+          </div>
+        )}
+
+        {consultation.status === ConsultationStatus.Completed && !consultation.rating && (
+          <div className="pt-2">
+            <Button onClick={() => setShowRatingModal(true)} className="bg-indigo-700 hover:bg-indigo-800">
+              Rate Consultation
+            </Button>
+
+            <ConsultationRatingModal
+              consultationId={consultation.id}
+              isOpen={showRatingModal}
+              onClose={() => setShowRatingModal(false)}
+              onSubmitted={fetchConsultationDetail}
+            />
           </div>
         )}
 

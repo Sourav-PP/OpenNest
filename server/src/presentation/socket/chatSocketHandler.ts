@@ -8,6 +8,7 @@ import { IMarkReadUseCase } from '@/useCases/interfaces/chat/IMarkReadUseCase';
 import { IDeleteMessageUseCase } from '@/useCases/interfaces/chat/IDeleteMessageUseCase';
 import { generalMessages } from '@/shared/constants/messages/generalMessages';
 import logger from '@/utils/logger';
+import { getRoomId } from '@/utils/getRoomId';
 
 export class ChatSocketHandler implements IChatSocketHandler {
     private _sendMessageUseCase: ISendMessageUseCase;
@@ -25,19 +26,23 @@ export class ChatSocketHandler implements IChatSocketHandler {
     }
 
     register(io: Server, socket: Socket): void {
-        socket.on('join_consultation', async(consultationId: string, ack?: (res: any) => void) => {
+        socket.on('join_consultation', async(roomId: string, ack?: (res: any) => void) => {
             try {
-                if (!consultationId) {
+                if (!roomId) {
                     return ack?.({
                         success: false,
                         error: chatMessages.ERROR.INVALID_CONSULTATION_ID,
                     });
                 }
 
-                await socket.join(consultationId);
-                logger.info(`Socket ${socket.id} joined consultation: ${consultationId}`);
+                console.log('roomId: ', roomId);
 
-                return ack?.({ success: true, roomId: consultationId });
+                await socket.join(roomId);
+                logger.info(`Room members: ${[...io.sockets.adapter.rooms.get(roomId) || []]}`);
+
+                logger.info(`Socket ${socket.id} joined consultation: ${roomId}`);
+
+                return ack?.({ success: true, roomId: roomId });
             } catch (err) {
                 logger.error(`Error occurred in join_consultation for socket ${socket.id}`, err);
                 return ack?.({
@@ -50,8 +55,12 @@ export class ChatSocketHandler implements IChatSocketHandler {
         // sending message
         socket.on('send_message', async data => {
             try {
-                const message = await this._sendMessageUseCase.execute(data);
-                io.to(data.consultationId).emit('new_message', message);
+                const roomId = data.roomId || getRoomId(data.senderId, data.receiverId);
+                console.log('roomId in sendmessage: ', roomId);
+                const payload = { ...data, roomId };
+
+                const message = await this._sendMessageUseCase.execute(payload);
+                io.to(roomId).emit('new_message', message);
             } catch (err) {
                 if (err instanceof AppError) {
                     socket.emit('chat_error', {
@@ -67,9 +76,9 @@ export class ChatSocketHandler implements IChatSocketHandler {
             }
         });
 
-        socket.on('delete', async(data: { messageId: string; consultationId: string }) => {
+        socket.on('delete', async(data: { messageId: string; roomId: string }) => {
             try {
-                if (!data?.messageId || !data?.consultationId) {
+                if (!data?.messageId || !data?.roomId) {
                     return socket.emit('chat_error', {
                         status: HttpStatus.BAD_REQUEST,
                         message: chatMessages.ERROR.INVALID_MESSAGEID_OR_CONSULTATION_ID,
@@ -85,9 +94,9 @@ export class ChatSocketHandler implements IChatSocketHandler {
                     });
                 }
 
-                io.to(data.consultationId).emit('message_deleted', {
+                io.to(data.roomId).emit('message_deleted', {
                     messageId: deletedMessage.id,
-                    consultationId: data.consultationId,
+                    roomId: data.roomId,
                     deletedBy: socket.data.userId,
                     isDeleted: true,
                 });
@@ -107,11 +116,11 @@ export class ChatSocketHandler implements IChatSocketHandler {
         });
 
         // mark message as read
-        socket.on('mark_as_read', async(consultationId: string, userId: string) => {
+        socket.on('mark_as_read', async(roomId: string, userId: string) => {
             try {
-                await this._markAsReadUseCase.execute(consultationId, userId);
-                io.to(consultationId).emit('message_read', {
-                    consultationId,
+                await this._markAsReadUseCase.execute(roomId, userId);
+                io.to(roomId).emit('message_read', {
+                    roomId,
                     userId,
                 });
             } catch (err) {
@@ -130,13 +139,13 @@ export class ChatSocketHandler implements IChatSocketHandler {
         });
 
         // typing indicator
-        socket.on('typing', ({ consultationId, senderId }: { consultationId: string; senderId: string }) => {
+        socket.on('typing', ({ roomId, senderId }: { roomId: string; senderId: string }) => {
             // emit to everyone in the room except the sender
-            socket.to(consultationId).emit('typing', { consultationId, senderId });
+            socket.to(roomId).emit('typing', { roomId, senderId });
         });
 
-        socket.on('stop_typing', ({ consultationId, senderId }: { consultationId: string; senderId: string }) => {
-            socket.to(consultationId).emit('stop_typing', { consultationId, senderId });
+        socket.on('stop_typing', ({ roomId, senderId }: { roomId: string; senderId: string }) => {
+            socket.to(roomId).emit('stop_typing', { roomId, senderId });
         });
     }
 }

@@ -8,6 +8,8 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import type { ITopUserDto } from '@/types/dtos/user';
 import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { Star } from 'lucide-react';
+import type { Column } from '@/types/dtos/table';
+import { getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
 
 const TopUsersTable = () => {
   const [users, setUsers] = useState<ITopUserDto[]>([]);
@@ -35,48 +37,35 @@ const TopUsersTable = () => {
     fetchTopUsers();
   }, []);
 
-  const columns = [
+  const topUserColumns: Column<ITopUserDto>[] = [
     {
       header: 'SI',
       render: (_: ITopUserDto, index: number) => index + 1,
       className: 'ps-4',
     },
-    {
-      header: 'Image',
-      render: (u: ITopUserDto) => (
-        <div className="flex justify-start min-w-[40px]">
-          {u.user.profileImage ? (
-            <img
-              src={getCloudinaryUrl(u.user.profileImage) || undefined}
-              alt={`${u.user.name}'s profile`}
-              loading="lazy"
-              className="w-8 h-8 rounded-full object-cover border border-gray-600"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gray-800" />
-          )}
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
-    {
-      header: 'Name',
-      render: (u: ITopUserDto) => u.user.name,
-    },
-    {
-      header: 'Email',
-      render: (u: ITopUserDto) => u.user.email,
-    },
-    {
-      header: 'Total Consultations',
-      render: (u: ITopUserDto) => u.totalConsultations,
-    },
+
+    imageColumn<ITopUserDto>(
+      'Image',
+      u => getCloudinaryUrlSafe(u.user.profileImage),
+      'px-6 py-4'
+    ),
+
+    textColumn<ITopUserDto>('Name', u => u.user.name, 'px-6 py-4'),
+
+    textColumn<ITopUserDto>('Email', u => u.user.email, 'px-6 py-4'),
+
+    textColumn<ITopUserDto>(
+      'Total Consultations',
+      u => u.totalConsultations.toString(),
+      'px-6 py-4 text-center'
+    ),
+
     {
       header: 'Average Rating',
-      render: (u: ITopUserDto) => (
+      render: u => (
         <div className="flex items-center justify-center gap-1 font-semibold border-none">
           <span>{u.averageRating?.toFixed(1) ?? '—'}</span>
-          <span><Star fill="#FACC15" stroke="none" size={16}/></span>
+          <Star fill="#FACC15" stroke="none" size={16} />
         </div>
       ),
       className: 'text-center',
@@ -114,7 +103,7 @@ const TopUsersTable = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
         <ReusableTable
           data={users}
-          columns={columns}
+          columns={topUserColumns}
           emptyMessage="No users found."
           className="overflow-x-auto rounded-lg"
         />

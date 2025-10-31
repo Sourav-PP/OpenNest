@@ -19,7 +19,7 @@ export class MarkReadUseCase implements IMarkReadUseCase {
         this._userRepo = userRepo;
     }
 
-    async execute(consultationId: string, userId: string): Promise<void> {
+    async execute(roomId: string, userId: string): Promise<void> {
         const user = await this._userRepo.findById(userId);
 
         if (!user) {
@@ -42,6 +42,6 @@ export class MarkReadUseCase implements IMarkReadUseCase {
             throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
-        await this._messageRepo.markAllAsRead(consultationId, receiverId);
+        await this._messageRepo.markAllAsRead(roomId, receiverId);
     }
 }

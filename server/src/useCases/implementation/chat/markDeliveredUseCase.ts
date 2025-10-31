@@ -8,7 +8,7 @@ export class MarkDeliveredUseCase implements IMarkDeliveredUseCase {
         this._messageRepo = messageRepo;
     }
 
-    async execute(consultationId: string, messageIds: string[], userId: string): Promise<void> {
-        await this._messageRepo.markDelivered(consultationId, messageIds, userId);
+    async execute(roomId: string, messageIds: string[], userId: string): Promise<void> {
+        await this._messageRepo.markDelivered(roomId, messageIds, userId);
     }
 }

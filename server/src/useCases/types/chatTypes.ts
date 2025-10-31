@@ -5,7 +5,7 @@ import {
 
 export interface ISendMessageInput {
     clientId: string;
-    consultationId: string;
+    roomId: string;
     senderId: string;
     receiverId: string;
     content: string;
@@ -14,11 +14,11 @@ export interface ISendMessageInput {
 }
 
 export interface IGetUserChatConsultationsResponse {
-    consultations: IUserChatConsultationDto[];
+    rooms: IUserChatConsultationDto[];
     totalCount: number;
 }
 
 export interface IGetPsychologistChatConsultationsResponse {
-    consultations: IPsychologistChatConsultationDto[];
+    rooms: IPsychologistChatConsultationDto[];
     totalCount: number;
 }

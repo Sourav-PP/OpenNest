@@ -3,12 +3,12 @@ import type { IMessageDto } from '../dtos/message';
 import type { BackendResponse } from './api';
 
 export interface IGetChatByPsychologistResponseData {
-  consultations: IPsychologistChatConsultationDto[];
+  rooms: IPsychologistChatConsultationDto[];
   totalCount: number;
 }
 
 export interface IGetChatByPatientResponseData {
-  consultations: IUserChatConsultationDto[];
+  rooms: IUserChatConsultationDto[];
   totalCount: number;
 }
 
