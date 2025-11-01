@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 
 const ServiceList = () => {
-  const { services, loading } = useServices();
+  const { services, loading } = useServices('');
   const navigate = useNavigate();
 
   if (loading) {

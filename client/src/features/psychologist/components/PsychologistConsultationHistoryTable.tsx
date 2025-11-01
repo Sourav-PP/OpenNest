@@ -6,7 +6,6 @@ import CustomPagination from '@/components/user/CustomPagination';
 import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { Link } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { psychologistApi } from '@/services/api/psychologist';
 import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';

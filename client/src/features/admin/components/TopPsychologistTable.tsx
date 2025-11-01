@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { adminApi } from '@/services/api/admin';
 import ReusableTable from '@/components/admin/ReusableTable';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { generalMessages } from '@/messages/GeneralMessages';
 import Filters from '@/components/admin/Filters';
 import { TopPsychologistFilter, type TopPsychologistFilterType } from '@/constants/types/SortFilter';

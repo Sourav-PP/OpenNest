@@ -5,7 +5,6 @@ import ReusableTable from '@/components/user/ReusableTable';
 import { psychologistApi } from '@/services/api/psychologist';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { Star } from 'lucide-react';
 import type { ITopConsultationDto } from '@/types/dtos/consultation';
 import { formatDateOnly } from '@/lib/utils/dateTimeFormatter';

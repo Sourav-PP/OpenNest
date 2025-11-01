@@ -6,7 +6,6 @@ import { psychologistApi } from '@/services/api/psychologist';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import type { ITopUserDto } from '@/types/dtos/user';
-import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { Star } from 'lucide-react';
 import type { Column } from '@/types/dtos/table';
 import { getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
