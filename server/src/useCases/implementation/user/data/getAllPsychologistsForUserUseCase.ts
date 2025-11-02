@@ -25,7 +25,11 @@ export class GetAllPsychologistsForUserUseCase implements IGetAllPsychologistsFo
             limit,
         });
 
-        const mapped = entities.map(entity => toUserPsychologistListDto(entity.psychologist, entity.user));
+        const filtered = entities.filter(
+            (entity) => entity.psychologist.isVerified && entity.user.isActive,
+        );
+
+        const mapped = filtered.map(entity => toUserPsychologistListDto(entity.psychologist, entity.user));
 
         const totalCount = await this._psychologistRepo.countAllVerified();
 

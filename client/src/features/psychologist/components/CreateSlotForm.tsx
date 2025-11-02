@@ -73,6 +73,7 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({ onSlotCreated }) => {
         await psychologistApi.createSingleSlot({
           startDateTime: data.startDateTime!,
           endDateTime: data.endDateTime!,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         });
         reset();
       }

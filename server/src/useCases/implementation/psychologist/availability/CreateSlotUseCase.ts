@@ -31,13 +31,27 @@ export class CreateSlotUseCase implements ICreateSlotUseCase {
             throw new AppError(psychologistMessages.ERROR.INVALID_INPUT_SINGLE, HttpStatus.BAD_REQUEST);
         }
 
-        const hasConflict = await this._slotRepo.checkConflict(psychologist.id, input.startDateTime, input.endDateTime);
+        console.log('startDateTime: ', input.startDateTime);
+        console.log('endDateTime: ', input.endDateTime);
+
+        const startUTC = DateTime.fromJSDate(input.startDateTime, { zone: input.timeZone || 'UTC' }).toUTC();
+        const endUTC = DateTime.fromJSDate(input.endDateTime, { zone: input.timeZone || 'UTC' }).toUTC();
+
+        const hasConflict = await this._slotRepo.checkConflict(
+            psychologist.id,
+            startUTC.toJSDate(),
+            endUTC.toJSDate(),
+        );
+
         if (hasConflict) throw new AppError(psychologistMessages.ERROR.CONFLICT_SINGLE, HttpStatus.CONFLICT);
+
+        console.log('startDateTime (received from frontend):', input.startDateTime);
+        console.log('startDateTime (parsed UTC):', startUTC.toISO());
 
         const createSlotInput: Omit<Slot, 'id' | 'isBooked' | 'isAvailable'> = {
             psychologistId: psychologist.id,
-            startDateTime: input.startDateTime,
-            endDateTime: input.endDateTime,
+            startDateTime: startUTC.toJSDate(),
+            endDateTime: endUTC.toJSDate(),
         };
 
         await this._slotRepo.createSlot([createSlotInput]);

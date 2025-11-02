@@ -54,6 +54,7 @@ export interface ISingleSlotInput {
     userId: string;
     startDateTime: Date;
     endDateTime: Date;
+    timeZone: string,
 }
 export interface IDeleteSlotInput {
     slotId: string;

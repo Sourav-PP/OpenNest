@@ -1,6 +1,7 @@
 export interface ISingleSlotInput {
   startDateTime: string;
   endDateTime: string;
+  timeZone: string;
 }
 
 export interface IRecurringSlotInput {

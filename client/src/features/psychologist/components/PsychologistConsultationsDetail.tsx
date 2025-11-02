@@ -368,7 +368,8 @@ const PsychologistConsultationsDetail = () => {
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors duration-200 ${
                   consultation.status === ConsultationStatus.Completed ||
                   consultation.status === ConsultationStatus.Cancelled ||
-                  consultation.status === ConsultationStatus.Missed
+                  consultation.status === ConsultationStatus.Missed ||
+                  timeLeft > 0
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-indigo-700 hover:bg-indigo-800'
                 }`}
@@ -376,7 +377,8 @@ const PsychologistConsultationsDetail = () => {
                   if (
                     consultation.status === ConsultationStatus.Completed ||
                     consultation.status === ConsultationStatus.Cancelled ||
-                    consultation.status === ConsultationStatus.Missed
+                    consultation.status === ConsultationStatus.Missed ||
+                    timeLeft > 0
                   ) {
                     e.preventDefault();
                   }

@@ -35,6 +35,7 @@ export class SlotController {
                     userId,
                     startDateTime: new Date(req.body.startDateTime),
                     endDateTime: new Date(req.body.endDateTime),
+                    timeZone: req.body.timeZone,
                 });
             } else {
                 const { fromDate, toDate, weekDays, startTime, endTime, duration, timeZone } = req.body;

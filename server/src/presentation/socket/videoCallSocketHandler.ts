@@ -44,19 +44,19 @@ export class VideoCallSocketHandler implements IVideoCallSocketHandler {
                 return;
             }
 
-            const now = new Date(consultation.startDateTime);
-            const start = new Date(consultation.endDateTime);
-            const end = new Date(consultation.endDateTime);
+            // const now = new Date();
+            // const start = new Date(consultation.endDateTime);
+            // const end = new Date(consultation.endDateTime);
 
-            if (now.getTime() < start.getTime() - 5 * 60 * 1000) {
-                socket.emit('error', { message: videoCallMessages.ERROR.SESSION_NOT_STARTED });
-                return;
-            }
+            // if (now.getTime() < start.getTime() - 5 * 60 * 1000) {
+            //     socket.emit('error', { message: videoCallMessages.ERROR.SESSION_NOT_STARTED });
+            //     return;
+            // }
 
-            if (now.getTime() > end.getTime() + 10 * 60 * 1000) {
-                socket.emit('error', { message: videoCallMessages.ERROR.SESSION_ENDED });
-                return;
-            }
+            // if (now.getTime() > end.getTime() + 10 * 60 * 1000) {
+            //     socket.emit('error', { message: videoCallMessages.ERROR.SESSION_ENDED });
+            //     return;
+            // }
 
             let isAuthorized = consultation.patientId === userId;
 
