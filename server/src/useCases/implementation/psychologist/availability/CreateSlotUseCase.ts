@@ -31,11 +31,27 @@ export class CreateSlotUseCase implements ICreateSlotUseCase {
             throw new AppError(psychologistMessages.ERROR.INVALID_INPUT_SINGLE, HttpStatus.BAD_REQUEST);
         }
 
-        console.log('startDateTime: ', input.startDateTime);
-        console.log('endDateTime: ', input.endDateTime);
+        let startISO: string;
+        let endISO: string;
 
-        const startUTC = DateTime.fromJSDate(input.startDateTime, { zone: input.timeZone || 'UTC' }).toUTC();
-        const endUTC = DateTime.fromJSDate(input.endDateTime, { zone: input.timeZone || 'UTC' }).toUTC();
+        // Handle both Date and string cases
+        if (input.startDateTime instanceof Date) {
+            startISO = input.startDateTime.toISOString();
+        } else {
+            startISO = input.startDateTime as string;
+        }
+
+        if (input.endDateTime instanceof Date) {
+            endISO = input.endDateTime.toISOString();
+        } else {
+            endISO = input.endDateTime as string;
+        }
+
+        console.log('Normalized startISO:', startISO);
+        console.log('Normalized endISO:', endISO);
+
+        const startUTC = DateTime.fromISO(startISO, { zone: 'utc' });
+        const endUTC = DateTime.fromISO(endISO, { zone: 'utc' });
 
         const hasConflict = await this._slotRepo.checkConflict(
             psychologist.id,

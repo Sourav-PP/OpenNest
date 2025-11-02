@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { psychologistApi } from '@/services/api/psychologist';
 import { CalendarIcon } from 'lucide-react';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { DateTime } from 'luxon';
 
 const weekDays = [
   { label: 'Mon', value: 'MO' },
@@ -71,8 +72,8 @@ const CreateSlotForm: React.FC<CreateSlotFormProps> = ({ onSlotCreated }) => {
         data.endTime = '';
         data.duration = null;
         await psychologistApi.createSingleSlot({
-          startDateTime: data.startDateTime!,
-          endDateTime: data.endDateTime!,
+          startDateTime: DateTime.fromISO(data.startDateTime!, { zone: 'Asia/Kolkata' }).toUTC().toISO()!,
+          endDateTime: DateTime.fromISO(data.endDateTime!, { zone: 'Asia/Kolkata' }).toUTC().toISO()!,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         });
         reset();
