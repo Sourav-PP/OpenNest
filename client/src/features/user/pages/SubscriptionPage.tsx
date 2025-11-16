@@ -1,6 +1,6 @@
 import Header from '@/components/user/Header.tsx';
 import Sidebar from '@/components/user/Sidebar.tsx';
-import UserSubscription from '../components/userSubscription';
+import UserSubscription from '../components/UserSubscription';
 
 const SubscriptionPage = () => {
   return (
