@@ -11,7 +11,7 @@ import Header from '@/components/user/Header';
 import { UserRole } from '@/constants/types/User';
 import { getRoomId } from '@/lib/utils/getRoomId';
 
-export default function PsychologistChatPage() {
+export default function UserChatPage() {
   const { role, userId } = useSelector((state: RootState) => state.auth);
   const [selectedConsultation, setSelectedConsultation] = useState<
     IUserChatConsultationDto | IPsychologistChatConsultationDto | null
@@ -37,14 +37,15 @@ export default function PsychologistChatPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <Header />
+
+        {/* Chat layout */}
         <div className="flex flex-1 overflow-hidden">
           {/* Chat Sidebar (for conversations) */}
           {(role === UserRole.USER || role === UserRole.PSYCHOLOGIST) && (
             <div
               className={`fixed inset-y-0 left-0 sm:static sm:w-80 w-full transform transition-transform duration-300 ease-in-out ${
                 isChatSidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
-              } z-10 bg-white`}
-              style={{ maxHeight: 'calc(100vh - 64px)', overflowY: 'auto' }}
+              } z-[10001] bg-white h-[calc(100vh)] sm:h-auto overflow-y-auto`}
             >
               <ChatSidebar
                 userId={userId!}
@@ -60,13 +61,16 @@ export default function PsychologistChatPage() {
           {/* Chat Content */}
           <div className="flex-1 flex flex-col">
             {/* Mobile Chat Sidebar Toggle Button */}
-            <Button
-              className="sm:hidden fixed top-4 left-4 z-20 p-2 bg-green-600 hover:bg-green-700 text-white rounded-full"
-              size="icon"
-              onClick={toggleChatSidebar}
-            >
-              {isChatSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+            {role && (
+              <Button
+                className="sm:hidden fixed top-20 left-4 z-[10002] p-2 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-md"
+                size="icon"
+                onClick={toggleChatSidebar}
+                aria-label="Toggle chat sidebar"
+              >
+                {isChatSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            )}
 
             {/* Chat Window or Placeholder */}
             {selectedConsultation ? (

@@ -14,11 +14,14 @@ import { getCloudinaryUrl } from '@/lib/utils/cloudinary';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 import { UserGender } from '@/constants/types/User';
+import { useDispatch } from 'react-redux';
+import { updateUserProfile } from '@/redux/slices/authSlice';
 
 const EditProfileForm = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -72,8 +75,16 @@ const EditProfileForm = () => {
         formData.append('file', file);
       }
 
-      await psychologistApi.updatePsychologistProfile(formData);
+      const res = await psychologistApi.updatePsychologistProfile(formData);
       toast.success('Profile updated successfully');
+
+      dispatch(
+        updateUserProfile({
+          email: res.data?.email,
+          profileImage: res.data?.profileImage ?? null,
+        })
+      );
+      
       navigate(psychologistFrontendRoutes.editProfile);
     } catch (error) {
       handleApiError(error);

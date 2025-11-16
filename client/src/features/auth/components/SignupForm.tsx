@@ -12,7 +12,7 @@ import OtpModal from './OtpModal';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Lock, Mail, Phone, User } from 'lucide-react';
+import { Eye, EyeClosed, Lock, Mail, Phone, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { walletApi } from '@/services/api/wallet';
 import { UserRole, type UserRoleType } from '@/constants/types/User';
@@ -37,6 +37,8 @@ const SignupForm = () => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [signupToken, setSignupToken] = useState('');
   const [email, setEmail] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const form = useForm<SignupData>({
     resolver: zodResolver(signupSchema),
@@ -50,7 +52,7 @@ const SignupForm = () => {
     },
   });
 
-  const handleSuccess = async (accessToken: string) => {
+  const handleSuccess = async (accessToken: string, profileImage?: string) => {
     const decoded = jwtDecode<TokenPayload>(accessToken);
     dispatch(
       loginSuccess({
@@ -58,6 +60,7 @@ const SignupForm = () => {
         email: decoded.email,
         role: decoded.role,
         userId: decoded.userId,
+        profileImage: profileImage ?? null,
         isSubmittedVerification: false,
       })
     );
@@ -187,7 +190,21 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" leftIcon={Lock} placeholder="Password" {...field} />
+                <Input
+                  type={showPass ? 'type' : 'password'}
+                  leftIcon={Lock}
+                  rightIcon={
+                    <button type="button" onClick={() => setShowPass(prev => !prev)} className="p-1">
+                      {showPass ? (
+                        <Eye className="text-slate-400 w-5 h-5" />
+                      ) : (
+                        <EyeClosed className="text-slate-400 w-5 h-5" />
+                      )}
+                    </button>
+                  }
+                  placeholder="Password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -202,7 +219,21 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input type="password" leftIcon={Lock} placeholder="Confirm Password" {...field} />
+                <Input
+                  type={showConfirmPass ? 'type' : 'password'}
+                  leftIcon={Lock}
+                  rightIcon={
+                    <button type="button" onClick={() => setShowConfirmPass(prev => !prev)} className="p-1">
+                      {showConfirmPass ? (
+                        <Eye className="text-slate-400 w-5 h-5" />
+                      ) : (
+                        <EyeClosed className="text-slate-400 w-5 h-5" />
+                      )}
+                    </button>
+                  }
+                  placeholder="Confirm Password"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

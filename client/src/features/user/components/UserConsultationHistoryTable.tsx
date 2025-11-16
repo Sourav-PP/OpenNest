@@ -11,7 +11,7 @@ import { SortFilter, type SortFilterType } from '@/constants/types/SortFilter';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 import type { Column } from '@/types/dtos/table';
-import { getCloudinaryUrlSafe, textColumn } from '@/components/user/TableColumns';
+import { getCloudinaryUrlSafe, imageColumn, textColumn } from '@/components/user/TableColumns';
 
 const UserConsultationHistoryTable = () => {
   const [consultations, setConsultations] = useState<IConsultationDto[]>([]);
@@ -71,22 +71,13 @@ const UserConsultationHistoryTable = () => {
       className: 'ps-4',
     },
 
-    {
-      header: 'Psychologist',
-      render: c => (
-        <div className="flex items-center gap-2">
-          {c.psychologist.profileImage && (
-            <img
-              src={getCloudinaryUrlSafe(c.psychologist.profileImage)}
-              alt={c.psychologist.name}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          )}
-          <span>{c.psychologist.name}</span>
-        </div>
-      ),
-      className: 'px-6 py-4',
-    },
+    imageColumn<IConsultationDto>(
+      'Image',
+      c => getCloudinaryUrlSafe(c.psychologist.profileImage),
+      'px-6 py-4'
+    ),
+    
+    textColumn<IConsultationDto>('Name', c => c.psychologist.name, 'px-6 py-4'),
 
     textColumn<IConsultationDto>('Session Goal', c => c.sessionGoal, 'px-6 py-4'),
 
@@ -145,12 +136,12 @@ const UserConsultationHistoryTable = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by psychologist or goal..."
-            className="px-3 py-2 border rounded-lg w-full sm:w-1/2"
+            className="px-3 py-2 border rounded-full w-full sm:w-1/2"
           />
           <select
             value={sort}
             onChange={e => setSort(e.target.value as 'asc' | 'desc')}
-            className="px-3 py-2 border rounded-lg"
+            className="px-3 py-2 w-full sm:w-auto border rounded-full"
           >
             <option value={SortFilter.Desc}>Newest First</option>
             <option value={SortFilter.Asc}>Oldest First</option>
@@ -162,6 +153,7 @@ const UserConsultationHistoryTable = () => {
           columns={userConsultationColumns}
           onRowClick={(c: IConsultationDto) => navigate(userFrontendRoutes.consultationHistoryDetail(c.id))}
           emptyMessage="No consultation history found."
+          emptyDescription='Try adjusting filters or book a consultation with psychologist!'
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />
 

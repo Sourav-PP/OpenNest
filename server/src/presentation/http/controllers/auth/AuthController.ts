@@ -9,10 +9,12 @@ import { authMessages } from '@/shared/constants/messages/authMessages';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { userMessages } from '@/shared/constants/messages/userMessages';
 import { appConfig } from '@/infrastructure/config/config';
+import { ISendForgotPasswordOtpUseCase } from '@/useCases/interfaces/auth/ISendForgotPasswordOtpUseCase';
 
 export class AuthController {
     private _signupUseCase: ISignupUseCase;
     private _sendOtpUseCase: ISendOtpUseCase;
+    private _sendForgotPasswordOtpUseCase: ISendForgotPasswordOtpUseCase;
     private _verifyOtpUseCase: IVerifyOtpUseCase;
     private _loginUseCase: ILoginUseCase;
     private _logoutUseCase: ILogoutUseCase;
@@ -20,12 +22,14 @@ export class AuthController {
     constructor(
         signupUseCase: ISignupUseCase,
         sendOtpUseCase: ISendOtpUseCase,
+        sendForgotPasswordOtpUseCase: ISendForgotPasswordOtpUseCase,
         verifyOtpUseCase: IVerifyOtpUseCase,
         loginUseCase: ILoginUseCase,
         logoutUseCase: ILogoutUseCase,
     ) {
         this._signupUseCase = signupUseCase;
         this._sendOtpUseCase = sendOtpUseCase;
+        this._sendForgotPasswordOtpUseCase = sendForgotPasswordOtpUseCase;
         this._verifyOtpUseCase = verifyOtpUseCase;
         this._loginUseCase = loginUseCase;
         this._logoutUseCase = logoutUseCase;
@@ -35,6 +39,20 @@ export class AuthController {
         try {
             if (!req.body?.email) throw new AppError(authMessages.ERROR.EMAIL_REQUIRED, HttpStatus.BAD_REQUEST);
             await this._sendOtpUseCase.execute(req.body.email);
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: authMessages.SUCCESS.OTP_SENT,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    forgotPasswordSendOtp = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            if (!req.body?.email) throw new AppError(authMessages.ERROR.EMAIL_REQUIRED, HttpStatus.BAD_REQUEST);
+            await this._sendForgotPasswordOtpUseCase.execute(req.body.email);
 
             res.status(HttpStatus.OK).json({
                 success: true,

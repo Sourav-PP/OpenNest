@@ -43,11 +43,12 @@ export class PsychologistProfileController {
                 file: req.file,
             };
 
-            await this._updatePsychologistUseCase.execute(payload);
+            const updatedUser = await this._updatePsychologistUseCase.execute(payload);
 
             res.status(HttpStatus.OK).json({
                 success: true,
                 message: userMessages.SUCCESS.PROFILE_UPDATE,
+                data: updatedUser,
             });
         } catch (error) {
             next(error);

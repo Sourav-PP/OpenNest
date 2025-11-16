@@ -19,6 +19,10 @@ import { IRevenueStatDto, ITopConsultationDto } from '@/useCases/dtos/consultati
 import { ITopUserDto } from '@/useCases/dtos/user';
 import { MessageModel } from '@/infrastructure/database/models/user/Message';
 import { getRoomId } from '@/utils/getRoomId';
+import { PsychologistModel } from '@/infrastructure/database/models/psychologist/PsychologistModel';
+import { psychologistMessages } from '@/shared/constants/messages/psychologistMessages';
+import { HttpStatus } from '@/shared/enums/httpStatus';
+import { AppError } from '@/domain/errors/AppError';
 
 export class ConsultationRepository
     extends GenericRepository<Consultation, IConsultationDocument>
@@ -561,6 +565,10 @@ export class ConsultationRepository
         unreadCount: number;
     }[]
     > {
+        const psych = await PsychologistModel.findById(psychologistId).lean();
+        if (!psych) throw new AppError(psychologistMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
+
+        const psychologistUserId = psych.userId.toString();
         const pipeline: PipelineStage[] = [
             { $match: { psychologistId: new mongoose.Types.ObjectId(psychologistId) } },
             {
@@ -592,7 +600,7 @@ export class ConsultationRepository
 
         const chatRooms = await Promise.all(
             results.map(async(item) => {
-                const roomId = getRoomId(item._id.toString(), psychologistId);
+                const roomId = getRoomId(item._id.toString(), psychologistUserId);
 
                 const lastMessageDoc = await MessageModel.findOne({ roomId })
                     .sort({ createdAt: -1 })
@@ -600,7 +608,7 @@ export class ConsultationRepository
 
                 const unreadCount = await MessageModel.countDocuments({
                     roomId,
-                    receiverId: new mongoose.Types.ObjectId(psychologistId),
+                    receiverId: new mongoose.Types.ObjectId(psychologistUserId),
                     status: { $in: ['sent', 'delivered'] },
                 });
 

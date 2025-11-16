@@ -11,6 +11,7 @@ import {
     tokenService,
     notificationRepository,
     updateMissedConsultationsUseCase,
+    clearPendingPaymentUseCase,
     setNotificationSocketHandler,
     initNotificationService,
     userRepository,
@@ -20,6 +21,7 @@ import { NotificationSocketHandler } from './presentation/socket/notificationSoc
 import { NotificationJob } from './infrastructure/cron/notificationJob';
 import { ConsultationMissedJob } from './infrastructure/cron/consultationMissedJob';
 import { connectRedis } from './infrastructure/redis/redisClient';
+import { ClearPendingPaymentJob } from './infrastructure/cron/clearPendingPaymentJob';
 
 async function startServer() {
     await connectDB();
@@ -41,8 +43,11 @@ async function startServer() {
     configureSocket(io, chatSocketHandler, videoCallSocketHandler, notificationSocketHandler, tokenService, userRepository);
     const notificationJob = new NotificationJob(notificationRepository, notificationSocketHandler);
     const consultationMissedJob = new ConsultationMissedJob(updateMissedConsultationsUseCase);
+    const clearPendingPaymentJob = new ClearPendingPaymentJob(clearPendingPaymentUseCase);
+
     notificationJob.start();
     consultationMissedJob.start();
+    clearPendingPaymentJob.start();
 
     httpServer.listen(appConfig.server.port, () => {
         logger.info(`Server running on port ${appConfig.server.port}`);

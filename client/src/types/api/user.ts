@@ -9,6 +9,7 @@ import type { BackendResponse } from './api';
 import type { SortFilterType } from '@/constants/types/SortFilter';
 import type { UserGenderFilterType, UserGenderType, UserRoleType } from '@/constants/types/User';
 import type { PaymentMethodType, PaymentPurposeType, PaymentStatusType } from '@/constants/types/Payment';
+import type { ITransactionDto } from '../dtos/user';
 
 export interface IGetAllPsychologistResponseData {
   psychologists: IPsychologistDto[];
@@ -47,6 +48,11 @@ export interface IGetUserProfileResponseData {
   dateOfBirth?: string;
   gender?: UserGenderType;
   isActive?: boolean;
+}
+
+export interface IGetUserTransactionsRequest {
+  page?: number;
+  limit?: number;
 }
 
 export interface IGetUserConsultationsRequest {
@@ -150,6 +156,11 @@ export interface IGetPsychologistByIdResponseData {
   psychologist: IPsychologistProfileDto;
 }
 
+export interface IGetUserTransactionsResponseData {
+  transactions: ITransactionDto[];
+  totalCount: number;
+}
+
 export type IGetAllPsychologistResponse = BackendResponse<IGetAllPsychologistResponseData>;
 export type IGetPsychologistByIdResponse = BackendResponse<IGetPsychologistByIdResponseData>;
 export type IGetUserConsultationsResponse = BackendResponse<IGetUserConsultationsResponseData>;
@@ -161,3 +172,4 @@ export type IGetActiveSubscriptionResponse = BackendResponse<ISubscriptionDto>;
 export type IGetAllPlansResponse = BackendResponse<IPlanDto[]>;
 export type ICreateCheckoutSessionResponse = BackendResponse<ICreateCheckoutSessionResponseData>;
 export type IGetSlotsByPsychologistResponse = BackendResponse<ISlotDto[]>;
+export type IGetUserTransactionsResponse = BackendResponse<IGetUserTransactionsResponseData>;

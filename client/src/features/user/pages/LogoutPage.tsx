@@ -15,6 +15,7 @@ const LogoutPage = () => {
     const performLogout = async () => {
       try {
         const res = await authApi.logout();
+        console.log('logout res: ', res);
         toast.success(res.message);
       } catch (err) {
         handleApiError(err);

@@ -24,7 +24,10 @@ export class RefreshTokenController {
 
             res.status(HttpStatus.OK).json({
                 success: true,
-                accessToken,
+                message: authMessages.SUCCESS.REFRESH_TOKEN_SUCCESS,
+                data: {
+                    accessToken,
+                },
             });
         } catch (error) {
             next(error);

@@ -7,6 +7,7 @@ interface AuthState {
   isAuthenticated: boolean;
   email: string | null;
   userId: string | null;
+  profileImage: string | null;
   isSubmittedVerification?: boolean;
 }
 
@@ -16,6 +17,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   email: null,
   userId: null,
+  profileImage: null,
   isSubmittedVerification: false,
 };
 
@@ -29,6 +31,13 @@ const authSlice = createSlice({
         isAuthenticated: true,
       };
     },
+    updateUserProfile: (
+      state,
+      action: PayloadAction<{ email?: string; profileImage?: string | null }>
+    ) => {
+      if (action.payload.email !== undefined) state.email = action.payload.email;
+      if (action.payload.profileImage !== undefined) state.profileImage = action.payload.profileImage;
+    },
     updateVerificationStatus: (state, action: PayloadAction<boolean>) => {
       state.isSubmittedVerification = action.payload;
     },
@@ -36,5 +45,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, logout, updateVerificationStatus } = authSlice.actions;
+export const { loginSuccess, logout, updateVerificationStatus, updateUserProfile } = authSlice.actions;
 export default authSlice.reducer;

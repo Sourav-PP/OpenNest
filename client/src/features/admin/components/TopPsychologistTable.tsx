@@ -65,7 +65,7 @@ const TopPsychologistTable = () => {
       header: 'Average Rating',
       render: (p: ITopPsychologistDto) => (
         <div className="flex items-center gap-1">
-          <span>{p.averageRating ?? 0}</span>
+          <span>{p.averageRating?.toFixed(1) ?? 0}</span>
           <span className="text-yellow-400">⭐</span>
         </div>
       ),

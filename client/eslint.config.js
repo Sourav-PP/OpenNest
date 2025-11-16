@@ -29,7 +29,8 @@ export default defineConfig([
       
       // --- Best practices ---
       'no-unused-vars': 'off', // use TS rule
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': 'off',  
+      'react-refresh/only-export-components': 'off',         //['warn', { argsIgnorePattern: '^_' }],
       eqeqeq: ['error', 'always'],
       'no-console': 'off',
       'prefer-const': 'error',

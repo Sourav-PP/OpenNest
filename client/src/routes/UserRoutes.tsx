@@ -17,6 +17,9 @@ import UserConsultationHistoryPage from '@/features/user/pages/UserConsultationH
 import UserConsultationHistoryDetailPage from '@/features/user/pages/UserConsultationHistoryDetailPage';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 import { UserRole } from '@/constants/types/User';
+import SubscriptionPage from '@/features/user/pages/SubscriptionPage';
+import PlansPage from '@/features/user/pages/PlansPage';
+import TransactionPage from '@/features/user/pages/TransactionPage';
 
 export const userRoutes: RouteObject[] = [
   {
@@ -116,6 +119,30 @@ export const userRoutes: RouteObject[] = [
     element: (
       <PrivateRoute allowedRoles={[UserRole.USER]}>
         <UserConsultationHistoryDetailPage />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: userFrontendRoutes.userSubscription,
+    element: (
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
+        <SubscriptionPage />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: userFrontendRoutes.plans,
+    element: (
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
+        <PlansPage />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: userFrontendRoutes.transactions,
+    element: (
+      <PrivateRoute allowedRoles={[UserRole.USER]}>
+        <TransactionPage />
       </PrivateRoute>
     ),
   },

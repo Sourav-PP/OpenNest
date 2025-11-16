@@ -55,6 +55,7 @@ import { AdminService } from '../services/adminService';
 //--------------- user ---------------
 import { SignupUseCase } from '../../useCases/implementation/signup/signupUseCase';
 import { SendOtpUseCase } from '../../useCases/implementation/signup/sendOtpUseCase';
+import { SendForgotPasswordOtpUseCase } from '@/useCases/implementation/auth/sendForgotPasswordOtpUseCase';
 import { VerifyOtpUseCase } from '../../useCases/implementation/signup/verifyOtpUseCase';
 import { LoginUseCase } from '../../useCases/implementation/auth/loginUseCase';
 import { RefreshTokenUseCase } from '../../useCases/implementation/auth/refreshTokenUseCase';
@@ -84,6 +85,7 @@ import { GetUserConsultationHistoryDetailsUseCase } from '@/useCases/implementat
 import { CreateNotificationUseCase } from '@/useCases/implementation/notification/createNotificationUseCase';
 import { CreateSubscriptionCheckoutSessionUseCase } from '@/useCases/implementation/subscription/createSubscriptionCheckoutSessionUseCase';
 import { BookConsultationWithSubscriptionUseCase } from '@/useCases/implementation/subscription/bookConsultationWithSubscriptionUseCase';
+import { GetUserTransactionUseCase } from '@/useCases/implementation/user/data/getUserTransactionUseCase';
 
 import { GetUserActiveSubscriptionUseCase } from '@/useCases/implementation/subscription/getUserActiveSubscriptionUseCase';
 import { CancelSubscriptionUseCase } from '@/useCases/implementation/subscription/cancelSubscriptionUseCase';
@@ -134,6 +136,7 @@ import { ApprovePayoutRequestUseCase } from '@/useCases/implementation/payout/ap
 import { RejectPayoutRequestUseCase } from '@/useCases/implementation/payout/rejectPayoutRequestUseCase';
 import { ListAllPayoutRequestsUseCase } from '@/useCases/implementation/payout/listAllPayoutRequestsUseCase';
 import { UpdateMissedConsultationUseCase } from '@/useCases/implementation/admin/management/updateMissedConsultationsUseCase';
+import { ClearPendingPaymentUseCase } from '@/useCases/implementation/admin/management/clearPendingPaymentUseCase';
 import { GetTopPsychologistUseCase } from '@/useCases/implementation/admin/management/getTopPsychologistUseCase';
 import { GetRevenueStatsUseCase } from '@/useCases/implementation/admin/management/getRevenueStatsUseCase';
 import { GetUserTrendUseCase } from '@/useCases/implementation/admin/management/getUserTrendUseCase';
@@ -308,6 +311,7 @@ const resetPasswordUseCase = new ResetPasswordUseCase(otpRepository, userReposit
 const changePasswordUseCase = new ChangePasswordUseCase(userRepository, authService);
 const logoutUseCase = new LogoutUseCase(redisTokenBlacklistService, tokenService);
 const sendOtpUseCase = new SendOtpUseCase(otpService);
+const sendForgotPasswordOtpUseCase = new SendForgotPasswordOtpUseCase(otpService, userRepository);
 const verifyOtpUseCase = new VerifyOtpUseCase(otpService, tokenService, userRepository, authService);
 const refreshTokenUseCase = new RefreshTokenUseCase(tokenService, userAuthRepository);
 const getAllServicesUseCase = new GetAllServiceUseCase(userServiceRepository);
@@ -370,6 +374,7 @@ const createSubscriptionCheckoutSessionUseCase = new CreateSubscriptionCheckoutS
     paymentService,
     paymentRepository,
     planRepository,
+    subscriptionRepository,
 );
 const bookConsultationWithSubscriptionUseCase = new BookConsultationWithSubscriptionUseCase(
     subscriptionRepository,
@@ -385,11 +390,13 @@ const getUserActiveSubscriptionUseCase = new GetUserActiveSubscriptionUseCase(su
 const cancelSubscriptionUseCase = new CancelSubscriptionUseCase(subscriptionRepository, paymentService);
 const listPlansUseCase = new ListPlansUseCase(planRepository);
 const updateConsultationRatingUseCase = new UpdateConsultationRatingUseCase(consultationRepository, psychologistRepository);
+const getUserTransactionUseCase = new GetUserTransactionUseCase(paymentRepository);
 
 // controllers
 export const authController = new AuthController(
     signupUseCase,
     sendOtpUseCase,
+    sendForgotPasswordOtpUseCase,
     verifyOtpUseCase,
     loginUseCase,
     logoutUseCase,
@@ -425,6 +432,7 @@ export const paymentController = new PaymentController(
     handleWebhookUseCase,
     createSubscriptionCheckoutSessionUseCase,
     bookConsultationWithSubscriptionUseCase,
+    getUserTransactionUseCase,
 );
 export const subscriptionController = new SubscriptionController(
     getUserActiveSubscriptionUseCase,
@@ -544,6 +552,7 @@ const approvePayoutRequestUseCase = new ApprovePayoutRequestUseCase(
 );
 const rejectPayoutRequestUseCase = new RejectPayoutRequestUseCase(payoutRequestRepository);
 export const updateMissedConsultationsUseCase = new UpdateMissedConsultationUseCase(consultationRepository);
+export const clearPendingPaymentUseCase = new ClearPendingPaymentUseCase(paymentRepository);
 const getTopPsychologistsUseCase = new GetTopPsychologistUseCase(psychologistRepository);
 const getRevenueStatsUseCase = new GetRevenueStatsUseCase(consultationRepository);
 const getUserTrendUseCase = new GetUserTrendUseCase(adminRepository);

@@ -4,7 +4,7 @@ import type { IRecurringSlotInput, ISingleSlotInput, IDeleteSlotResponse, IDelet
 import type { ISlotDto } from '@/types/dtos/slot';
 import type { IKycDto } from '@/types/dtos/kyc';
 import type { BackendResponse } from '@/types/api/api';
-import type { IGetUserConsultationHistoryRequest, IGetUserConsultationsRequest } from '@/types/api/user';
+import type { IGetUserConsultationHistoryRequest, IGetUserConsultationsRequest, IGetUserProfileResponse } from '@/types/api/user';
 import type {
   IGetPatientConsultationHistoryResponse,
   IGetPayoutHistoryResponse,
@@ -23,8 +23,8 @@ export const psychologistApi = {
   getProfile: async () => server.get<IPsychologistProfileDto>(psychologistRoutes.profile),
   submitVerification: async (data: FormData) =>
     server.post<BackendResponse, FormData>(psychologistRoutes.verifyProfile, data),
-  updatePsychologistProfile: async (data: FormData) =>
-    server.put<IPsychologistProfileDto, FormData>(psychologistRoutes.profile, data, {
+  updatePsychologistProfile: async (data: FormData): Promise<IGetUserProfileResponse> =>
+    server.put(psychologistRoutes.profile, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
   createSingleSlot: async (data: ISingleSlotInput) => server.post(psychologistRoutes.slot, data),

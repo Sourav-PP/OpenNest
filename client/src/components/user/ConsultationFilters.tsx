@@ -24,7 +24,7 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
   setCurrentPage,
 }) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
       <Input
         placeholder="Search by session goal or psychologist"
         value={search}
@@ -32,7 +32,7 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
           setSearch(e.target.value);
           setCurrentPage(1);
         }}
-        className="w-full sm:w-80 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+        className="w-full sm:w-80 bg-white dark:bg-gray-700 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
         aria-label="Search consultations"
       />
       <Select
@@ -43,7 +43,7 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
         }}
       >
         <SelectTrigger
-          className="w-full sm:w-40 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+          className="w-full sm:w-40 rounded-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
           aria-label="Sort consultations by date"
         >
           <SelectValue placeholder="Sort by date" />
@@ -61,7 +61,7 @@ const ConsultationFilters: React.FC<ConsultationFiltersProps> = ({
         }}
       >
         <SelectTrigger
-          className="w-full sm:w-40 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+          className="w-full sm:w-40 rounded-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
           aria-label="Filter consultations by status"
         >
           <SelectValue placeholder="Filter by status" />

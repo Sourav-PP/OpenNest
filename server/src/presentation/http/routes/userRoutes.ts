@@ -44,6 +44,7 @@ router.get('/subscription/active', authenticateUser, subscriptionController.getA
 router.post('/subscription/cancel', authenticateUser, subscriptionController.cancelSubscription);
 router.get('/plans', subscriptionController.listPlans);
 router.post('/consultation/:consultationId/rating', authenticateUser, userConsultationController.updateRating);
+router.get('/payments/transactions', authenticateUser, paymentController.getUserTransactions);  
 
 router.get('/notification', authenticateAll, notificationController.getNotifications);
 router.patch('/notification/mark-all-read', authenticateAll, notificationController.markAsRead);

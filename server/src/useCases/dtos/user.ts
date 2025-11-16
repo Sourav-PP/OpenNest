@@ -1,4 +1,5 @@
 import { UserGender, UserRole } from '@/domain/enums/UserEnums';
+import { ITransactionDto } from '../types/payment';
 
 export interface IUserDto {
     id: string;
@@ -69,4 +70,9 @@ export interface IPsychologistBookingTrend {
 export interface IUniqueClientTrend {
     date: string;
     uniqueUsers: number;
+}
+
+export interface ITransactionResponseDto {
+    transactions: ITransactionDto[];
+    totalCount: number;
 }

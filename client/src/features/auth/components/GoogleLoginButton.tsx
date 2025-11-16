@@ -76,6 +76,7 @@ const GoogleLoginButton = () => {
               email: res.data.user.email,
               role: res.data.user.role,
               userId: decoded.userId,
+              profileImage: res.data.user.profileImage ?? null,
               isSubmittedVerification: res.data.hasSubmittedVerificationForm,
             })
           );

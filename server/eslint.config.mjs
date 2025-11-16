@@ -40,12 +40,13 @@ export default defineConfig([
 
             // --- Best Practices ---
             'no-unused-vars': 'off', // turn off base rule for TS
-            '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+            '@typescript-eslint/no-unused-vars': 'off', //['warn', { argsIgnorePattern: '^_' }],
             'unused-imports/no-unused-imports': 'error',
-            'unused-imports/no-unused-vars': [
-                'warn',
-                { vars: 'all', varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
-            ],
+            'unused-imports/no-unused-vars': 'off', 
+            // [
+            //     'warn',
+            //     { vars: 'all', varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+            // ],
             
             'no-console': 'off',
             eqeqeq: ['error', 'always'],
@@ -75,7 +76,7 @@ export default defineConfig([
             // --- TypeScript-specific ---
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/explicit-function-return-type': 'off',
-            '@typescript-eslint/no-non-null-assertion': 'warn',
+            '@typescript-eslint/no-non-null-assertion': 'off',
         },
     },
 ]);

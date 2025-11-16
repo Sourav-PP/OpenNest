@@ -9,7 +9,7 @@ import { User } from '@/domain/entities/user';
 import mongoose, { PipelineStage, Types } from 'mongoose';
 import { GenericRepository } from '../GenericRepository';
 import { ConsultationModel } from '@/infrastructure/database/models/user/Consultation';
-import { UserGender, UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
+import { UserGenderFilter, UserRole } from '@/domain/enums/UserEnums';
 import { ConsultationPaymentStatus, ConsultationStatus } from '@/domain/enums/ConsultationEnums';
 import { RevenueFilter, SortFilter, TopPsychologistSortFilter } from '@/domain/enums/SortFilterEnum';
 import { IPsychologistBookingTrend, IUniqueClientTrend } from '@/useCases/dtos/user';
@@ -125,20 +125,22 @@ export class PsychologistRepository
         }));
     }
 
-    async countAllPsychologist(params?: { search?: string; gender?: UserGender }): Promise<number> {
+    async countAllPsychologist(params?: { search?: string; gender?: UserGenderFilter, expertise?: string }): Promise<number> {
         const matchStage: Record<string, unknown> = {
             'user.role': UserRole.PSYCHOLOGIST,
+            'user.isActive': true,
+            'isVerified': true,
         };
 
         if (params && params.search) {
             matchStage['user.name'] = { $regex: params.search, $options: 'i' };
         }
 
-        if (params && params.gender) {
+        if (params?.gender && params.gender !== 'all') {
             matchStage['user.gender'] = params.gender;
         }
 
-        const result = await PsychologistModel.aggregate([
+        const pipeline: PipelineStage[] = [
             {
                 $lookup: {
                     from: 'users',
@@ -148,10 +150,33 @@ export class PsychologistRepository
                 },
             },
             { $unwind: '$user' },
+            {
+                $lookup: {
+                    from: 'services',
+                    localField: 'specializations',
+                    foreignField: '_id',
+                    as: 'specializationData',
+                },
+            },
             { $match: matchStage },
-            { $count: 'total' },
-        ]);
+        ];
 
+        if (params?.expertise) {
+            pipeline.push({
+                $match: {
+                    'specializationData.name': {
+                        $regex: params.expertise,
+                        $options: 'i',
+                    },
+                },
+            });
+        }
+
+        pipeline.push({
+            $count: 'total',
+        });
+
+        const result = await PsychologistModel.aggregate(pipeline);
         return result[0]?.total || 0;
     }
 

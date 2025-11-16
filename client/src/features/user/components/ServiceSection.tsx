@@ -43,10 +43,10 @@ const ServiceSession = () => {
   }, []);
 
   return (
-    <div className="bg-gray-200 py-16 px-8 sm:px-6 lg:px-36 pt-32">
+    <div className="bg-gray-200 border-b-2 border-gray-300 py-8 sm:py-16 px-8 sm:px-6 lg:px-36 pt-32">
       <div className="max-w-7xl mx-auto">
         {/* Service Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-20 sm:gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-20 sm:gap-8 mb-8 sm:mb-12">
           {services.map(service => (
             <div
               key={service.id}
@@ -65,7 +65,7 @@ const ServiceSession = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center mt-20">{service.name}</h3>
 
               {/* Description */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-6 text-center flex-grow">{service.description}</p>
+              <p className="text-gray-600 text-sm sm:leading-relaxed mb-6 text-center flex-grow">{service.description}</p>
 
               {/* Button */}
               <div className="text-center">

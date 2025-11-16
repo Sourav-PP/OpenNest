@@ -2,7 +2,7 @@ import { IPsychologistBookingTrend, IUniqueClientTrend } from '@/useCases/dtos/u
 import { Psychologist } from '../entities/psychologist';
 import { User } from '../entities/user';
 import { RevenueFilter, SortFilter, TopPsychologistSortFilter } from '../enums/SortFilterEnum';
-import { UserGender, UserGenderFilter } from '../enums/UserEnums';
+import { UserGenderFilter } from '../enums/UserEnums';
 
 export interface IPsychologistRepository {
     create(psychologist: Omit<Psychologist, 'id'>): Promise<Psychologist>
@@ -21,7 +21,8 @@ export interface IPsychologistRepository {
     }): Promise<{psychologist: Psychologist, user: User}[]>
     countAllPsychologist(params: {
         search?: string;
-        gender?: UserGender;
+        gender?: UserGenderFilter;
+        expertise?: string;
     }): Promise<number>
     countAllVerified():Promise<number>
     findTopPsychologists(

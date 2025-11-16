@@ -18,6 +18,7 @@ export const authMessages = {
         FORBIDDEN: 'You do not have permission to perform this action',
         EMAIL_NOT_VERIFIED: 'Email not verified',
         EMAIL_ALREADY_EXISTS: 'Email is already registered',
+        EMAIL_NOT_FOUND: 'Email not found',
         INVALID_OTP: 'Invalid OTP provided',
         PENDING_SIGNUP_NOT_FOUND: 'Pending signup not found',
         USER_CREATION_FAILED: 'Failed to create user',

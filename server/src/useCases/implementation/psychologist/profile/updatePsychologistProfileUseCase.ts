@@ -9,6 +9,8 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 import { userMessages } from '@/shared/constants/messages/userMessages';
 import { IFileStorage } from '@/useCases/interfaces/IFileStorage';
 import { UserGender } from '@/domain/enums/UserEnums';
+import { toUserUpdatedDto } from '@/useCases/mappers/userMapper';
+import { IUpdateUserProfileOutput } from '@/useCases/types/userTypes';
 
 export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProfileUseCase {
     private _psychologistRepo: IPsychologistRepository;
@@ -21,7 +23,7 @@ export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProf
         this._fileStorage = fileStorage;
     }
 
-    async execute(input: IUpdatePsychologistProfileInput): Promise<void> {
+    async execute(input: IUpdatePsychologistProfileInput): Promise<IUpdateUserProfileOutput> {
         const user = await this._userRepo.findById(input.userId);
         if (!user) throw new AppError(userMessages.ERROR.NOT_FOUND, HttpStatus.NOT_FOUND);
 
@@ -49,7 +51,11 @@ export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProf
         if (input.aboutMe?.trim()) psychologistUpdates.aboutMe = input.aboutMe.trim();
         if (input.defaultFee !== undefined) psychologistUpdates.defaultFee = Number(input.defaultFee);
 
-        await this._userRepo.updateProfile(input.userId, userUpdates);
+        const updateUser = await this._userRepo.updateProfile(input.userId, userUpdates);
+        if (!updateUser) throw new AppError(userMessages.ERROR.UPDATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
+
         await this._psychologistRepo.updateByUserId(input.userId, psychologistUpdates);
+
+        return toUserUpdatedDto(updateUser);
     }
 }

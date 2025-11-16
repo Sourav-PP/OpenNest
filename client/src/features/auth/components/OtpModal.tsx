@@ -9,7 +9,7 @@ interface OtpModalProps {
   onClose: () => void;
   email: string;
   signupToken: string;
-  onSuccess: (accessToken: string) => Promise<void>;
+  onSuccess: (accessToken: string, profileImage?: string) => Promise<void>;
 }
 
 const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalProps) => {
@@ -60,7 +60,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
     try {
       const res = await authApi.verifyOtp({ email, otp, signupToken });
       toast.success('Email verified and signup complete!');
-      await onSuccess(res.accessToken);
+      await onSuccess(res.accessToken, res.user.profileImage);
       onClose();
     } catch (error) {
       handleApiError(error);
@@ -71,7 +71,7 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+      <Dialog as="div" className="relative z-50" onClose={() => {}} static>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"

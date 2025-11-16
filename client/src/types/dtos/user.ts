@@ -1,3 +1,4 @@
+import type { PaymentMethodType, PaymentPurposeType, PaymentStatusType } from '@/constants/types/Payment';
 import type { UserGenderType, UserRoleType } from '@/constants/types/User';
 
 export interface IUserDto {
@@ -23,4 +24,15 @@ export interface ITopUserDto {
     };
     totalConsultations: number;
     averageRating?: number;
+}
+
+export interface ITransactionDto {
+    id: string;
+    amount: number;
+    currency: string;
+    paymentStatus: PaymentStatusType;
+    paymentMethod: PaymentMethodType
+    purpose: PaymentPurposeType;
+    transactionId?: string;
+    createdAt: Date;   
 }

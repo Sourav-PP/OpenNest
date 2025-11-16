@@ -16,7 +16,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         this._accountRepository = accountRepository;
     }
 
-    async execute(refreshToken: string): Promise<{ accessToken: string }> {
+    async execute(refreshToken: string): Promise<string> {
         const payload = this._tokenService.verifyRefreshToken(refreshToken);
         if (!payload) {
             throw new AppError(authMessages.ERROR.INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
@@ -29,8 +29,6 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         const isActive = user.role === UserRole.USER ? (user.isActive ?? true) : true;
         const newAccessToken = this._tokenService.generateAccessToken(payload.userId, user.role, user.email, isActive);
 
-        return {
-            accessToken: newAccessToken,
-        };
+        return newAccessToken;
     }
 }

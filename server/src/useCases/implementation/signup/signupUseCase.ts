@@ -35,7 +35,7 @@ export class SignupUseCase implements ISignupUseCase {
         }
 
         await this._userRepository.createPendingSignup({
-            name: request.name,
+            name: request.name.trim().toLowerCase(),
             email: request.email,
             phone: request.phone,
             password: request.password,

@@ -6,12 +6,16 @@ import { HttpStatus } from '@/shared/enums/httpStatus';
 export const loginValidator = [
     body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
     body('password')
-        .isLength({ min: 6 })
+        .isLength({ min: 6, max: 30 })
         .withMessage('Password must be at least 6 characters long')
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
-        .withMessage(
-            'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-        ),
+        .matches(/[A-Z]/)
+        .withMessage('Password must contain at least one uppercase letter')
+        .matches(/[a-z]/)
+        .withMessage('Password must contain at least one lowercase letter')
+        .matches(/[0-9]/)
+        .withMessage('Password must contain at least one number')
+        .matches(/[^a-zA-Z0-9]/)
+        .withMessage('Password must contain at least one special character'),
 ];
 
 export const loginValidate = (req: Request, res: Response, next: NextFunction): void => {

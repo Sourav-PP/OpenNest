@@ -10,23 +10,27 @@ import { ICreateSubscriptionCheckoutSessionUseCase } from '@/useCases/interfaces
 import { IBookConsultationWithSubscriptionUseCase } from '@/useCases/interfaces/subscription/IBookConsultationWithSubscriptionUseCase';
 import { PaymentPurpose } from '@/domain/enums/PaymentEnums';
 import logger from '@/utils/logger';
+import { IGetUserTransactionUseCase } from '@/useCases/interfaces/user/data/IGetUserTransactionUseCase';
 
 export class PaymentController {
     private _createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase;
     private _handleWebhookUseCase: IHandleWebhookUseCase;
     private _createSubscriptionCheckoutSessionUseCase: ICreateSubscriptionCheckoutSessionUseCase;
     private _bookConsultationWithSubscriptionUseCase: IBookConsultationWithSubscriptionUseCase;
+    private _getUserTransactionUseCase: IGetUserTransactionUseCase;
 
     constructor(
         createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase,
         handleWebhookUseCase: IHandleWebhookUseCase,
         createSubscriptionCheckoutSessionUseCase: ICreateSubscriptionCheckoutSessionUseCase,
         bookConsultationWithSubscriptionUseCase: IBookConsultationWithSubscriptionUseCase,
+        getUserTransactionUseCase: IGetUserTransactionUseCase,
     ) {
         this._createCheckoutSessionUseCase = createCheckoutSessionUseCase;
         this._handleWebhookUseCase = handleWebhookUseCase;
         this._createSubscriptionCheckoutSessionUseCase = createSubscriptionCheckoutSessionUseCase;
         this._bookConsultationWithSubscriptionUseCase = bookConsultationWithSubscriptionUseCase;
+        this._getUserTransactionUseCase = getUserTransactionUseCase;
     }
 
     // normal consultation payment session
@@ -79,11 +83,7 @@ export class PaymentController {
                 throw new AppError(bookingMessages.ERROR.MISSING_FIELDS, HttpStatus.BAD_REQUEST);
             }
 
-            if (!psychologistId) {
-                throw new AppError(bookingMessages.ERROR.MISSING_FIELDS, HttpStatus.BAD_REQUEST);
-            }
-
-            const url = await this._createSubscriptionCheckoutSessionUseCase.execute(userId, planId, psychologistId);
+            const url = await this._createSubscriptionCheckoutSessionUseCase.execute(userId, planId, psychologistId ?? null);
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -148,5 +148,30 @@ export class PaymentController {
         } catch (error) {
             next(error);
         }
+    };
+
+    getUserTransactions = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
+
+            const userId = req.user?.userId;
+            if (!userId) {
+                throw new AppError(authMessages.ERROR.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+            }
+            const result = await this._getUserTransactionUseCase.execute({
+                userId,
+                page,
+                limit,
+            });
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                message: bookingMessages.SUCCESS.TRANSACTIONS_RETRIEVED,
+                data: result,
+            });
+        } catch (error) {
+            next(error);
+        }   
     };
 }

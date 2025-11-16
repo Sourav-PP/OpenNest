@@ -17,4 +17,6 @@ export interface Payment {
     stripeSessionId?: string;
     slotId: string | null;
     purpose: PaymentPurpose;
+    createdAt?: Date;
+    updatedAt?: Date;
 }

@@ -53,6 +53,7 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
+      console.log('data :', data);
       const res = await authApi.login(data);
 
       if (!res.data) {
@@ -67,6 +68,7 @@ const LoginForm = () => {
           email: res.data.user.email,
           role: res.data.user.role,
           userId: decoded.userId,
+          profileImage: res.data.user.profileImage ?? null,
           isSubmittedVerification: res.data.hasSubmittedVerificationForm,
         })
       );
@@ -86,7 +88,7 @@ const LoginForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-md mx-auto">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 sm:space-y-4 max-w-md mx-auto">
         {/* Email Field */}
         <FormField
           control={form.control}

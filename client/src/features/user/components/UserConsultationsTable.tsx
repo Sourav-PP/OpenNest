@@ -172,6 +172,7 @@ const UserConsultationsTable = () => {
             navigate(userFrontendRoutes.consultationDetail(consultation.id));
           }}
           emptyMessage="No consultations found."
+          emptyDescription='Try adjusting filters or book a consultation with psychologist!'
           className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
         />
         <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />

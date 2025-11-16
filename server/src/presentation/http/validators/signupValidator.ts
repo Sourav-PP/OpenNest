@@ -21,14 +21,16 @@ export const signupValidator = [
         .matches(/^\d{10}$/)
         .withMessage('Mobile number must be exactly 10 digits'),
     body('password')
-        .isLength({ min: 6 })
+        .isLength({ min: 6, max: 30 })
         .withMessage('Password must be at least 6 characters long')
-        .matches(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        )
-        .withMessage(
-            'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-        ),
+        .matches(/[A-Z]/)
+        .withMessage('Password must contain at least one uppercase letter')
+        .matches(/[a-z]/)
+        .withMessage('Password must contain at least one lowercase letter')
+        .matches(/[0-9]/)
+        .withMessage('Password must contain at least one number')
+        .matches(/[^a-zA-Z0-9]/)
+        .withMessage('Password must contain at least one special character'),
     body('confirmPassword')
         .custom((value, { req }) => value === req.body.password)
         .withMessage('Passwords do not match'),

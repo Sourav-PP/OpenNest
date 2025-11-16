@@ -15,6 +15,8 @@ import type {
   IGetNotificationsResponse,
   IGetActiveSubscriptionResponse,
   IGetAllPlansResponse,
+  IGetUserTransactionsRequest,
+  IGetUserTransactionsResponse,
 } from '../../types/api/user';
 
 import { server } from '../server';
@@ -39,6 +41,8 @@ export const userApi = {
     server.post<ICreateCheckoutSessionResponse, ICreateCheckoutSessionInput>(userRoutes.createCheckoutSession, input),
   getUserConsultations: async (params?: IGetUserConsultationsRequest) =>
     server.get<IGetUserConsultationsResponse>(userRoutes.consultations, { params }),
+  getUserTransactions: async (params?: IGetUserTransactionsRequest) =>
+    server.get<IGetUserTransactionsResponse>(userRoutes.transactions, { params }),
   UserConsultationsDetail: async (consultationId: string) =>
     server.get<IUserConsultationDetailsResponse>(userRoutes.consultationDetail(consultationId)),
   cancelConsultation: async (consultationId: string, reason: string) =>
@@ -52,11 +56,19 @@ export const userApi = {
     server.patch<void, Record<string, string>>(userRoutes.markAllNotificationsRead, {}),
   getActiveSubscription: async () => server.get<IGetActiveSubscriptionResponse>(userRoutes.activeSubscription),
   getPlans: async () => server.get<IGetAllPlansResponse>(userRoutes.plans),
-  createSubscriptionCheckoutSession: async (planId: string, psychologistId: string) =>
-    server.post<BackendResponse<{ url: string }>, { planId: string; psychologistId: string }>(
+  createSubscriptionCheckoutSession: async (planId: string, psychologistId?: string) => {
+    const payload: { planId: string; psychologistId?: string } = { planId };
+
+    // when subscribing from plans-page psychologistId won't be present
+    if (psychologistId) {
+      payload.psychologistId = psychologistId;
+    }
+
+    return server.post<BackendResponse<{ url: string }>, { planId: string, psychologistId?: string }>(
       userRoutes.createSubscriptionCheckoutSession,
-      { planId, psychologistId }
-    ),
+      payload
+    );
+  },
   bookConsultationWithSubscription: async (data: { subscriptionId: string; slotId: string; sessionGoal: string }) =>
     server.post<
       BackendResponse<{ consultation: IConsultationDto; subscription: ISubscriptionDto }>,

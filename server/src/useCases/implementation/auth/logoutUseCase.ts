@@ -23,16 +23,25 @@ export class LogoutUseCase implements ILogoutUseCase {
         }
 
         const token = authHeader.split(' ')[1];
+        let payload: any;
 
-        const payload = this._tokenService.verifyAccessToken(token);
-        if (!payload || !payload.userId || !payload.email || !payload.role) {
-            throw new AppError(authMessages.ERROR.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
+        try {
+            payload = this._tokenService.verifyAccessToken(token);
+        } catch (error: any) {
+            if (error.name === 'TokenExpiredError') {
+                // Token is expired; proceed to clear cookies
+                payload = null;
+            } else {
+                throw new AppError(authMessages.ERROR.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
+            }
         }
-        const exp = payload.exp;
-        const ttl = exp - Math.floor(Date.now() / 1000);
 
-        if (ttl > 0) {
-            await this._tokenBlacklistService.blacklistToken(token, ttl);
+        // If token was valid, blacklist it so it can't be reused
+        if (payload && payload.exp) {
+            const ttl = payload.exp - Math.floor(Date.now() / 1000);
+            if (ttl > 0) {
+                await this._tokenBlacklistService.blacklistToken(token, ttl);
+            }
         }
 
         res.clearCookie('refreshToken', {

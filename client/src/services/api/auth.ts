@@ -23,6 +23,8 @@ export const authApi = {
   preSignup: async (data: FormData) => server.post<IPreSignupResponse, FormData>(authRoutes.preSignup, data),
   signup: async (data: FormData) => server.post<ISignupResponse, FormData>(authRoutes.signup, data),
   sendOtp: async (data: ISendOtpRequest) => server.post<BackendResponse, ISendOtpRequest>(authRoutes.sendOtp, data),
+  sendForgotPasswordOtp: async (data: ISendOtpRequest) =>
+    server.post<BackendResponse, ISendOtpRequest>(authRoutes.sendForgotPasswordOtp, data),
   verifyOtp: async (data: IVerifyOtpRequest) =>
     server.post<IVerifyOtpResponse, IVerifyOtpRequest>(authRoutes.verifyOtp, data),
   verifyForgotOtp: async (data: IVerifyForgotOtpRequest) =>

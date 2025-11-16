@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { userApi } from '@/services/api/user';
 import type { ISlotDto } from '@/types/dtos/slot';
 import { useParams } from 'react-router-dom';
@@ -150,7 +150,7 @@ const BookingSession = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-white p-4 sm:p-8 md:p-12 lg:p-10">
+    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-white p-6 sm:p-8 md:p-12 lg:p-10">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-primaryText mb-6 text-center">
           Book a Session with {psychologist?.name}
@@ -158,57 +158,100 @@ const BookingSession = () => {
 
         {/* subscription session */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-900">Subscription Plans</h2>
+          <h2 className="text-2xl font-semibold mb-2 text-gray-900 border-b-2 sm:border-none pb-2">Subscription Plans</h2>
           {subscriptionLoading ? (
             <p className="text-gray-600 text-lg animate-pulse">Loading subscription details...</p>
           ) : activeSubscriptionPlan ? (
-            <Card className="p-6 sm:p-8 bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl shadow-xl mb-6 transition-transform hover:scale-[1.02] duration-200">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                {/* Header */}
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">Active Plan</p>
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-green-900">
+            <Card className="bg-white/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-green-200 rounded-2xl overflow-hidden w-full ml-0 mr-auto">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-200 pb-5 px-6">
+                <div className="flex items-center justify-start gap-3">
+                  <CardTitle className="text-xl sm:text-2xl font-bold text-gray-800 capitalize">
                     {activeSubscriptionPlan.plan.name}
-                  </h3>
+                  </CardTitle>
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                      activeSubscriptionPlan.status === 'active'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}
+                  >
+                    {activeSubscriptionPlan.status}
+                  </span>
+                </div>
+                {activeSubscriptionPlan.plan.description && (
+                  <p className="mt-2 text-sm text-gray-600 text-left">{activeSubscriptionPlan.plan.description}</p>
+                )}
+              </CardHeader>
+
+              <CardContent className="p-6 space-y-5 text-left">
+                {/* Price */}
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                  <span className="font-medium text-gray-700">Price</span>
+                  <span className="text-lg font-bold text-primaryText">
+                    {activeSubscriptionPlan.currency.toUpperCase()} {activeSubscriptionPlan.amount}
+                    <span className="text-sm font-normal text-gray-500">/{activeSubscriptionPlan.plan.billingPeriod}</span>
+                  </span>
                 </div>
 
-                {/* Badge for plan type */}
-                <span className="inline-block bg-green-200 text-green-800 text-sm font-medium px-3 py-1 rounded-full uppercase tracking-wide">
-                  {activeSubscriptionPlan.plan.billingPeriod} plan
-                </span>
-              </div>
+                {/* Credits + Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                    <span className="font-medium text-gray-700">Credits Used</span>
+                    <span className="text-sm font-semibold text-gray-800">
+                      {activeSubscriptionPlan.creditRemaining} / {activeSubscriptionPlan.creditsPerPeriod}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-700"
+                      style={{
+                        width: `${Math.min(
+                          (activeSubscriptionPlan.creditRemaining / activeSubscriptionPlan.creditsPerPeriod) * 100,
+                          100
+                        )}%`,
+                      }}
+                    />
+                  </div>
+                </div>
 
-              {/* Plan details */}
-              <div className="mt-6 space-y-3">
-                <p className="text-gray-700 text-base sm:text-lg">
-                  Credits Remaining: <span className="font-semibold">{activeSubscriptionPlan.creditRemaining}</span> /{' '}
-                  {activeSubscriptionPlan.plan.creditsPerPeriod}
-                </p>
-                <p className="text-gray-600 text-sm sm:text-base">
-                  Valid Until:{' '}
-                  <span className="font-medium">{formatDateTime(activeSubscriptionPlan.currentPeriodEnd)}</span>
-                </p>
-                <p className="text-gray-600 text-sm sm:text-base">
-                  Price:{' '}
-                  <span className="font-medium">
-                    ${activeSubscriptionPlan.plan.price} / {activeSubscriptionPlan.plan.billingPeriod}
-                  </span>
-                </p>
-                {activeSubscriptionPlan.plan.description && (
-                  <p className="text-gray-700 text-sm sm:text-base mt-2">{activeSubscriptionPlan.plan.description}</p>
+                {/* Billing Period */}
+                {activeSubscriptionPlan.currentPeriodStart && (
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-3 border-t border-gray-100 gap-2">
+                    <span className="font-medium text-gray-700">Billing Period</span>
+                    <span className="text-sm text-gray-600">
+                      {new Date(activeSubscriptionPlan.currentPeriodStart).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}{' '}
+                      to{' '}
+                      {new Date(activeSubscriptionPlan.currentPeriodEnd).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </div>
                 )}
-              </div>
 
-              {/* Call to action */}
-              {/* <div className="mt-6">
-                <button className="w-full sm:w-auto px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium shadow-md">
-                  Manage Subscription
-                </button>
-              </div> */}
+                {/* Cancellation Notice */}
+                {activeSubscriptionPlan.canceledAt && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4 text-left">
+                    <p className="text-sm font-medium text-red-700 flex items-start gap-2">
+                      <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      Subscription Canceled
+                    </p>
+                    <p className="text-xs text-red-600 mt-1">
+                      Ends on {new Date(activeSubscriptionPlan.canceledAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
             </Card>
           ) : (
-            <div>
-              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+            <div className='border-b-2 pb-6'>
+              <p className="text-gray-600 mb-8 sm:text-lg sm:leading-relaxed">
                 No active subscription found. Choose a plan below for discounted sessions or continue with standard
                 consultations.
               </p>
@@ -216,20 +259,36 @@ const BookingSession = () => {
                 {plans.map(plan => (
                   <Card
                     key={plan.id}
-                    className="p-8 bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    className="relative bg-white border border-gray-100 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300"
                   >
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">{plan.name}</h3>
-                    <p className="text-gray-600 text-sm mb-4 leading-relaxed">{plan.description}</p>
-                    <p className="text-3xl font-bold text-blue-700 mb-6">
-                      ${plan.price.toFixed(2)}{' '}
-                      <span className="text-base font-normal text-gray-500">/ {plan.billingPeriod}</span>
-                    </p>
-                    <Button
-                      onClick={() => handleBuyPlan(plan.id)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors duration-200"
-                    >
-                      Subscribe Now
-                    </Button>
+                    <CardHeader>
+                      <CardTitle className="text-lg sm:text-xl font-semibold text-gray-800 capitalize">
+                        {plan.name}
+                      </CardTitle>
+                      {plan.description && <p className="text-sm text-gray-500">{plan.description}</p>}
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <div className="flex justify-between text-gray-700 text-sm">
+                        <span className="font-medium">Price:</span>
+                        <span>
+                          {plan.currency.toUpperCase()} {plan.price}/{plan.billingPeriod}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between text-gray-700 text-sm">
+                        <span className="font-medium">Credits:</span>
+                        <span>{plan.creditsPerPeriod}</span>
+                      </div>
+                      <div className='group'>
+                        <button
+                          className="btn-primary w-full px-6 py-2.5 text-sm font-medium rounded-full group-hover:animate-glow-ring transition-all"
+                          onClick={() => handleBuyPlan(plan.id)}
+                        >
+                          Subscribe
+                        </button>
+                      </div>
+                    </CardContent>
                   </Card>
                 ))}
               </div>
@@ -258,8 +317,21 @@ const BookingSession = () => {
 
           <div className="lg:col-span-2">
             {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+              <div className="flex justify-center items-center mt-48 bg-white">
+                <div className="relative h-10 w-10 animate-spin" style={{ animationDuration: '1.2s' }}>
+                  {[...Array(8)].map((_, index) => (
+                    <div
+                      key={index}
+                      className="absolute h-2 w-2 bg-gray-300 rounded-full"
+                      style={{
+                        top: '50%',
+                        left: '50%',
+                        transform: `translate(-50%, -50%) rotate(${index * 45}deg) translateY(-18px)`,
+                      }}
+                    ></div>
+                  ))}
+                  <span className="sr-only">Loading...</span>
+                </div>
               </div>
             ) : allSlots.length === 0 ? (
               <Card className="p-6 text-center bg-white shadow-md border border-gray-200 rounded-lg">

@@ -4,6 +4,7 @@ export const bookingMessages = {
         CHECKOUT_SESSION_CREATED: 'Checkout session created successfully',
         PAYMENT_SUCCESS: 'Payment completed successfully',
         BOOKING_CONFIRMED: 'Booking confirmed successfully',
+        TRANSACTIONS_RETRIEVED: 'User transactions retrieved successfully',
     },
     ERROR: {
         BOOKING_ONLY_AFTER_ONE_MONTH: 'You can only book another session after one month from your last session.',

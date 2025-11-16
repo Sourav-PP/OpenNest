@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Stethoscope, MessageSquare, Wallet, Lock, History } from 'lucide-react';
+import { Home, Stethoscope, MessageSquare, Wallet, Lock, History, ArrowLeftSquare, Ticket, Crown, Receipt } from 'lucide-react';
 import { assets } from '../../assets/assets';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
@@ -13,8 +13,12 @@ const Sidebar = () => {
     { name: 'Change Password', path: userFrontendRoutes.changePassword, icon: <Lock className="w-5 h-5" /> },
     { name: 'My Sessions', path: userFrontendRoutes.consultations, icon: <Stethoscope className="w-5 h-5" /> },
     { name: 'Session History', path: userFrontendRoutes.consultationHistory, icon: <History className="w-5 h-5" /> },
+    { name: 'Plans', path: userFrontendRoutes.plans, icon: <Crown className='w-5 h-5' /> },
+    { name: 'Subscription', path: userFrontendRoutes.userSubscription, icon: <Ticket className='w-5 h-5' /> },
     { name: 'My Chats', path: userFrontendRoutes.chat, icon: <MessageSquare className="w-5 h-5" /> },
+    { name: 'Transactions', path: userFrontendRoutes.transactions, icon: <Receipt className="w-5 h-5" /> },
     { name: 'Wallet', path: userFrontendRoutes.wallet, icon: <Wallet className="w-5 h-5" /> },
+    { name: 'Go to Home', path: publicFrontendRoutes.landing, icon: <ArrowLeftSquare className='w-5 h-5' /> }
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -25,10 +29,10 @@ const Sidebar = () => {
       {!isOpen && (
         <button
           onClick={toggleSidebar}
-          className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gradient-to-r from-slate-600 to-slate-400 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+          className="lg:hidden fixed top-4 left-4 z-[10004] p-2 bg-gradient-to-r from-slate-600 to-slate-400 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
         >
           <svg
-            className="w-6 h-6"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -43,7 +47,7 @@ const Sidebar = () => {
       <aside
         className={`fixed lg:static top-0 left-0 h-screen bg-gradient-to-b from-slate-50 to-white text-gray-800 transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-64 p-6 flex flex-col gap-6 shadow-md border-r-2 border-slate-200 z-50`}
+        } lg:translate-x-0 w-64 p-6 flex flex-col gap-6 shadow-md border-r-2 border-slate-200 z-[10004]`}
       >
         {/* Logo */}
         <NavLink to={publicFrontendRoutes.landing} className="mb-8">

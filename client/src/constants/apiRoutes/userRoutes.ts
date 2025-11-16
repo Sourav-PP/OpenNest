@@ -4,6 +4,7 @@ export const userRoutes = {
   profile: '/user/profile',
   slotsByPsychologist: (userId: string) => `/user/psychologists/${userId}/slots`,
   createCheckoutSession: '/user/payment/create-checkout-session',
+  transactions: '/user/payments/transactions',
   consultations: '/user/consultations',
   consultationDetail: (consultationId: string) => `/user/consultation/${consultationId}`,
   consultationCancel: (consultationId: string) => `/user/consultation/${consultationId}/cancel`,

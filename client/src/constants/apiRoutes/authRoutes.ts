@@ -5,6 +5,7 @@ export const authRoutes = {
   preSignup: '/auth/signup',
   signup: '/auth/signup',
   sendOtp: '/auth/send-otp',
+  sendForgotPasswordOtp: '/auth/forgot-password/send-otp',
   verifyOtp: '/auth/verify-otp',
   verifyForgotOtp: '/auth/forgot/verify-otp',
   resetPassword: '/auth/forgot/reset-password',

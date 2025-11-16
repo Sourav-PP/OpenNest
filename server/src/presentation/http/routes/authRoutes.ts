@@ -19,6 +19,7 @@ import { uploadFields, uploadSingle } from '../middlewares/multer';
 const router = express.Router();
 
 router.post('/send-otp', authController.sendOtp);
+router.post('/forgot-password/send-otp', authController.forgotPasswordSendOtp);
 router.post('/verify-otp', authController.verifyOtp);
 router.post('/signup', uploadSingle, signupValidator, validate, authController.signup);
 router.post('/login', loginValidator, loginValidate, authController.login);

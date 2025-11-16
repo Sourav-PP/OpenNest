@@ -60,12 +60,12 @@ const TherapistPageSection = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-200 to-white p-4 sm:p-8 md:p-12 lg:p-16 xl:pt-28">
+    <div className="min-h-screen bg-gradient-to-b from-slate-200 to-white p-6 pt-20 sm:p-8 md:p-12 lg:p-16 xl:pt-28">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-primaryText mb-4 text-center tracking-tight">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-primaryText mb-4 text-center leading-snug tracking-tight">
           Meet Our Licensed Psychologists
         </h1>
-        <p className="text-gray-500 mb-8 font-extralight sm:text-lg text-center max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-500 mb-8 font-extralight sm:text-lg text-center max-w-2xl mx-auto sm:leading-relaxed">
           Connect with our compassionate team of licensed psychologists, each offering unique expertise to support your
           mental health journey.
         </p>
@@ -78,18 +78,18 @@ const TherapistPageSection = () => {
               placeholder="Search by name"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full px-5 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-300 shadow-sm hover:shadow-md"
+              className="w-full px-5 py-2 sm:py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 transition-all duration-300 shadow-sm hover:shadow-md"
             />
             <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:flex-1 sm:gap-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-1 sm:gap-3">
             <select
               value={expertise}
               onChange={e => {
                 setExpertise(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full px-5 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 transition-all duration-300 shadow-sm hover:shadow-md appearance-none"
+              className="w-full px-5 py-2 sm:py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 transition-all duration-300 shadow-sm hover:shadow-md appearance-none"
             >
               <option value="all">All Expertise</option>
               <option value="anxiety">Anxiety</option>
@@ -102,7 +102,7 @@ const TherapistPageSection = () => {
                 setGender(e.target.value as UserGenderFilterType);
                 setCurrentPage(1);
               }}
-              className="w-full px-5 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 transition-all duration-300 shadow-sm hover:shadow-md appearance-none"
+              className="w-full px-5 py-2 sm:py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 transition-all duration-300 shadow-sm hover:shadow-md appearance-none"
             >
               <option value={UserGenderFilter.ALL}>All Genders</option>
               <option value={UserGenderFilter.MALE}>Male</option>
@@ -111,7 +111,7 @@ const TherapistPageSection = () => {
             <select
               value={sort}
               onChange={e => setSort(e.target.value as 'asc' | 'desc')}
-              className="w-full px-5 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 transition-all duration-300 shadow-sm hover:shadow-md appearance-none"
+              className="w-full px-5 py-2 sm:py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 transition-all duration-300 shadow-sm hover:shadow-md appearance-none"
             >
               <option value={SortFilter.Desc}>Sort by Price</option>
               <option value={SortFilter.Asc}>Low to High</option>
@@ -142,8 +142,9 @@ const TherapistPageSection = () => {
                   </span>
                 )}
               </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-2">{therapist.name}</h3>
+              <h3 className="text-lg font-bold text-gray-800 sm:mb-0">{therapist.name}</h3>
               <p className="text-green-600 text-sm mb-2 font-medium">{therapist.qualification}</p>
+              <p className="text-gray-600 text-sm mb-1 font-medium"><span className='text-gray-500 font-normal'>Consultation Fees:</span> {therapist.defaultFee}$</p>
               <p className="text-gray-500 text-xs mb-4 line-clamp-2">{therapist.specializations.join(', ')}</p>
               <div className="group">
                 <Link to={userFrontendRoutes.psychologistDetail(therapist.userId)}>

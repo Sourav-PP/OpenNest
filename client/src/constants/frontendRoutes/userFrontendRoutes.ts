@@ -20,4 +20,7 @@ export const userFrontendRoutes = {
   consultationHistory: '/user/consultation/history',
   consultationHistoryDetailPath: '/user/consultation/:consultationId/history',
   consultationHistoryDetail: (consultationId: string) => `/user/consultation/${consultationId}/history`,
+  userSubscription: '/user/subscription',
+  plans: '/user/plans',
+  transactions: '/user/transactions',
 } as const;

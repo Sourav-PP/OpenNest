@@ -66,6 +66,12 @@ export interface IGetConsultationsRequest {
   limit?: number; 
 }
 
+export interface IGetTransactionsRequest {
+  userId: string;
+  page: number;
+  limit: number;
+}
+
 export interface IGetConsultationsResponse {
   consultations: IConsultationDto[],
   totalCount: number

@@ -15,11 +15,14 @@ import AnimatedTitle from '@/components/animation/AnimatedTitle';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { UserGender } from '@/constants/types/User';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
+import { useDispatch } from 'react-redux';
+import { updateUserProfile } from '@/redux/slices/authSlice';
 
 const UserProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   const form = useForm<updateProfileData>({
     resolver: zodResolver(updateProfileSchema),
@@ -74,6 +77,14 @@ const UserProfile = () => {
 
       const res = await userApi.updateProfile(formData);
       toast.success(res.message);
+
+      dispatch(
+        updateUserProfile({
+          email: res.data?.email,
+          profileImage: res.data?.profileImage,
+        })
+      );
+      
       navigate(userFrontendRoutes.profile);
     } catch (err) {
       handleApiError(err, form.setError);
@@ -101,7 +112,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-br from-slate-200 to-white min-h-screen">
+    <div className="px-6 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-br from-slate-200 to-white min-h-screen">
       <AnimatedTitle>
         <h2 className="text-3xl sm:text-4xl font-bold text-primaryText mb-3 tracking-tight text-start">My Profile</h2>
       </AnimatedTitle>

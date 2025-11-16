@@ -7,6 +7,7 @@ export const loginSchema = z.object({
     .max(100, { message: 'Email must be at most 100 characters long' }),
   password: z
     .string()
+    .trim()
     .min(6, { message: 'Password must be at least 6 characters long' })
     .max(30, { message: 'Password must be at most 30 characters long' })
     .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })

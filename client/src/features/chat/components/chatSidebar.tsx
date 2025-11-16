@@ -42,6 +42,8 @@ export default function ChatSidebar({
           return;
         }
 
+        console.log('response: ', res.data);
+
         let rooms = res.data.rooms;
         if (role === UserRole.PSYCHOLOGIST) {
           rooms = uniqBy(rooms as IPsychologistChatConsultationDto[], c => c.patient.id);
@@ -92,6 +94,7 @@ export default function ChatSidebar({
                 content: message.content,
                 createdAt: message.createdAt,
               },
+              lastMessageTime: message.createdAt,
               unreadCount:
                 r.roomId === selectedChatId
                   ? 0

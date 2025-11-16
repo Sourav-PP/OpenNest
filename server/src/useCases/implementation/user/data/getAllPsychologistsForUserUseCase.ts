@@ -31,7 +31,11 @@ export class GetAllPsychologistsForUserUseCase implements IGetAllPsychologistsFo
 
         const mapped = filtered.map(entity => toUserPsychologistListDto(entity.psychologist, entity.user));
 
-        const totalCount = await this._psychologistRepo.countAllVerified();
+        const totalCount = await this._psychologistRepo.countAllPsychologist({
+            search,
+            gender,
+            expertise,
+        });
 
         return {
             psychologists: mapped,

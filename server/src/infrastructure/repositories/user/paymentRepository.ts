@@ -25,6 +25,8 @@ export class PaymentRepository extends GenericRepository<Payment, IPaymentDocume
             stripeSessionId: mapped.stripeSessionId,
             slotId: mapped.slotId as string | null,
             purpose: mapped.purpose,
+            createdAt: mapped.createdAt,
+            updatedAt: mapped.updatedAt,
         };
     }
 
@@ -40,11 +42,28 @@ export class PaymentRepository extends GenericRepository<Payment, IPaymentDocume
         return this.map(doc);
     }
 
+    async fndByUserId(input: { userId: string, page: number, limit: number }): Promise<Payment[]> {
+        const { userId, page = 1, limit = 10 } = input;
+        const skip = (page - 1) * limit;
+
+        const docs = await PaymentModel.find({ userId })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .exec();
+
+        return docs.map(doc => this.map(doc));
+    }
+
     async findBySessionId(sessionId: string): Promise<Payment | null> {
         const doc = await PaymentModel.findOne({ stripeSessionId: sessionId }).exec();
 
         if (!doc) return null;
         return this.map(doc);
+    }
+
+    async countAll(userId: string): Promise<number> {
+        return await PaymentModel.countDocuments({ userId });
     }
 
     async findByConsultationId(id: string): Promise<Payment | null> {
@@ -58,6 +77,15 @@ export class PaymentRepository extends GenericRepository<Payment, IPaymentDocume
     async findByConsultationIds(ids: string[]): Promise<Payment[]> {
         const payments = await PaymentModel.find({ consultationId: { $in: ids } }).exec();
         return payments.map(payment => this.map(payment));
+    }
+
+    async findPendingPayments(date: Date): Promise<Payment[]> {
+        const payments = await PaymentModel.find({
+            paymentStatus: PaymentStatus.PENDING,
+            createdAt: { $lt: date },
+        });
+
+        return payments.map(p => this.map(p));
     }
 
     async sumPaidAmounts(): Promise<number> {

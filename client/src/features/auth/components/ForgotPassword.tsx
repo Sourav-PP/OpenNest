@@ -25,8 +25,8 @@ const ForgotPassword = () => {
 
   const onSubmit = async (data: ForgotPasswordData) => {
     try {
-      const res = await authApi.sendOtp({ email: data.email });
-
+      const res = await authApi.sendForgotPasswordOtp({ email: data.email });
+      
       toast.success(res.message);
       navigate(publicFrontendRoutes.verifyOtp, { state: { email: data.email, role: role } });
     } catch (err) {

@@ -150,13 +150,13 @@ const Navbar = () => {
 
           {/* Mobile Toggle Button */}
           <div className="md:hidden text-2xl text-[#3EB1EB]">
-            <button onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <FiX /> : <FiMenu />}</button>
+            <button onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <FiX className='w-5 h-5' /> : <FiMenu className='w-5 h-5' />}</button>
           </div>
         </div>
 
         {/* Mobile Dropdown Menu */}
         <div
-          className={`absolute top-full right-0 bg-white shadow-lg rounded-lg mt-2 p-6 flex flex-col gap-6 md:hidden transition-all duration-300 ease-in-out transform origin-top ${
+          className={`absolute top-full right-0 bg-white shadow-lg rounded-2xl mt-2 p-4 flex flex-col gap-3 md:hidden transition-all duration-300 ease-in-out transform origin-top ${
             menuOpen
               ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
               : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
@@ -164,47 +164,53 @@ const Navbar = () => {
         >
           <button
             onClick={() => navigate(publicFrontendRoutes.landing)}
-            className="cursor-pointer font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
+            className="cursor-pointer text-sm font-semibold text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
           >
             Home
           </button>
-          <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
+          <button
+            onClick={() => navigate(userFrontendRoutes.services)}
+            className="cursor-pointer text-end text-sm text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
             Services
           </button>
           <button
             onClick={() => navigate(userFrontendRoutes.psychologist)}
-            className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
+            className="cursor-pointer text-end text-sm text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
           >
             Therapists
           </button>
-          <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
+          <button className="cursor-pointer text-end text-sm text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
             About
           </button>
-          <button className="cursor-pointer text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
+          <button className="cursor-pointer text-end text-sm text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200">
             Contact
           </button>
           {accessToken ? (
             <>
               <button
                 onClick={() => navigate(userFrontendRoutes.profile)}
-                className="text-end text-gray-800 hover:text-[#3EB1EB] transition-colors duration-200"
+                className="btn bg-cyan-400 rounded-full py-2 text-gray-800 text-sm transition-colors duration-200"
               >
                 Profile
               </button>
-              <button
-                onClick={handleLogout}
-                className="text-end text-red-600 hover:text-red-700 transition-colors duration-200"
-              >
-                Logout
-              </button>
+              <div className="md:block group text-center">
+                <button
+                  onClick={handleLogout}
+                  className="btn-logout flex rounded-full group-hover:animate-glow-ring px-10 py-2"
+                >
+                  Logout
+                </button>
+              </div>
             </>
           ) : (
-            <button
-              onClick={handleLogin}
-              className="btn-login w-[10rem] px-6 py-2 rounded-md text-white bg-[#3EB1EB] hover:bg-[#2A9CDB] transition-colors duration-200"
-            >
-              Login/Register
-            </button>
+            <div className="md:block group text-center">
+              <button
+                onClick={handleLogin}
+                className="text-white text-sm font-medium bg-gradient-to-r from-[#3EB1EB] to-[#2A9CDB] px-4 py-2 rounded-full hover:from-[#2A9CDB] hover:to-[#1B87C9] transition-all duration-300 group-hover:animate-glow-ring"
+              >
+                Login/Register
+              </button>
+            </div>
           )}
         </div>
       </nav>

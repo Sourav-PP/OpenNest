@@ -85,9 +85,17 @@ const Sidebar = () => {
       {!isOpen && (
         <button
           onClick={toggleSidebar}
-          className="lg:hidden fixed top-4 left-4 z-50 p-2 px-3 bg-gray-800 text-white rounded-md"
+          className="lg:hidden fixed top-4 left-4 z-[10004] p-2 bg-gradient-to-r from-slate-600 to-slate-400 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
         >
-          ☰
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
         </button>
       )}
 
@@ -95,7 +103,7 @@ const Sidebar = () => {
       <aside
         className={`fixed lg:static top-0 left-0 h-screen bg-white text-gray-700 transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-64 p-6 flex flex-col gap-4 z-50 shadow-lg`}
+        } lg:translate-x-0 w-64 p-6 flex flex-col gap-4 z-[10004] shadow-lg`}
       >
         {/* Logo */}
         <NavLink to={psychologistFrontendRoutes.profile}>

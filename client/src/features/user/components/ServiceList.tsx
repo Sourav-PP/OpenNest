@@ -20,12 +20,12 @@ const ServiceList = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-200 to-white p-4 sm:p-8 md:p-12 lg:p-16 xl:pt-28">
+    <div className="min-h-screen bg-gradient-to-b from-slate-200 to-white p-6 pt-20 sm:p-8 md:p-12 lg:p-16 xl:pt-28">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-primaryText mb-4 text-center tracking-tight">
           Our Services
         </h1>
-        <p className="text-gray-500 mb-20 font-extralight sm:text-lg text-center max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-500 mb-20 font-extralight sm:text-lg text-center max-w-2xl mx-auto leading-5.5 sm:leading-relaxed">
           Discover a range of services tailored to support your mindfulness journey. Find the perfect fit for your
           needs.
         </p>
@@ -50,7 +50,7 @@ const ServiceList = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center mt-20">{service.name}</h3>
 
               {/* Description */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-6 text-center flex-grow">{service.description}</p>
+              <p className="text-gray-600 text-sm sm:leading-relaxed mb-6 text-center flex-grow">{service.description}</p>
 
               {/* Button */}
               <div className="text-center">

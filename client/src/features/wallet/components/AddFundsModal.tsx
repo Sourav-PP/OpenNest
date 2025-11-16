@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog } from '@/components/ui/dialog';
@@ -16,12 +16,29 @@ interface Props {
 }
 
 const AddFundsModal: React.FC<Props> = ({ open, onClose }: Props) => {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (!open) setAmount('');
+  }, [open]);
+
   const handleAddFunds = async () => {
-    if (!amount || amount <= 0 || amount > 10000) {
-      toast.error('Enter a valid amount');
+    const numericAmount = Number(amount);
+
+    // ✅ Validate input
+    if (!numericAmount || isNaN(numericAmount)) {
+      toast.error('Please enter a valid amount.');
+      return;
+    }
+
+    if (numericAmount <= 0) {
+      toast.error('Amount must be greater than 0.');
+      return;
+    }
+
+    if (numericAmount > 100000) {
+      toast.error('Maximum allowed amount is 100,000.');
       return;
     }
 
@@ -29,7 +46,7 @@ const AddFundsModal: React.FC<Props> = ({ open, onClose }: Props) => {
       setLoading(true);
 
       const res = await userApi.createCheckoutSession({
-        amount,
+        amount: numericAmount,
         purpose: PaymentPurpose.WALLET,
       });
 
@@ -48,28 +65,48 @@ const AddFundsModal: React.FC<Props> = ({ open, onClose }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="w-[90%] sm:max-w-md p-4 sm:p-6 rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Add Funds</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl font-semibold">
+            Add Funds
+          </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col gap-4">
+
+        <div className="flex flex-col gap-4 mt-2">
           <Input
             type="number"
             placeholder="Enter amount"
             value={amount}
-            onChange={e => setAmount(Number(e.target.value))}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (/^\d*$/.test(value)) {
+                setAmount(value);
+              }
+            }}
+            className="text-base sm:text-lg py-2"
           />
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+
+        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 mt-4">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="w-full sm:w-auto text-sm sm:text-base"
+          >
             Cancel
           </Button>
-          <Button onClick={handleAddFunds} disabled={loading}>
+          <Button
+            onClick={handleAddFunds}
+            disabled={loading}
+            className="w-full sm:w-auto text-sm sm:text-base"
+          >
             {loading ? 'Processing...' : 'Add Funds'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
   );
 };
 

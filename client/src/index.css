@@ -19,7 +19,7 @@
   }
 
   .btn-logout {
-    @apply text-white px-5 sm:px-12 py-2.5 sm:py-2 text-xs sm:text-base rounded-lg bg-gradient-to-r from-[#FF1D1C] to-[#FF5655] transition-all;
+    @apply text-white px-5 sm:px-12 py-2.5 sm:py-2 text-sm sm:text-base rounded-lg bg-gradient-to-r from-[#FF1D1C] to-[#FF5655] transition-all;
   }
 }
 
@@ -98,6 +98,21 @@ body {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+}
+
+@media (max-width: 640px) {
+  .Toastify__toast {
+    transform: scale(0.9);
+    transform-origin: top right;
+    font-size: 0.9rem;
+    border-radius: 12px !important;   /* <-- restore rounded corners */
+    overflow: hidden;                 /* keeps the background shape clean */
+  }
+
+  .Toastify__toast-container {
+    width: 85vw !important;
+    padding: 0 8px !important;
+  }
 }
 
 @media (min-width: 640px) {

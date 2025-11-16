@@ -85,15 +85,18 @@ instance.interceptors.response.use(
 
       try {
         const { data } = await instance.post(refreshEndpoint);
-        const accessToken = data.accessToken.accessToken;
+        console.log('data in refresh token: ', data);
+        const accessToken = data.data.accessToken;
 
         const decoded: { email: string; userId: string; role: UserRoleType } = jwtDecode(accessToken);
 
+        const currentProfileImage = store.getState().auth.profileImage;
         store.dispatch(
           loginSuccess({
             accessToken,
             email: decoded.email,
             userId: decoded.userId,
+            profileImage: currentProfileImage ?? null,
             role: decoded.role,
           })
         );

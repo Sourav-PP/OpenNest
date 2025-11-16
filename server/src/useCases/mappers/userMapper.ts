@@ -2,6 +2,8 @@ import { User } from '@/domain/entities/user';
 import { ILoginOutputDto, IUserDto, IUserUpdatedDto } from '../dtos/user';
 import { Notification } from '@/domain/entities/notification';
 import { INotificationDto } from '../dtos/notification';
+import { ITransactionDto } from '../types/payment';
+import { Payment } from '@/domain/entities/payment';
 
 export function toUserDetailDto(user: IUserDto): IUserDto {
     return {
@@ -52,5 +54,18 @@ export function toNotificationDto(notification: Notification): INotificationDto 
         read: notification.read,
         createdAt: notification.createdAt,
         notifyAt: notification.notifyAt,
+    };
+}
+
+export function toTransactionDto(payment: Payment): ITransactionDto {
+    return {
+        id: payment.id,
+        amount: payment.amount,
+        currency: payment.currency, 
+        paymentStatus: payment.paymentStatus,
+        paymentMethod: payment.paymentMethod,
+        purpose: payment.purpose,
+        transactionId: payment.transactionId,
+        createdAt: payment.createdAt,
     };
 }

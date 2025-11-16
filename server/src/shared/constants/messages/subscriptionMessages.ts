@@ -16,6 +16,7 @@ export const SubscriptionMessages = {
         PLAN_ID_REQUIRED: 'Plan ID is required',
         SUBSCRIPTION_CREATION_FAILED: 'Failed to create subscription',
         SUBSCRIPTION_ID_REQUIRED: 'Subscription ID is required',
+        SUBSCRIPTION_EXISTS: 'You already have an active subscription',
         NAME_ALREADY_EXISTS: (name: string) => `Plan with name ${name} already exists`,
         PLAN_NOT_FOUND: 'Plan not found',
         SUBSCRIPTION_NOT_FOUND: 'Subscription not found',

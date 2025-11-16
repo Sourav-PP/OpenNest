@@ -56,6 +56,7 @@ export interface ISignupResponse {
     name: string;
     email: string;
     role: UserRoleType;
+    profileImage: string;
   };
   accessToken: string;
 }
@@ -75,6 +76,7 @@ export interface IVerifyOtpResponse {
     name: string;
     email: string;
     role: UserRoleType;
+    profileImage: string;
   };
   accessToken: string;
 }

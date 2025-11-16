@@ -1,7 +1,10 @@
+import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
 import LoginForm from '../components/LoginForm';
 import { assets } from '@/assets/assets';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="relative min-h-screen bg-auth flex justify-center items-center bg-cover bg-center bg-no-repeat px-3 sm:px-0 py-8 sm:py-12 h-full">
       {/* Overlay over background */}
@@ -12,11 +15,23 @@ const LoginPage = () => {
         {/* Left: Form Side */}
         <div className="md:w-1/2 w-full items-center flex justify-start px-6">
           <div className="bg-white p-10 w-full max-w-sm rounded-[40px] overflow-hidden text-gray-500 text-sm shadow-[0_15px_30px_rgba(0,0,0,0.05)]">
-            <div className="w-full flex justify-center mb-2">
+            <div className="w-full flex justify-center sm:mb-2">
               <img className="w-32" src={assets.logo} alt="Logo" />
             </div>
             <h2 className="text-2xl font-bold text-[#1A4384] text-center mb-5">Sign In</h2>
             <LoginForm />
+            
+            {/* Back to Home Button */}
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={() => navigate(publicFrontendRoutes.landing)} // or '/'
+                className="flex items-center gap-1 px-2 py-1 border bg-gray-200 text-gray-500 font-medium rounded-full hover:bg-gray-300 transition-all duration-300 shadow-sm"
+              >
+                <span className="text-lg"></span>
+                <span>Back to Home</span>
+              </button>
+            </div>
+
           </div>
         </div>
       </div>

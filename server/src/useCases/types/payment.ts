@@ -1,4 +1,4 @@
-import { PaymentPurpose } from '@/domain/enums/PaymentEnums';
+import { PaymentMethod, PaymentPurpose, PaymentStatus } from '@/domain/enums/PaymentEnums';
 
 export interface ICreateCheckoutSessionInput {
     userId: string;
@@ -11,4 +11,15 @@ export interface ICreateCheckoutSessionInput {
 
 export interface ICreateCheckoutSessionOutput {
     url: string;
+}
+
+export interface ITransactionDto {
+    id: string;
+    amount: number;
+    currency: string;
+    paymentStatus: PaymentStatus;
+    paymentMethod: PaymentMethod
+    purpose: PaymentPurpose;
+    transactionId?: string;
+    createdAt: Date;    
 }
