@@ -21,5 +21,5 @@ export interface ITransactionDto {
     paymentMethod: PaymentMethod
     purpose: PaymentPurpose;
     transactionId?: string;
-    createdAt: Date;    
+    createdAt?: Date;    
 }
