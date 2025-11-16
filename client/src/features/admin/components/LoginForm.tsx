@@ -46,6 +46,7 @@ const LoginForm = () => {
           email: decoded.email,
           role: decoded.role,
           userId: decoded.userId,
+          profileImage: null
         })
       );
 
