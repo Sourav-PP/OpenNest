@@ -17,6 +17,8 @@ import { UserGender } from '@/constants/types/User';
 import { userFrontendRoutes } from '@/constants/frontendRoutes/userFrontendRoutes';
 import { useDispatch } from 'react-redux';
 import { updateUserProfile } from '@/redux/slices/authSlice';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -211,10 +213,25 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel className="text-gray-700 font-semibold text-sm sm:text-base">Mobile Number</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter your mobile number"
-                          {...field}
-                          className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                        <PhoneInput
+                          country={'in'}
+                          value={field.value}
+                          onChange={value => {
+                            if (value.length <= 2)
+                              field.onChange(''); // only country code = empty
+                            else field.onChange('+' + value);
+                          }}
+                          inputProps={{
+                            name: field.name,
+                            onBlur: field.onBlur,
+                            required: true,
+                          }}
+                          enableSearch={true}
+                          specialLabel={''}
+                          inputStyle={{
+                            width: '100%',
+                            height: '40px',
+                          }}
                         />
                       </FormControl>
                       <FormMessage className="text-xs sm:text-sm text-red-500" />

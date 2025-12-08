@@ -39,7 +39,7 @@ export class UpdatePsychologistProfileUseCase implements IUpdatePsychologistProf
 
         const userUpdates: Partial<User> = {};
 
-        if (input.name?.trim()) userUpdates.name = input.name?.trim();
+        if (input.name?.trim()) userUpdates.name = input.name?.trim().toLowerCase();
         if (input.email?.trim()) userUpdates.email = input.email?.trim();
         if (input.phone?.trim()) userUpdates.phone = input.phone.trim();
         if (input.gender?.trim()) userUpdates.gender = input.gender.trim() as UserGender;

@@ -26,6 +26,7 @@
     "express-validator": "^7.2.1",
     "google-auth-library": "^10.2.0",
     "jsonwebtoken": "^9.0.2",
+    "libphonenumber-js": "^1.12.29",
     "lodash": "^4.17.21",
     "luxon": "^3.7.1",
     "mongoose": "^8.16.0",

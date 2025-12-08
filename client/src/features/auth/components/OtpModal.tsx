@@ -56,6 +56,11 @@ const OtpModal = ({ isOpen, email, signupToken, onClose, onSuccess }: OtpModalPr
       toast.error('Please enter the OTP');
       return;
     }
+
+    if (timer <= 0) {
+      toast.error('OTP has expired. Please resend OTP.');
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await authApi.verifyOtp({ email, otp, signupToken });

@@ -16,6 +16,7 @@ import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psycholog
 import { UserGender } from '@/constants/types/User';
 import { useDispatch } from 'react-redux';
 import { updateUserProfile } from '@/redux/slices/authSlice';
+import PhoneInput from 'react-phone-input-2';
 
 const EditProfileForm = () => {
   const navigate = useNavigate();
@@ -27,6 +28,8 @@ const EditProfileForm = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
+    trigger,
     formState: { errors },
   } = useForm<updatePsychologistData>({
     resolver: zodResolver(updatePsychologistSchema),
@@ -84,7 +87,7 @@ const EditProfileForm = () => {
           profileImage: res.data?.profileImage ?? null,
         })
       );
-      
+
       navigate(psychologistFrontendRoutes.editProfile);
     } catch (error) {
       handleApiError(error);
@@ -204,12 +207,30 @@ const EditProfileForm = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                  <input
-                    type="text"
-                    {...register('phone')}
-                    className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
-                    placeholder="Enter phone number"
+
+                  <PhoneInput
+                    country={'in'}
+                    value={watch('phone') ?? ''} // get RHF value
+                    onChange={value => {
+                      if (value.length <= 2) {
+                        setValue('phone', '', { shouldValidate: true });
+                      } else {
+                        setValue('phone', '+' + value, { shouldValidate: true });
+                      }
+                    }}
+                    inputProps={{
+                      name: 'phone',
+                      onBlur: () => trigger('phone'),
+                      required: true,
+                    }}
+                    enableSearch
+                    specialLabel=""
+                    inputStyle={{
+                      width: '100%',
+                      height: '40px',
+                    }}
                   />
+
                   {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
                 </div>
 

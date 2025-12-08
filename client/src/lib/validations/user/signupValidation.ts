@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -12,7 +13,10 @@ const imageFileSchema = z
     message: 'Image size should be less than 5MB',
   })
   .refine(filelist => ACCEPTED_MIME_TYPES.includes(filelist?.[0]?.type), {
-    message: 'Only JPEG, PNG, or WEPG images are allowed',
+    message: 'Invalid image type',
+  })
+  .refine(filelist => /\.(jpe?g|png|webp)$/i.test(filelist?.[0]?.name), {
+    message: 'Invalid file extension',
   });
 
 export const signupSchema = z
@@ -20,16 +24,34 @@ export const signupSchema = z
     name: z
       .string()
       .trim()
+      .regex(/^[A-Za-z ]+$/, { message: 'Name can only contain letters and spaces' })
       .min(2, { message: 'name must be at least 2 characters long' })
       .max(50, { message: 'Name must be at most 50 characters' }),
     email: z
       .string()
+      .trim()
+      .toLowerCase()
       .email({ message: 'Invalid email address' })
       .max(100, { message: 'Email must be at most 100 characters long' }),
     phone: z
       .string()
       .trim()
-      .regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
+      .regex(/^\+[1-9]\d{7,14}$/, {
+        message: 'Enter a valid international phone number',
+      })
+      .refine(
+        value => {
+          const phone = parsePhoneNumberFromString(value);
+          console.log('phone:', phone, 'valid: ', phone?.isValid());
+          return phone?.isValid() === true;
+        },
+        {
+          message: 'Phone number is not valid',
+        }
+      )
+      .refine(value => !/^(\d)\1+$/.test(value.replace(/\D/g, '')), {
+        message: 'Phone number cannot be all repeated digits',
+      }),
     profileImage: imageFileSchema,
     password: z
       .string()

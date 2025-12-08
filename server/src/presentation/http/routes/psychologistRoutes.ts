@@ -11,11 +11,22 @@ import {
 } from '@/infrastructure/config/di';
 
 import { uploadSingle } from '../middlewares/multer';
+import {
+    updatePsychologistProfileValidator,
+    validateUpdatePsychologist,
+} from '../validators/updatePsychologistProfileValidator';
 
 const router = express.Router();
 
 router.get('/profile', authenticatePsychologist, psychologistProfileController.getProfile);
-router.put('/profile', authenticatePsychologist, uploadSingle, psychologistProfileController.updateProfile);
+router.put(
+    '/profile',
+    authenticatePsychologist,
+    uploadSingle,
+    updatePsychologistProfileValidator,
+    validateUpdatePsychologist,
+    psychologistProfileController.updateProfile,
+);
 router.get('/kyc', authenticatePsychologist, psychologistKycController.getKycDetails);
 router.post('/slot', authenticatePsychologist, slotController.createSlot);
 router.get('/slot', authenticatePsychologist, slotController.getSlotByPsychologist);
@@ -32,7 +43,11 @@ router.get(
     authenticatePsychologist,
     psychologistConsultationController.getPatientHistory,
 );
-router.put('/consultation/:consultationId/notes', authenticatePsychologist, psychologistConsultationController.updateNotes);
+router.put(
+    '/consultation/:consultationId/notes',
+    authenticatePsychologist,
+    psychologistConsultationController.updateNotes,
+);
 router.get('/payout/pending', authenticatePsychologist, psychologistPayoutController.getPendingAmount);
 router.post('/payout-requests', authenticatePsychologist, psychologistPayoutController.requestPayout);
 router.get('/payout-requests', authenticatePsychologist, psychologistPayoutController.listPayouts);

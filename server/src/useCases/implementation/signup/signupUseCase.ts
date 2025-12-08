@@ -34,6 +34,7 @@ export class SignupUseCase implements ISignupUseCase {
             throw new AppError(authMessages.ERROR.PASSWORDS_DO_NOT_MATCH, HttpStatus.BAD_REQUEST);
         }
 
+        console.log('phone: ', request.phone);
         await this._userRepository.createPendingSignup({
             name: request.name.trim().toLowerCase(),
             email: request.email,

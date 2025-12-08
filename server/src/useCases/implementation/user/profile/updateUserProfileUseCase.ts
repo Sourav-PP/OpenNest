@@ -34,7 +34,7 @@ export class UpdateUserProfileUseCase implements IUpdateUserProfileUseCase {
 
         const updates: Partial<User> = {};
 
-        if (input.name?.trim()) updates.name = input.name?.trim();
+        if (input.name?.trim()) updates.name = input.name?.trim().toLowerCase();
         if (input.email?.trim()) updates.email = input.email?.trim();
         if (input.phone?.trim()) updates.phone = input.phone.trim();
         if (input.gender?.trim()) updates.gender = input.gender.trim() as UserGender;

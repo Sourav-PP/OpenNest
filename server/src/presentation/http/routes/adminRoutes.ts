@@ -16,6 +16,7 @@ import {
     adminPayoutController,
     adminDashboardController,
 } from '@/infrastructure/config/di';
+import { addPlanValidator, validateAddPlan } from '../validators/addPlanValidator';
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ router.patch('/kyc/:psychologistId/approve', authenticateAdmin, adminKycControll
 router.patch('/kyc/:psychologistId/reject', authenticateAdmin, adminKycController.rejectKyc);
 router.patch('/users/:userId/status', authenticateAdmin, adminUserManagementController.toggleUserStatus);
 router.get('/consultations', authenticateAdmin, adminConsultationController.getAllConsultations);
-router.post('/plans', authenticateAdmin, planController.createPlan);
+router.post('/plans', authenticateAdmin, addPlanValidator, validateAddPlan, planController.createPlan);
 router.get('/plans', authenticateAdmin, planController.getAllPlans);
 router.delete('/plans/:planId', authenticateAdmin, planController.deletePlan);
 router.get('/payout-requests', authenticateAdmin, adminPayoutController.listPayoutRequests);

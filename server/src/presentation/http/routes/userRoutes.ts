@@ -14,6 +14,7 @@ import {
 } from '@/infrastructure/config/di';
 
 import { uploadSingle } from '../middlewares/multer';
+import { updateUserProfileValidator, validateUpdateUserProfile } from '../validators/updateUserProfileValidator';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get('/services', userServiceController.getAllService);
 router.get('/psychologists', userPsychologistController.getAllPsychologists);
 router.get('/psychologists/:id', userPsychologistController.getPsychologistDetails);
 router.get('/profile', authenticateUser, userProfileController.getProfile);
-router.put('/profile', authenticateUser, uploadSingle, userProfileController.updateProfile);
+router.put('/profile', authenticateUser, uploadSingle, updateUserProfileValidator, validateUpdateUserProfile, userProfileController.updateProfile);
 router.get('/psychologists/:userId/slots', userSlotController.getAllSlots);
 router.post('/payment/create-checkout-session', authenticateUser, paymentController.createCheckoutSession);
 router.post(

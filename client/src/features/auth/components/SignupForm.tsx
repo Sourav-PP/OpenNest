@@ -19,6 +19,8 @@ import { UserRole, type UserRoleType } from '@/constants/types/User';
 import { generalMessages } from '@/messages/GeneralMessages';
 import { psychologistFrontendRoutes } from '@/constants/frontendRoutes/psychologistFrontendRoutes';
 import { publicFrontendRoutes } from '@/constants/frontendRoutes/publicFrontendRoutes';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 interface TokenPayload {
   userId: string;
@@ -71,7 +73,9 @@ const SignupForm = () => {
       handleApiError(error);
     }
 
-    navigate(decoded.role === UserRole.PSYCHOLOGIST ? psychologistFrontendRoutes.verification : publicFrontendRoutes.landing);
+    navigate(
+      decoded.role === UserRole.PSYCHOLOGIST ? psychologistFrontendRoutes.verification : publicFrontendRoutes.landing
+    );
   };
 
   const onSubmit = async (data: SignupData) => {
@@ -148,7 +152,26 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input leftIcon={Phone} placeholder="Phone" {...field} />
+                <PhoneInput
+                  country={'in'}
+                  value={field.value}
+                  onChange={value => {
+                    if (value.length <= 2)
+                      field.onChange(''); // only country code = empty
+                    else field.onChange('+' + value);
+                  }}
+                  inputProps={{
+                    name: field.name,
+                    onBlur: field.onBlur,
+                    required: true,
+                  }}
+                  enableSearch={true}
+                  specialLabel={''}
+                  inputStyle={{
+                    width: '100%',
+                    height: '40px',
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

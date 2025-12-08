@@ -9,6 +9,7 @@ const AddServiceForm = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<addServiceData>({
@@ -28,7 +29,7 @@ const AddServiceForm = () => {
       toast.success('Service created successfully');
       reset();
     } catch (err) {
-      handleApiError(err);
+      handleApiError(err, setError);
     }
   };
 

@@ -5,15 +5,16 @@ export const addPlanSchema = z.object({
     .string()
     .trim()
     .min(2, { message: 'Name must be at least 2 characters' })
-    .max(100, { message: 'Name cannot exceed 100 characters' })
-    .regex(/^[\w\s-]+$/, { message: 'Name contains invalid characters' }),
-
+    .max(50, { message: 'Name cannot exceed 50 characters' })
+    .regex(/^[A-Za-z ]+$/, { message: 'Name can only contain letters and spaces' }),
   description: z
     .string()
     .trim()
     .min(5, { message: 'Description must be at least 5 characters' })
     .max(1000, { message: 'Description cannot exceed 1000 characters' })
-    .regex(/^[\w\s\-,.!?()]+$/, { message: 'Description contains invalid characters' }),
+    .regex(/^[A-Za-z0-9\s\-.,!()]+$/, {
+      message: 'Description contains invalid characters',
+    }),
 
   price: z
     .number({ invalid_type_error: 'Price must be a number' })

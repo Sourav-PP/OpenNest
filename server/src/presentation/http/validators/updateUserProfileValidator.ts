@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import { AppError } from '@/domain/errors/AppError';
 import { HttpStatus } from '@/shared/enums/httpStatus';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import { UserRole } from '@/domain/enums/UserEnums';
 
 // Allowed MIME types
 const ACCEPTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -26,7 +25,7 @@ const checkMagicNumber = (buffer: Buffer): boolean => {
     return false;
 };
 
-export const signupValidator = [
+export const updateUserProfileValidator = [
     // NAME
     body('name')
         .trim()
@@ -41,9 +40,9 @@ export const signupValidator = [
         .isEmail()
         .withMessage('Invalid email address')
         .isLength({ max: 100 })
-        .withMessage('Email must be at most 100 characters'),
+        .withMessage('Email is too long'),
 
-    // PHONE — match frontend Zod (E.164 + libphonenumber-js + no repeating digits)
+    // PHONE (E.164 + libphonenumber-js + no repeating)
     body('phone')
         .trim()
         .matches(/^\+[1-9]\d{7,14}$/)
@@ -63,31 +62,36 @@ export const signupValidator = [
             return true;
         }),
 
-    // PASSWORD
-    body('password')
-        .trim()
-        .isLength({ min: 6, max: 30 })
-        .withMessage('Password must be between 6 and 30 characters')
-        .matches(/[A-Z]/)
-        .withMessage('Password must contain at least one uppercase letter')
-        .matches(/[a-z]/)
-        .withMessage('Password must contain at least one lowercase letter')
-        .matches(/[0-9]/)
-        .withMessage('Password must contain at least one number')
-        .matches(/[^a-zA-Z0-9]/)
-        .withMessage('Password must contain at least one special character'),
+    // DATE OF BIRTH (optional)
+    body('dateOfBirth')
+        .optional({ nullable: true, checkFalsy: true })
+        .matches(/^\d{4}-\d{2}-\d{2}$/)
+        .withMessage('Date of birth must be in YYYY-MM-DD format')
+        .custom(value => {
+            const dob = new Date(value);
+            const today = new Date();
 
-    // CONFIRM PASSWORD
-    body('confirmPassword')
-        .custom((value, { req }) => value === req.body.password)
-        .withMessage('Passwords must match'),
+            const age =
+                today.getFullYear() -
+                dob.getFullYear() -
+                (today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0);
 
-    // Strict IMAGE VALIDATION
+            if (age < 18 || age > 99) {
+                throw new Error('You must be at least 18 years old and less than 100 years old');
+            }
+            return true;
+        }),
+
+    // GENDER (optional)
+    body('gender').optional().isIn(['male', 'female', 'other']).withMessage('Invalid gender value'),
+
+    // PROFILE IMAGE (optional)
     // eslint-disable-next-line @typescript-eslint/naming-convention
     body('profileImage').custom((_, { req }) => {
-        const file = req.file; 
+        const file = req.file;
 
-        if (!file) throw new Error('Image is required');
+        // If no file, it's optional → accept
+        if (!file) return true;
 
         // SIZE check
         if (file.size > MAX_IMAGE_SIZE) {
@@ -99,23 +103,16 @@ export const signupValidator = [
             throw new Error('Invalid image MIME type');
         }
 
-        // MAGIC NUMBER CHECK — prevents fake .pdf → .jpg rename
+        // MAGIC NUMBER CHECK — prevents fake files
         if (!checkMagicNumber(file.buffer)) {
             throw new Error('Invalid or corrupted image file');
         }
 
         return true;
     }),
-
-    // ROLE
-    body('role')
-        .notEmpty()
-        .withMessage('role is required')
-        .isIn([UserRole.USER, UserRole.PSYCHOLOGIST])
-        .withMessage('Role must be either "user" or "psychologist"'),
 ];
 
-export const validate = (req: Request, res: Response, next: NextFunction) => {
+export const validateUpdateUserProfile = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
