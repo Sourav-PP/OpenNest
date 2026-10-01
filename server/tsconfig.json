@@ -4,8 +4,9 @@
     "module": "commonjs",                      // Node.js modules
     "rootDir": "./src",                        // source folder
     "outDir": "./dist",                        // compiled JS output
-    "baseUrl": "./src",                        // base path for imports
-    "paths": { "@/*": ["*"] },                 // optional alias for imports
+    "paths": {
+      "@/*": ["./src/*"]
+    },                 // optional alias for imports
     "esModuleInterop": true,                   // for importing CommonJS modules
     "experimentalDecorators": true,            // if you plan to use decorators
     "emitDecoratorMetadata": true,             // required for some decorators
